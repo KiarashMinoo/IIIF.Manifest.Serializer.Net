@@ -5,7 +5,12 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net", "src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj", "{B02074F3-915D-437C-AB50-9BF8E1F4F329}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IIIF.Manifest.Serializer.Net.Test", "src\IIIF.Manifest.Serializer.Net.Test\IIIF.Manifest.Serializer.Net.Test.csproj", "{2B917F24-7384-4FB0-8988-D2B460B494A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.Test", "src\IIIF.Manifest.Serializer.Net.Test\IIIF.Manifest.Serializer.Net.Test.csproj", "{2B917F24-7384-4FB0-8988-D2B460B494A7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1E032212-EB55-4231-A74E-5C5B7E28F687}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
