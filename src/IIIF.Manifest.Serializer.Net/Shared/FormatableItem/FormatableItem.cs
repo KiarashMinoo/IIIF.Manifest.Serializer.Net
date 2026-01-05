@@ -1,6 +1,7 @@
+using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.FormatableItem
 {
     [JsonConverter(typeof(FormatableItemJsonConverter<>))]
     public class FormatableItem<TFormatableItem> : BaseItem<TFormatableItem>

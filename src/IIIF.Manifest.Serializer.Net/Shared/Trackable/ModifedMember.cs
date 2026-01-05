@@ -1,4 +1,4 @@
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.Trackable
 {
     public class ModifedMember<TValueType>
     {

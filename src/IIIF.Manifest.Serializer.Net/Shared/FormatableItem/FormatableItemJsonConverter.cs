@@ -1,9 +1,10 @@
+using System;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.FormatableItem
 {
     public class FormatableItemJsonConverter<TFormatableItem> : BaseItemJsonConverter<TFormatableItem>
         where TFormatableItem : FormatableItem<TFormatableItem>

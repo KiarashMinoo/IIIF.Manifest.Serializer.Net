@@ -1,7 +1,8 @@
-using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Nodes.Content.Segment.Resource;
+using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Content.Segment
 {
     public class Segment : BaseContent<Segment, SegmentResource>
     {
@@ -17,11 +18,11 @@ namespace IIIF.Manifests.Serializer.Nodes
         public string On { get; }
 
         [JsonProperty(SelectorJName)]
-        public Selector Selector { get; private set; }
+        public Selector.Selector Selector { get; private set; }
 
 
         public Segment(string id, SegmentResource resource, string on) : base(id, "oa:Annotation", resource) => On = on;
 
-        public Segment SetSelector(Selector selector) => SetPropertyValue(a => a.Selector, selector);
+        public Segment SetSelector(Selector.Selector selector) => SetPropertyValue(a => a.Selector, selector);
     }
 }

@@ -1,10 +1,10 @@
+using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.Within
 {
     public class WithinJsonConverter : BaseItemJsonConverter<Within>
     {

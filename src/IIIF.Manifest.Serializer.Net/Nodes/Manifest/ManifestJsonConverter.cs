@@ -1,12 +1,14 @@
-using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Properties.Interfaces;
+using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseNode;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Manifest
 {
     public class ManifestJsonConverter : BaseNodeJsonConverter<Manifest>
     {
@@ -37,9 +39,25 @@ namespace IIIF.Manifests.Serializer.Nodes
             if (!(jSequences is JArray))
                 throw new JsonObjectMustBeJArray<Manifest>(Manifest.SequencesJName);
 
-            var sequences = jSequences.ToObject<Sequence[]>();
+            var sequences = jSequences.ToObject<Sequence.Sequence[]>();
             foreach (var sequence in sequences)
                 manifest.AddSequence(sequence);
+
+            return manifest;
+        }
+
+        private Manifest SetStructures(JToken element, Manifest manifest)
+        {
+            var jStructures = element.TryGetToken(Manifest.StructuresJName);
+            if (jStructures != null)
+            {
+                if (!(jStructures is JArray))
+                    throw new JsonObjectMustBeJArray<Manifest>(Manifest.StructuresJName);
+
+                var structures = jStructures.ToObject<Structure.Structure[]>();
+                foreach (var structure in structures)
+                    manifest.AddStructure(structure);
+            }
 
             return manifest;
         }
@@ -53,6 +71,7 @@ namespace IIIF.Manifests.Serializer.Nodes
             manifest = SetNavDate(element, manifest);
             manifest = SetSequences(element, manifest);
             manifest = manifest.SetViewingDirection(element);
+            manifest = SetStructures(element, manifest);
 
             return manifest;
         }
@@ -77,6 +96,18 @@ namespace IIIF.Manifests.Serializer.Nodes
 
                     foreach (var sequence in manifest.Sequences)
                         serializer.Serialize(writer, sequence);
+
+                    writer.WriteEndArray();
+                }
+
+                if (manifest.Structures.Any())
+                {
+                    writer.WritePropertyName(Manifest.StructuresJName);
+
+                    writer.WriteStartArray();
+
+                    foreach (var structure in manifest.Structures)
+                        serializer.Serialize(writer, structure);
 
                     writer.WriteEndArray();
                 }

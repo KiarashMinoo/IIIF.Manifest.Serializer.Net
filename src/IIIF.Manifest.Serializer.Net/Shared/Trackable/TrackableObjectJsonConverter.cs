@@ -1,8 +1,8 @@
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.Trackable
 {
     public class TrackableObjectJsonConverter<TTrackableObject> : JsonConverter<TTrackableObject>
         where TTrackableObject : TrackableObject<TTrackableObject>

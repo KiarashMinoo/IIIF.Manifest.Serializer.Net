@@ -1,6 +1,6 @@
 using System;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.Exceptions
 {
     public class JsonObjectMustBeJArray<T> : Exception
     {

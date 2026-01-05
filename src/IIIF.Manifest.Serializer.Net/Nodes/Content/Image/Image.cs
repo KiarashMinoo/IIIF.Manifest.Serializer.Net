@@ -1,7 +1,8 @@
-using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
+using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Content.Image
 {
     [JsonConverter(typeof(ImageJsonConverter))]
     public class Image : BaseContent<Image, ImageResource>

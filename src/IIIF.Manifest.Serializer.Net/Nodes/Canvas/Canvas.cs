@@ -1,10 +1,14 @@
-using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.Content.Image;
+using IIIF.Manifests.Serializer.Nodes.Content.OtherContent;
+using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Interfaces;
+using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseNode;
+using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Canvas
 {
     [JsonConverter(typeof(CanvasJsonConverter))]
     public class Canvas : BaseNode<Canvas>, IDimenssionSupport<Canvas>

@@ -1,11 +1,11 @@
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Reflection;
+using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.Trackable
 {
     [JsonConverter(typeof(TrackableObjectJsonConverter<>))]
     public class TrackableObject<TTrackableObject> : INotifyPropertyChanging, INotifyPropertyChanged

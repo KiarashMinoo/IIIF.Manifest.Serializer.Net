@@ -1,9 +1,9 @@
-using IIIF.Manifests.Serializer.Shared;
+using System;
+using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Content.OtherContent
 {
     public class OtherContentJsonConverter : BaseContentJsonConverter<OtherContent>
     {

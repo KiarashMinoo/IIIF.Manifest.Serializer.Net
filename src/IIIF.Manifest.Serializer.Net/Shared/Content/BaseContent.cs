@@ -1,7 +1,9 @@
-using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Interfaces;
+using IIIF.Manifests.Serializer.Shared.BaseNode;
+using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.Content
 {
     [JsonConverter(typeof(BaseContentJsonConverter<>))]
     public class BaseContent<TBaseContent> : BaseNode<TBaseContent>, IDimenssionSupport<TBaseContent>

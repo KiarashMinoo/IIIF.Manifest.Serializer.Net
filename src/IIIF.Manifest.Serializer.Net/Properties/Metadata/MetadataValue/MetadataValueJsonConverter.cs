@@ -1,9 +1,10 @@
-using IIIF.Manifests.Serializer.Shared;
+using System;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
+using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.Metadata.MetadataValue
 {
     public class MetadataValueJsonConverter : TrackableObjectJsonConverter<MetadataValue>
     {

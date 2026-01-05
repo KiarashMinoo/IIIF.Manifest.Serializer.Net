@@ -1,10 +1,10 @@
+using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.Description
 {
     public class DescriptionJsonConverter : ValuableItemJsonConverter<Description>
     {

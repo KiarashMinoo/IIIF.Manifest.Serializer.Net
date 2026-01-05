@@ -1,11 +1,15 @@
-using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Within;
+using IIIF.Manifests.Serializer.Shared.BaseNode;
+using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.Content
 {
     public class BaseContentJsonConverter<TBaseContent> : BaseNodeJsonConverter<TBaseContent>
         where TBaseContent : BaseContent<TBaseContent>
@@ -14,6 +18,9 @@ namespace IIIF.Manifests.Serializer.Shared
         {
             DisableTypeChecking = true;
         }
+
+        protected override bool ShouldHandleSeeAlso(TBaseContent node) => false;
+        protected override bool ShouldHandleWithin(TBaseContent node) => false;
 
         private TBaseContent SetFormat(JToken element, TBaseContent content)
         {

@@ -1,9 +1,10 @@
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.Interfaces
 
 {
     public interface IDimenssionSupport<TItem>

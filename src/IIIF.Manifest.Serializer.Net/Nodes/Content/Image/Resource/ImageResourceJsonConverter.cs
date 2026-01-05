@@ -1,10 +1,12 @@
+using System;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Content.Image.Resource
 {
     public class ImageResourceJsonConverter : BaseResourceJsonConverter<ImageResource>
     {

@@ -1,12 +1,16 @@
-using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.Content.Image;
+using IIIF.Manifests.Serializer.Nodes.Content.OtherContent;
+using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseNode;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Canvas
 {
     public class CanvasJsonConverter : BaseNodeJsonConverter<Canvas>
     {

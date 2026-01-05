@@ -1,8 +1,8 @@
-using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
+using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Content.Segment.Selector
 {
     public class Selector : BaseItem<Selector>
     {

@@ -1,7 +1,7 @@
-using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Content.Embedded.Resource
 {
     public class EmbeddedContentResource : BaseResource<EmbeddedContentResource>
     {

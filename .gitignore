@@ -219,3 +219,6 @@ Results.*.xml
 !**/TestData/*.nupkg
 .vs
 *.ini
+
+
+.idea

@@ -1,11 +1,14 @@
-using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Properties.Interfaces;
+using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.Service
 {
     public class ServiceJsonConverter : BaseItemJsonConverter<Service>
     {
@@ -23,7 +26,14 @@ namespace IIIF.Manifests.Serializer.Properties
             if (jProfile is null)
                 throw new JsonNodeRequiredException<Service>(Service.ProfileJName);
 
-            return new Service(jContext.ToString(), jId.ToString(), jProfile.ToString());
+            var service = new Service(jContext.ToString(), jId.ToString(), jProfile.ToString());
+
+            var jType = element.TryGetToken(Service.TypeJName);
+            if (jType is null)
+                throw new JsonNodeRequiredException<Service>(Service.TypeJName);
+
+            service.SetType(jType.ToString());
+            return service;
         }
 
         private Service SetTiles(JToken element, Service service)
@@ -32,7 +42,7 @@ namespace IIIF.Manifests.Serializer.Properties
 
             if (jTiles != null && jTiles is JArray)
             {
-                var tiles = jTiles.ToObject<Tile[]>();
+                var tiles = jTiles.ToObject<Tile.Tile[]>();
                 foreach (var tile in tiles)
                     service.AddTile(tile);
 
@@ -43,6 +53,7 @@ namespace IIIF.Manifests.Serializer.Properties
 
         protected sealed override Service EnrichReadJson(Service service, JToken element, Type objectType, Service existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
+            service = base.EnrichReadJson(service, element, objectType, existingValue, hasExistingValue, serializer);
             service = service.SetHeight(element);
             service = service.SetWidth(element);
             service = SetTiles(element, service);

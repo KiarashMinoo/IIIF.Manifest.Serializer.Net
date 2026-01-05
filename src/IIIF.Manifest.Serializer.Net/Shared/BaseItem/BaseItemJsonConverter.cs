@@ -1,10 +1,12 @@
+using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Service;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
+using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.BaseItem
 {
     public class BaseItemJsonConverter<TBaseItem> : TrackableObjectJsonConverter<TBaseItem>
         where TBaseItem : BaseItem<TBaseItem>

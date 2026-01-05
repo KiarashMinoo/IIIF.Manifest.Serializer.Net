@@ -1,15 +1,22 @@
-using IIIF.Manifests.Serializer.Shared;
+using System;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Content.Embedded.Resource
 {
     public class EmbeddedContentResourceJsonConverter : BaseResourceJsonConverter<EmbeddedContentResource>
     {
         protected override EmbeddedContentResource CreateInstance(JToken element, Type objectType, EmbeddedContentResource existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            return base.CreateInstance(element, objectType, existingValue, hasExistingValue, serializer);
+            var jChars = element.TryGetToken(EmbeddedContentResource.CharsJName);
+            if (jChars is null)
+                throw new JsonNodeRequiredException<EmbeddedContentResource>(EmbeddedContentResource.CharsJName);
+
+            var jLanguage = element.TryGetToken(EmbeddedContentResource.LanguageJname);
+            return new EmbeddedContentResource(jChars.ToString(), jLanguage?.ToString());
         }
     }
 }

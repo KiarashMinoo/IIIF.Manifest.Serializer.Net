@@ -1,9 +1,10 @@
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.Interfaces
 {
     public interface IViewingDirectionSupport<TNode>
         where TNode : BaseNode<TNode>, IViewingDirectionSupport<TNode>

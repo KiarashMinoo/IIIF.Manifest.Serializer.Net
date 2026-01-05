@@ -1,15 +1,23 @@
-using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Description;
+using IIIF.Manifests.Serializer.Properties.Metadata;
+using IIIF.Manifests.Serializer.Properties.Rendering;
+using IIIF.Manifests.Serializer.Properties.Within;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.BaseNode
 {
     public class BaseNodeJsonConverter<TBaseNode> : BaseItemJsonConverter<TBaseNode>
         where TBaseNode : BaseNode<TBaseNode>
     {
+        protected virtual bool ShouldHandleSeeAlso(TBaseNode node) => true;
+        protected virtual bool ShouldHandleWithin(TBaseNode node) => true;
+
         private TBaseNode SetLabels(JToken element, TBaseNode node)
         {
             var jLabel = element.TryGetToken(BaseNode<TBaseNode>.LabelJName);
@@ -183,8 +191,12 @@ namespace IIIF.Manifests.Serializer.Shared
             node = SetViewingHint(element, node);
             node = SetRendering(element, node);
             node = SetRelated(element, node);
-            node = SetSeeAlsoes(element, node);
-            node = SetWithins(element, node);
+
+            if (ShouldHandleSeeAlso(node))
+                node = SetSeeAlsoes(element, node);
+
+            if (ShouldHandleWithin(node))
+                node = SetWithins(element, node);
 
             return node;
         }
@@ -294,7 +306,7 @@ namespace IIIF.Manifests.Serializer.Shared
                     writer.WriteValue(node.Related);
                 }
 
-                if (node.SeeAlso.Any())
+                if (ShouldHandleSeeAlso(node) && node.SeeAlso.Any())
                 {
                     writer.WritePropertyName(BaseNode<TBaseNode>.SeeAlsoJName);
 
@@ -311,7 +323,7 @@ namespace IIIF.Manifests.Serializer.Shared
                     }
                 }
 
-                if (node.Within.Any())
+                if (ShouldHandleWithin(node) && node.Within.Any())
                 {
                     writer.WritePropertyName(BaseNode<TBaseNode>.WithinJName);
 

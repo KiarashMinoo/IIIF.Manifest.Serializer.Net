@@ -1,12 +1,15 @@
-using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Linq;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Interfaces;
+using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.BaseNode;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes
+namespace IIIF.Manifests.Serializer.Nodes.Sequence
 {
     public class SequenceJsonConverter : BaseNodeJsonConverter<Sequence>
     {
@@ -34,7 +37,7 @@ namespace IIIF.Manifests.Serializer.Nodes
             if (!(jCanvases is JArray))
                 throw new JsonObjectMustBeJArray<Sequence>(Sequence.CanvasesJName);
 
-            var canvases = jCanvases.ToObject<Canvas[]>();
+            var canvases = jCanvases.ToObject<Canvas.Canvas[]>();
             foreach (var canvas in canvases)
                 sequence.AddCanvas(canvas);
 

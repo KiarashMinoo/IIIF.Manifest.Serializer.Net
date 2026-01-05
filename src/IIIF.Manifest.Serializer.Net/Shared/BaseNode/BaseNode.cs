@@ -1,9 +1,14 @@
+using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Description;
+using IIIF.Manifests.Serializer.Properties.Metadata;
+using IIIF.Manifests.Serializer.Properties.Rendering;
+using IIIF.Manifests.Serializer.Properties.Within;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
-namespace IIIF.Manifests.Serializer.Shared
+namespace IIIF.Manifests.Serializer.Shared.BaseNode
 {
     public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNode<TBaseNode>
     {
@@ -57,10 +62,10 @@ namespace IIIF.Manifests.Serializer.Shared
         public Rendering Rendering { get; private set; }
 
         [JsonProperty(SeeAlsoJName)]
-        public IReadOnlyCollection<SeeAlso> SeeAlso => seeAloses;
+        public IReadOnlyCollection<SeeAlso> SeeAlso => seeAloses.AsReadOnly();
 
         [JsonProperty(WithinJName)]
-        public IReadOnlyCollection<Within> Within => withins;
+        public IReadOnlyCollection<Within> Within => withins.AsReadOnly();
 
         [JsonProperty(RelatedJName)]
         public string Related { get; private set; }
