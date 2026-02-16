@@ -65,7 +65,8 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
             var json = JsonConvert.SerializeObject(service, Formatting.Indented);
             var deserialized = JsonConvert.DeserializeObject<Service>(json);
             // Assert
-            deserialized.Rights.Should().Be("http://creativecommons.org/licenses/by/4.0/");
+            deserialized.Rights.Should().NotBeNull();
+            deserialized.Rights.Value.Should().Be("http://creativecommons.org/licenses/by/4.0/");
         }
         [Fact]
         public void Service_ShouldSupportPreferredFormatsWithValueObjects()
@@ -162,7 +163,8 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
             deserialized.MaxWidth.Should().Be(2000);
             deserialized.MaxHeight.Should().Be(1500);
             deserialized.MaxArea.Should().Be(10000000);
-            deserialized.Rights.Should().Be("http://creativecommons.org/licenses/by/4.0/");
+            deserialized.Rights.Should().NotBeNull();
+            deserialized.Rights.Value.Should().Be("http://creativecommons.org/licenses/by/4.0/");
             deserialized.Sizes.Should().HaveCount(2);
             deserialized.Tiles.Should().HaveCount(1);
             deserialized.PreferredFormats.Should().HaveCount(2);

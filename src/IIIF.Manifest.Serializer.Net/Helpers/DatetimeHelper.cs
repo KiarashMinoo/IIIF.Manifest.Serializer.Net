@@ -30,6 +30,10 @@ namespace IIIF.Manifests.Serializer.Helpers
             "yyyy-MM-ddTHHzzz",
             "yyyy-MM-ddTHHzz",
             "yyyy-MM-ddTHHZ",
+            // Date only formats
+            "yyyy-MM-dd",
+            "yyyy-MM",
+            "yyyy",
         };
 
         public static DateTime ParseISO8601String(string str)

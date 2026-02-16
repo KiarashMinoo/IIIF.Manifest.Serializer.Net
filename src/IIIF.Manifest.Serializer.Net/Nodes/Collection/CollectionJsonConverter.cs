@@ -17,21 +17,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Collection
             if (jId is null)
                 throw new ArgumentException("Collection requires @id");
 
-            var jLabel = element.TryGetToken(Collection.LabelJName);
-            if (jLabel != null)
-            {
-                if (jLabel is JArray labelArray)
-                {
-                    var labels = labelArray.ToObject<Label[]>();
-                    return new Collection(jId.ToString(), labels);
-                }
-                else
-                {
-                    return new Collection(jId.ToString(), new Label(jLabel.ToString()));
-                }
-            }
-
-            return new Collection(jId.ToString()) { };
+            // Don't read labels here - let BaseNodeJsonConverter.SetLabels handle them
+            return new Collection(jId.ToString());
         }
 
         private Collection SetCollections(JToken element, Collection collection)
@@ -116,6 +103,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Collection
 
         protected override Collection EnrichReadJson(Collection collection, JToken element, Type objectType, Collection existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
+            collection = base.EnrichReadJson(collection, element, objectType, existingValue, hasExistingValue, serializer);
+
             SetCollections(element, collection);
             SetManifests(element, collection);
             SetMembers(element, collection);
@@ -128,6 +117,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Collection
 
         protected override void EnrichMoreWriteJson(JsonWriter writer, Collection collection, JsonSerializer serializer)
         {
+            base.EnrichMoreWriteJson(writer, collection, serializer);
+
             if (collection.ViewingDirection != null)
             {
                 writer.WritePropertyName(Constants.ViewingDirectionJName);

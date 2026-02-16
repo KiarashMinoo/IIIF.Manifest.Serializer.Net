@@ -23,7 +23,18 @@ namespace IIIF.Manifests.Serializer.Nodes.Sequence
         {
             var jStartCanvas = element.TryGetToken(Sequence.StartCanvasJName);
             if (jStartCanvas != null)
-                sequence.SetStartCanvas(jStartCanvas.ToObject<StartCanvas>());
+            {
+                if (jStartCanvas is JObject jObj)
+                {
+                    var id = jObj.TryGetToken("@id");
+                    if (id != null)
+                        sequence.SetStartCanvas(new StartCanvas(id.ToString()));
+                }
+                else
+                {
+                    sequence.SetStartCanvas(new StartCanvas(jStartCanvas.ToString()));
+                }
+            }
 
             return sequence;
         }
@@ -78,7 +89,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Sequence
                 if (sequence.StartCanvas != null)
                 {
                     writer.WritePropertyName(Sequence.StartCanvasJName);
-                    serializer.Serialize(writer, sequence.StartCanvas);
+                    writer.WriteValue(sequence.StartCanvas.Id);
                 }
 
                 if (sequence.ViewingDirection != null)

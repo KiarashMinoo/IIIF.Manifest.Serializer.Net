@@ -190,7 +190,7 @@ namespace IIIF.Manifests.Serializer.Properties.Service
                 if (value.Rights != null)
                 {
                     writer.WritePropertyName(Service.RightsJName);
-                    writer.WriteValue(value.Rights);
+                    writer.WriteValue(value.Rights.Value);
                 }
 
                 if (value.Sizes.Any())

@@ -49,7 +49,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
         {
             var jImages = element.TryGetToken(Canvas.ImagesJName);
             if (jImages is null)
-                throw new JsonNodeRequiredException<Canvas>(Canvas.ImagesJName);
+                return canvas;
 
             if (!(jImages is JArray))
                 throw new JsonObjectMustBeJArray<Canvas>(Canvas.ImagesJName);
@@ -81,6 +81,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
 
         protected override Canvas EnrichReadJson(Canvas canvas, JToken element, Type objectType, Canvas existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
+            // Clear labels set by constructor to avoid duplication when base.EnrichReadJson re-reads them
+            canvas.SetLabel(new Label[0]);
             canvas = base.EnrichReadJson(canvas, element, objectType, existingValue, hasExistingValue, serializer);
 
             canvas = SetImages(element, canvas);
@@ -116,18 +118,6 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
 
                     foreach (var otherContent in canvas.OtherContents)
                         serializer.Serialize(writer, otherContent);
-
-                    writer.WriteEndArray();
-                }
-
-                if (canvas.Label.Any())
-                {
-                    writer.WritePropertyName(Canvas.LabelJName);
-
-                    writer.WriteStartArray();
-
-                    foreach (var label in canvas.Label)
-                        serializer.Serialize(writer, label);
 
                     writer.WriteEndArray();
                 }

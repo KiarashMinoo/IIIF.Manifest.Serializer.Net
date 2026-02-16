@@ -25,7 +25,12 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
         {
             var jNavDate = element.TryGetToken(Manifest.NavDateJName);
             if (jNavDate != null)
-                manifest.SetNavDate(DatetimeHelper.ParseISO8601String(jNavDate.ToString()));
+            {
+                if (jNavDate.Type == Newtonsoft.Json.Linq.JTokenType.Date)
+                    manifest.SetNavDate(jNavDate.Value<DateTime>());
+                else
+                    manifest.SetNavDate(DatetimeHelper.ParseISO8601String(jNavDate.ToString()));
+            }
 
             return manifest;
         }
@@ -34,7 +39,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
         {
             var jSequences = element.TryGetToken(Manifest.SequencesJName);
             if (jSequences is null)
-                throw new JsonNodeRequiredException<Manifest>(Manifest.SequencesJName);
+                return manifest;
 
             if (!(jSequences is JArray))
                 throw new JsonObjectMustBeJArray<Manifest>(Manifest.SequencesJName);
@@ -85,7 +90,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
                 if (manifest.NavDate != null)
                 {
                     writer.WritePropertyName(Manifest.NavDateJName);
-                    writer.WriteValue(manifest.NavDate.Value);
+                    writer.WriteValue(manifest.NavDate.Value.ToString("yyyy-MM-ddTHH:mm:ssZ", System.Globalization.CultureInfo.InvariantCulture));
                 }
 
                 if (manifest.Sequences.Any())
