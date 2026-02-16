@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
@@ -8,6 +9,14 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Sequence
 {
+    /// <summary>
+    /// IIIF Sequence resource - an ordered list of Canvases.
+    /// </summary>
+    /// <remarks>
+    /// Deprecated in IIIF Presentation API 3.0. Use items property on Manifest instead.
+    /// </remarks>
+    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", 
+        ReplacedBy = "Manifest.items", Notes = "Sequences removed in API 3.0; canvases moved to items array")]
     [JsonConverter(typeof(SequenceJsonConverter))]
     public class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequence>
     {

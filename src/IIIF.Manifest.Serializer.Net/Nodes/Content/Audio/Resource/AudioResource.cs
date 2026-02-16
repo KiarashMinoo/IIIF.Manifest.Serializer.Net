@@ -1,0 +1,20 @@
+﻿using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using Newtonsoft.Json;
+namespace IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource
+{
+    /// <summary>
+    /// IIIF Audio resource for A/V content.
+    /// </summary>
+    [JsonConverter(typeof(AudioResourceJsonConverter))]
+    public class AudioResource : BaseResource<AudioResource>
+    {
+        public const string DurationJName = "duration";
+        [JsonProperty(DurationJName)]
+        public double? Duration { get; private set; }
+        public AudioResource(string id, string format) : base(id, "dctypes:Sound")
+        {
+            SetFormat(format);
+        }
+        public AudioResource SetDuration(double duration) => SetPropertyValue(a => a.Duration, duration);
+    }
+}

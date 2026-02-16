@@ -56,7 +56,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public License License { get; private set; }
 
         [JsonProperty(ViewingHintJName)]
-        public string ViewingHint { get; private set; }
+        public ViewingHint ViewingHint { get; private set; }
 
         [JsonProperty(RenderingJName)]
         public Rendering Rendering { get; private set; }
@@ -99,7 +99,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public TBaseNode SetLogo(Logo logo) => SetPropertyValue(a => a.Logo, logo);
         public TBaseNode SetThumbnail(Thumbnail thumbnail) => SetPropertyValue(a => a.Thumbnail, thumbnail);
         public TBaseNode SetLicense(License license) => SetPropertyValue(a => a.License, license);
-        public TBaseNode SetViewingHint(string viewingHint) => SetPropertyValue(a => a.ViewingHint, viewingHint);
+        public TBaseNode SetViewingHint(ViewingHint viewingHint) => SetPropertyValue(a => a.ViewingHint, viewingHint);
         public TBaseNode SetRendering(Rendering rendering) => SetPropertyValue(a => a.Rendering, rendering);
         public TBaseNode SetRelated(string related) => SetPropertyValue(a => a.Related, related);
     }

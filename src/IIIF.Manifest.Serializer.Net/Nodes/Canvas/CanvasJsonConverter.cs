@@ -85,6 +85,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
 
             canvas = SetImages(element, canvas);
             canvas = SetOtherContents(element, canvas);
+            canvas = SetDuration(element, canvas);
 
             return canvas;
         }
@@ -142,7 +143,22 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
                     writer.WritePropertyName(Constants.HeightJName);
                     writer.WriteValue(canvas.Height.Value);
                 }
+
+                if (canvas.Duration != null)
+                {
+                    writer.WritePropertyName(Canvas.DurationJName);
+                    writer.WriteValue(canvas.Duration.Value);
+                }
             }
+        }
+
+        private Canvas SetDuration(JToken element, Canvas canvas)
+        {
+            var jDuration = element.TryGetToken(Canvas.DurationJName);
+            if (jDuration != null)
+                canvas.SetDuration(jDuration.Value<double>());
+
+            return canvas;
         }
     }
 }

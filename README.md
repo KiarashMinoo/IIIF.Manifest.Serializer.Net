@@ -104,9 +104,44 @@ dotnet restore
 # Build library
 dotnet build -c Release
 
-# Run sample/benchmark
-dotnet run --project src/IIIF.Manifest.Serializer.Net.Test
+# Run tests
+dotnet test
+
+# Run examples
+dotnet run --project examples/IIIF.Manifest.Serializer.Net.Examples
 ```
+
+## Tests & Examples
+
+### Unit Tests
+Comprehensive test coverage using xUnit and FluentAssertions:
+```powershell
+dotnet test tests/IIIF.Manifest.Serializer.Net.Tests
+```
+
+**Test Coverage:**
+- Manifest, Canvas, Sequence, Structure, Collection nodes
+- IIIF Image Service and tiles
+- ViewingHint enumeration
+- Serialization/deserialization round-trips
+- Metadata and property handling
+
+See [tests/README.md](tests/IIIF.Manifest.Serializer.Net.Tests/README.md) for details.
+
+### Examples
+Five practical examples demonstrating real-world usage:
+```powershell
+dotnet run --project examples/IIIF.Manifest.Serializer.Net.Examples
+```
+
+**Available Examples:**
+1. **Single Image** - Minimal manifest with one image
+2. **Multi-Page Book** - Book with deep zoom via IIIF Image Service
+3. **Hierarchical Structure** - Table of contents with ranges
+4. **Deserialize & Modify** - Load and edit existing manifests
+5. **Collection** - Organize multiple manifests with viewing hints
+
+See [examples/README.md](examples/IIIF.Manifest.Serializer.Net.Examples/README.md) for details.
 
 ## Target Frameworks
 

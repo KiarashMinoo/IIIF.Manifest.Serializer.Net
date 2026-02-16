@@ -1,9 +1,15 @@
 using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties
 {
+    /// <summary>
+    /// IIIF viewing direction values.
+    /// Specifies the direction in which a set of Canvases should be displayed.
+    /// </summary>
+    [PresentationAPI("2.0", Notes = "Supported in both 2.x and 3.0")]
     [JsonConverter(typeof(ValuableItemJsonConverter<ViewingDirection>))]
     public class ViewingDirection : ValuableItem<ViewingDirection>
     {

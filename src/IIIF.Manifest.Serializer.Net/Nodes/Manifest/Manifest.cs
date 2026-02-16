@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
@@ -9,6 +10,10 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Manifest
 {
+    /// <summary>
+    /// IIIF Manifest resource - the top-level resource representing a single object.
+    /// </summary>
+    [PresentationAPI("2.0", Notes = "Core resource in Presentation API 2.x. In 3.0, structure changed significantly.")]
     [JsonConverter(typeof(ManifestJsonConverter))]
     public class Manifest : BaseNode<Manifest>, IViewingDirectionSupport<Manifest>
     {
@@ -20,15 +25,19 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
         private readonly List<Structure.Structure> structures = new List<Structure.Structure>();
 
 
+        [PresentationAPI("2.0")]
         [JsonProperty(NavDateJName)]
         public DateTime? NavDate { get; private set; }
 
+        [PresentationAPI("2.0")]
         [JsonProperty(Constants.ViewingDirectionJName)]
         public ViewingDirection ViewingDirection { get; private set; }
 
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(SequencesJName)]
         public IReadOnlyCollection<Sequence.Sequence> Sequences => sequences.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(StructuresJName)]
         public IReadOnlyCollection<Structure.Structure> Structures => structures.AsReadOnly();
 

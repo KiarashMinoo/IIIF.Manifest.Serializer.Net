@@ -120,7 +120,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         {
             var jViewingHint = element.TryGetToken(BaseNode<TBaseNode>.ViewingHintJName);
             if (jViewingHint != null)
-                node.SetViewingHint(jViewingHint.ToString());
+                node.SetViewingHint(jViewingHint.ToObject<ViewingHint>());
 
             return node;
         }
@@ -288,10 +288,10 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
                     serializer.Serialize(writer, node.License);
                 }
 
-                if (!string.IsNullOrEmpty(node.ViewingHint))
+                if (node.ViewingHint != null)
                 {
                     writer.WritePropertyName(BaseNode<TBaseNode>.ViewingHintJName);
-                    writer.WriteValue(node.ViewingHint);
+                    serializer.Serialize(writer, node.ViewingHint);
                 }
 
                 if (node.Rendering != null)

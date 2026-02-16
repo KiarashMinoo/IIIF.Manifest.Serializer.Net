@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes.Content.Image;
 using IIIF.Manifests.Serializer.Nodes.Content.OtherContent;
@@ -10,25 +11,41 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Canvas
 {
+    /// <summary>
+    /// IIIF Canvas resource - a virtual container representing a page or view.
+    /// </summary>
+    [PresentationAPI("2.0", Notes = "Core resource. In 3.0, images property replaced by items (AnnotationPage).")]
     [JsonConverter(typeof(CanvasJsonConverter))]
     public class Canvas : BaseNode<Canvas>, IDimenssionSupport<Canvas>
     {
         public const string ImagesJName = "images";
         public const string OtherContentsJName = "otherContent";
+        public const string DurationJName = "duration";
 
         private readonly List<Image> images = new List<Image>();
         private readonly List<OtherContent> otherContents = new List<OtherContent>();
 
 
+        [PresentationAPI("2.0")]
         [JsonProperty(Constants.HeightJName)]
         public int? Height { get; }
 
+        [PresentationAPI("2.0")]
         [JsonProperty(Constants.WidthJName)]
         public int? Width { get; }
 
+        /// <summary>
+        /// Duration in seconds for time-based media (A/V content).
+        /// </summary>
+        [PresentationAPI("2.1", Notes = "Added in 2.1 for A/V support. Also in 3.0.")]
+        [JsonProperty(DurationJName)]
+        public double? Duration { get; private set; }
+
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(ImagesJName)]
         public IReadOnlyCollection<Image> Images => images.AsReadOnly();
 
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "annotations")]
         [JsonProperty(OtherContentsJName)]
         public IReadOnlyCollection<OtherContent> OtherContents => otherContents.AsReadOnly();
 
@@ -44,5 +61,6 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
 
         public Canvas SetHeight(int height) => SetPropertyValue(a => a.Height, height);
         public Canvas SetWidth(int width) => SetPropertyValue(a => a.Width, width);
+        public Canvas SetDuration(double duration) => SetPropertyValue(a => a.Duration, duration);
     }
 }
