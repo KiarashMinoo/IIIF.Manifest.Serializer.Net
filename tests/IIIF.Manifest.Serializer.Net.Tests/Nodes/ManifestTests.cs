@@ -135,6 +135,103 @@ namespace IIIF.Manifests.Serializer.Tests.Nodes
             // Assert
             deserialized.Label.Should().HaveCount(2);
         }
+
+        [Fact]
+        public void Manifest_ShouldSupportStartCanvas()
+        {
+            // Arrange
+            var manifest = new Manifest(
+                "https://example.org/manifest/1",
+                new Label("Test Manifest")
+            );
+
+            manifest.SetStart("https://example.org/canvas/2");
+
+            // Act
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            // Assert
+            deserialized.Start.Should().Be("https://example.org/canvas/2");
+        }
+
+        [Fact]
+        public void Manifest_ShouldDeserializeStartFromJson()
+        {
+            // Arrange
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest/1"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Test Manifest"",
+  ""start"": ""https://example.org/canvas/2""
+}";
+
+            // Act
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            // Assert
+            manifest.Start.Should().Be("https://example.org/canvas/2");
+        }
+
+        [Fact]
+        public void Manifest_ShouldDeserializeStartObjectFromJson()
+        {
+            // Arrange
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest/1"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Test Manifest"",
+  ""start"": {
+    ""@id"": ""https://example.org/canvas/2""
+  }
+}";
+
+            // Act
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            // Assert
+            manifest.Start.Should().Be("https://example.org/canvas/2");
+        }
+
+        [Fact]
+        public void Manifest_ShouldSupportPlaceholderCanvas()
+        {
+            // Arrange
+            var manifest = new Manifest(
+                "https://example.org/manifest/1",
+                new Label("Test Manifest")
+            );
+
+            manifest.SetPlaceholderCanvas("https://example.org/canvas/placeholder");
+
+            // Act
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            // Assert
+            deserialized.PlaceholderCanvas.Should().Be("https://example.org/canvas/placeholder");
+        }
+
+        [Fact]
+        public void Manifest_ShouldDeserializePlaceholderCanvasFromJson()
+        {
+            // Arrange
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest/1"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Test Manifest"",
+  ""placeholderCanvas"": ""https://example.org/canvas/placeholder""
+}";
+
+            // Act
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            // Assert
+            manifest.PlaceholderCanvas.Should().Be("https://example.org/canvas/placeholder");
+        }
     }
 }
 

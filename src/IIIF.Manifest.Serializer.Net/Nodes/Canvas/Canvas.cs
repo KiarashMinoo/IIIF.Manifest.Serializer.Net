@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.Content.Audio;
 using IIIF.Manifests.Serializer.Nodes.Content.Image;
 using IIIF.Manifests.Serializer.Nodes.Content.OtherContent;
+using IIIF.Manifests.Serializer.Nodes.Content.Video;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
@@ -23,6 +25,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
         public const string DurationJName = "duration";
 
         private readonly List<Image> images = new List<Image>();
+        private readonly List<Audio> audios = new List<Audio>();
+        private readonly List<Video> videos = new List<Video>();
         private readonly List<OtherContent> otherContents = new List<OtherContent>();
 
 
@@ -45,6 +49,9 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
         [JsonProperty(ImagesJName)]
         public IReadOnlyCollection<Image> Images => images.AsReadOnly();
 
+        public IReadOnlyCollection<Audio> Audios => audios.AsReadOnly();
+        public IReadOnlyCollection<Video> Videos => videos.AsReadOnly();
+
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "annotations")]
         [JsonProperty(OtherContentsJName)]
         public IReadOnlyCollection<OtherContent> OtherContents => otherContents.AsReadOnly();
@@ -57,6 +64,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
         }
 
         public Canvas AddImage(Image image) => SetPropertyValue(a => a.images, a => a.Images, images.Attach(image));
+        public Canvas AddAudio(Audio audio) => SetPropertyValue(a => a.audios, a => a.Audios, audios.Attach(audio));
+        public Canvas AddVideo(Video video) => SetPropertyValue(a => a.videos, a => a.Videos, videos.Attach(video));
         public Canvas AddOtherContent(OtherContent otherContent) => SetPropertyValue(a => a.otherContents, a => a.OtherContents, otherContents.Attach(otherContent));
 
         public Canvas SetHeight(int height) => SetPropertyValue(a => a.Height, height);

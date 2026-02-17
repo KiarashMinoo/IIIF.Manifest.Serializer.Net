@@ -28,6 +28,11 @@ Console.WriteLine("--- [Basic] Recipe 0006: Internationalization and Multi-langu
 Console.WriteLine(Recipe005_MultiLanguage.ToJson());
 Console.WriteLine();
 
+// Cookbook 0002 — Simplest Manifest - Audio
+Console.WriteLine("--- [Basic] Recipe 0002: Simplest Manifest - Audio ---");
+Console.WriteLine(Recipe002_Audio.ToJson());
+Console.WriteLine();
+
 // Deserialization round-trip test for basic recipe
 Console.WriteLine("--- [Basic] Round-trip: Deserialize → Reserialize (0001) ---");
 var basicJson = Recipe001_SimpleImage.ToJson();

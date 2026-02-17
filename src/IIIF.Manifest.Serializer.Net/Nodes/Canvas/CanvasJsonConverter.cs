@@ -1,8 +1,10 @@
 using System;
 using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.Content.Audio;
 using IIIF.Manifests.Serializer.Nodes.Content.Image;
 using IIIF.Manifests.Serializer.Nodes.Content.OtherContent;
+using IIIF.Manifests.Serializer.Nodes.Content.Video;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
@@ -54,9 +56,44 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
             if (!(jImages is JArray))
                 throw new JsonObjectMustBeJArray<Canvas>(Canvas.ImagesJName);
 
-            var images = jImages.ToObject<Image[]>();
-            foreach (var image in images)
-                canvas.AddImage(image);
+            foreach (var jImage in jImages)
+            {
+                var jResource = jImage.TryGetToken("resource");
+                if (jResource != null)
+                {
+                    var jType = jResource.TryGetToken("@type");
+                    if (jType != null)
+                    {
+                        var type = jType.ToString();
+                        if (type == "dctypes:Image")
+                        {
+                            var image = jImage.ToObject<Image>();
+                            canvas.AddImage(image);
+                        }
+                        else if (type == "dctypes:Sound")
+                        {
+                            var audio = jImage.ToObject<Audio>();
+                            canvas.AddAudio(audio);
+                        }
+                        else if (type == "dctypes:MovingImage")
+                        {
+                            var video = jImage.ToObject<Video>();
+                            canvas.AddVideo(video);
+                        }
+                        else
+                        {
+                            // Default to Image or handle other types
+                            var image = jImage.ToObject<Image>();
+                            canvas.AddImage(image);
+                        }
+                    }
+                    else
+                    {
+                        var image = jImage.ToObject<Image>();
+                        canvas.AddImage(image);
+                    }
+                }
+            }
 
             return canvas;
         }
@@ -98,14 +135,15 @@ namespace IIIF.Manifests.Serializer.Nodes.Canvas
 
             if (canvas != null)
             {
-                if (canvas.Images.Any())
+                var allImages = canvas.Images.Cast<object>().Concat(canvas.Audios).Concat(canvas.Videos).ToList();
+                if (allImages.Any())
                 {
                     writer.WritePropertyName(Canvas.ImagesJName);
 
                     writer.WriteStartArray();
 
-                    foreach (var image in canvas.Images)
-                        serializer.Serialize(writer, image);
+                    foreach (var item in allImages)
+                        serializer.Serialize(writer, item);
 
                     writer.WriteEndArray();
                 }

@@ -1,0 +1,49 @@
+using IIIF.Manifests.Serializer.Nodes.Canvas;
+using IIIF.Manifests.Serializer.Nodes.Content.Audio;
+using IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource;
+using IIIFManifest = IIIF.Manifests.Serializer.Nodes.Manifest.Manifest;
+using IIIF.Manifests.Serializer.Nodes.Sequence;
+using IIIF.Manifests.Serializer.Properties;
+using Newtonsoft.Json;
+
+namespace IIIF.Manifest.Serializer.Cookbook.Recipes
+{
+    /// <summary>
+    /// Recipe 0002: Simplest Manifest - Audio
+    /// https://iiif.io/api/cookbook/recipe/0002-mvm-audio/
+    /// </summary>
+    public static class Recipe002_Audio
+    {
+        public static string ToJson()
+        {
+            var manifest = new IIIFManifest(
+                "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
+                new Label("Simplest Audio Manifest")
+            );
+
+            var canvas = new Canvas(
+                "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas/1",
+                new Label("Audio Canvas"),
+                640, 480
+            ).SetDuration(1985.024);
+
+            var audioResource = new AudioResource(
+                "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/audio/full/max/default.mp3",
+                "audio/mp3"
+            ).SetDuration(1985.024);
+
+            var audio = new Audio(
+                "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/annotation/audio",
+                audioResource,
+                canvas.Id
+            );
+            canvas.AddAudio(audio);
+
+            var sequence = new Sequence("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/normal");
+            sequence.AddCanvas(canvas);
+            manifest.AddSequence(sequence);
+
+            return JsonConvert.SerializeObject(manifest, Formatting.Indented);
+        }
+    }
+}

@@ -159,11 +159,70 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
             return node;
         }
 
+        private TBaseNode SetHomepages(JToken element, TBaseNode node)
+        {
+            var jHomepage = element.TryGetToken(BaseNode<TBaseNode>.HomepageJName);
+            if (jHomepage != null)
+            {
+                if (jHomepage is JArray)
+                {
+                    var homepages = jHomepage.ToObject<Homepage[]>();
+                    foreach (var homepage in homepages)
+                        node.AddHomepage(homepage);
+                }
+                else node.AddHomepage(jHomepage.ToObject<Homepage>());
+            }
+
+            return node;
+        }
+
+        private TBaseNode SetProviders(JToken element, TBaseNode node)
+        {
+            var jProvider = element.TryGetToken(BaseNode<TBaseNode>.ProviderJName);
+            if (jProvider != null)
+            {
+                if (jProvider is JArray)
+                {
+                    var providers = jProvider.ToObject<Provider[]>();
+                    foreach (var provider in providers)
+                        node.AddProvider(provider);
+                }
+                else node.AddProvider(jProvider.ToObject<Provider>());
+            }
+
+            return node;
+        }
+
+        private TBaseNode SetAccompanyingCanvas(JToken element, TBaseNode node)
+        {
+            var jAccompanyingCanvas = element.TryGetToken(BaseNode<TBaseNode>.AccompanyingCanvasJName);
+            if (jAccompanyingCanvas != null)
+            {
+                node.SetAccompanyingCanvas(jAccompanyingCanvas.ToObject<AccompanyingCanvas>());
+            }
+
+            return node;
+        }
+
         private TBaseNode SetRendering(JToken element, TBaseNode node)
         {
             var jRendering = element.TryGetToken(BaseNode<TBaseNode>.RenderingJName);
             if (jRendering != null)
-                node.SetRendering(jRendering.ToObject<Rendering>());
+            {
+                if (jRendering is JArray array)
+                {
+                    foreach (var item in array)
+                    {
+                        var rendering = item.ToObject<Rendering>();
+                        node.AddRendering(rendering);
+                    }
+                }
+                else
+                {
+                    var rendering = jRendering.ToObject<Rendering>();
+                    node.AddRendering(rendering);
+                }
+            }
 
             return node;
         }
@@ -194,6 +253,10 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
 
             if (ShouldHandleSeeAlso(node))
                 node = SetSeeAlsoes(element, node);
+
+            node = SetHomepages(element, node);
+            node = SetProviders(element, node);
+            node = SetAccompanyingCanvas(element, node);
 
             if (ShouldHandleWithin(node))
                 node = SetWithins(element, node);
@@ -298,6 +361,46 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
                 {
                     writer.WritePropertyName(BaseNode<TBaseNode>.RenderingJName);
                     serializer.Serialize(writer, node.Rendering);
+                }
+
+                if (node.Homepage.Any())
+                {
+                    writer.WritePropertyName(BaseNode<TBaseNode>.HomepageJName);
+
+                    if (node.Homepage.Count == 1)
+                        serializer.Serialize(writer, node.Homepage.First());
+                    else
+                    {
+                        writer.WriteStartArray();
+
+                        foreach (var homepage in node.Homepage)
+                            serializer.Serialize(writer, homepage);
+
+                        writer.WriteEndArray();
+                    }
+                }
+
+                if (node.Provider.Any())
+                {
+                    writer.WritePropertyName(BaseNode<TBaseNode>.ProviderJName);
+
+                    if (node.Provider.Count == 1)
+                        serializer.Serialize(writer, node.Provider.First());
+                    else
+                    {
+                        writer.WriteStartArray();
+
+                        foreach (var provider in node.Provider)
+                            serializer.Serialize(writer, provider);
+
+                        writer.WriteEndArray();
+                    }
+                }
+
+                if (node.AccompanyingCanvas != null)
+                {
+                    writer.WritePropertyName(BaseNode<TBaseNode>.AccompanyingCanvasJName);
+                    serializer.Serialize(writer, node.AccompanyingCanvas);
                 }
 
                 if (!string.IsNullOrEmpty(node.Related))

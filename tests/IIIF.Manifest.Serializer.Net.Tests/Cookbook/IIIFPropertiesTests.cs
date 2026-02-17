@@ -4,9 +4,12 @@ using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
 using IIIF.Manifests.Serializer.Nodes.Manifest;
 using IIIF.Manifests.Serializer.Nodes.Sequence;
 using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Rendering;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.Linq;
 using Xunit;
 
 namespace IIIF.Manifests.Serializer.Tests.Cookbook
@@ -22,6 +25,8 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
     ///   - navDate
     ///   - thumbnail
     ///   - rendering
+    ///   - seeAlso
+    ///   - homepage
     /// </summary>
     public class IIIFPropertiesTests
     {
@@ -558,6 +563,28 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
 
         #endregion
 
+        #region NavDate (Serialization & Round-trip)
+
+        [Fact]
+        public void NavDate_ShouldSerializeAndRoundTrip()
+        {
+            var manifest = new Manifest(
+                "https://example.org/manifest.json",
+                new Label("Manifest with NavDate")
+            );
+
+            var navDate = new DateTime(1856, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            manifest.SetNavDate(navDate);
+
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            deserialized.Should().NotBeNull();
+            deserialized.NavDate.Should().Be(navDate);
+        }
+
+        #endregion
+
         #region Thumbnail (Serialization & Deserialization)
 
         [Fact]
@@ -614,6 +641,240 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
 
             canvas.Thumbnail.Should().NotBeNull();
             canvas.Thumbnail.Id.Should().Be("https://example.org/thumb.jpg");
+        }
+
+        #endregion
+
+        #region SeeAlso (Serialization & Deserialization)
+
+        [Fact]
+        public void SeeAlso_ShouldRoundTrip()
+        {
+            var manifest = new Manifest(
+                "https://example.org/manifest.json",
+                new Label("Manifest with SeeAlso")
+            );
+
+            manifest.AddSeeAlso(new SeeAlso("https://example.org/related.xml").SetFormat("text/xml"));
+
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            deserialized.Should().NotBeNull();
+            deserialized.SeeAlso.Should().HaveCount(1);
+            deserialized.SeeAlso.First().Id.Should().Be("https://example.org/related.xml");
+            deserialized.SeeAlso.First().Format.Should().Be("text/xml");
+        }
+
+        [Fact]
+        public void SeeAlso_ShouldDeserializeFromJson()
+        {
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest.json"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Manifest with SeeAlso"",
+  ""seeAlso"": [
+    {
+      ""@id"": ""https://example.org/related.xml"",
+      ""format"": ""text/xml""
+    }
+  ]
+}";
+
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            manifest.Should().NotBeNull();
+            manifest.SeeAlso.Should().HaveCount(1);
+            manifest.SeeAlso.First().Id.Should().Be("https://example.org/related.xml");
+            manifest.SeeAlso.First().Format.Should().Be("text/xml");
+        }
+
+        #endregion
+
+        #region Rendering (Serialization & Deserialization)
+
+        [Fact]
+        public void Rendering_ShouldRoundTrip()
+        {
+            var manifest = new Manifest(
+                "https://example.org/manifest.json",
+                new Label("Manifest with Rendering")
+            );
+
+            manifest.AddRendering(new Rendering("https://example.org/pdf", "Download as PDF").SetFormat("application/pdf"));
+
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            deserialized.Should().NotBeNull();
+            deserialized.Rendering.Should().HaveCount(1);
+            deserialized.Rendering.First().Id.Should().Be("https://example.org/pdf");
+            deserialized.Rendering.First().Label.Should().Be("Download as PDF");
+            deserialized.Rendering.First().Format.Should().Be("application/pdf");
+        }
+
+        [Fact]
+        public void Rendering_ShouldDeserializeFromJson()
+        {
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest.json"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Manifest with Rendering"",
+  ""rendering"": [
+    {
+      ""@id"": ""https://example.org/pdf"",
+      ""label"": ""Download as PDF"",
+      ""format"": ""application/pdf""
+    }
+  ]
+}";
+
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            manifest.Should().NotBeNull();
+            manifest.Rendering.Should().HaveCount(1);
+            manifest.Rendering.First().Id.Should().Be("https://example.org/pdf");
+            manifest.Rendering.First().Label.Should().Be("Download as PDF");
+            manifest.Rendering.First().Format.Should().Be("application/pdf");
+        }
+
+        #endregion
+
+        #region Homepage (Serialization & Deserialization)
+
+        [Fact]
+        public void Homepage_ShouldRoundTrip()
+        {
+            var manifest = new Manifest(
+                "https://example.org/manifest.json",
+                new Label("Manifest with Homepage")
+            );
+
+            manifest.AddHomepage(new Homepage("https://example.org/homepage", "View on Website"));
+
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            Console.WriteLine(json);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            deserialized.Should().NotBeNull();
+            deserialized.Homepage.Should().HaveCount(1);
+            deserialized.Homepage.First().Id.Should().Be("https://example.org/homepage");
+            deserialized.Homepage.First().Label.Should().Be("View on Website");
+        }
+
+        [Fact]
+        public void Homepage_ShouldDeserializeFromJson()
+        {
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest.json"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Manifest with Homepage"",
+  ""homepage"": [
+    {
+      ""@id"": ""https://example.org/homepage"",
+      ""label"": ""View on Website""
+    }
+  ]
+}";
+
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            manifest.Should().NotBeNull();
+            manifest.Homepage.Should().HaveCount(1);
+            manifest.Homepage.First().Id.Should().Be("https://example.org/homepage");
+            manifest.Homepage.First().Label.Should().Be("View on Website");
+        }
+
+        #endregion
+
+        #region Provider (Serialization & Deserialization)
+
+        [Fact]
+        public void Provider_ShouldRoundTrip()
+        {
+            var manifest = new Manifest(
+                "https://example.org/manifest.json",
+                new Label("Manifest with Provider")
+            );
+
+            manifest.AddProvider(new Provider("https://example.org/institution", "Example Institution"));
+
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            deserialized.Should().NotBeNull();
+            deserialized.Provider.Should().HaveCount(1);
+            deserialized.Provider.First().Id.Should().Be("https://example.org/institution");
+            deserialized.Provider.First().Label.Should().Be("Example Institution");
+        }
+
+        [Fact]
+        public void Provider_ShouldDeserializeFromJson()
+        {
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest.json"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Manifest with Provider"",
+  ""provider"": {
+    ""@id"": ""https://example.org/institution"",
+    ""@type"": ""Agent"",
+    ""label"": ""Example Institution""
+  }
+}";
+
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            manifest.Should().NotBeNull();
+            manifest.Provider.Should().HaveCount(1);
+            manifest.Provider.First().Id.Should().Be("https://example.org/institution");
+            manifest.Provider.First().Label.Should().Be("Example Institution");
+        }
+
+        #endregion
+
+        #region AccompanyingCanvas (Serialization & Deserialization)
+
+        [Fact]
+        public void AccompanyingCanvas_ShouldRoundTrip()
+        {
+            var manifest = new Manifest(
+                "https://example.org/manifest.json",
+                new Label("Manifest with Accompanying Canvas")
+            );
+
+            manifest.SetAccompanyingCanvas(new AccompanyingCanvas("https://example.org/canvas/accompanying"));
+
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            deserialized.Should().NotBeNull();
+            deserialized.AccompanyingCanvas.Should().NotBeNull();
+            deserialized.AccompanyingCanvas.Id.Should().Be("https://example.org/canvas/accompanying");
+        }
+
+        [Fact]
+        public void AccompanyingCanvas_ShouldDeserializeFromJson()
+        {
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest.json"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Manifest with Accompanying Canvas"",
+  ""accompanyingCanvas"": {
+    ""@id"": ""https://example.org/canvas/accompanying"",
+    ""@type"": ""sc:Canvas""
+  }
+}";
+
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            manifest.Should().NotBeNull();
+            manifest.AccompanyingCanvas.Should().NotBeNull();
+            manifest.AccompanyingCanvas.Id.Should().Be("https://example.org/canvas/accompanying");
         }
 
         #endregion

@@ -20,6 +20,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
         public const string NavDateJName = "navDate";
         public const string SequencesJName = "sequences";
         public const string StructuresJName = "structures";
+        public const string StartJName = "start";
+        public const string PlaceholderCanvasJName = "placeholderCanvas";
 
         private readonly List<Sequence.Sequence> sequences = new List<Sequence.Sequence>();
         private readonly List<Structure.Structure> structures = new List<Structure.Structure>();
@@ -41,6 +43,14 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
         [JsonProperty(StructuresJName)]
         public IReadOnlyCollection<Structure.Structure> Structures => structures.AsReadOnly();
 
+        [PresentationAPI("2.0")]
+        [JsonProperty(StartJName)]
+        public string Start { get; private set; }
+
+        [PresentationAPI("2.0")]
+        [JsonProperty(PlaceholderCanvasJName)]
+        public string PlaceholderCanvas { get; private set; }
+
         internal Manifest(string id) : base(id, "sc:Manifest")
         {
         }
@@ -49,6 +59,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
 
         public Manifest SetNavDate(DateTime navDate) => SetPropertyValue(a => a.NavDate, navDate);
         public Manifest SetViewingDirection(ViewingDirection viewingDirection) => SetPropertyValue(a => a.ViewingDirection, viewingDirection);
+        public Manifest SetStart(string start) => SetPropertyValue(a => a.Start, start);
+        public Manifest SetPlaceholderCanvas(string placeholderCanvas) => SetPropertyValue(a => a.PlaceholderCanvas, placeholderCanvas);
 
         public Manifest AddSequence(Sequence.Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Attach(sequence));
         public Manifest RemoveSequence(Sequence.Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Detach(sequence));

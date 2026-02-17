@@ -23,7 +23,11 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public const string RenderingJName = "rendering";
         public const string WithinJName = "within";
         public const string SeeAlsoJName = "seeAlso";
+        public const string HomepageJName = "homepage";
         public const string RelatedJName = "related";
+        public const string ProviderJName = "provider";
+        public const string AccompanyingCanvasJName = "accompanyingCanvas";
+        public const string BehaviorJName = "behavior";
 
 
         private List<Label> labels = new List<Label>();
@@ -32,6 +36,9 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         private readonly List<Attribution> attributions = new List<Attribution>();
         private readonly List<SeeAlso> seeAloses = new List<SeeAlso>();
         private readonly List<Within> withins = new List<Within>();
+        private readonly List<Rendering> renderings = new List<Rendering>();
+        private readonly List<Homepage> homepages = new List<Homepage>();
+        private readonly List<Provider> providers = new List<Provider>();
 
 
         [JsonProperty(LabelJName)]
@@ -59,13 +66,22 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public ViewingHint ViewingHint { get; private set; }
 
         [JsonProperty(RenderingJName)]
-        public Rendering Rendering { get; private set; }
+        public IReadOnlyCollection<Rendering> Rendering => renderings.AsReadOnly();
 
         [JsonProperty(SeeAlsoJName)]
         public IReadOnlyCollection<SeeAlso> SeeAlso => seeAloses.AsReadOnly();
 
         [JsonProperty(WithinJName)]
         public IReadOnlyCollection<Within> Within => withins.AsReadOnly();
+
+        [JsonProperty(HomepageJName)]
+        public IReadOnlyCollection<Homepage> Homepage => homepages.AsReadOnly();
+
+        [JsonProperty(ProviderJName)]
+        public IReadOnlyCollection<Provider> Provider => providers.AsReadOnly();
+
+        [JsonProperty(AccompanyingCanvasJName)]
+        public AccompanyingCanvas AccompanyingCanvas { get; private set; }
 
         [JsonProperty(RelatedJName)]
         public string Related { get; private set; }
@@ -93,6 +109,17 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public TBaseNode AddSeeAlso(SeeAlso seeAlso) => SetPropertyValue(a => a.seeAloses, a => a.SeeAlso, seeAloses.Attach(seeAlso));
         public TBaseNode RemoveSeeAlso(SeeAlso seeAlso) => SetPropertyValue(a => a.seeAloses, a => a.SeeAlso, seeAloses.Detach(seeAlso));
 
+        public TBaseNode AddRendering(Rendering rendering) => SetPropertyValue(a => a.renderings, a => a.Rendering, renderings.Attach(rendering));
+        public TBaseNode RemoveRendering(Rendering rendering) => SetPropertyValue(a => a.renderings, a => a.Rendering, renderings.Detach(rendering));
+
+        public TBaseNode AddHomepage(Homepage homepage) => SetPropertyValue(a => a.homepages, a => a.Homepage, homepages.Attach(homepage));
+        public TBaseNode RemoveHomepage(Homepage homepage) => SetPropertyValue(a => a.homepages, a => a.Homepage, homepages.Detach(homepage));
+
+        public TBaseNode AddProvider(Provider provider) => SetPropertyValue(a => a.providers, a => a.Provider, providers.Attach(provider));
+        public TBaseNode RemoveProvider(Provider provider) => SetPropertyValue(a => a.providers, a => a.Provider, providers.Detach(provider));
+
+        public TBaseNode SetAccompanyingCanvas(AccompanyingCanvas accompanyingCanvas) => SetPropertyValue(a => a.AccompanyingCanvas, accompanyingCanvas);
+
         public TBaseNode AddWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Attach(within));
         public TBaseNode RemoveWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Detach(within));
 
@@ -100,7 +127,6 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public TBaseNode SetThumbnail(Thumbnail thumbnail) => SetPropertyValue(a => a.Thumbnail, thumbnail);
         public TBaseNode SetLicense(License license) => SetPropertyValue(a => a.License, license);
         public TBaseNode SetViewingHint(ViewingHint viewingHint) => SetPropertyValue(a => a.ViewingHint, viewingHint);
-        public TBaseNode SetRendering(Rendering rendering) => SetPropertyValue(a => a.Rendering, rendering);
         public TBaseNode SetRelated(string related) => SetPropertyValue(a => a.Related, related);
     }
 }

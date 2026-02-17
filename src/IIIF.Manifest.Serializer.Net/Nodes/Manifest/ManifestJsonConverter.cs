@@ -67,6 +67,52 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
             return manifest;
         }
 
+        private Manifest SetStart(JToken element, Manifest manifest)
+        {
+            var jStart = element.TryGetToken(Manifest.StartJName);
+            if (jStart != null)
+            {
+                // Start can be either a string ID or an object with @id
+                if (jStart.Type == JTokenType.String)
+                {
+                    manifest.SetStart(jStart.Value<string>());
+                }
+                else if (jStart is JObject startObj)
+                {
+                    var id = startObj.TryGetToken("@id")?.Value<string>() ?? startObj.TryGetToken("id")?.Value<string>();
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        manifest.SetStart(id);
+                    }
+                }
+            }
+
+            return manifest;
+        }
+
+        private Manifest SetPlaceholderCanvas(JToken element, Manifest manifest)
+        {
+            var jPlaceholderCanvas = element.TryGetToken(Manifest.PlaceholderCanvasJName);
+            if (jPlaceholderCanvas != null)
+            {
+                // PlaceholderCanvas can be either a string ID or an object with @id
+                if (jPlaceholderCanvas.Type == JTokenType.String)
+                {
+                    manifest.SetPlaceholderCanvas(jPlaceholderCanvas.Value<string>());
+                }
+                else if (jPlaceholderCanvas is JObject placeholderObj)
+                {
+                    var id = placeholderObj.TryGetToken("@id")?.Value<string>() ?? placeholderObj.TryGetToken("id")?.Value<string>();
+                    if (!string.IsNullOrEmpty(id))
+                    {
+                        manifest.SetPlaceholderCanvas(id);
+                    }
+                }
+            }
+
+            return manifest;
+        }
+
         protected override Manifest CreateInstance(JToken element, Type objectType, Manifest existingValue, bool hasExistingValue, JsonSerializer serializer) => ConstructManifest(element);
 
         protected override Manifest EnrichReadJson(Manifest manifest, JToken element, Type objectType, Manifest existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -77,6 +123,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
             manifest = SetSequences(element, manifest);
             manifest = manifest.SetViewingDirection(element);
             manifest = SetStructures(element, manifest);
+            manifest = SetStart(element, manifest);
+            manifest = SetPlaceholderCanvas(element, manifest);
 
             return manifest;
         }
@@ -121,6 +169,18 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
                 {
                     writer.WritePropertyName(Constants.ViewingDirectionJName);
                     serializer.Serialize(writer, manifest.ViewingDirection);
+                }
+
+                if (!string.IsNullOrEmpty(manifest.Start))
+                {
+                    writer.WritePropertyName(Manifest.StartJName);
+                    writer.WriteValue(manifest.Start);
+                }
+
+                if (!string.IsNullOrEmpty(manifest.PlaceholderCanvas))
+                {
+                    writer.WritePropertyName(Manifest.PlaceholderCanvasJName);
+                    writer.WriteValue(manifest.PlaceholderCanvas);
                 }
             }
         }
