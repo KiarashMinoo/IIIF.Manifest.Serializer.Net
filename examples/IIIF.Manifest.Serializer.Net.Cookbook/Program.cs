@@ -1,4 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Net.Cookbook.Recipes;
+﻿using IIIF.Manifests.Serializer.Examples.Cookbook;
+using IIIF.Manifests.Serializer.Net.Cookbook.Recipes;
 using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using Newtonsoft.Json;
 
@@ -178,8 +179,27 @@ Console.WriteLine(RecipeAuth03_ActiveAuth2.ToJson());
 Console.WriteLine();
 
 // ═══════════════════════════════════════════════════════
-// NOTE: Audio/Visual, Annotation, and Geo Recipes
+// SEARCH & DISCOVERY RECIPES
 // ═══════════════════════════════════════════════════════
+Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
+Console.WriteLine("║         SEARCH & DISCOVERY RECIPES                    ║");
+Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
+Console.WriteLine();
+
+// Search Recipe 1 — IIIF Content Search API 2.0
+Console.WriteLine("--- [Search] Recipe Search 1: Content Search API 2.0 ---");
+Console.WriteLine(RecipeSearch01_ContentSearch.ToJson());
+Console.WriteLine();
+
+// Discovery Recipe 1 — IIIF Change Discovery API 1.0
+Console.WriteLine("--- [Discovery] Recipe Discovery 1: Change Discovery API 1.0 ---");
+Console.WriteLine(RecipeDiscovery01_ChangeDiscovery.ToJson());
+Console.WriteLine();
+
+// State Recipe 1 — IIIF Content State API 1.0
+Console.WriteLine("--- [State] Recipe State 1: Content State API 1.0 ---");
+Console.WriteLine(RecipeState01_ContentState.ToJson());
+Console.WriteLine();
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
 Console.WriteLine("║  AUDIO/VISUAL, ANNOTATION & GEO RECIPES               ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
