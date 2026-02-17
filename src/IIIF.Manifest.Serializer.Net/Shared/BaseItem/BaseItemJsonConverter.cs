@@ -1,7 +1,6 @@
 using System;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
-using IIIF.Manifests.Serializer.Shared.Service;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,20 +24,15 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
             return baseItem;
         }
 
-        protected TBaseItem SetService<TServive>(JToken element, TBaseItem baseItem) where TServive : IBaseService
+        private TBaseItem SetService(JToken element, TBaseItem baseItem)
         {
             var jService = element.TryGetToken(BaseItem<TBaseItem>.ServiceJName);
             if (jService != null)
-                baseItem.SetService(jService.ToObject<TServive>());
+                baseItem.SetService(jService.ToObject<Properties.ServiceProperty.Service>());
 
             return baseItem;
         }
         
-        private TBaseItem SetService(JToken element, TBaseItem baseItem)
-        {
-            return SetService<Properties.ServiceProperty.Service>(element, baseItem);
-        }
-
         protected override TBaseItem CreateInstance(JToken element, Type objectType, TBaseItem existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (element is JObject)
