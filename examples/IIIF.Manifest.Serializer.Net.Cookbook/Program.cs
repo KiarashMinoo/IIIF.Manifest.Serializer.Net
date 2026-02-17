@@ -143,6 +143,11 @@ Console.WriteLine("--- [Annotation] Recipe 0013: Tagging with Text ---");
 Console.WriteLine(Recipe013_Tagging.ToJson());
 Console.WriteLine();
 
+// Cookbook 0014 — Non-Rectangular Selection
+Console.WriteLine("--- [Annotation] Recipe 0014: Non-Rectangular Selection ---");
+Console.WriteLine(Recipe014_NonRectangularSelection.ToJson());
+Console.WriteLine();
+
 // ═══════════════════════════════════════════════════════
 // NOTE: Audio/Visual, Annotation, and Geo Recipes
 // ═══════════════════════════════════════════════════════
@@ -153,7 +158,7 @@ Console.WriteLine();
 Console.WriteLine("  These categories from the IIIF Cookbook are not yet");
 Console.WriteLine("  fully implemented in this Presentation 2.0 library:");
 Console.WriteLine("  - Audio/Visual Recipes (basic audio/video implemented; complex A/V content pending)");
-Console.WriteLine("  - Annotation Recipes (Recipe 0013 tagging implemented; complex inline annotations pending)");
+Console.WriteLine("  - Annotation Recipes (Recipes 0013 tagging and 0014 non-rectangular selection implemented; complex inline annotations pending)");
 Console.WriteLine("  - Geo Recipes (geographic areas, web maps)");
 Console.WriteLine("  See: https://iiif.io/api/cookbook/recipe/code/");
 Console.WriteLine();
