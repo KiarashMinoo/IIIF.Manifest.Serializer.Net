@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>IIIF.Manifests.Serializer.Georeference</RootNamespace>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>latestmajor</LangVersion>
+    <Nullable>disable</Nullable>
+    <PackageId>IIIF.Manifest.Serializer.Net.Georeference</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>IIIF Community</Authors>
+    <Description>IIIF Georeference Extension for map georeferencing in IIIF manifests.</Description>
+    <PackageTags>iiif;manifest;georeference;maps;gcp</PackageTags>
+    <RepositoryUrl>https://github.com/IIIF/iiif.net</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
+  </ItemGroup>
+
+</Project>
