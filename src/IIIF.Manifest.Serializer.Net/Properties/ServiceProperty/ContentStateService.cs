@@ -19,6 +19,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// <summary>
         /// Creates a new ContentStateService.
         /// </summary>
+        /// <param name="context">The IIIF context URL</param>
         /// <param name="id">The service identifier</param>
         /// <param name="profile">The service profile</param>
         public ContentStateService(string context, string id, string profile) : base(id, "ContentStateService", context)

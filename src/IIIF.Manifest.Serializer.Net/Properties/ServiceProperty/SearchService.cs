@@ -24,6 +24,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// <summary>
         /// Creates a new SearchService.
         /// </summary>
+        /// <param name="context">The IIIF context URL</param>
         /// <param name="id">The service identifier</param>
         /// <param name="profile">The service profile</param>
         public SearchService(string context, string id, string profile) : base(id, "SearchService2", context)
