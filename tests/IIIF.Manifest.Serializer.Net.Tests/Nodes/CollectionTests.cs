@@ -1,8 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Nodes.Collection;
-using IIIF.Manifests.Serializer.Properties;
-using FluentAssertions;
-using Newtonsoft.Json;
-using Xunit;
+﻿using IIIF.Manifests.Serializer.Nodes.CollectionNode;
 
 namespace IIIF.Manifests.Serializer.Tests.Nodes
 {

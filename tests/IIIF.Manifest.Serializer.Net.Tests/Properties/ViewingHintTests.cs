@@ -1,12 +1,7 @@
-﻿using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
-using IIIF.Manifests.Serializer.Properties;
-using FluentAssertions;
-using Newtonsoft.Json;
-using Xunit;
+﻿using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {

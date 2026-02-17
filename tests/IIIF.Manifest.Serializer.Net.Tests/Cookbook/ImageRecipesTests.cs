@@ -1,15 +1,10 @@
-using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Service;
-using IIIF.Manifests.Serializer.Properties.Tile;
-using FluentAssertions;
-using Newtonsoft.Json;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Properties.TileProperty;
 using Newtonsoft.Json.Linq;
-using Xunit;
 
 namespace IIIF.Manifests.Serializer.Tests.Cookbook
 {

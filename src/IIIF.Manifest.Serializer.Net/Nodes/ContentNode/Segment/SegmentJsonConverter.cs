@@ -1,12 +1,12 @@
 using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Nodes.Content.Segment.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Segment.Resource;
 using IIIF.Manifests.Serializer.Shared.Content;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Segment
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment
 {
     public class SegmentJsonConverter : BaseContentJsonConverter<Segment>
     {

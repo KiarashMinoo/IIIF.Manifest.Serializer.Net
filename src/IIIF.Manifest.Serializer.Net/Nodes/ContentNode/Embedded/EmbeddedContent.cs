@@ -1,8 +1,8 @@
-using IIIF.Manifests.Serializer.Nodes.Content.Embedded.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Embedded.Resource;
 using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Embedded
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Embedded
 {
     public class EmbeddedContent : BaseContent<EmbeddedContent, EmbeddedContentResource>
     {

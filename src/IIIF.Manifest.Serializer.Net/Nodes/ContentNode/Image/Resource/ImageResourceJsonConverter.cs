@@ -6,7 +6,7 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Image.Resource
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource
 {
     public class ImageResourceJsonConverter : BaseResourceJsonConverter<ImageResource>
     {

@@ -3,7 +3,7 @@ using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Video.Resource
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Video.Resource
 {
     /// <summary>
     /// IIIF Video resource for A/V content.

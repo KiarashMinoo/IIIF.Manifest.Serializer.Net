@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.Service
+namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
 {
     /// <summary>
     /// IIIF Authentication API 1.0 Service - provides authentication flow information.
@@ -61,7 +61,7 @@ namespace IIIF.Manifests.Serializer.Properties.Service
         /// </summary>
         /// <param name="id">Service identifier (login/token/logout endpoint URL)</param>
         /// <param name="profile">Auth profile (login/clickthrough/kiosk/external/token/logout)</param>
-        public AuthService1(string id, string profile) 
+        public AuthService1(string id, string profile)
             : base(id, string.Empty, "http://iiif.io/api/auth/1/context.json")
         {
             Profile = profile;

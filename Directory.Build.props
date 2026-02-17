@@ -11,7 +11,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591;CS0067</NoWarn>
     <Configurations>Debug;Release</Configurations>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>latestmajor</LangVersion>
     <Platforms>AnyCPU</Platforms>
   </PropertyGroup>
 

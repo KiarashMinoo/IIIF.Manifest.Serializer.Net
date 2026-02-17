@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.Within
+namespace IIIF.Manifests.Serializer.Properties.WithinProperty
 {
     public class WithinJsonConverter : BaseItemJsonConverter<Within>
     {

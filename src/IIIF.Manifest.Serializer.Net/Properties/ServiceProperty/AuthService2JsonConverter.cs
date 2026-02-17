@@ -6,7 +6,7 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.Service
+namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
 {
     public class AuthService2JsonConverter : BaseItemJsonConverter<AuthService2>
     {

@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.Metadata.MetadataValue
+namespace IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue
 {
     [JsonConverter(typeof(MetadataValueJsonConverter))]
     public class MetadataValue : TrackableObject<MetadataValue>

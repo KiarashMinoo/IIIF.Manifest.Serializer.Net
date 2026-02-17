@@ -1,9 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Properties;
-using FluentAssertions;
-using Newtonsoft.Json;
-using Xunit;
-
-namespace IIIF.Manifests.Serializer.Tests.Properties
+﻿namespace IIIF.Manifests.Serializer.Tests.Properties
 {
     public class ValueObjectTests
     {

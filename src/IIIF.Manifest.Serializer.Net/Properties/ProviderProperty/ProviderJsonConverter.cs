@@ -5,7 +5,7 @@ using IIIF.Manifests.Serializer.Shared.FormatableItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.Provider
+namespace IIIF.Manifests.Serializer.Properties.ProviderProperty
 {
     public class ProviderJsonConverter : FormatableItemJsonConverter<Provider>
     {

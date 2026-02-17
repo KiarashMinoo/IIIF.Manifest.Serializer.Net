@@ -1,9 +1,6 @@
-﻿using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Properties.Service;
-using IIIF.Manifests.Serializer.Properties.Tile;
-using FluentAssertions;
-using Newtonsoft.Json;
-using Xunit;
+﻿using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Properties.TileProperty;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {

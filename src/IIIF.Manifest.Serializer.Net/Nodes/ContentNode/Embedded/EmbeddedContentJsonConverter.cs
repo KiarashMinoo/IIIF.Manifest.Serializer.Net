@@ -1,12 +1,12 @@
 using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Nodes.Content.Embedded.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Embedded.Resource;
 using IIIF.Manifests.Serializer.Shared.Content;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Embedded
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Embedded
 {
     public class EmbeddedContentJsonConverter : BaseContentJsonConverter<EmbeddedContent>
     {

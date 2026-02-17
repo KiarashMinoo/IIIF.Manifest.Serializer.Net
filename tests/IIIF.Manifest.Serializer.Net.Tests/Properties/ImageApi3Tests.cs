@@ -1,11 +1,8 @@
-﻿using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Service;
-using IIIF.Manifests.Serializer.Properties.Size;
-using IIIF.Manifests.Serializer.Properties.Tile;
-using FluentAssertions;
-using Newtonsoft.Json;
-using System.Linq;
-using Xunit;
+﻿using System.Linq;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Properties.SizeProperty;
+using IIIF.Manifests.Serializer.Properties.TileProperty;
+
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {
     public class ImageApi3Tests

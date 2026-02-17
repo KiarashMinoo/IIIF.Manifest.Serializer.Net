@@ -1,8 +1,8 @@
-using IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Audio.Resource;
 using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Audio
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Audio
 {
     [JsonConverter(typeof(AudioJsonConverter))]
     public class Audio : BaseContent<Audio, AudioResource>

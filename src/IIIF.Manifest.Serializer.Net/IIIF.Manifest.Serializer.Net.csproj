@@ -4,6 +4,7 @@
     <RootNamespace>IIIF.Manifests.Serializer</RootNamespace>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latestmajor</LangVersion>
+    <Nullable>disable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

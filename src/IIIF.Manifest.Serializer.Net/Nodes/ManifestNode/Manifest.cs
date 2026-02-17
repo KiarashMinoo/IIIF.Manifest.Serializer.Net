@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
+using IIIF.Manifests.Serializer.Nodes.StructureNode;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Manifest
+namespace IIIF.Manifests.Serializer.Nodes.ManifestNode
 {
     /// <summary>
     /// IIIF Manifest resource - the top-level resource representing a single object.
@@ -23,8 +25,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
         public const string StartJName = "start";
         public const string PlaceholderCanvasJName = "placeholderCanvas";
 
-        private readonly List<Sequence.Sequence> sequences = new List<Sequence.Sequence>();
-        private readonly List<Structure.Structure> structures = new List<Structure.Structure>();
+        private readonly List<Sequence> sequences = new List<Sequence>();
+        private readonly List<Structure> structures = new List<Structure>();
 
 
         [PresentationAPI("2.0")]
@@ -37,11 +39,11 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(SequencesJName)]
-        public IReadOnlyCollection<Sequence.Sequence> Sequences => sequences.AsReadOnly();
+        public IReadOnlyCollection<Sequence> Sequences => sequences.AsReadOnly();
 
         [PresentationAPI("2.0")]
         [JsonProperty(StructuresJName)]
-        public IReadOnlyCollection<Structure.Structure> Structures => structures.AsReadOnly();
+        public IReadOnlyCollection<Structure> Structures => structures.AsReadOnly();
 
         [PresentationAPI("2.0")]
         [JsonProperty(StartJName)]
@@ -62,10 +64,10 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
         public Manifest SetStart(string start) => SetPropertyValue(a => a.Start, start);
         public Manifest SetPlaceholderCanvas(string placeholderCanvas) => SetPropertyValue(a => a.PlaceholderCanvas, placeholderCanvas);
 
-        public Manifest AddSequence(Sequence.Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Attach(sequence));
-        public Manifest RemoveSequence(Sequence.Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Detach(sequence));
+        public Manifest AddSequence(Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Attach(sequence));
+        public Manifest RemoveSequence(Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Detach(sequence));
 
-        public Manifest AddStructure(Structure.Structure structure) => SetPropertyValue(a => a.structures, a => a.Structures, structures.Attach(structure));
-        public Manifest RemoveStructure(Structure.Structure structure) => SetPropertyValue(a => a.structures, a => a.Structures, structures.Detach(structure));
+        public Manifest AddStructure(Structure structure) => SetPropertyValue(a => a.structures, a => a.Structures, structures.Attach(structure));
+        public Manifest RemoveStructure(Structure structure) => SetPropertyValue(a => a.structures, a => a.Structures, structures.Detach(structure));
     }
 }

@@ -7,7 +7,7 @@ using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Structure
+namespace IIIF.Manifests.Serializer.Nodes.StructureNode
 {
     /// <summary>
     /// IIIF Range/Structure resource - represents a structural section of a Manifest.

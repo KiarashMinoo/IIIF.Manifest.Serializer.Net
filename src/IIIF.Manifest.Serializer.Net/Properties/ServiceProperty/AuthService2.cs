@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.Service
+namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
 {
     /// <summary>
     /// IIIF Authentication API 2.0 Service - provides probe and access service patterns.

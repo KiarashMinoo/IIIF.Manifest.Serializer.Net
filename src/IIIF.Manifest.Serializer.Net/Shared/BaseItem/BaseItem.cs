@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Properties.Service;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 

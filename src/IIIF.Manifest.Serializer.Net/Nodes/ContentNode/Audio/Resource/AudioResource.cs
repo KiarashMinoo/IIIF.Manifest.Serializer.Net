@@ -1,6 +1,7 @@
 ﻿using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
-namespace IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource
+
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Audio.Resource
 {
     /// <summary>
     /// IIIF Audio resource for A/V content.

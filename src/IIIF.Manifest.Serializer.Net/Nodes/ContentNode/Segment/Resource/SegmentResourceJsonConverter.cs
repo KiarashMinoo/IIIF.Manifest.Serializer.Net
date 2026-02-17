@@ -5,7 +5,7 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Segment.Resource
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment.Resource
 {
     public class SegmentResourceJsonConverter : BaseResourceJsonConverter<SegmentResource>
     {

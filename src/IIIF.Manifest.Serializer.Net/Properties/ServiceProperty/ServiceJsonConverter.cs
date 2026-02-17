@@ -2,13 +2,15 @@ using System;
 using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
+using IIIF.Manifests.Serializer.Properties.SizeProperty;
+using IIIF.Manifests.Serializer.Properties.TileProperty;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.Service
+namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
 {
     public class ServiceJsonConverter : BaseItemJsonConverter<Service>
     {
@@ -43,7 +45,7 @@ namespace IIIF.Manifests.Serializer.Properties.Service
 
             if (jTiles != null && jTiles is JArray)
             {
-                var tiles = jTiles.ToObject<Tile.Tile[]>();
+                var tiles = jTiles.ToObject<Tile[]>();
                 foreach (var tile in tiles)
                     service.AddTile(tile);
             }
@@ -57,7 +59,7 @@ namespace IIIF.Manifests.Serializer.Properties.Service
 
             if (jSizes != null && jSizes is JArray)
             {
-                var sizes = jSizes.ToObject<Size.Size[]>();
+                var sizes = jSizes.ToObject<Size[]>();
                 foreach (var size in sizes)
                     service.AddSize(size);
             }

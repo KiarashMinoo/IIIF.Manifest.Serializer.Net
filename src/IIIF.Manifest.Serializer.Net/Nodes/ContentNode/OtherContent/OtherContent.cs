@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.OtherContent
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.OtherContent
 {
     [JsonConverter(typeof(OtherContentJsonConverter))]
     public class OtherContent : BaseContent<OtherContent>

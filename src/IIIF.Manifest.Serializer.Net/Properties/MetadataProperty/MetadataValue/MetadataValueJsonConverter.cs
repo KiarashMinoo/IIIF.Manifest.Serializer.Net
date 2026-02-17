@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.Metadata.MetadataValue
+namespace IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue
 {
     public class MetadataValueJsonConverter : TrackableObjectJsonConverter<MetadataValue>
     {

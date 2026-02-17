@@ -5,7 +5,8 @@ using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-namespace IIIF.Manifests.Serializer.Nodes.Content.Video.Resource
+
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Video.Resource
 {
     public class VideoResourceJsonConverter : BaseResourceJsonConverter<VideoResource>
     {

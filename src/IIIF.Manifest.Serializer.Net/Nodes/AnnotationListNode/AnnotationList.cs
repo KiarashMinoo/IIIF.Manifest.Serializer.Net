@@ -1,11 +1,11 @@
-﻿﻿using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.AnnotationList
+namespace IIIF.Manifests.Serializer.Nodes.AnnotationListNode
 {
     /// <summary>
     /// IIIF Presentation API 2.0 AnnotationList resource.

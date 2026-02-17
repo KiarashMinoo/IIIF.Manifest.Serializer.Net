@@ -1,21 +1,16 @@
-using System;
 using System.Linq;
-using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Audio;
-using IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Content.Video;
-using IIIF.Manifests.Serializer.Nodes.Content.Video.Resource;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Metadata;
-using FluentAssertions;
-using Newtonsoft.Json;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.CollectionNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Audio;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Audio.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Video;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Video.Resource;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
+using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using Newtonsoft.Json.Linq;
-using Xunit;
-using IIIFDescription = IIIF.Manifests.Serializer.Properties.Description.Description;
+using IIIFDescription = IIIF.Manifests.Serializer.Properties.DescriptionPropery.Description;
 
 namespace IIIF.Manifests.Serializer.Tests.Cookbook
 {
@@ -522,12 +517,12 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
                 640, 480
             ).SetDuration(1985.024);
 
-            var audioResource = new IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource.AudioResource(
+            var audioResource = new AudioResource(
                 "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/audio/full/max/default.mp3",
                 "audio/mp3"
             ).SetDuration(1985.024);
 
-            var audio = new IIIF.Manifests.Serializer.Nodes.Content.Audio.Audio(
+            var audio = new Audio(
                 "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/annotation/audio",
                 audioResource,
                 canvas.Id
@@ -562,12 +557,12 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
                 640, 480
             ).SetDuration(1985.024);
 
-            var audioResource = new IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource.AudioResource(
+            var audioResource = new AudioResource(
                 "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/audio/full/max/default.mp3",
                 "audio/mp3"
             ).SetDuration(1985.024);
 
-            canvas.AddAudio(new IIIF.Manifests.Serializer.Nodes.Content.Audio.Audio(
+            canvas.AddAudio(new Audio(
                 "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/annotation/audio",
                 audioResource,
                 canvas.Id
@@ -609,12 +604,12 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
                 640, 480
             ).SetDuration(660.0);
 
-            var videoResource = new IIIF.Manifests.Serializer.Nodes.Content.Video.Resource.VideoResource(
+            var videoResource = new VideoResource(
                 "https://iiif.io/api/cookbook/recipe/0003-mvm-video/video/full/max/default.mp4",
                 "video/mp4"
             ).SetDuration(660.0);
 
-            var video = new IIIF.Manifests.Serializer.Nodes.Content.Video.Video(
+            var video = new Video(
                 "https://iiif.io/api/cookbook/recipe/0003-mvm-video/annotation/video",
                 videoResource,
                 canvas.Id
@@ -649,12 +644,12 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
                 640, 480
             ).SetDuration(660.0);
 
-            var videoResource = new IIIF.Manifests.Serializer.Nodes.Content.Video.Resource.VideoResource(
+            var videoResource = new VideoResource(
                 "https://iiif.io/api/cookbook/recipe/0003-mvm-video/video/full/max/default.mp4",
                 "video/mp4"
             ).SetDuration(660.0);
 
-            canvas.AddVideo(new IIIF.Manifests.Serializer.Nodes.Content.Video.Video(
+            canvas.AddVideo(new Video(
                 "https://iiif.io/api/cookbook/recipe/0003-mvm-video/annotation/video",
                 videoResource,
                 canvas.Id
@@ -685,7 +680,7 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
         [Fact]
         public void SimpleCollection_ShouldSerializeAndDeserialize()
         {
-            var collection = new IIIF.Manifests.Serializer.Nodes.Collection.Collection(
+            var collection = new Collection(
                 "https://example.org/collection/top",
                 new Label("Top-level Collection")
             );
@@ -694,7 +689,7 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
             collection.AddManifest("https://example.org/manifest/2");
 
             var json = JsonConvert.SerializeObject(collection, Formatting.Indented);
-            var deserialized = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.Collection.Collection>(json);
+            var deserialized = JsonConvert.DeserializeObject<Collection>(json);
 
             deserialized.Should().NotBeNull();
             deserialized.Manifests.Should().HaveCount(2);
@@ -722,7 +717,7 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
   ]
 }";
 
-            var collection = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.Collection.Collection>(json);
+            var collection = JsonConvert.DeserializeObject<Collection>(json);
 
             collection.Should().NotBeNull();
             collection.Id.Should().Be("https://example.org/collection/top");

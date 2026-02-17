@@ -1,17 +1,17 @@
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Nodes.Content.Audio;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.OtherContent;
-using IIIF.Manifests.Serializer.Nodes.Content.Video;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Audio;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.OtherContent;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Video;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Canvas
+namespace IIIF.Manifests.Serializer.Nodes.CanvasNode
 {
     /// <summary>
     /// IIIF Canvas resource - a virtual container representing a page or view.

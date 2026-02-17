@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Within;
+using IIIF.Manifests.Serializer.Properties.WithinProperty;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Shared.Exceptions;

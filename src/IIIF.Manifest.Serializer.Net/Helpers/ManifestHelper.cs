@@ -2,9 +2,9 @@ using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Properties;
 using System.Collections.Generic;
 using System.Linq;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Properties.Metadata;
-using IIIF.Manifests.Serializer.Properties.Metadata.MetadataValue;
+using IIIF.Manifests.Serializer.Nodes.ManifestNode;
+using IIIF.Manifests.Serializer.Properties.MetadataProperty;
+using IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue;
 
 namespace IIIF.Manifests.Serializer.Helpers
 {

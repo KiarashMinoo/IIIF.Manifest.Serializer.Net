@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.AnnotationList
+namespace IIIF.Manifests.Serializer.Nodes.AnnotationListNode
 {
     public class AnnotationListJsonConverter : BaseNodeJsonConverter<AnnotationList>
     {

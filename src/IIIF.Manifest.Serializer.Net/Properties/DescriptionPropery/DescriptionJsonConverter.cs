@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.Description
+namespace IIIF.Manifests.Serializer.Properties.DescriptionPropery
 {
     public class DescriptionJsonConverter : ValuableItemJsonConverter<Description>
     {

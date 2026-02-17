@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
+using IIIF.Manifests.Serializer.Nodes.StructureNode;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
@@ -8,7 +10,7 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Manifest
+namespace IIIF.Manifests.Serializer.Nodes.ManifestNode
 {
     public class ManifestJsonConverter : BaseNodeJsonConverter<Manifest>
     {
@@ -44,7 +46,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
             if (!(jSequences is JArray))
                 throw new JsonObjectMustBeJArray<Manifest>(Manifest.SequencesJName);
 
-            var sequences = jSequences.ToObject<Sequence.Sequence[]>();
+            var sequences = jSequences.ToObject<Sequence[]>();
             foreach (var sequence in sequences)
                 manifest.AddSequence(sequence);
 
@@ -59,7 +61,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Manifest
                 if (!(jStructures is JArray))
                     throw new JsonObjectMustBeJArray<Manifest>(Manifest.StructuresJName);
 
-                var structures = jStructures.ToObject<Structure.Structure[]>();
+                var structures = jStructures.ToObject<Structure[]>();
                 foreach (var structure in structures)
                     manifest.AddStructure(structure);
             }

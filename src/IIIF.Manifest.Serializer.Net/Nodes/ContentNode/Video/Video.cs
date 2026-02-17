@@ -1,8 +1,8 @@
-using IIIF.Manifests.Serializer.Nodes.Content.Video.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Video.Resource;
 using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Video
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Video
 {
     [JsonConverter(typeof(VideoJsonConverter))]
     public class Video : BaseContent<Video, VideoResource>

@@ -4,7 +4,8 @@ using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-namespace IIIF.Manifests.Serializer.Nodes.Content.Audio.Resource
+
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Audio.Resource
 {
     public class AudioResourceJsonConverter : BaseResourceJsonConverter<AudioResource>
     {

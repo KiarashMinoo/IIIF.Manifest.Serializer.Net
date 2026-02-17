@@ -5,7 +5,7 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.AccompanyingCanvas
+namespace IIIF.Manifests.Serializer.Properties.AccompanyingCanvasProperty
 {
     public class AccompanyingCanvasJsonConverter : BaseItemJsonConverter<AccompanyingCanvas>
     {

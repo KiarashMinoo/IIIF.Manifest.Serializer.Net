@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Segment.Selector
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment.Selector
 {
     public class Selector : BaseItem<Selector>
     {

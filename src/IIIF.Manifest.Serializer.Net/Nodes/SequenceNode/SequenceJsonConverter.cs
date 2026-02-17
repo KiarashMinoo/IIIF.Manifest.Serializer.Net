@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
@@ -9,7 +10,7 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Sequence
+namespace IIIF.Manifests.Serializer.Nodes.SequenceNode
 {
     public class SequenceJsonConverter : BaseNodeJsonConverter<Sequence>
     {
@@ -48,7 +49,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Sequence
             if (!(jCanvases is JArray))
                 throw new JsonObjectMustBeJArray<Sequence>(Sequence.CanvasesJName);
 
-            var canvases = jCanvases.ToObject<Canvas.Canvas[]>();
+            var canvases = jCanvases.ToObject<Canvas[]>();
             foreach (var canvas in canvases)
                 sequence.AddCanvas(canvas);
 

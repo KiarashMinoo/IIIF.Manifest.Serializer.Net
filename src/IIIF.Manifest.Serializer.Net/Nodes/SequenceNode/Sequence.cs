@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Sequence
+namespace IIIF.Manifests.Serializer.Nodes.SequenceNode
 {
     /// <summary>
     /// IIIF Sequence resource - an ordered list of Canvases.
@@ -23,11 +24,11 @@ namespace IIIF.Manifests.Serializer.Nodes.Sequence
         public const string StartCanvasJName = "startCanvas";
         public const string CanvasesJName = "canvases";
 
-        private readonly List<Canvas.Canvas> canvases = new List<Canvas.Canvas>();
+        private readonly List<Canvas> canvases = new List<Canvas>();
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(CanvasesJName)]
-        public IReadOnlyCollection<Canvas.Canvas> Canvases => canvases.AsReadOnly();
+        public IReadOnlyCollection<Canvas> Canvases => canvases.AsReadOnly();
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "start")]
         [JsonProperty(StartCanvasJName)]
@@ -45,8 +46,8 @@ namespace IIIF.Manifests.Serializer.Nodes.Sequence
         {
         }
 
-        public Sequence AddCanvas(Canvas.Canvas canvas) => SetPropertyValue(a => a.canvases, a => a.Canvases, canvases.Attach(canvas));
-        public Sequence RemoveCanvas(Canvas.Canvas canvas) => SetPropertyValue(a => a.canvases, a => a.Canvases, canvases.Detach(canvas));
+        public Sequence AddCanvas(Canvas canvas) => SetPropertyValue(a => a.canvases, a => a.Canvases, canvases.Attach(canvas));
+        public Sequence RemoveCanvas(Canvas canvas) => SetPropertyValue(a => a.canvases, a => a.Canvases, canvases.Detach(canvas));
 
         public Sequence SetStartCanvas(StartCanvas startCanvas) => SetPropertyValue(a => a.StartCanvas, startCanvas);
         public Sequence SetViewingDirection(ViewingDirection viewingDirection) => SetPropertyValue(a => a.ViewingDirection, viewingDirection);

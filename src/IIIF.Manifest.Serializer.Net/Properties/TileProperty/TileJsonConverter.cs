@@ -5,7 +5,7 @@ using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties.Tile
+namespace IIIF.Manifests.Serializer.Properties.TileProperty
 {
     public class TileJsonConverter : TrackableObjectJsonConverter<Tile>
     {

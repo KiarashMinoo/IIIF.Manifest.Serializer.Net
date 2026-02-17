@@ -1,13 +1,14 @@
 using System.Collections.Generic;
-using System.Linq;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
+using IIIF.Manifests.Serializer.Properties.SizeProperty;
+using IIIF.Manifests.Serializer.Properties.TileProperty;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.Service
+namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
 {
     /// <summary>
     /// IIIF Image API Service descriptor - provides info about image server capabilities.
@@ -27,8 +28,8 @@ namespace IIIF.Manifests.Serializer.Properties.Service
         public const string ExtraQualitiesJName = "extraQualities";
         public const string ExtraFeaturesJName = "extraFeatures";
 
-        private readonly List<Tile.Tile> tiles = new List<Tile.Tile>();
-        private readonly List<Size.Size> sizes = new List<Size.Size>();
+        private readonly List<Tile> tiles = new List<Tile>();
+        private readonly List<Size> sizes = new List<Size>();
         private readonly List<ImageFormat> preferredFormats = new List<ImageFormat>();
         private readonly List<ImageQuality> extraQualities = new List<ImageQuality>();
         private readonly List<ImageFeature> extraFeatures = new List<ImageFeature>();
@@ -48,11 +49,11 @@ namespace IIIF.Manifests.Serializer.Properties.Service
 
         [ImageAPI("2.0")]
         [JsonProperty(TilesJName)]
-        public IReadOnlyCollection<Tile.Tile> Tiles => tiles.AsReadOnly();
+        public IReadOnlyCollection<Tile> Tiles => tiles.AsReadOnly();
 
         [ImageAPI("2.0")]
         [JsonProperty(SizesJName)]
-        public IReadOnlyCollection<Size.Size> Sizes => sizes.AsReadOnly();
+        public IReadOnlyCollection<Size> Sizes => sizes.AsReadOnly();
 
         [ImageAPI("3.0", Notes = "Added in Image API 3.0")]
         [JsonProperty(MaxWidthJName)]
@@ -89,11 +90,11 @@ namespace IIIF.Manifests.Serializer.Properties.Service
         public Service SetHeight(int height) => SetPropertyValue(a => a.Height, height);
         public Service SetWidth(int width) => SetPropertyValue(a => a.Width, width);
 
-        public Service AddTile(Tile.Tile tile) => SetPropertyValue(a => a.tiles, a => a.Tiles, tiles.Attach(tile));
-        public Service RemoveTile(Tile.Tile tile) => SetPropertyValue(a => a.tiles, a => a.Tiles, tiles.Detach(tile));
+        public Service AddTile(Tile tile) => SetPropertyValue(a => a.tiles, a => a.Tiles, tiles.Attach(tile));
+        public Service RemoveTile(Tile tile) => SetPropertyValue(a => a.tiles, a => a.Tiles, tiles.Detach(tile));
 
-        public Service AddSize(Size.Size size) => SetPropertyValue(a => a.sizes, a => a.Sizes, sizes.Attach(size));
-        public Service RemoveSize(Size.Size size) => SetPropertyValue(a => a.sizes, a => a.Sizes, sizes.Detach(size));
+        public Service AddSize(Size size) => SetPropertyValue(a => a.sizes, a => a.Sizes, sizes.Attach(size));
+        public Service RemoveSize(Size size) => SetPropertyValue(a => a.sizes, a => a.Sizes, sizes.Detach(size));
 
         public Service SetMaxWidth(int maxWidth) => SetPropertyValue(a => a.MaxWidth, maxWidth);
         public Service SetMaxHeight(int maxHeight) => SetPropertyValue(a => a.MaxHeight, maxHeight);

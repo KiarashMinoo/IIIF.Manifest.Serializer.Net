@@ -3,7 +3,8 @@ using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-namespace IIIF.Manifests.Serializer.Properties.Size
+
+namespace IIIF.Manifests.Serializer.Properties.SizeProperty
 {
     public class SizeJsonConverter : TrackableObjectJsonConverter<Size>
     {

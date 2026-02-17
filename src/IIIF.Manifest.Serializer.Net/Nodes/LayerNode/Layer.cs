@@ -5,7 +5,7 @@ using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Layer
+namespace IIIF.Manifests.Serializer.Nodes.LayerNode
 {
     /// <summary>
     /// IIIF Presentation API 2.0 Layer resource.

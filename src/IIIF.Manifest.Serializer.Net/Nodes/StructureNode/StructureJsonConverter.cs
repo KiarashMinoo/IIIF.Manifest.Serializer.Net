@@ -6,7 +6,7 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Structure
+namespace IIIF.Manifests.Serializer.Nodes.StructureNode
 {
     public class StructureJsonConverter : BaseNodeJsonConverter<Structure>
     {

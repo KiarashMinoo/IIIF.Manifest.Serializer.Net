@@ -1,12 +1,12 @@
 ﻿using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.ManifestNode;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Description;
+using IIIF.Manifests.Serializer.Properties.DescriptionPropery;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Examples.Examples

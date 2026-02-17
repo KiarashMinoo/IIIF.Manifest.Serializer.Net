@@ -1,13 +1,14 @@
 ﻿using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Collection;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.CollectionNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.ManifestNode;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Description;
+using IIIF.Manifests.Serializer.Properties.DescriptionPropery;
+using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Examples.Examples
@@ -27,8 +28,8 @@ namespace IIIF.Manifests.Serializer.Examples.Examples
                 new Label("Digital Library Collection")
             );
 
-            collection.AddMetadata(new Properties.Metadata.Metadata("Institution", "Example University"))
-                      .AddMetadata(new Properties.Metadata.Metadata("Curator", "Dr. Jane Smith"))
+            collection.AddMetadata(new Metadata("Institution", "Example University"))
+                      .AddMetadata(new Metadata("Curator", "Dr. Jane Smith"))
                       .AddDescription(new Description("A curated collection of historical manuscripts and documents."))
                       .AddAttribution(new Attribution("Example University Library"))
                       .SetViewingHint(ViewingHint.MultiPart)

@@ -1,9 +1,6 @@
-using System;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Service;
-using Newtonsoft.Json;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 
-namespace IIIF.Manifest.Serializer.Net.Tests.Integration
+namespace IIIF.Manifests.Serializer.Tests.Integration
 {
     /// <summary>
     /// Simple demonstration of Auth API usage - not a unit test.
@@ -33,24 +30,24 @@ namespace IIIF.Manifest.Serializer.Net.Tests.Integration
 
             // Create logout service
             var logoutService = new AuthService1(
-                "https://auth.example.org/logout",
-                Profile.AuthLogout.Value
-            )
-            .SetLabel("Logout from Example Institution");
+                    "https://auth.example.org/logout",
+                    Profile.AuthLogout.Value
+                )
+                .SetLabel("Logout from Example Institution");
 
             // Create login service with nested token and logout
             var loginService = new AuthService1(
-                "https://auth.example.org/login",
-                Profile.AuthLogin.Value
-            )
-            .SetLabel("Login to View Content")
-            .SetHeader("Authentication Required")
-            .SetDescription("Please log in with your institutional credentials.")
-            .SetConfirmLabel("Login")
-            .SetFailureHeader("Login Failed")
-            .SetFailureDescription("Authentication was unsuccessful. Please try again.")
-            .AddService(tokenService)
-            .AddService(logoutService);
+                    "https://auth.example.org/login",
+                    Profile.AuthLogin.Value
+                )
+                .SetLabel("Login to View Content")
+                .SetHeader("Authentication Required")
+                .SetDescription("Please log in with your institutional credentials.")
+                .SetConfirmLabel("Login")
+                .SetFailureHeader("Login Failed")
+                .SetFailureDescription("Authentication was unsuccessful. Please try again.")
+                .AddService(tokenService)
+                .AddService(logoutService);
 
             var json = JsonConvert.SerializeObject(loginService, Formatting.Indented);
             Console.WriteLine(json);
@@ -75,14 +72,14 @@ namespace IIIF.Manifest.Serializer.Net.Tests.Integration
 
             // Create access service (active pattern for interactive auth)
             var accessService = new AuthService2(
-                "https://auth.example.org/auth2/access",
-                "active" // profile for active authentication
-            )
-            .SetLabel("Login Required")
-            .SetHeading("Secure Content Access")
-            .SetNote("This content requires authentication. Please log in to continue.")
-            .SetConfirmLabel("Login")
-            .AddService(tokenService);
+                    "https://auth.example.org/auth2/access",
+                    "active" // profile for active authentication
+                )
+                .SetLabel("Login Required")
+                .SetHeading("Secure Content Access")
+                .SetNote("This content requires authentication. Please log in to continue.")
+                .SetConfirmLabel("Login")
+                .AddService(tokenService);
 
             // Create probe service (entry point for checking access)
             var probeService = new AuthService2("https://auth.example.org/auth2/probe")

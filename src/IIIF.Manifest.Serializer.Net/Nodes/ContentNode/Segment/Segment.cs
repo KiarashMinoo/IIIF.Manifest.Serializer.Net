@@ -1,8 +1,8 @@
-using IIIF.Manifests.Serializer.Nodes.Content.Segment.Resource;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Segment.Resource;
 using IIIF.Manifests.Serializer.Shared.Content;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Content.Segment
+namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment
 {
     public class Segment : BaseContent<Segment, SegmentResource>
     {

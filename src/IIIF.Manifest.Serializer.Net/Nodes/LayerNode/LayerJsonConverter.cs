@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Nodes.Layer
+namespace IIIF.Manifests.Serializer.Nodes.LayerNode
 {
     public class LayerJsonConverter : BaseNodeJsonConverter<Layer>
     {

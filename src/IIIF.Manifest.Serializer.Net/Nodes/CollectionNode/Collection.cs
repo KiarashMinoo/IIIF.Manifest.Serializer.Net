@@ -7,7 +7,7 @@ using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Collection
+namespace IIIF.Manifests.Serializer.Nodes.CollectionNode
 {
     /// <summary>
     /// IIIF Collection resource - an ordered list of Manifests and/or Collections.

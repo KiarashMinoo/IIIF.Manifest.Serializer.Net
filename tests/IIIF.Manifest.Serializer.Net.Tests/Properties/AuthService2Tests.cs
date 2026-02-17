@@ -1,11 +1,7 @@
 using System.Linq;
-using FluentAssertions;
-using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Service;
-using Newtonsoft.Json;
-using Xunit;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 
-namespace IIIF.Manifest.Serializer.Net.Tests.Properties
+namespace IIIF.Manifests.Serializer.Tests.Properties
 {
     public class AuthService2Tests
     {
