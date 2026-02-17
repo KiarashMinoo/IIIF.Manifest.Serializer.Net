@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
@@ -17,6 +18,10 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource
         public ImageResource(string id, string format) : base(id, "dctypes:Image")
         {
             SetFormat(format);
+        }
+        
+        public ImageResource(string id, ImageFormat format) : this(id, format.Value)
+        {
         }
 
         public ImageResource SetHeight(int height) => SetPropertyValue(a => a.Height, height);

@@ -10,7 +10,7 @@ using IIIF.Manifests.Serializer.Nodes.ContentNode.Video.Resource;
 using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using Newtonsoft.Json.Linq;
-using IIIFDescription = IIIF.Manifests.Serializer.Properties.DescriptionPropery.Description;
+using IIIFDescription = IIIF.Manifests.Serializer.Properties.DescriptionProperty.Description;
 
 namespace IIIF.Manifests.Serializer.Tests.Cookbook
 {

@@ -250,7 +250,7 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
 
             deserializedResource.Service.Should().NotBeNull();
             deserializedResource.Service.Profile.Should().Be(Profile.ImageApi2Level1.Value);
-            deserializedResource.Service.Tiles.Should().ContainSingle()
+            deserializedResource.Service.As<Service>().Tiles.Should().ContainSingle()
                 .Which.Width.Should().Be(512);
         }
 
@@ -319,12 +319,12 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
                 .Images.Should().ContainSingle().Subject.Resource;
 
             resource.Service.Should().NotBeNull();
-            resource.Service.Id.Should().Be("https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen");
+            resource.Service.As<Service>().Id.Should().Be("https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-gottingen");
             resource.Service.Profile.Should().Be("http://iiif.io/api/image/2/level1.json");
-            resource.Service.Height.Should().Be(3024);
-            resource.Service.Width.Should().Be(4032);
-            resource.Service.Tiles.Should().ContainSingle();
-            resource.Service.Tiles.Should().ContainSingle().Which.Width.Should().Be(512);
+            resource.Service.As<Service>().Height.Should().Be(3024);
+            resource.Service.As<Service>().Width.Should().Be(4032);
+            resource.Service.As<Service>().Tiles.Should().ContainSingle();
+            resource.Service.As<Service>().Tiles.Should().ContainSingle().Which.Width.Should().Be(512);
         }
 
         #endregion

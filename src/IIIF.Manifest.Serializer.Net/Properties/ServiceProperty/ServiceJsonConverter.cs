@@ -7,6 +7,7 @@ using IIIF.Manifests.Serializer.Properties.TileProperty;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
+using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -24,9 +25,9 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             if (jId is null)
                 throw new JsonNodeRequiredException<Service>(Service.IdJName);
 
-            var jProfile = element.TryGetToken(Service.ProfileJName);
+            var jProfile = element.TryGetToken(IBaseService.ProfileJName);
             if (jProfile is null)
-                throw new JsonNodeRequiredException<Service>(Service.ProfileJName);
+                throw new JsonNodeRequiredException<Service>(IBaseService.ProfileJName);
 
             var service = new Service(jContext.ToString(), jId.ToString(), jProfile.ToString());
 
@@ -155,7 +156,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             {
                 if (!string.IsNullOrEmpty(value.Profile))
                 {
-                    writer.WritePropertyName(Service.ProfileJName);
+                    writer.WritePropertyName(IBaseService.ProfileJName);
                     writer.WriteValue(value.Profile);
                 }
 

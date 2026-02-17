@@ -3,7 +3,7 @@ using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.AccompanyingCanvasProperty;
-using IIIF.Manifests.Serializer.Properties.DescriptionPropery;
+using IIIF.Manifests.Serializer.Properties.DescriptionProperty;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.ProviderProperty;
 using IIIF.Manifests.Serializer.Properties.RenderingProperty;

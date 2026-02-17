@@ -1,13 +1,14 @@
-using System;
-using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.ManifestNode;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Service;
+using IIIF.Manifests.Serializer.Properties.DescriptionProperty;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
+namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 {
     /// <summary>
     /// Auth Recipe 3: IIIF Authentication API 2.0 - Active Pattern
@@ -19,12 +20,10 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
         {
             // Create logout service
             var logoutService = new AuthService2("https://authentication.example.org/auth2/logout")
-                .SetType(ResourceType.AuthLogoutService2.Value)
                 .SetLabel("Logout");
 
             // Create access token service
             var tokenService = new AuthService2("https://authentication.example.org/auth2/token")
-                .SetType(ResourceType.AuthAccessTokenService2.Value)
                 .AddService(logoutService);
 
             // Create access service (active pattern)
@@ -32,7 +31,6 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
                 "https://authentication.example.org/auth2/access",
                 "active" // profile for active authentication
             )
-            .SetType(ResourceType.AuthAccessService2.Value)
             .SetLabel("Login to Access Content")
             .SetHeading("Authentication Required")
             .SetNote("Please log in with your institutional credentials to access this content.")
@@ -41,11 +39,11 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
 
             // Create probe service (entry point for auth flow)
             var probeService = new AuthService2("https://authentication.example.org/auth2/probe")
-                .SetType(ResourceType.AuthProbeService2.Value)
                 .AddService(accessService);
 
             // Create image service with auth 2.0
             var imageService = new Service(
+                "http://iiif.io/api/image/2/context.json",
                 "https://iiif.example.org/image/auth2-image",
                 Profile.ImageApi2Level1.Value
             )
@@ -56,9 +54,8 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
             // Create image resource
             var imageResource = new ImageResource(
                 "https://iiif.example.org/image/auth2-image/full/full/0/default.jpg",
-                "https://iiif.example.org/image/auth2-image"
+                ImageFormat.Jpg.Value
             )
-            .SetFormat(ImageFormat.Jpeg)
             .SetHeight(3200)
             .SetWidth(2400)
             .SetService(imageService);
@@ -66,16 +63,16 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
             // Create canvas with image
             var canvas = new Canvas(
                 "https://example.org/iiif/document/canvas/p1",
-                "Page 1",
+                new Label("Page 1"),
                 3200,
                 2400
             );
 
             var image = new Image(
                 "https://example.org/iiif/document/annotation/p1-image",
+                imageResource,
                 canvas.Id
-            )
-            .SetResource(imageResource);
+            );
 
             canvas.AddImage(image);
 
@@ -86,11 +83,10 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
             // Create manifest
             var manifest = new Manifest(
                 "https://example.org/iiif/document/manifest",
-                "Document with Auth 2.0"
+                new Label("Document with Auth 2.0")
             );
 
-            manifest.AddLabel("en", "Secure Document - Auth 2.0");
-            manifest.SetDescription("A document using IIIF Authentication API 2.0 with probe service pattern.");
+            manifest.AddDescription(new Description("A document using IIIF Authentication API 2.0 with probe service pattern."));
             manifest.AddSequence(sequence);
 
             // Serialize to JSON

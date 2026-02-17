@@ -7,7 +7,7 @@ using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
 using IIIF.Manifests.Serializer.Nodes.ManifestNode;
 using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.DescriptionPropery;
+using IIIF.Manifests.Serializer.Properties.DescriptionProperty;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using Newtonsoft.Json;
 

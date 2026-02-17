@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
+using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
@@ -12,9 +13,8 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
     /// </summary>
     [AuthAPI("1.0", Notes = "Auth API 1.0 service for content access control.")]
     [JsonConverter(typeof(AuthService1JsonConverter))]
-    public class AuthService1 : BaseItem<AuthService1>
+    public class AuthService1 : BaseItem<AuthService1>, IBaseService
     {
-        public const string ProfileJName = "profile";
         public const string LabelJName = "label";
         public const string HeaderJName = "header";
         public const string DescriptionJName = "description";
@@ -25,7 +25,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         private readonly List<AuthService1> services = new List<AuthService1>();
 
         [AuthAPI("1.0")]
-        [JsonProperty(ProfileJName)]
+        [JsonProperty(IBaseService.ProfileJName)]
         public string Profile { get; }
 
         [AuthAPI("1.0")]

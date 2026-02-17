@@ -105,7 +105,7 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
             // Assert
             deserialized.Service.Should().NotBeNull();
             deserialized.Service.Profile.Should().Be("http://iiif.io/api/image/2/level1.json");
-            deserialized.Service.Tiles.Should().ContainSingle();
+            deserialized.Service.As<Service>().Tiles.Should().ContainSingle();
         }
     }
 }

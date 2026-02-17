@@ -6,6 +6,7 @@ using IIIF.Manifests.Serializer.Properties.SizeProperty;
 using IIIF.Manifests.Serializer.Properties.TileProperty;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
+using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
@@ -15,9 +16,8 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
     /// </summary>
     [ImageAPI("2.0", Notes = "Service descriptor for Image API. Properties vary between 2.x and 3.0.")]
     [JsonConverter(typeof(ServiceJsonConverter))]
-    public class Service : BaseItem<Service>, IDimenssionSupport<Service>
+    public class Service : BaseItem<Service>, IDimenssionSupport<Service>, IBaseService
     {
-        public const string ProfileJName = "profile";
         public const string TilesJName = "tiles";
         public const string SizesJName = "sizes";
         public const string MaxWidthJName = "maxWidth";
@@ -36,7 +36,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
 
 
         [ImageAPI("2.0")]
-        [JsonProperty(ProfileJName)]
+        [JsonProperty(IBaseService.ProfileJName)]
         public string Profile { get; }
 
         [ImageAPI("2.0")]

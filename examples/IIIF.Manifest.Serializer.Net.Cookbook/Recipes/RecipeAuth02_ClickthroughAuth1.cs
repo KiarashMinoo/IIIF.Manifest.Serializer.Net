@@ -1,13 +1,14 @@
-using System;
-using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Manifest;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.ManifestNode;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Service;
+using IIIF.Manifests.Serializer.Properties.DescriptionProperty;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
+namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 {
     /// <summary>
     /// Auth Recipe 2: IIIF Authentication API 1.0 - Clickthrough Pattern
@@ -38,6 +39,7 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
 
             // Create image service with authentication
             var imageService = new Service(
+                "http://iiif.io/api/image/2/context.json",
                 "https://iiif.example.org/image/restricted-image",
                 Profile.ImageApi2Level1.Value
             )
@@ -48,9 +50,8 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
             // Create image resource
             var imageResource = new ImageResource(
                 "https://iiif.example.org/image/restricted-image/full/full/0/default.jpg",
-                "https://iiif.example.org/image/restricted-image"
+                ImageFormat.Jpg.Value
             )
-            .SetFormat(ImageFormat.Jpeg)
             .SetHeight(2000)
             .SetWidth(1500)
             .SetService(imageService);
@@ -58,16 +59,16 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
             // Create canvas with image
             var canvas = new Canvas(
                 "https://example.org/iiif/manuscript/canvas/p1",
-                "Folio 1r",
+                new Label("Folio 1r"),
                 2000,
                 1500
             );
 
             var image = new Image(
                 "https://example.org/iiif/manuscript/annotation/p1-image",
+                imageResource,
                 canvas.Id
-            )
-            .SetResource(imageResource);
+            );
 
             canvas.AddImage(image);
 
@@ -78,11 +79,10 @@ namespace IIIF.Manifest.Serializer.Net.Cookbook.Recipes
             // Create manifest
             var manifest = new Manifest(
                 "https://example.org/iiif/manuscript/manifest",
-                "Manuscript with Terms Agreement"
+                new Label("Manuscript with Terms Agreement")
             );
 
-            manifest.AddLabel("en", "Restricted Manuscript");
-            manifest.SetDescription("A manuscript that requires acceptance of terms before viewing.");
+            manifest.AddDescription(new Description("A manuscript that requires acceptance of terms before viewing."));
             manifest.AddSequence(sequence);
 
             // Serialize to JSON

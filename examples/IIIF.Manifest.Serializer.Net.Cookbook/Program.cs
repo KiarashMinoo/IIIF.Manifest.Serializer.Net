@@ -1,4 +1,5 @@
-﻿using IIIF.Manifest.Serializer.Cookbook.Recipes;
+﻿using IIIF.Manifests.Serializer.Net.Cookbook.Recipes;
+using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using Newtonsoft.Json;
 
 Console.WriteLine("=== IIIF Cookbook Recipes (Presentation API 2.0) ===");
@@ -9,7 +10,7 @@ Console.WriteLine();
 // BASIC RECIPES
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-Console.WriteLine("║               BASIC RECIPES                         ║");
+Console.WriteLine("║               BASIC RECIPES                           ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 
@@ -41,7 +42,7 @@ Console.WriteLine();
 // Deserialization round-trip test for basic recipe
 Console.WriteLine("--- [Basic] Round-trip: Deserialize → Reserialize (0001) ---");
 var basicJson = Recipe001_SimpleImage.ToJson();
-var basicManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.Manifest.Manifest>(basicJson);
+var basicManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest>(basicJson);
 var basicReserialized = JsonConvert.SerializeObject(basicManifest, Formatting.Indented);
 Console.WriteLine($"  Round-trip OK: {basicManifest != null && basicManifest.Sequences.Count == 1}");
 Console.WriteLine();
@@ -50,7 +51,7 @@ Console.WriteLine();
 // IIIF PROPERTIES
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-Console.WriteLine("║              IIIF PROPERTIES                        ║");
+Console.WriteLine("║              IIIF PROPERTIES                          ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 
@@ -82,7 +83,7 @@ Console.WriteLine();
 // STRUCTURING RESOURCES
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-Console.WriteLine("║           STRUCTURING RESOURCES                     ║");
+Console.WriteLine("║           STRUCTURING RESOURCES                       ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 
@@ -94,7 +95,7 @@ Console.WriteLine();
 // Deserialization round-trip for structures
 Console.WriteLine("--- [Structure] Round-trip: Deserialize → Reserialize (TOC) ---");
 var tocJson = Recipe003_BookWithTOC.ToJson();
-var tocManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.Manifest.Manifest>(tocJson);
+var tocManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest>(tocJson);
 Console.WriteLine($"  Round-trip OK: {tocManifest != null && tocManifest.Structures?.Count > 0}");
 Console.WriteLine();
 
@@ -102,7 +103,7 @@ Console.WriteLine();
 // IMAGE RECIPES
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-Console.WriteLine("║              IMAGE RECIPES                          ║");
+Console.WriteLine("║              IMAGE RECIPES                            ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 
@@ -124,17 +125,17 @@ Console.WriteLine();
 // Deserialization round-trip for image service
 Console.WriteLine("--- [Image] Round-trip: Deserialize → Reserialize (Image Service) ---");
 var imgJson = Recipe002_ImageService.ToJson();
-var imgManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.Manifest.Manifest>(imgJson);
+var imgManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest>(imgJson);
 var imgCanvas = System.Linq.Enumerable.First(System.Linq.Enumerable.First(imgManifest.Sequences).Canvases);
 var imgRes = System.Linq.Enumerable.First(imgCanvas.Images).Resource;
-Console.WriteLine($"  Round-trip OK: {imgRes.Service != null && imgRes.Service.Tiles?.Count > 0}");
+Console.WriteLine($"  Round-trip OK: {imgRes.Service is Service { Tiles.Count: > 0 }}");
 Console.WriteLine();
 
 // ═══════════════════════════════════════════════════════
 // ANNOTATION RECIPES
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-Console.WriteLine("║              ANNOTATION RECIPES                     ║");
+Console.WriteLine("║              ANNOTATION RECIPES                       ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 
@@ -157,7 +158,7 @@ Console.WriteLine();
 // AUTHENTICATION RECIPES
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-Console.WriteLine("║            AUTHENTICATION RECIPES                   ║");
+Console.WriteLine("║            AUTHENTICATION RECIPES                     ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 
@@ -180,7 +181,7 @@ Console.WriteLine();
 // NOTE: Audio/Visual, Annotation, and Geo Recipes
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
-Console.WriteLine("║  AUDIO/VISUAL, ANNOTATION & GEO RECIPES             ║");
+Console.WriteLine("║  AUDIO/VISUAL, ANNOTATION & GEO RECIPES               ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 Console.WriteLine("  These categories from the IIIF Cookbook are not yet");

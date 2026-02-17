@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Shared.Service;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
@@ -13,17 +13,13 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
         public const string TypeJName = "@type";
         public const string ServiceJName = "service";
 
-        [JsonProperty(ContextJName)]
-        public string Context { get; private set; }
+        [JsonProperty(ContextJName)] public string Context { get; private set; }
 
-        [JsonProperty(IdJName)]
-        public string Id { get; }
+        [JsonProperty(IdJName)] public string Id { get; }
 
-        [JsonProperty(TypeJName)]
-        public string Type { get; private set; }
+        [JsonProperty(TypeJName)] public string Type { get; private set; }
 
-        [JsonProperty(ServiceJName)]
-        public Service Service { get; private set; }
+        [JsonProperty(ServiceJName)] public IBaseService Service { get; private set; }
 
         protected internal BaseItem(string id)
         {
@@ -36,6 +32,10 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
         protected internal BaseItem(string id, string type, string context) : this(id, type) => Context = context;
 
         internal TBaseItem SetType(string type) => SetPropertyValue(a => a.Type, type);
-        public TBaseItem SetService(Service service) => SetPropertyValue(a => a.Service, service);
+
+        public TBaseItem SetService<TService>(TService service) where TService : IBaseService
+        {
+            return SetPropertyValue(a => a.Service, service);
+        }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
+using IIIF.Manifests.Serializer.Shared.Service;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -25,13 +25,18 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
             return baseItem;
         }
 
-        private TBaseItem SetService(JToken element, TBaseItem baseItem)
+        protected TBaseItem SetService<TServive>(JToken element, TBaseItem baseItem) where TServive : IBaseService
         {
             var jService = element.TryGetToken(BaseItem<TBaseItem>.ServiceJName);
             if (jService != null)
-                baseItem.SetService(jService.ToObject<Service>());
+                baseItem.SetService(jService.ToObject<TServive>());
 
             return baseItem;
+        }
+        
+        private TBaseItem SetService(JToken element, TBaseItem baseItem)
+        {
+            return SetService<Properties.ServiceProperty.Service>(element, baseItem);
         }
 
         protected override TBaseItem CreateInstance(JToken element, Type objectType, TBaseItem existingValue, bool hasExistingValue, JsonSerializer serializer)
@@ -55,7 +60,9 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
             return item;
         }
 
-        protected virtual void EnrichMoreWriteJson(JsonWriter writer, TBaseItem value, JsonSerializer serializer) { }
+        protected virtual void EnrichMoreWriteJson(JsonWriter writer, TBaseItem value, JsonSerializer serializer)
+        {
+        }
 
         protected sealed override void EnrichWriteJson(JsonWriter writer, TBaseItem value, JsonSerializer serializer)
         {

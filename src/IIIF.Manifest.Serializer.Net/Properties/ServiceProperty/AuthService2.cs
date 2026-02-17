@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
+using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
@@ -12,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
     /// </summary>
     [AuthAPI("2.0", Notes = "Auth API 2.0 service with probe/access patterns.")]
     [JsonConverter(typeof(AuthService2JsonConverter))]
-    public class AuthService2 : BaseItem<AuthService2>
+    public class AuthService2 : BaseItem<AuthService2>, IBaseService
     {
         public const string ProfileJName = "profile";
         public const string LabelJName = "label";

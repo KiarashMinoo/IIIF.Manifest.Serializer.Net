@@ -3,6 +3,7 @@ using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
+using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,9 +17,9 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             if (jId is null)
                 throw new JsonNodeRequiredException<AuthService1>(AuthService1.IdJName);
 
-            var jProfile = element.TryGetToken(AuthService1.ProfileJName);
+            var jProfile = element.TryGetToken(IBaseService.ProfileJName);
             if (jProfile is null)
-                throw new JsonNodeRequiredException<AuthService1>(AuthService1.ProfileJName);
+                throw new JsonNodeRequiredException<AuthService1>(IBaseService.ProfileJName);
 
             var service = new AuthService1(jId.ToString(), jProfile.ToString());
 
@@ -98,7 +99,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             {
                 if (!string.IsNullOrEmpty(value.Profile))
                 {
-                    writer.WritePropertyName(AuthService1.ProfileJName);
+                    writer.WritePropertyName(IBaseService.ProfileJName);
                     writer.WriteValue(value.Profile);
                 }
 

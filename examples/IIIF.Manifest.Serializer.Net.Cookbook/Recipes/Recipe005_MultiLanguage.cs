@@ -1,14 +1,14 @@
-using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
-using IIIFManifest = IIIF.Manifests.Serializer.Nodes.Manifest.Manifest;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.Metadata;
-using IIIFDescription = IIIF.Manifests.Serializer.Properties.Description.Description;
+using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using Newtonsoft.Json;
+using IIIFManifest = IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest;
+using IIIFDescription = IIIF.Manifests.Serializer.Properties.DescriptionProperty.Description;
 
-namespace IIIF.Manifest.Serializer.Cookbook.Recipes
+namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 {
     /// <summary>
     /// IIIF Cookbook Recipe 0006: Internationalization and Multi-language Values

@@ -1,12 +1,12 @@
-﻿using IIIF.Manifests.Serializer.Nodes.Canvas;
-using IIIF.Manifests.Serializer.Nodes.Content.Image;
-using IIIF.Manifests.Serializer.Nodes.Content.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Sequence;
-using IIIFManifest = IIIF.Manifests.Serializer.Nodes.Manifest.Manifest;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json;
+using IIIFManifest = IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest;
 
-namespace IIIF.Manifest.Serializer.Cookbook.Recipes
+namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 {
     /// <summary>
     /// IIIF Cookbook Recipe 0001: Simplest Manifest - Single Image File
