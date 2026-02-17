@@ -27,7 +27,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
             );
 
             manifest.SetViewingDirection(ViewingDirection.Ltr);
-            manifest.SetViewingHint(ViewingHint.Paged);
+            manifest.AddBehavior(Behavior.Paged);
 
             var sequence = new Sequence(
                 "https://iiif.io/api/cookbook/recipe/0009-book-1/sequence/normal"

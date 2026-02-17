@@ -28,7 +28,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
                 new Label("Book with Paged Behavior")
             );
 
-            manifest.SetViewingHint(ViewingHint.Paged);
+            manifest.AddBehavior(Behavior.Paged);
             manifest.SetViewingDirection(ViewingDirection.Ltr);
 
             var sequence = new Sequence(
@@ -74,7 +74,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
                 new Label("Scroll with Continuous Behavior")
             );
 
-            manifest.SetViewingHint(ViewingHint.Continuous);
+            manifest.AddBehavior(Behavior.Continuous);
             manifest.SetViewingDirection(ViewingDirection.Ttb);
 
             var sequence = new Sequence(
@@ -120,7 +120,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
                 new Label("Gallery with Individuals Behavior")
             );
 
-            manifest.SetViewingHint(ViewingHint.Individuals);
+            manifest.AddBehavior(Behavior.Individuals);
 
             var sequence = new Sequence(
                 "https://iiif.io/api/cookbook/recipe/0011-book-3-behavior/sequence/individuals"

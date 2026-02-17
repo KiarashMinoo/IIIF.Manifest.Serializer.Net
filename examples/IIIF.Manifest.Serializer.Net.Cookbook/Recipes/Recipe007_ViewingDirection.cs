@@ -28,7 +28,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
             );
 
             manifest.SetViewingDirection(ViewingDirection.Rtl);
-            manifest.SetViewingHint(ViewingHint.Paged);
+            manifest.AddBehavior(Behavior.Paged);
 
             var sequence = new Sequence(
                 "https://iiif.io/api/cookbook/recipe/0010-book-2-viewing-direction/sequence/rtl"
@@ -74,7 +74,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
             );
 
             manifest.SetViewingDirection(ViewingDirection.Ttb);
-            manifest.SetViewingHint(ViewingHint.Continuous);
+            manifest.AddBehavior(Behavior.Continuous);
 
             var sequence = new Sequence(
                 "https://iiif.io/api/cookbook/recipe/0010-book-2-viewing-direction/sequence/ttb"
