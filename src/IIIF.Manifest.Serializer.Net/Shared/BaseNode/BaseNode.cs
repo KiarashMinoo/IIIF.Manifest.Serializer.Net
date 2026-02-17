@@ -31,6 +31,8 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public const string ProviderJName = "provider";
         public const string AccompanyingCanvasJName = "accompanyingCanvas";
         public const string BehaviorJName = "behavior";
+        public const string NavPlaceJName = "navPlace";
+        public const string GeoreferenceJName = "georeference";
 
 
         private List<Label> labels = new List<Label>();
@@ -104,6 +106,14 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         [JsonProperty(BehaviorJName)]
         public IReadOnlyCollection<Behavior> Behavior => behaviors.AsReadOnly();
 
+        [NavPlaceExtension("1.0")]
+        [JsonProperty(NavPlaceJName)]
+        public NavPlace NavPlace { get; private set; }
+
+        [GeoreferenceExtension("1.0")]
+        [JsonProperty(GeoreferenceJName)]
+        public Georeference Georeference { get; private set; }
+
         [PresentationAPI("2.0")]
         [JsonProperty(RelatedJName)]
         public string Related { get; private set; }
@@ -147,6 +157,10 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
 
         public TBaseNode AddWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Attach(within));
         public TBaseNode RemoveWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Detach(within));
+
+        public TBaseNode SetNavPlace(NavPlace navPlace) => SetPropertyValue(a => a.NavPlace, navPlace);
+
+        public TBaseNode SetGeoreference(Georeference georeference) => SetPropertyValue(a => a.Georeference, georeference);
 
         public TBaseNode SetLogo(Logo logo) => SetPropertyValue(a => a.Logo, logo);
         public TBaseNode SetThumbnail(Thumbnail thumbnail) => SetPropertyValue(a => a.Thumbnail, thumbnail);

@@ -3,6 +3,7 @@ using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
 using IIIF.Manifests.Serializer.Shared.Content;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
+using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -25,7 +26,15 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Image
             if (jOn is null)
                 throw new JsonNodeRequiredException<Image>(Image.OnJName);
 
-            return new Image(id, jResource.ToObject<ImageResource>(), jOn.ToString());
+            var image = new Image(id, jResource.ToObject<ImageResource>(), jOn.ToString());
+
+            var jTextGranularity = element.TryGetToken(Image.TextGranularityJName);
+            if (jTextGranularity != null)
+            {
+                image.SetTextGranularity(jTextGranularity.ToObject<TextGranularity>());
+            }
+
+            return image;
         }
 
         protected override void EnrichMoreWriteJson(JsonWriter writer, Image image, JsonSerializer serializer)
@@ -50,6 +59,12 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Image
                 {
                     writer.WritePropertyName(Image.MotivationJName);
                     writer.WriteValue(image.Motivation);
+                }
+
+                if (image.TextGranularity != null)
+                {
+                    writer.WritePropertyName(Image.TextGranularityJName);
+                    serializer.Serialize(writer, image.TextGranularity);
                 }
             }
         }

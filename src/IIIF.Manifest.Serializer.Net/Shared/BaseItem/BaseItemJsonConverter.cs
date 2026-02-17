@@ -85,6 +85,10 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
                         return serviceToken.ToObject<Properties.ServiceProperty.SearchService>();
                     case "AutoCompleteService2":
                         return serviceToken.ToObject<Properties.ServiceProperty.AutoCompleteService>();
+                    case "OrderedCollection":
+                        return serviceToken.ToObject<Properties.ServiceProperty.DiscoveryService>();
+                    case "ContentStateService":
+                        return serviceToken.ToObject<Properties.ServiceProperty.ContentStateService>();
                     default:
                         // Try to detect by profile or other means
                         var jProfile = serviceToken.TryGetToken("profile");
@@ -100,6 +104,14 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
                             else if (profileValue.Contains("search"))
                             {
                                 return serviceToken.ToObject<Properties.ServiceProperty.SearchService>();
+                            }
+                            else if (profileValue.Contains("discovery"))
+                            {
+                                return serviceToken.ToObject<Properties.ServiceProperty.DiscoveryService>();
+                            }
+                            else if (profileValue.Contains("content-state"))
+                            {
+                                return serviceToken.ToObject<Properties.ServiceProperty.ContentStateService>();
                             }
                             else if (profileValue.Contains("image"))
                             {
