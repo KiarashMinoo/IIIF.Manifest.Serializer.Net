@@ -28,7 +28,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
 
             // Sequence 1: High resolution version
             var sequence1 = new Sequence("https://iiif.io/api/cookbook/recipe/0015-choice-of-versions/sequence/high-res");
-            sequence1.Label = new Label("High Resolution Version");
+            sequence1.AddLabel(new Label("High Resolution Version"));
 
             var canvas1 = new Canvas(
                 "https://iiif.io/api/cookbook/recipe/0015-choice-of-versions/canvas/p1-high",
@@ -53,7 +53,7 @@ namespace IIIF.Manifest.Serializer.Cookbook.Recipes
 
             // Sequence 2: Low resolution version
             var sequence2 = new Sequence("https://iiif.io/api/cookbook/recipe/0015-choice-of-versions/sequence/low-res");
-            sequence2.Label = new Label("Low Resolution Version");
+            sequence2.AddLabel(new Label("Low Resolution Version"));
 
             var canvas2 = new Canvas(
                 "https://iiif.io/api/cookbook/recipe/0015-choice-of-versions/canvas/p1-low",
