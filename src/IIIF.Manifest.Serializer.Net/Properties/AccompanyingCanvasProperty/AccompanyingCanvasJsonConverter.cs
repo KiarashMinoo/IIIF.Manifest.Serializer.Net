@@ -1,11 +1,11 @@
 using System;
+using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
-using IIIF.Manifests.Serializer.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.AccompanyingCanvas
 {
     public class AccompanyingCanvasJsonConverter : BaseItemJsonConverter<AccompanyingCanvas>
     {

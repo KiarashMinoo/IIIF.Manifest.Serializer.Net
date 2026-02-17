@@ -1,11 +1,11 @@
 using System;
-using IIIF.Manifests.Serializer.Shared.FormatableItem;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
+using IIIF.Manifests.Serializer.Shared.FormatableItem;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties.Provider
 {
     public class ProviderJsonConverter : FormatableItemJsonConverter<Provider>
     {
