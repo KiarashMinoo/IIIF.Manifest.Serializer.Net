@@ -204,6 +204,28 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
             return node;
         }
 
+        private TBaseNode SetBehaviors(JToken element, TBaseNode node)
+        {
+            var jBehavior = element.TryGetToken(BaseNode<TBaseNode>.BehaviorJName);
+            if (jBehavior != null)
+            {
+                if (jBehavior is JArray)
+                {
+                    var behaviors = jBehavior.ToObject<Behavior[]>();
+                    foreach (var behavior in behaviors)
+                        node.AddBehavior(behavior);
+                }
+                else
+                {
+                    // Single behavior value
+                    var behavior = jBehavior.ToObject<Behavior>();
+                    node.AddBehavior(behavior);
+                }
+            }
+
+            return node;
+        }
+
         private TBaseNode SetRendering(JToken element, TBaseNode node)
         {
             var jRendering = element.TryGetToken(BaseNode<TBaseNode>.RenderingJName);
@@ -257,6 +279,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
             node = SetHomepages(element, node);
             node = SetProviders(element, node);
             node = SetAccompanyingCanvas(element, node);
+            node = SetBehaviors(element, node);
 
             if (ShouldHandleWithin(node))
                 node = SetWithins(element, node);
@@ -401,6 +424,23 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
                 {
                     writer.WritePropertyName(BaseNode<TBaseNode>.AccompanyingCanvasJName);
                     serializer.Serialize(writer, node.AccompanyingCanvas);
+                }
+
+                if (node.Behavior.Any())
+                {
+                    writer.WritePropertyName(BaseNode<TBaseNode>.BehaviorJName);
+
+                    if (node.Behavior.Count == 1)
+                        serializer.Serialize(writer, node.Behavior.First());
+                    else
+                    {
+                        writer.WriteStartArray();
+
+                        foreach (var behavior in node.Behavior)
+                            serializer.Serialize(writer, behavior);
+
+                        writer.WriteEndArray();
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(node.Related))

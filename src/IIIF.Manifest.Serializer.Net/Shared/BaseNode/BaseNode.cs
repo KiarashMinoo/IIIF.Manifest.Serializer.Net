@@ -39,6 +39,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         private readonly List<Rendering> renderings = new List<Rendering>();
         private readonly List<Homepage> homepages = new List<Homepage>();
         private readonly List<Provider> providers = new List<Provider>();
+        private readonly List<Behavior> behaviors = new List<Behavior>();
 
 
         [JsonProperty(LabelJName)]
@@ -83,6 +84,9 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         [JsonProperty(AccompanyingCanvasJName)]
         public AccompanyingCanvas AccompanyingCanvas { get; private set; }
 
+        [JsonProperty(BehaviorJName)]
+        public IReadOnlyCollection<Behavior> Behavior => behaviors.AsReadOnly();
+
         [JsonProperty(RelatedJName)]
         public string Related { get; private set; }
 
@@ -119,6 +123,9 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public TBaseNode RemoveProvider(Provider provider) => SetPropertyValue(a => a.providers, a => a.Provider, providers.Detach(provider));
 
         public TBaseNode SetAccompanyingCanvas(AccompanyingCanvas accompanyingCanvas) => SetPropertyValue(a => a.AccompanyingCanvas, accompanyingCanvas);
+
+        public TBaseNode AddBehavior(Behavior behavior) => SetPropertyValue(a => a.behaviors, a => a.Behavior, behaviors.Attach(behavior));
+        public TBaseNode RemoveBehavior(Behavior behavior) => SetPropertyValue(a => a.behaviors, a => a.Behavior, behaviors.Detach(behavior));
 
         public TBaseNode AddWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Attach(within));
         public TBaseNode RemoveWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Detach(within));

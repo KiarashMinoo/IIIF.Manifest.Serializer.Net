@@ -878,5 +878,65 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
         }
 
         #endregion
+        #region Behavior (Serialization & Deserialization)
+
+        [Fact]
+        public void Behavior_ShouldRoundTrip()
+        {
+            var manifest = new Manifest(
+                "https://example.org/manifest.json",
+                new Label("Manifest with Behavior")
+            );
+
+            manifest.AddBehavior(Behavior.Paged);
+            manifest.AddBehavior(Behavior.AutoAdvance);
+
+            var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
+            var deserialized = JsonConvert.DeserializeObject<Manifest>(json);
+
+            deserialized.Should().NotBeNull();
+            deserialized.Behavior.Should().HaveCount(2);
+            deserialized.Behavior.Should().Contain(b => b.Value == "paged");
+            deserialized.Behavior.Should().Contain(b => b.Value == "auto-advance");
+        }
+
+        [Fact]
+        public void Behavior_ShouldDeserializeFromJson()
+        {
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest.json"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Manifest with Behavior"",
+  ""behavior"": [""paged"", ""auto-advance""]
+}";
+
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            manifest.Should().NotBeNull();
+            manifest.Behavior.Should().HaveCount(2);
+            manifest.Behavior.Should().Contain(b => b.Value == "paged");
+            manifest.Behavior.Should().Contain(b => b.Value == "auto-advance");
+        }
+
+        [Fact]
+        public void Behavior_SingleValue_ShouldDeserializeFromJson()
+        {
+            var json = @"{
+  ""@context"": ""http://iiif.io/api/presentation/2/context.json"",
+  ""@id"": ""https://example.org/manifest.json"",
+  ""@type"": ""sc:Manifest"",
+  ""label"": ""Manifest with Single Behavior"",
+  ""behavior"": ""continuous""
+}";
+
+            var manifest = JsonConvert.DeserializeObject<Manifest>(json);
+
+            manifest.Should().NotBeNull();
+            manifest.Behavior.Should().HaveCount(1);
+            manifest.Behavior.Should().Contain(b => b.Value == "continuous");
+        }
+
+        #endregion
     }
 }
