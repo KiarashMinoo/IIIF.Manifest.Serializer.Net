@@ -110,10 +110,59 @@ All value objects follow the `ValuableItem<T>` pattern for fluent API:
 | `Language` | English, French, etc. | ✅ Supported |
 | `TimeMode` | Trim, Scale, Loop | ✅ Supported |
 
+## IIIF Extensions Support
+
+### Approved Extensions ✅ Implemented
+
+| Extension | Version | Status | Description |
+|-----------|---------|--------|-------------|
+| **Text Granularity** | 1.0 | ✅ Complete | OCR text segmentation levels |
+| **navPlace** | 1.0 | ✅ Complete | Geographic location support |
+| **Georeference** | 1.0 | ✅ Complete | Map georeferencing with GCPs |
+
+### Text Granularity Extension
+
+Provides text granularity levels for high-resolution text content:
+
+| Granularity | Description | Use Case |
+|-------------|-------------|----------|
+| `Character` | Individual character level | OCR with character positioning |
+| `Word` | Word-level segmentation | Word-based text search |
+| `Line` | Line-level segmentation | Line-based text display |
+| `Block` | Block-level segmentation | Paragraph/region text |
+| `Page` | Page-level segmentation | Full page text |
+
+### navPlace Extension
+
+GeoJSON-LD geographic location support for IIIF resources:
+
+| Feature | Description | Implementation |
+|---------|-------------|----------------|
+| **Point Geometry** | WGS84 coordinates | `Point` class with longitude/latitude |
+| **Feature Collection** | GeoJSON FeatureCollection | `FeatureCollection` with features array |
+| **Feature Properties** | Optional metadata | `FeatureProperties` with label support |
+| **Resource Support** | Available on all resources | `BaseNode.NavPlace` property |
+
+### Georeference Extension
+
+Map georeferencing using Ground Control Points:
+
+| Feature | Description | Implementation |
+|---------|-------------|----------------|
+| **Ground Control Points** | Image-to-world mapping | `GroundControlPoint` with image/world coordinates |
+| **Transformations** | Coordinate transformations | `Transformation` with algorithm parameters |
+| **CRS Support** | Coordinate reference systems | `Georeference.Crs` property |
+| **Resource Support** | Available on all resources | `BaseNode.Georeference` property |
+
 ## Project Structure
 
 ```
 src/IIIF.Manifest.Serializer.Net/
+├── Attributes/              # IIIF extension attributes
+│   ├── IIIFVersionAttribute.cs
+│   ├── TextGranularityExtensionAttribute.cs
+│   ├── NavPlaceExtensionAttribute.cs
+│   └── GeoreferenceExtensionAttribute.cs
 ├── Nodes/
 │   ├── AnnotationList/      # AnnotationList resource
 │   ├── Canvas/              # Canvas resource
@@ -143,6 +192,9 @@ src/IIIF.Manifest.Serializer.Net/
 │   ├── TimeMode.cs          # TimeMode value object
 │   ├── ViewingDirection.cs  # ViewingDirection value object
 │   ├── ViewingHint.cs       # ViewingHint value object
+│   ├── TextGranularity.cs   # Text Granularity extension
+│   ├── NavPlace.cs          # navPlace extension
+│   ├── Georeference.cs      # Georeference extension
 │   ├── Description/         # Description property
 │   ├── Metadata/            # Metadata property
 │   ├── Rendering/           # Rendering property
@@ -232,6 +284,10 @@ This library targets **IIIF Presentation API 2.0/2.1** with support for:
 - All resource types
 - Full JSON-LD serialization
 - Round-trip serialization/deserialization
+- **IIIF Approved Extensions:**
+  - Text Granularity Extension 1.0
+  - navPlace Extension 1.0
+  - Georeference Extension 1.0
 
 ## Future Work
 

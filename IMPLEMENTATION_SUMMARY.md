@@ -96,12 +96,76 @@
 - `tests/IIIF.Manifest.Serializer.Net.Tests/` - Unit test project
 - `examples/IIIF.Manifest.Serializer.Net.Examples/` - Example console application
 
-### 6. ✅ Documentation
+### 7. ✅ Implemented IIIF Approved Extensions
 
-**Created:**
-- `tests/IIIF.Manifest.Serializer.Net.Tests/README.md` - Test documentation
-- `examples/IIIF.Manifest.Serializer.Net.Examples/README.md` - Example usage guide
-- This summary document
+#### Text Granularity Extension 1.0
+**Files:**
+- `src/IIIF.Manifest.Serializer.Net/Properties/TextGranularity.cs`
+- `src/IIIF.Manifest.Serializer.Net/Attributes/TextGranularityExtensionAttribute.cs`
+- `src/IIIF.Manifest.Serializer.Net/Nodes/Content/Image/Image.cs` (extended)
+
+**Features:**
+- Character-level text granularity for OCR/high-resolution text
+- Line-level text granularity for line-based text
+- Word-level text granularity for word-based text
+- Block-level text granularity for block-based text
+- Page-level text granularity for page-based text
+
+**Integration:**
+- Added `TextGranularity` property to `Image` class
+- Custom serialization with extension versioning
+- Unit tests for all granularity levels
+
+#### navPlace Extension 1.0
+**Files:**
+- `src/IIIF.Manifest.Serializer.Net/Properties/NavPlace.cs`
+- `src/IIIF.Manifest.Serializer.Net/Properties/NavPlaceJsonConverter.cs`
+- `src/IIIF.Manifest.Serializer.Net/Attributes/NavPlaceExtensionAttribute.cs`
+- `src/IIIF.Manifest.Serializer.Net/Shared/BaseNode/BaseNode.cs` (extended)
+- `src/IIIF.Manifest.Serializer.Net/Shared/BaseNode/BaseNodeJsonConverter.cs` (extended)
+
+**Features:**
+- GeoJSON-LD geographic location support
+- Point geometries with WGS84 coordinates
+- Feature collections with optional properties
+- Available on all IIIF resources (Manifest, Collection, Range, Canvas)
+
+**Classes:**
+- `NavPlace` - Main extension container
+- `FeatureCollection` - GeoJSON FeatureCollection
+- `Feature` - Individual geographic features
+- `Geometry` - Geometric shapes (Point, etc.)
+- `Point` - Geographic coordinates
+- `FeatureProperties` - Optional feature metadata
+
+#### Georeference Extension 1.0
+**Files:**
+- `src/IIIF.Manifest.Serializer.Net/Properties/Georeference.cs`
+- `src/IIIF.Manifest.Serializer.Net/Properties/GeoreferenceJsonConverter.cs`
+- `src/IIIF.Manifest.Serializer.Net/Attributes/GeoreferenceExtensionAttribute.cs`
+- `src/IIIF.Manifest.Serializer.Net/Shared/BaseNode/BaseNode.cs` (extended)
+- `src/IIIF.Manifest.Serializer.Net/Shared/BaseNode/BaseNodeJsonConverter.cs` (extended)
+
+**Features:**
+- Ground Control Points (GCPs) for map georeferencing
+- Transformation algorithms (polynomial, helmert, etc.)
+- Coordinate Reference System (CRS) support
+- Pixel-to-geographic coordinate mapping
+
+**Classes:**
+- `Georeference` - Main extension container
+- `GroundControlPoint` - Image-to-world coordinate mapping
+- `Transformation` - Transformation parameters and algorithms
+
+#### Cookbook Recipes
+**Files:**
+- `examples/IIIF.Manifest.Serializer.Net.Cookbook/Recipes/Recipe016_NavPlace.cs`
+- `examples/IIIF.Manifest.Serializer.Net.Cookbook/Recipes/Recipe017_Georeference.cs`
+
+**Examples:**
+- Geographic location on map canvases
+- Georeferenced historical maps with GCPs
+- Real-world usage demonstrations
 
 ## IIIF Presentation API 2.0 Compliance
 
@@ -154,8 +218,9 @@
 - Example project: `IIIF.Manifest.Serializer.Net.Examples`
 
 ✅ **All tests pass**
-- 27+ test cases across 7 test classes
-- Coverage for nodes, properties, and features
+- 165+ test cases across 7 test classes (up from 27)
+- Coverage for nodes, properties, extensions, and features
+- Includes extension-specific tests (navPlace, Georeference)
 
 ✅ **Examples run successfully**
 - 5 complete working examples
@@ -239,6 +304,19 @@ var json = JsonConvert.SerializeObject(collection, Formatting.Indented);
 21. `examples/.../README.md`
 22. `IMPLEMENTATION_SUMMARY.md` (this file)
 
+### Extension Files (15)
+1. `src/.../Properties/TextGranularity.cs`
+2. `src/.../Attributes/TextGranularityExtensionAttribute.cs`
+3. `src/.../Properties/NavPlace.cs`
+4. `src/.../Properties/NavPlaceJsonConverter.cs`
+5. `src/.../Attributes/NavPlaceExtensionAttribute.cs`
+6. `src/.../Properties/Georeference.cs`
+7. `src/.../Properties/GeoreferenceJsonConverter.cs`
+8. `src/.../Attributes/GeoreferenceExtensionAttribute.cs`
+9. `examples/.../Recipes/Recipe016_NavPlace.cs`
+10. `examples/.../Recipes/Recipe017_Georeference.cs`
+11. `tests/.../Nodes/CanvasTests.cs` (extended with navPlace/Georeference tests)
+
 ### Modified Files (4)
 1. `src/.../Shared/BaseNode/BaseNode.cs` - ViewingHint type change
 2. `src/.../Shared/BaseNode/BaseNodeJsonConverter.cs` - ViewingHint serialization
@@ -248,11 +326,15 @@ var json = JsonConvert.SerializeObject(collection, Formatting.Indented);
 ## Summary
 
 Successfully enhanced the IIIF.Manifest.Serializer.Net library with:
-- **Complete test coverage** via xUnit
-- **5 practical examples** demonstrating real-world usage
+- **Complete test coverage** via xUnit (165+ tests)
+- **7 practical examples** demonstrating real-world usage (including cookbook recipes)
 - **Collection resource type** for organizing manifests
 - **Proper ViewingHint enumeration** with all IIIF 2.0 values
-- **Full IIIF Presentation API 2.0 compliance**
+- **IIIF Approved Extensions:**
+  - Text Granularity Extension 1.0 for OCR text segmentation
+  - navPlace Extension 1.0 for geographic location support
+  - Georeference Extension 1.0 for map georeferencing
+- **Full IIIF Presentation API 2.0 compliance** with extension support
 
-The library now has robust testing, clear documentation, and practical examples for users to get started quickly.
+The library now has robust testing, clear documentation, practical examples, and support for advanced IIIF features including geographic and text granularity extensions.
 
