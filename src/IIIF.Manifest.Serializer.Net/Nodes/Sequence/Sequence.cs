@@ -25,12 +25,15 @@ namespace IIIF.Manifests.Serializer.Nodes.Sequence
 
         private readonly List<Canvas.Canvas> canvases = new List<Canvas.Canvas>();
 
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(CanvasesJName)]
         public IReadOnlyCollection<Canvas.Canvas> Canvases => canvases.AsReadOnly();
 
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "start")]
         [JsonProperty(StartCanvasJName)]
         public StartCanvas StartCanvas { get; private set; }
 
+        [PresentationAPI("2.0")]
         [JsonProperty(Constants.ViewingDirectionJName)]
         public ViewingDirection ViewingDirection { get; private set; }
 

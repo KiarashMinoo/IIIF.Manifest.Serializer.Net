@@ -1,8 +1,10 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.FormatableItem;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Rendering
 {
+    [PresentationAPI("2.0")]
     [JsonConverter(typeof(RenderingJsonConverter))]
     public class Rendering : FormatableItem<Rendering>
     {

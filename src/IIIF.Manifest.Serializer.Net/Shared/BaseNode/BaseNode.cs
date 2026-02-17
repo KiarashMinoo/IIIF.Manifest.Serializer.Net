@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Description;
@@ -45,48 +46,63 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         [JsonProperty(LabelJName)]
         public IReadOnlyCollection<Label> Label => labels.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(DescriptionJName)]
         public IReadOnlyCollection<Description> Description => descriptions.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(MetadataJName)]
         public IReadOnlyCollection<Metadata> Metadata => metadatas.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(AttributionJName)]
         public IReadOnlyCollection<Attribution> Attribution => attributions.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(LogoJName)]
         public Logo Logo { get; private set; }
 
+        [PresentationAPI("2.0")]
         [JsonProperty(ThumbnailJName)]
         public Thumbnail Thumbnail { get; private set; }
 
+        [PresentationAPI("2.0")]
         [JsonProperty(LicenseJName)]
         public License License { get; private set; }
 
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
         [JsonProperty(ViewingHintJName)]
         public ViewingHint ViewingHint { get; private set; }
 
+        [PresentationAPI("2.0")]
         [JsonProperty(RenderingJName)]
         public IReadOnlyCollection<Rendering> Rendering => renderings.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(SeeAlsoJName)]
         public IReadOnlyCollection<SeeAlso> SeeAlso => seeAloses.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(WithinJName)]
         public IReadOnlyCollection<Within> Within => withins.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(HomepageJName)]
         public IReadOnlyCollection<Homepage> Homepage => homepages.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(ProviderJName)]
         public IReadOnlyCollection<Provider> Provider => providers.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(AccompanyingCanvasJName)]
         public AccompanyingCanvas AccompanyingCanvas { get; private set; }
 
+        [PresentationAPI("3.0", Notes = "Replaces viewingHint from API 2.x. Some values also valid in 2.x as viewingHint.")]
         [JsonProperty(BehaviorJName)]
         public IReadOnlyCollection<Behavior> Behavior => behaviors.AsReadOnly();
 
+        [PresentationAPI("2.0")]
         [JsonProperty(RelatedJName)]
         public string Related { get; private set; }
 

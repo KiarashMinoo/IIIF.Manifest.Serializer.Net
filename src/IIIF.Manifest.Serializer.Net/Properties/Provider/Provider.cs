@@ -1,4 +1,5 @@
 using System;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.FormatableItem;
 using Newtonsoft.Json;
 
@@ -7,6 +8,7 @@ namespace IIIF.Manifests.Serializer.Properties
     /// <summary>
     /// IIIF Provider property - describes the organization providing the resource.
     /// </summary>
+    [PresentationAPI("2.0")]
     [JsonConverter(typeof(ProviderJsonConverter))]
     public class Provider : FormatableItem<Provider>
     {
