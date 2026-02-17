@@ -18,6 +18,11 @@ Console.WriteLine("--- [Basic] Recipe 0001: Simplest Manifest - Single Image ---
 Console.WriteLine(Recipe001_SimpleImage.ToJson());
 Console.WriteLine();
 
+// Cookbook 0003 — Simplest Manifest - Video
+Console.WriteLine("--- [Basic] Recipe 0003: Simplest Manifest - Video ---");
+Console.WriteLine(Recipe003_Video.ToJson());
+Console.WriteLine();
+
 // Cookbook 0009 — Simple Manifest - Book
 Console.WriteLine("--- [Basic] Recipe 0009: Simple Manifest - Book ---");
 Console.WriteLine(Recipe003_BookWithTOC.ToJson());
@@ -133,8 +138,8 @@ Console.WriteLine("║  AUDIO/VISUAL, ANNOTATION & GEO RECIPES             ║")
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 Console.WriteLine();
 Console.WriteLine("  These categories from the IIIF Cookbook are not yet");
-Console.WriteLine("  implemented in this Presentation 2.0 library:");
-Console.WriteLine("  - Audio/Visual Recipes (audio, video, A/V content)");
+Console.WriteLine("  fully implemented in this Presentation 2.0 library:");
+Console.WriteLine("  - Audio/Visual Recipes (basic audio/video implemented; complex A/V content pending)");
 Console.WriteLine("  - Annotation Recipes (tagging, hotspot linking, etc.)");
 Console.WriteLine("  - Geo Recipes (geographic areas, web maps)");
 Console.WriteLine("  See: https://iiif.io/api/cookbook/recipe/code/");
