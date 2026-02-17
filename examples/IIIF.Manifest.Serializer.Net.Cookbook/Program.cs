@@ -154,6 +154,29 @@ Console.WriteLine(Recipe015_ChoiceOfVersions.ToJson());
 Console.WriteLine();
 
 // ═══════════════════════════════════════════════════════
+// AUTHENTICATION RECIPES
+// ═══════════════════════════════════════════════════════
+Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
+Console.WriteLine("║            AUTHENTICATION RECIPES                   ║");
+Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
+Console.WriteLine();
+
+// Auth Recipe 1 — IIIF Auth 1.0 Login Pattern
+Console.WriteLine("--- [Authentication] Auth 1: Login Authentication Pattern (Auth 1.0) ---");
+Console.WriteLine(RecipeAuth01_LoginAuth1.ToJson());
+Console.WriteLine();
+
+// Auth Recipe 2 — IIIF Auth 1.0 Clickthrough Pattern
+Console.WriteLine("--- [Authentication] Auth 2: Clickthrough Authentication Pattern (Auth 1.0) ---");
+Console.WriteLine(RecipeAuth02_ClickthroughAuth1.ToJson());
+Console.WriteLine();
+
+// Auth Recipe 3 — IIIF Auth 2.0 Active Pattern
+Console.WriteLine("--- [Authentication] Auth 3: Active Authentication Pattern (Auth 2.0) ---");
+Console.WriteLine(RecipeAuth03_ActiveAuth2.ToJson());
+Console.WriteLine();
+
+// ═══════════════════════════════════════════════════════
 // NOTE: Audio/Visual, Annotation, and Geo Recipes
 // ═══════════════════════════════════════════════════════
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");

@@ -203,7 +203,7 @@ var json = JsonConvert.SerializeObject(collection, Formatting.Indented);
 - [ ] Performance benchmarks
 - [ ] More cookbook recipe examples
 - [ ] Manifest validation utilities
-- [ ] IIIF Auth API support
+- [x] **IIIF Auth API support** (✅ Complete - Auth 1.0 and 2.0 with full authentication & authorization patterns)
 - [ ] Content Search API support
 - [ ] Change Discovery API support
 
