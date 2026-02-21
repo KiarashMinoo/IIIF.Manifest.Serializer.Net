@@ -39,7 +39,7 @@ namespace IIIF.Manifests.Serializer.Nodes.CanvasNode
                 var labels = jLabel.ToObject<Label[]>();
                 var first = labels[0];
                 var canvas = new Canvas(jId.ToString(), first, jHeight.Value<int>(), jWidth.Value<int>());
-                foreach (var label in labels.Except(new[] { first }))
+                foreach (var label in labels.Except([first]))
                     canvas.AddLabel(label);
                 return canvas;
             }
@@ -65,32 +65,44 @@ namespace IIIF.Manifests.Serializer.Nodes.CanvasNode
                     if (jType != null)
                     {
                         var type = jType.ToString();
-                        if (type == "dctypes:Image")
+                        switch (type)
                         {
-                            var image = jImage.ToObject<Image>();
-                            canvas.AddImage(image);
-                        }
-                        else if (type == "dctypes:Sound")
-                        {
-                            var audio = jImage.ToObject<Audio>();
-                            canvas.AddAudio(audio);
-                        }
-                        else if (type == "dctypes:MovingImage")
-                        {
-                            var video = jImage.ToObject<Video>();
-                            canvas.AddVideo(video);
-                        }
-                        else
-                        {
-                            // Default to Image or handle other types
-                            var image = jImage.ToObject<Image>();
-                            canvas.AddImage(image);
+                            case "dctypes:Image":
+                            {
+                                var image = jImage.ToObject<Image>();
+                                if (image != null)
+                                    canvas.AddImage(image);
+                                break;
+                            }
+                            case "dctypes:Sound":
+                            {
+                                var audio = jImage.ToObject<Audio>();
+                                if (audio != null)
+                                    canvas.AddAudio(audio);
+                                break;
+                            }
+                            case "dctypes:MovingImage":
+                            {
+                                var video = jImage.ToObject<Video>();
+                                if (video != null)
+                                    canvas.AddVideo(video);
+                                break;
+                            }
+                            default:
+                            {
+                                // Default to Image or handle other types
+                                var image = jImage.ToObject<Image>();
+                                if (image != null)
+                                    canvas.AddImage(image);
+                                break;
+                            }
                         }
                     }
                     else
                     {
                         var image = jImage.ToObject<Image>();
-                        canvas.AddImage(image);
+                        if (image != null)
+                            canvas.AddImage(image);
                     }
                 }
             }
@@ -107,19 +119,22 @@ namespace IIIF.Manifests.Serializer.Nodes.CanvasNode
                     throw new JsonObjectMustBeJArray<Canvas>(Canvas.OtherContentsJName);
 
                 var otherContents = jOtherContents.ToObject<OtherContent[]>();
-                foreach (var otherContent in otherContents)
-                    canvas.AddOtherContent(otherContent);
+                if (otherContents != null)
+                {
+                    foreach (var otherContent in otherContents)
+                        canvas.AddOtherContent(otherContent);
+                }
             }
 
             return canvas;
         }
 
-        protected override Canvas CreateInstance(JToken element, Type objectType, Canvas existingValue, bool hasExistingValue, JsonSerializer serializer) => ConstructCanvas(element);
+        protected override Canvas CreateInstance(JToken element, Type objectType, Canvas? existingValue, bool hasExistingValue, JsonSerializer serializer) => ConstructCanvas(element);
 
         protected override Canvas EnrichReadJson(Canvas canvas, JToken element, Type objectType, Canvas? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             // Clear labels set by constructor to avoid duplication when base.EnrichReadJson re-reads them
-            canvas.SetLabel(new Label[0]);
+            canvas.SetLabel([]);
             canvas = base.EnrichReadJson(canvas, element, objectType, existingValue, hasExistingValue, serializer);
 
             canvas = SetImages(element, canvas);
@@ -133,50 +148,47 @@ namespace IIIF.Manifests.Serializer.Nodes.CanvasNode
         {
             base.EnrichMoreWriteJson(writer, canvas, serializer);
 
-            if (canvas != null)
+            var allImages = canvas.Images.Cast<object>().Concat(canvas.Audios).Concat(canvas.Videos).ToList();
+            if (allImages.Any())
             {
-                var allImages = canvas.Images.Cast<object>().Concat(canvas.Audios).Concat(canvas.Videos).ToList();
-                if (allImages.Any())
-                {
-                    writer.WritePropertyName(Canvas.ImagesJName);
+                writer.WritePropertyName(Canvas.ImagesJName);
 
-                    writer.WriteStartArray();
+                writer.WriteStartArray();
 
-                    foreach (var item in allImages)
-                        serializer.Serialize(writer, item);
+                foreach (var item in allImages)
+                    serializer.Serialize(writer, item);
 
-                    writer.WriteEndArray();
-                }
+                writer.WriteEndArray();
+            }
 
-                if (canvas.OtherContents.Any())
-                {
-                    writer.WritePropertyName(Canvas.OtherContentsJName);
+            if (canvas.OtherContents.Any())
+            {
+                writer.WritePropertyName(Canvas.OtherContentsJName);
 
-                    writer.WriteStartArray();
+                writer.WriteStartArray();
 
-                    foreach (var otherContent in canvas.OtherContents)
-                        serializer.Serialize(writer, otherContent);
+                foreach (var otherContent in canvas.OtherContents)
+                    serializer.Serialize(writer, otherContent);
 
-                    writer.WriteEndArray();
-                }
+                writer.WriteEndArray();
+            }
 
-                if (canvas.Width != null)
-                {
-                    writer.WritePropertyName(Constants.WidthJName);
-                    writer.WriteValue(canvas.Width.Value);
-                }
+            if (canvas.Width != null)
+            {
+                writer.WritePropertyName(Constants.WidthJName);
+                writer.WriteValue(canvas.Width.Value);
+            }
 
-                if (canvas.Height != null)
-                {
-                    writer.WritePropertyName(Constants.HeightJName);
-                    writer.WriteValue(canvas.Height.Value);
-                }
+            if (canvas.Height != null)
+            {
+                writer.WritePropertyName(Constants.HeightJName);
+                writer.WriteValue(canvas.Height.Value);
+            }
 
-                if (canvas.Duration != null)
-                {
-                    writer.WritePropertyName(Canvas.DurationJName);
-                    writer.WriteValue(canvas.Duration.Value);
-                }
+            if (canvas.Duration != null)
+            {
+                writer.WritePropertyName(Canvas.DurationJName);
+                writer.WriteValue(canvas.Duration.Value);
             }
         }
 

@@ -274,7 +274,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
             node = SetViewingHint(element, node);
             node = SetRendering(element, node);
             node = SetRelated(element, node);
-            
+
             if (ShouldHandleSeeAlso(node))
                 node = SetSeeAlsoes(element, node);
 
@@ -293,196 +293,193 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         {
             base.EnrichMoreWriteJson(writer, node, serializer);
 
-            if (node != null)
+            if (node.Label.Any())
             {
-                if (node.Label.Any())
+                writer.WritePropertyName(BaseNode<TBaseNode>.LabelJName);
+
+                if (node.Label.Count == 1)
+                    serializer.Serialize(writer, node.Label.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.LabelJName);
-
-                    if (node.Label.Count == 1)
-                        serializer.Serialize(writer, node.Label.First());
-                    else
-                    {
-                        writer.WriteStartArray();
-
-                        foreach (var label in node.Label)
-                            serializer.Serialize(writer, label);
-
-                        writer.WriteEndArray();
-                    }
-                }
-
-                if (node.Description.Any())
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.DescriptionJName);
-
-                    if (node.Description.Count == 1)
-                        serializer.Serialize(writer, node.Description.First());
-                    else
-                    {
-                        writer.WriteStartArray();
-
-                        foreach (var description in node.Description)
-                            serializer.Serialize(writer, description);
-
-                        writer.WriteEndArray();
-                    }
-                }
-
-                if (node.Metadata.Any())
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.MetadataJName);
-
                     writer.WriteStartArray();
 
-                    foreach (var metadata in node.Metadata)
-                        serializer.Serialize(writer, metadata);
+                    foreach (var label in node.Label)
+                        serializer.Serialize(writer, label);
 
                     writer.WriteEndArray();
                 }
+            }
 
-                if (node.Attribution.Any())
+            if (node.Description.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.DescriptionJName);
+
+                if (node.Description.Count == 1)
+                    serializer.Serialize(writer, node.Description.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.AttributionJName);
+                    writer.WriteStartArray();
 
-                    if (node.Attribution.Count == 1)
-                        serializer.Serialize(writer, node.Attribution.First());
-                    else
-                    {
-                        writer.WriteStartArray();
+                    foreach (var description in node.Description)
+                        serializer.Serialize(writer, description);
 
-                        foreach (var attribution in node.Attribution)
-                            serializer.Serialize(writer, attribution);
-
-                        writer.WriteEndArray();
-                    }
+                    writer.WriteEndArray();
                 }
+            }
 
-                if (node.Logo != null)
+            if (node.Metadata.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.MetadataJName);
+
+                writer.WriteStartArray();
+
+                foreach (var metadata in node.Metadata)
+                    serializer.Serialize(writer, metadata);
+
+                writer.WriteEndArray();
+            }
+
+            if (node.Attribution.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.AttributionJName);
+
+                if (node.Attribution.Count == 1)
+                    serializer.Serialize(writer, node.Attribution.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.LogoJName);
-                    serializer.Serialize(writer, node.Logo);
+                    writer.WriteStartArray();
+
+                    foreach (var attribution in node.Attribution)
+                        serializer.Serialize(writer, attribution);
+
+                    writer.WriteEndArray();
                 }
+            }
 
-                if (node.Thumbnail != null)
+            if (node.Logo != null)
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.LogoJName);
+                serializer.Serialize(writer, node.Logo);
+            }
+
+            if (node.Thumbnail != null)
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.ThumbnailJName);
+                serializer.Serialize(writer, node.Thumbnail);
+            }
+
+            if (node.License != null)
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.LicenseJName);
+                serializer.Serialize(writer, node.License);
+            }
+
+            if (node.ViewingHint != null)
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.ViewingHintJName);
+                serializer.Serialize(writer, node.ViewingHint);
+            }
+
+            if (node.Rendering != null)
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.RenderingJName);
+                serializer.Serialize(writer, node.Rendering);
+            }
+
+            if (node.Homepage.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.HomepageJName);
+
+                if (node.Homepage.Count == 1)
+                    serializer.Serialize(writer, node.Homepage.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.ThumbnailJName);
-                    serializer.Serialize(writer, node.Thumbnail);
+                    writer.WriteStartArray();
+
+                    foreach (var homepage in node.Homepage)
+                        serializer.Serialize(writer, homepage);
+
+                    writer.WriteEndArray();
                 }
+            }
 
-                if (node.License != null)
+            if (node.Provider.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.ProviderJName);
+
+                if (node.Provider.Count == 1)
+                    serializer.Serialize(writer, node.Provider.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.LicenseJName);
-                    serializer.Serialize(writer, node.License);
+                    writer.WriteStartArray();
+
+                    foreach (var provider in node.Provider)
+                        serializer.Serialize(writer, provider);
+
+                    writer.WriteEndArray();
                 }
+            }
 
-                if (node.ViewingHint != null)
+            if (node.AccompanyingCanvas != null)
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.AccompanyingCanvasJName);
+                serializer.Serialize(writer, node.AccompanyingCanvas);
+            }
+
+            if (node.Behavior.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.BehaviorJName);
+
+                if (node.Behavior.Count == 1)
+                    serializer.Serialize(writer, node.Behavior.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.ViewingHintJName);
-                    serializer.Serialize(writer, node.ViewingHint);
+                    writer.WriteStartArray();
+
+                    foreach (var behavior in node.Behavior)
+                        serializer.Serialize(writer, behavior);
+
+                    writer.WriteEndArray();
                 }
+            }
 
-                if (node.Rendering != null)
+            if (!string.IsNullOrEmpty(node.Related))
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.RelatedJName);
+                writer.WriteValue(node.Related);
+            }
+
+            if (ShouldHandleSeeAlso(node) && node.SeeAlso.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.SeeAlsoJName);
+
+                if (node.SeeAlso.Count == 1)
+                    serializer.Serialize(writer, node.SeeAlso.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.RenderingJName);
-                    serializer.Serialize(writer, node.Rendering);
+                    writer.WriteStartArray();
+
+                    foreach (var seeAlso in node.SeeAlso)
+                        serializer.Serialize(writer, seeAlso);
+
+                    writer.WriteEndArray();
                 }
+            }
 
-                if (node.Homepage.Any())
+            if (ShouldHandleWithin(node) && node.Within.Any())
+            {
+                writer.WritePropertyName(BaseNode<TBaseNode>.WithinJName);
+
+                if (node.Within.Count == 1)
+                    serializer.Serialize(writer, node.Within.First());
+                else
                 {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.HomepageJName);
+                    writer.WriteStartArray();
 
-                    if (node.Homepage.Count == 1)
-                        serializer.Serialize(writer, node.Homepage.First());
-                    else
-                    {
-                        writer.WriteStartArray();
+                    foreach (var within in node.Within)
+                        serializer.Serialize(writer, within);
 
-                        foreach (var homepage in node.Homepage)
-                            serializer.Serialize(writer, homepage);
-
-                        writer.WriteEndArray();
-                    }
-                }
-
-                if (node.Provider.Any())
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.ProviderJName);
-
-                    if (node.Provider.Count == 1)
-                        serializer.Serialize(writer, node.Provider.First());
-                    else
-                    {
-                        writer.WriteStartArray();
-
-                        foreach (var provider in node.Provider)
-                            serializer.Serialize(writer, provider);
-
-                        writer.WriteEndArray();
-                    }
-                }
-
-                if (node.AccompanyingCanvas != null)
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.AccompanyingCanvasJName);
-                    serializer.Serialize(writer, node.AccompanyingCanvas);
-                }
-
-                if (node.Behavior.Any())
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.BehaviorJName);
-
-                    if (node.Behavior.Count == 1)
-                        serializer.Serialize(writer, node.Behavior.First());
-                    else
-                    {
-                        writer.WriteStartArray();
-
-                        foreach (var behavior in node.Behavior)
-                            serializer.Serialize(writer, behavior);
-
-                        writer.WriteEndArray();
-                    }
-                }
-
-                if (!string.IsNullOrEmpty(node.Related))
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.RelatedJName);
-                    writer.WriteValue(node.Related);
-                }
-
-                if (ShouldHandleSeeAlso(node) && node.SeeAlso.Any())
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.SeeAlsoJName);
-
-                    if (node.SeeAlso.Count == 1)
-                        serializer.Serialize(writer, node.SeeAlso.First());
-                    else
-                    {
-                        writer.WriteStartArray();
-
-                        foreach (var seeAlso in node.SeeAlso)
-                            serializer.Serialize(writer, seeAlso);
-
-                        writer.WriteEndArray();
-                    }
-                }
-
-                if (ShouldHandleWithin(node) && node.Within.Any())
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.WithinJName);
-
-                    if (node.Within.Count == 1)
-                        serializer.Serialize(writer, node.Within.First());
-                    else
-                    {
-                        writer.WriteStartArray();
-
-                        foreach (var within in node.Within)
-                            serializer.Serialize(writer, within);
-
-                        writer.WriteEndArray();
-                    }
+                    writer.WriteEndArray();
                 }
             }
         }

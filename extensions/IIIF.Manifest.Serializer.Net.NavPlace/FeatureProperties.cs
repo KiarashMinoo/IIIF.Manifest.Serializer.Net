@@ -8,7 +8,9 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// </summary>
 public class FeatureProperties : TrackableObject<FeatureProperties>
 {
-    [JsonProperty("label")] public string Label => GetElementValue(x => x.Label)!;
+    public const string LabelJName = "label";
+
+    [JsonProperty(LabelJName)] public string Label => GetElementValue(x => x.Label)!;
 
     public FeatureProperties(string label)
     {

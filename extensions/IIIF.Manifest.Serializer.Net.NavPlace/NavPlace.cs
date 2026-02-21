@@ -10,12 +10,13 @@ namespace IIIF.Manifests.Serializer.Extensions
     [JsonConverter(typeof(NavPlaceJsonConverter))]
     public class NavPlace : TrackableObject<NavPlace>
     {
-        public const string NavPlaceName = "navPlace";
+        public const string NavPlaceJName = "navPlace";
+        public const string CoordinatesJName = "coordinates";
 
         /// <summary>
         /// The GeoJSON FeatureCollection containing geographic features.
         /// </summary>
-        [JsonProperty("features")]
+        [JsonProperty(CoordinatesJName)]
         public FeatureCollection Features => GetElementValue(x => x.Features)!;
 
         /// <summary>

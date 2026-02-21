@@ -8,9 +8,11 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// </summary>
 public class Geometry : TrackableObject<Geometry>
 {
-    [JsonProperty("type")] public string? Type => GetElementValue(x => x.Type);
+    public const string TypeJName = "type";
+    public const string CoordinatesJName = "coordinates";
 
-    [JsonProperty("coordinates")] public Point? Coordinates => GetElementValue(x => x.Coordinates);
+    [JsonProperty(TypeJName)] public string? Type => GetElementValue(x => x.Type);
+    [JsonProperty(CoordinatesJName)] public Point? Coordinates => GetElementValue(x => x.Coordinates);
 
     public Geometry()
     {

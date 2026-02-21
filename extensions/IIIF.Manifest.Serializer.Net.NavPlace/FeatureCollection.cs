@@ -9,9 +9,12 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// </summary>
 public class FeatureCollection : TrackableObject<FeatureCollection>
 {
-    [JsonProperty("type")] public string Type => GetElementValue(x => x.Type)!;
+    public const string TypeJName = "type";
+    public const string FeaturesJName = "features";
 
-    [JsonProperty("features")] public IReadOnlyCollection<Feature> Features => GetElementValue(x => x.Features) ?? [];
+    [JsonProperty(TypeJName)] public string Type => GetElementValue(x => x.Type)!;
+
+    [JsonProperty(FeaturesJName)] public IReadOnlyCollection<Feature> Features => GetElementValue(x => x.Features) ?? [];
 
     public FeatureCollection(Feature[] features)
     {

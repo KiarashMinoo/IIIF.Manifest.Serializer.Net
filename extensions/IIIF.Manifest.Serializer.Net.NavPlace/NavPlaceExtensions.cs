@@ -9,12 +9,12 @@ public static class NavPlaceExtensions
     {
         public Canvas SetNavPlace(NavPlace navPlace)
         {
-            return collection.SetAdditionalElementValue(NavPlace.NavPlaceName, navPlace);
+            return collection.SetAdditionalElementValue(NavPlace.NavPlaceJName, navPlace);
         }
 
         public NavPlace? GetNavPlace()
         {
-            return collection.GetAdditionalElementValue<Canvas, NavPlace>(NavPlace.NavPlaceName);
+            return collection.GetAdditionalElementValue<Canvas, NavPlace>(NavPlace.NavPlaceJName);
         }
     }
 }

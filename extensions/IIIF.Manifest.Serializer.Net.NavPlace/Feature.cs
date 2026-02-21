@@ -8,12 +8,15 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// </summary>
 public class Feature : TrackableObject<Feature>
 {
-    [JsonProperty("type")] public string Type => GetElementValue(x => x.Type)!;
+    public const string TypeJName = "type";
+    public const string GeometryJName = "geometry";
+    public const string PropertiesJName = "properties";
 
-    [JsonProperty("geometry")] public Geometry? Geometry => GetElementValue(x => x.Geometry);
+    [JsonProperty(TypeJName)] public string Type => GetElementValue(x => x.Type)!;
 
-    [JsonProperty("properties", NullValueHandling = NullValueHandling.Ignore)]
-    public FeatureProperties? Properties => GetElementValue(x => x.Properties);
+    [JsonProperty(GeometryJName)] public Geometry? Geometry => GetElementValue(x => x.Geometry);
+
+    [JsonProperty(PropertiesJName)] public FeatureProperties? Properties => GetElementValue(x => x.Properties);
 
     public Feature()
     {
