@@ -61,7 +61,7 @@ namespace IIIF.Manifests.Serializer.Nodes.StructureNode
         protected override Structure CreateInstance(JToken element, Type objectType, Structure existingValue, bool hasExistingValue, JsonSerializer serializer)
             => ConstructStructure(element);
 
-        protected override Structure EnrichReadJson(Structure structure, JToken element, Type objectType, Structure existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Structure EnrichReadJson(Structure structure, JToken element, Type objectType, Structure? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             structure = base.EnrichReadJson(structure, element, objectType, existingValue, hasExistingValue, serializer);
             structure = SetCanvases(element, structure);

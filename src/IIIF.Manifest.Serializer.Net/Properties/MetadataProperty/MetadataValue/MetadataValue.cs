@@ -10,22 +10,20 @@ namespace IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue
         public const string LanguageJName = "@language";
 
 
-        [JsonProperty(ValueJName)]
-        public string Value { get; private set; }
+        [JsonProperty(ValueJName)] public string Value => GetElementValue(x => x.Value)!;
 
-        [JsonProperty(LanguageJName)]
-        public string Language { get; }
+        [JsonProperty(LanguageJName)] public string? Language => GetElementValue(x => x.Language);
 
         public MetadataValue(string value)
         {
-            Value = value;
+            SetElementValue(x => x.Value, value);
         }
 
         public MetadataValue(string value, string language) : this(value)
         {
-            Language = language;
+            SetElementValue(x => x.Language, language);
         }
 
-        public MetadataValue SetValue(string value) => SetPropertyValue(a => a.Value, value);
+        public MetadataValue SetValue(string value) => SetElementValue(a => a.Value, value);
     }
 }

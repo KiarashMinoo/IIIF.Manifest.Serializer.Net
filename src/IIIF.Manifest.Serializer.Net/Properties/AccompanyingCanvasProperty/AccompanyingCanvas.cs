@@ -9,10 +9,5 @@ namespace IIIF.Manifests.Serializer.Properties.AccompanyingCanvasProperty
     /// </summary>
     [PresentationAPI("2.0")]
     [JsonConverter(typeof(AccompanyingCanvasJsonConverter))]
-    public class AccompanyingCanvas : BaseItem<AccompanyingCanvas>
-    {
-        public AccompanyingCanvas(string id) : base(id, "sc:Canvas")
-        {
-        }
-    }
+    public class AccompanyingCanvas(string id) : BaseItem<AccompanyingCanvas>(id, "sc:Canvas");
 }

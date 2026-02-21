@@ -19,7 +19,7 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Video.Resource
             var format = jFormat?.ToString() ?? "video/mp4";
             return new VideoResource(jId.ToString(), format);
         }
-        protected override VideoResource EnrichReadJson(VideoResource resource, JToken element, Type objectType, VideoResource existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override VideoResource EnrichReadJson(VideoResource resource, JToken element, Type objectType, VideoResource? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             resource = base.EnrichReadJson(resource, element, objectType, existingValue, hasExistingValue, serializer);
             var jHeight = element.TryGetToken(Constants.HeightJName);

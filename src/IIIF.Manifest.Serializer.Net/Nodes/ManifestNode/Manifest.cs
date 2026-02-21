@@ -25,49 +25,46 @@ namespace IIIF.Manifests.Serializer.Nodes.ManifestNode
         public const string StartJName = "start";
         public const string PlaceholderCanvasJName = "placeholderCanvas";
 
-        private readonly List<Sequence> sequences = new List<Sequence>();
-        private readonly List<Structure> structures = new List<Structure>();
-
-
         [PresentationAPI("2.0")]
         [JsonProperty(NavDateJName)]
-        public DateTime? NavDate { get; private set; }
+        public DateTime? NavDate => GetElementValue(a => a.NavDate);
 
         [PresentationAPI("2.0")]
         [JsonProperty(Constants.ViewingDirectionJName)]
-        public ViewingDirection ViewingDirection { get; private set; }
+        public ViewingDirection? ViewingDirection => GetElementValue(a => a.ViewingDirection);
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(SequencesJName)]
-        public IReadOnlyCollection<Sequence> Sequences => sequences.AsReadOnly();
+        public IReadOnlyCollection<Sequence> Sequences => GetElementValue(x => x.Sequences) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(StructuresJName)]
-        public IReadOnlyCollection<Structure> Structures => structures.AsReadOnly();
+        public IReadOnlyCollection<Structure> Structures => GetElementValue(x => x.Structures) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(StartJName)]
-        public string Start { get; private set; }
+        public string? Start => GetElementValue(a => a.Start);
 
         [PresentationAPI("2.0")]
         [JsonProperty(PlaceholderCanvasJName)]
-        public string PlaceholderCanvas { get; private set; }
+        public string? PlaceholderCanvas => GetElementValue(a => a.PlaceholderCanvas);
 
         internal Manifest(string id) : base(id, "sc:Manifest")
         {
         }
+
         public Manifest(string id, IEnumerable<Label> labels) : this(id) => labels.Enumerate(label => AddLabel(label));
         public Manifest(string id, Label label) : this(id) => AddLabel(label);
 
-        public Manifest SetNavDate(DateTime navDate) => SetPropertyValue(a => a.NavDate, navDate);
-        public Manifest SetViewingDirection(ViewingDirection viewingDirection) => SetPropertyValue(a => a.ViewingDirection, viewingDirection);
-        public Manifest SetStart(string start) => SetPropertyValue(a => a.Start, start);
-        public Manifest SetPlaceholderCanvas(string placeholderCanvas) => SetPropertyValue(a => a.PlaceholderCanvas, placeholderCanvas);
+        public Manifest SetNavDate(DateTime navDate) => SetElementValue(a => a.NavDate, navDate);
+        public Manifest SetViewingDirection(ViewingDirection viewingDirection) => SetElementValue(a => a.ViewingDirection, viewingDirection);
+        public Manifest SetStart(string start) => SetElementValue(a => a.Start, start);
+        public Manifest SetPlaceholderCanvas(string placeholderCanvas) => SetElementValue(a => a.PlaceholderCanvas, placeholderCanvas);
 
-        public Manifest AddSequence(Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Attach(sequence));
-        public Manifest RemoveSequence(Sequence sequence) => SetPropertyValue(a => a.sequences, a => a.Sequences, sequences.Detach(sequence));
+        public Manifest AddSequence(Sequence sequence) => SetElementValue(a => a.Sequences, collection => collection.With(sequence));
+        public Manifest RemoveSequence(Sequence sequence) => SetElementValue(a => a.Sequences, collection => collection.Without(sequence));
 
-        public Manifest AddStructure(Structure structure) => SetPropertyValue(a => a.structures, a => a.Structures, structures.Attach(structure));
-        public Manifest RemoveStructure(Structure structure) => SetPropertyValue(a => a.structures, a => a.Structures, structures.Detach(structure));
+        public Manifest AddStructure(Structure structure) => SetElementValue(a => a.Structures, collection => collection.Without(structure));
+        public Manifest RemoveStructure(Structure structure) => SetElementValue(a => a.Structures, collection => collection.With(structure));
     }
 }

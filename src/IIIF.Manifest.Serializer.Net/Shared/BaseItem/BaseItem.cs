@@ -13,29 +13,32 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
         public const string TypeJName = "@type";
         public const string ServiceJName = "service";
 
-        [JsonProperty(ContextJName)] public string Context { get; private set; }
+        [JsonProperty(ContextJName)] public string Context => GetElementValue(a => a.Context) ?? DefaultContext;
 
-        [JsonProperty(IdJName)] public string Id { get; }
+        [JsonProperty(IdJName)] public string Id => GetElementValue(a => a.Id)!;
 
-        [JsonProperty(TypeJName)] public string Type { get; private set; }
+        [JsonProperty(TypeJName)] public string? Type => GetElementValue(x => x.Type);
 
-        [JsonProperty(ServiceJName)] public IBaseService Service { get; private set; }
+        [JsonProperty(ServiceJName)] public IBaseService? Service => GetElementValue(x => x.Service);
 
         protected internal BaseItem(string id)
         {
-            Id = id;
-            Context = DefaultContext;
+            SetElementValue(x => x.Id, id);
+            SetElementValue(x => x.Context, DefaultContext);
         }
 
         public BaseItem(string id, string type) : this(id) => SetType(type);
 
-        protected internal BaseItem(string id, string type, string context) : this(id, type) => Context = context;
+        protected internal BaseItem(string id, string type, string context) : this(id, type)
+        {
+            SetElementValue(x => x.Context, context);
+        }
 
-        internal TBaseItem SetType(string type) => SetPropertyValue(a => a.Type, type);
+        internal TBaseItem SetType(string type) => SetElementValue(a => a.Type, type);
 
         public TBaseItem SetService<TService>(TService service) where TService : IBaseService
         {
-            return SetPropertyValue(a => a.Service, service);
+            return SetElementValue(a => a.Service, service);
         }
     }
 }

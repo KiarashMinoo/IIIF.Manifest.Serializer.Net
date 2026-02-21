@@ -16,7 +16,7 @@ namespace IIIF.Manifests.Serializer.Nodes.SequenceNode
     /// <remarks>
     /// Deprecated in IIIF Presentation API 3.0. Use items property on Manifest instead.
     /// </remarks>
-    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", 
+    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
         ReplacedBy = "Manifest.items", Notes = "Sequences removed in API 3.0; canvases moved to items array")]
     [JsonConverter(typeof(SequenceJsonConverter))]
     public class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequence>
@@ -24,19 +24,17 @@ namespace IIIF.Manifests.Serializer.Nodes.SequenceNode
         public const string StartCanvasJName = "startCanvas";
         public const string CanvasesJName = "canvases";
 
-        private readonly List<Canvas> canvases = new List<Canvas>();
-
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(CanvasesJName)]
-        public IReadOnlyCollection<Canvas> Canvases => canvases.AsReadOnly();
+        public IReadOnlyCollection<Canvas> Canvases => GetElementValue(x => x.Canvases) ?? [];
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "start")]
         [JsonProperty(StartCanvasJName)]
-        public StartCanvas StartCanvas { get; private set; }
+        public StartCanvas? StartCanvas => GetElementValue(x => x.StartCanvas);
 
         [PresentationAPI("2.0")]
         [JsonProperty(Constants.ViewingDirectionJName)]
-        public ViewingDirection ViewingDirection { get; private set; }
+        public ViewingDirection? ViewingDirection => GetElementValue(x => x.ViewingDirection);
 
         public Sequence() : this(string.Empty)
         {
@@ -46,10 +44,10 @@ namespace IIIF.Manifests.Serializer.Nodes.SequenceNode
         {
         }
 
-        public Sequence AddCanvas(Canvas canvas) => SetPropertyValue(a => a.canvases, a => a.Canvases, canvases.Attach(canvas));
-        public Sequence RemoveCanvas(Canvas canvas) => SetPropertyValue(a => a.canvases, a => a.Canvases, canvases.Detach(canvas));
+        public Sequence AddCanvas(Canvas canvas) => SetElementValue(a => a.Canvases, collection => collection.With(canvas));
+        public Sequence RemoveCanvas(Canvas canvas) => SetElementValue(a => a.Canvases, collection => collection.Without(canvas));
 
-        public Sequence SetStartCanvas(StartCanvas startCanvas) => SetPropertyValue(a => a.StartCanvas, startCanvas);
-        public Sequence SetViewingDirection(ViewingDirection viewingDirection) => SetPropertyValue(a => a.ViewingDirection, viewingDirection);
+        public Sequence SetStartCanvas(StartCanvas startCanvas) => SetElementValue(a => a.StartCanvas, startCanvas);
+        public Sequence SetViewingDirection(ViewingDirection viewingDirection) => SetElementValue(a => a.ViewingDirection, viewingDirection);
     }
 }

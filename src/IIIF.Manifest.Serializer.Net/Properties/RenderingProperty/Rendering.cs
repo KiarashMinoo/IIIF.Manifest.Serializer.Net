@@ -6,16 +6,15 @@ namespace IIIF.Manifests.Serializer.Properties.RenderingProperty
 {
     [PresentationAPI("2.0")]
     [JsonConverter(typeof(RenderingJsonConverter))]
-    public class Rendering : FormatableItem<Rendering>
+    public class Rendering : FormattableItem<Rendering>
     {
         public const string LabelJName = "label";
 
-        [JsonProperty(LabelJName)]
-        public string Label { get; }
+        [JsonProperty(LabelJName)] public string Label => GetElementValue(x => x.Label)!;
 
         public Rendering(string id, string label) : base(id)
         {
-            Label = label;
+            SetElementValue(x => x.Label, label);
         }
     }
 }

@@ -11,17 +11,13 @@ namespace IIIF.Manifests.Serializer.Properties.TileProperty
         public const string WidthJName = "width";
         public const string ScaleFactorsJName = "scaleFactors";
 
-        private readonly List<int> scaleFactors = new List<int>();
+        [JsonProperty(WidthJName)] public int? Width => GetElementValue(x => x.Width);
 
-        [JsonProperty(WidthJName)]
-        public int? Width { get; private set; }
+        [JsonProperty(ScaleFactorsJName)] public IReadOnlyCollection<int> ScaleFactors => GetElementValue(x => x.ScaleFactors) ?? [];
 
-        [JsonProperty(ScaleFactorsJName)]
-        public IReadOnlyCollection<int> ScaleFactors => scaleFactors.AsReadOnly();
+        public Tile SetWidth(int width) => SetElementValue(a => a.Width, width);
 
-        public Tile SetWidth(int width) => SetPropertyValue(a => a.Width, width);
-
-        public Tile AddScaleFactor(int scaleFactor) => SetPropertyValue(a => scaleFactors, a => ScaleFactors, scaleFactors.Attach(scaleFactor));
-        public Tile RemoveScaleFactor(int scaleFactor) => SetPropertyValue(a => scaleFactors, a => ScaleFactors, scaleFactors.Detach(scaleFactor));
+        public Tile AddScaleFactor(int scaleFactor) => SetElementValue(a => ScaleFactors, collection => collection.With(scaleFactor));
+        public Tile RemoveScaleFactor(int scaleFactor) => SetElementValue(a => ScaleFactors, collection => collection.Without(scaleFactor));
     }
 }

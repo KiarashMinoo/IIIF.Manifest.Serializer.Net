@@ -28,12 +28,6 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Image
 
             var image = new Image(id, jResource.ToObject<ImageResource>(), jOn.ToString());
 
-            var jTextGranularity = element.TryGetToken(Image.TextGranularityJName);
-            if (jTextGranularity != null)
-            {
-                image.SetTextGranularity(jTextGranularity.ToObject<TextGranularity>());
-            }
-
             return image;
         }
 
@@ -59,12 +53,6 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Image
                 {
                     writer.WritePropertyName(Image.MotivationJName);
                     writer.WriteValue(image.Motivation);
-                }
-
-                if (image.TextGranularity != null)
-                {
-                    writer.WritePropertyName(Image.TextGranularityJName);
-                    serializer.Serialize(writer, image.TextGranularity);
                 }
             }
         }

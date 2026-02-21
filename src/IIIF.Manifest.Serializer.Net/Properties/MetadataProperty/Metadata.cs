@@ -11,18 +11,13 @@ namespace IIIF.Manifests.Serializer.Properties.MetadataProperty
         public const string LabelJName = "label";
         public const string ValueJName = "value";
 
-        private readonly List<MetadataValue.MetadataValue> value = new List<MetadataValue.MetadataValue>();
+        [JsonProperty(LabelJName)] public string Label => GetElementValue(x => x.Label)!;
 
-
-        [JsonProperty(LabelJName)]
-        public string Label { get; }
-
-        [JsonProperty(ValueJName)]
-        public IReadOnlyCollection<MetadataValue.MetadataValue> Value => value;
+        [JsonProperty(ValueJName)] public IReadOnlyCollection<MetadataValue.MetadataValue> Value => GetElementValue(x => x.Value) ?? [];
 
         public Metadata(string label, MetadataValue.MetadataValue value)
         {
-            Label = label;
+            SetElementValue(x => x.Label, label);
             AddValue(value);
         }
 
@@ -34,15 +29,16 @@ namespace IIIF.Manifests.Serializer.Properties.MetadataProperty
         {
         }
 
-        public Metadata AddValue(MetadataValue.MetadataValue value) => SetPropertyValue(a => a.value, a => a.Value, this.value.Attach(value));
+        public Metadata AddValue(MetadataValue.MetadataValue value) => SetElementValue(a => a.Value, collection => collection.With(value));
         public Metadata AddValue(string value, string language) => AddValue(new MetadataValue.MetadataValue(value, language));
         public Metadata AddValue(string value) => AddValue(new MetadataValue.MetadataValue(value));
 
         public Metadata ResetValue(MetadataValue.MetadataValue value)
         {
-            this.value.Clear();
+            SetElementValue(x => x.Value, []);
             return AddValue(value);
         }
+
         public Metadata ResetValue(string value, string language) => ResetValue(new MetadataValue.MetadataValue(value, language));
         public Metadata ResetValue(string value) => ResetValue(new MetadataValue.MetadataValue(value));
     }

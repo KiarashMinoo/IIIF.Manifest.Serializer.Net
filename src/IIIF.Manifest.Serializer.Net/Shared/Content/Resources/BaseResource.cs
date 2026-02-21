@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Shared.Content.Resources
 {
     [JsonConverter(typeof(BaseResourceJsonConverter<>))]
-    public class BaseResource<TBaseResource> : FormatableItem<TBaseResource> where TBaseResource : BaseResource<TBaseResource>
+    public class BaseResource<TBaseResource> : FormattableItem<TBaseResource> where TBaseResource : BaseResource<TBaseResource>
     {
         protected internal BaseResource(string id) : base(id)
         {

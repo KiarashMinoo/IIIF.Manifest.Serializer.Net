@@ -116,7 +116,7 @@ namespace IIIF.Manifests.Serializer.Nodes.CanvasNode
 
         protected override Canvas CreateInstance(JToken element, Type objectType, Canvas existingValue, bool hasExistingValue, JsonSerializer serializer) => ConstructCanvas(element);
 
-        protected override Canvas EnrichReadJson(Canvas canvas, JToken element, Type objectType, Canvas existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Canvas EnrichReadJson(Canvas canvas, JToken element, Type objectType, Canvas? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             // Clear labels set by constructor to avoid duplication when base.EnrichReadJson re-reads them
             canvas.SetLabel(new Label[0]);

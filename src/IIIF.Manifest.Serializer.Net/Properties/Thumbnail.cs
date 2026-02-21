@@ -7,7 +7,7 @@ namespace IIIF.Manifests.Serializer.Properties
 {
     [PresentationAPI("2.0")]
     [JsonConverter(typeof(FormatableItemJsonConverter<Thumbnail>))]
-    public class Thumbnail : FormatableItem<Thumbnail>
+    public class Thumbnail : FormattableItem<Thumbnail>
     {
         public Thumbnail(string id) : base(id, "dctypes:Image")
         {

@@ -18,8 +18,8 @@ namespace IIIF.Manifests.Serializer.Nodes.AnnotationListNode
             return new AnnotationList(jId.ToString());
         }
 
-        protected override AnnotationList EnrichReadJson(AnnotationList annotationList, JToken element, 
-            Type objectType, AnnotationList existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override AnnotationList EnrichReadJson(AnnotationList annotationList, JToken element,
+            Type objectType, AnnotationList? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             annotationList = base.EnrichReadJson(annotationList, element, objectType, existingValue, 
                 hasExistingValue, serializer);

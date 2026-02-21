@@ -260,25 +260,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
             return node;
         }
 
-        private TBaseNode SetNavPlace(JToken element, TBaseNode node)
-        {
-            var jNavPlace = element.TryGetToken(BaseNode<TBaseNode>.NavPlaceJName);
-            if (jNavPlace != null)
-                node.SetNavPlace(jNavPlace.ToObject<NavPlace>());
-
-            return node;
-        }
-
-        private TBaseNode SetGeoreference(JToken element, TBaseNode node)
-        {
-            var jGeoreference = element.TryGetToken(BaseNode<TBaseNode>.GeoreferenceJName);
-            if (jGeoreference != null)
-                node.SetGeoreference(jGeoreference.ToObject<Georeference>());
-
-            return node;
-        }
-
-        protected override TBaseNode EnrichReadJson(TBaseNode node, JToken element, Type objectType, TBaseNode existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override TBaseNode EnrichReadJson(TBaseNode node, JToken element, Type objectType, TBaseNode? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             node = base.EnrichReadJson(node, element, objectType, existingValue, hasExistingValue, serializer);
 
@@ -292,9 +274,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
             node = SetViewingHint(element, node);
             node = SetRendering(element, node);
             node = SetRelated(element, node);
-            node = SetNavPlace(element, node);
-            node = SetGeoreference(element, node);
-
+            
             if (ShouldHandleSeeAlso(node))
                 node = SetSeeAlsoes(element, node);
 
@@ -469,18 +449,6 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
                 {
                     writer.WritePropertyName(BaseNode<TBaseNode>.RelatedJName);
                     writer.WriteValue(node.Related);
-                }
-
-                if (node.NavPlace != null)
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.NavPlaceJName);
-                    serializer.Serialize(writer, node.NavPlace);
-                }
-
-                if (node.Georeference != null)
-                {
-                    writer.WritePropertyName(BaseNode<TBaseNode>.GeoreferenceJName);
-                    serializer.Serialize(writer, node.Georeference);
                 }
 
                 if (ShouldHandleSeeAlso(node) && node.SeeAlso.Any())

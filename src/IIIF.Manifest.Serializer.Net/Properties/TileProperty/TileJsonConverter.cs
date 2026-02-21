@@ -35,7 +35,7 @@ namespace IIIF.Manifests.Serializer.Properties.TileProperty
 
         protected override Tile CreateInstance(JToken element, Type objectType, Tile existingValue, bool hasExistingValue, JsonSerializer serializer) => new Tile();
 
-        protected override Tile EnrichReadJson(Tile tile, JToken element, Type objectType, Tile existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Tile EnrichReadJson(Tile tile, JToken element, Type objectType, Tile? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             tile = SetWidth(element, tile);
             tile = SetScaleFactor(element, tile);

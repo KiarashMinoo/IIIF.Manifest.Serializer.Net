@@ -36,7 +36,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             return service;
         }
 
-        protected override SearchService EnrichReadJson(SearchService service, JToken element, Type objectType, SearchService existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override SearchService EnrichReadJson(SearchService service, JToken element, Type objectType, SearchService? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             // Handle nested services (autocomplete services)
             var jServices = element.TryGetToken(SearchService.ServiceJName);

@@ -83,7 +83,7 @@ namespace IIIF.Manifests.Serializer.Shared.Content
             return content;
         }
 
-        protected override TBaseContent EnrichReadJson(TBaseContent item, JToken element, Type objectType, TBaseContent existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override TBaseContent EnrichReadJson(TBaseContent item, JToken element, Type objectType, TBaseContent? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             item = base.EnrichReadJson(item, element, objectType, existingValue, hasExistingValue, serializer);
 

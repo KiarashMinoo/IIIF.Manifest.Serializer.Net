@@ -8,14 +8,14 @@ namespace IIIF.Manifests.Serializer.Properties.SizeProperty
     {
         public const string WidthJName = "width";
         public const string HeightJName = "height";
-        [JsonProperty(WidthJName)]
-        public int Width { get; private set; }
-        [JsonProperty(HeightJName)]
-        public int Height { get; private set; }
+
+        [JsonProperty(WidthJName)] public int Width => GetElementValue(x => x.Width);
+        [JsonProperty(HeightJName)] public int Height => GetElementValue(x => x.Height);
+
         public Size(int width, int height)
         {
-            Width = width;
-            Height = height;
+            SetElementValue(x => x.Width, width);
+            SetElementValue(x => x.Height, height);
         }
     }
 }

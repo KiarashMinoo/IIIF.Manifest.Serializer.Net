@@ -5,11 +5,11 @@ VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net", "src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj", "{B02074F3-915D-437C-AB50-9BF8E1F4F329}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.NavPlace", "src\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj", "{00000000-0000-0000-0000-000000000000}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.NavPlace", "extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj", "{00000000-0000-0000-0000-000000000000}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.TextGranularity", "src\extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj", "{00000000-0000-0000-0000-000000000000}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.TextGranularity", "extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj", "{00000000-0000-0000-0000-000000000000}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.Georeference", "src\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj", "{00000000-0000-0000-0000-000000000000}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.Georeference", "extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj", "{00000000-0000-0000-0000-000000000000}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Net.Tests", "tests\IIIF.Manifest.Serializer.Net.Tests\IIIF.Manifest.Serializer.Net.Tests.csproj", "{C5E3F8A4-2D6B-4C8E-9B4A-1F7D8E9C2A3B}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B9D24C21-892F-4484-870A-959275A00B59}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "extensions", "extensions", "{9FD2A94C-43DF-4315-82DD-C482EA34262B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -64,6 +66,7 @@ Global
 		{7656666B-D7EE-2B23-53FC-4364EBED59FD} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
 		{B02074F3-915D-437C-AB50-9BF8E1F4F329} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{C5E3F8A4-2D6B-4C8E-9B4A-1F7D8E9C2A3B} = {B9D24C21-892F-4484-870A-959275A00B59}
+		{00000000-0000-0000-0000-000000000000} = {9FD2A94C-43DF-4315-82DD-C482EA34262B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {281F3D66-CC29-4390-8F05-001FAA21F45B}

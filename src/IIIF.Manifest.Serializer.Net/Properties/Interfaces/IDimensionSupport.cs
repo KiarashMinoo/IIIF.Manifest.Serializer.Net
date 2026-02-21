@@ -5,14 +5,12 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Interfaces
 
 {
-    public interface IDimenssionSupport<TItem>
-        where TItem : BaseItem<TItem>, IDimenssionSupport<TItem>
+    public interface IDimensionSupport<out TItem>
+        where TItem : BaseItem<TItem>, IDimensionSupport<TItem>
     {
-        [JsonProperty(Constants.HeightJName)]
-        int? Height { get; }
+        [JsonProperty(Constants.HeightJName)] int? Height { get; }
 
-        [JsonProperty(Constants.WidthJName)]
-        int? Width { get; }
+        [JsonProperty(Constants.WidthJName)] int? Width { get; }
 
 
         TItem SetHeight(int height);

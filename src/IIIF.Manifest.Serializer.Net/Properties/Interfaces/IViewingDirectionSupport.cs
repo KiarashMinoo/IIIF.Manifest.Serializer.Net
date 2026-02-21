@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Interfaces
 {
-    public interface IViewingDirectionSupport<TNode>
+    public interface IViewingDirectionSupport<out TNode>
         where TNode : BaseNode<TNode>, IViewingDirectionSupport<TNode>
     {
         [JsonProperty(Constants.ViewingDirectionJName)]
-        ViewingDirection ViewingDirection { get; }
+        ViewingDirection? ViewingDirection { get; }
 
         TNode SetViewingDirection(ViewingDirection viewingDirection);
     }

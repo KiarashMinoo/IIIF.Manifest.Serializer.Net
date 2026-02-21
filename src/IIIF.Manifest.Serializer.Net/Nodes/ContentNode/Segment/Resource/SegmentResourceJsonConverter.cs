@@ -32,7 +32,7 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment.Resource
             return resource;
         }
 
-        protected override SegmentResource EnrichReadJson(SegmentResource resource, JToken element, Type objectType, SegmentResource existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override SegmentResource EnrichReadJson(SegmentResource resource, JToken element, Type objectType, SegmentResource? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             resource = base.EnrichReadJson(resource, element, objectType, existingValue, hasExistingValue, serializer);
             resource = SetFull(element, resource);

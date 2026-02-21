@@ -7,7 +7,7 @@ namespace IIIF.Manifests.Serializer.Properties
 {
     [PresentationAPI("2.0")]
     [JsonConverter(typeof(FormatableItemJsonConverter<>))]
-    public class Related : FormatableItem<Related>
+    public class Related : FormattableItem<Related>
     {
         public Related(string id) : base(id)
         {

@@ -13,12 +13,9 @@ public class Activity
     public const string ObjectJName = "object";
     public const string EndTimeJName = "endTime";
 
-    [JsonProperty(TypeJName)]
-    public string Type { get; set; }
+    [JsonProperty(TypeJName)] public string Type { get; set; }
 
-    [JsonProperty(ObjectJName)]
-    public ActivityObject Object { get; set; }
+    [JsonProperty(ObjectJName)] public ActivityObject Object { get; set; }
 
-    [JsonProperty(EndTimeJName)]
-    public string EndTime { get; set; }
+    [JsonProperty(EndTimeJName)] public string EndTime { get; set; }
 }

@@ -100,7 +100,7 @@ namespace IIIF.Manifests.Serializer.Nodes.CollectionNode
         protected override Collection CreateInstance(JToken element, Type objectType, Collection existingValue, bool hasExistingValue, JsonSerializer serializer) 
             => ConstructCollection(element);
 
-        protected override Collection EnrichReadJson(Collection collection, JToken element, Type objectType, Collection existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Collection EnrichReadJson(Collection collection, JToken element, Type objectType, Collection? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             collection = base.EnrichReadJson(collection, element, objectType, existingValue, hasExistingValue, serializer);
 

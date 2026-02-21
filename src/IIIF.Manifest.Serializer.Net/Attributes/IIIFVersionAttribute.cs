@@ -50,4 +50,3 @@ namespace IIIF.Manifests.Serializer.Attributes
         }
     }
 }
-

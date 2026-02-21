@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
@@ -15,11 +16,9 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
     {
         public new const string ServiceJName = "service";
 
-        private readonly List<AutoCompleteService> services = new List<AutoCompleteService>();
-
         [SearchAPI("2.0")]
         [JsonProperty(IBaseService.ProfileJName)]
-        public string Profile { get; }
+        public string Profile => GetElementValue(x => x.Profile)!;
 
         /// <summary>
         /// Creates a new SearchService.
@@ -29,7 +28,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// <param name="profile">The service profile</param>
         public SearchService(string context, string id, string profile) : base(id, "SearchService2", context)
         {
-            Profile = profile;
+            SetElementValue(x => x.Profile, profile);
         }
 
         /// <summary>
@@ -37,28 +36,20 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// </summary>
         [SearchAPI("2.0")]
         [JsonProperty(ServiceJName)]
-        public IReadOnlyCollection<AutoCompleteService> Services => services;
+        public IReadOnlyCollection<AutoCompleteService> Services => GetElementValue(x => x.Services) ?? [];
 
         /// <summary>
         /// Adds an autocomplete service to this search service.
         /// </summary>
         /// <param name="service">The autocomplete service to add</param>
         /// <returns>This SearchService for fluent API</returns>
-        public SearchService AddService(AutoCompleteService service)
-        {
-            services.Add(service);
-            return this;
-        }
+        public SearchService AddService(AutoCompleteService service) => SetElementValue(x => x.Services, collection => collection.With(service));
 
         /// <summary>
         /// Removes an autocomplete service from this search service.
         /// </summary>
         /// <param name="service">The autocomplete service to remove</param>
         /// <returns>This SearchService for fluent API</returns>
-        public SearchService RemoveService(AutoCompleteService service)
-        {
-            services.Remove(service);
-            return this;
-        }
+        public SearchService RemoveService(AutoCompleteService service) => SetElementValue(x => x.Services, collection => collection.Without(service));
     }
 }

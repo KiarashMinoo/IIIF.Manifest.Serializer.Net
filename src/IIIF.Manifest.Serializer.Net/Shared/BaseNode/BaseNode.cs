@@ -27,145 +27,117 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public const string WithinJName = "within";
         public const string SeeAlsoJName = "seeAlso";
         public const string HomepageJName = "homepage";
-        public const string RelatedJName = "related";
         public const string ProviderJName = "provider";
         public const string AccompanyingCanvasJName = "accompanyingCanvas";
         public const string BehaviorJName = "behavior";
-        public const string NavPlaceJName = "navPlace";
-        public const string GeoreferenceJName = "georeference";
+        public const string RelatedJName = "related";
 
-
-        private List<Label> labels = new List<Label>();
-        private readonly List<Description> descriptions = new List<Description>();
-        private readonly List<Metadata> metadatas = new List<Metadata>();
-        private readonly List<Attribution> attributions = new List<Attribution>();
-        private readonly List<SeeAlso> seeAloses = new List<SeeAlso>();
-        private readonly List<Within> withins = new List<Within>();
-        private readonly List<Rendering> renderings = new List<Rendering>();
-        private readonly List<Homepage> homepages = new List<Homepage>();
-        private readonly List<Provider> providers = new List<Provider>();
-        private readonly List<Behavior> behaviors = new List<Behavior>();
-
-
-        [JsonProperty(LabelJName)]
-        public IReadOnlyCollection<Label> Label => labels.AsReadOnly();
+        [JsonProperty(LabelJName)] public IReadOnlyCollection<Label> Label => GetElementValue(x => x.Label) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(DescriptionJName)]
-        public IReadOnlyCollection<Description> Description => descriptions.AsReadOnly();
+        public IReadOnlyCollection<Description> Description => GetElementValue(x => x.Description) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(MetadataJName)]
-        public IReadOnlyCollection<Metadata> Metadata => metadatas.AsReadOnly();
+        public IReadOnlyCollection<Metadata> Metadata => GetElementValue(x => x.Metadata) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(AttributionJName)]
-        public IReadOnlyCollection<Attribution> Attribution => attributions.AsReadOnly();
+        public IReadOnlyCollection<Attribution> Attribution => GetElementValue(x => x.Attribution) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(LogoJName)]
-        public Logo Logo { get; private set; }
+        public Logo? Logo => GetElementValue(x => x.Logo);
 
         [PresentationAPI("2.0")]
         [JsonProperty(ThumbnailJName)]
-        public Thumbnail Thumbnail { get; private set; }
+        public Thumbnail? Thumbnail => GetElementValue(x => x.Thumbnail);
 
         [PresentationAPI("2.0")]
         [JsonProperty(LicenseJName)]
-        public License License { get; private set; }
+        public License? License => GetElementValue(x => x.License);
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
         [JsonProperty(ViewingHintJName)]
-        public ViewingHint ViewingHint { get; private set; }
+        public ViewingHint? ViewingHint => GetElementValue(x => x.ViewingHint);
 
         [PresentationAPI("2.0")]
         [JsonProperty(RenderingJName)]
-        public IReadOnlyCollection<Rendering> Rendering => renderings.AsReadOnly();
-
-        [PresentationAPI("2.0")]
-        [JsonProperty(SeeAlsoJName)]
-        public IReadOnlyCollection<SeeAlso> SeeAlso => seeAloses.AsReadOnly();
+        public IReadOnlyCollection<Rendering> Rendering => GetElementValue(x => x.Rendering) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(WithinJName)]
-        public IReadOnlyCollection<Within> Within => withins.AsReadOnly();
+        public IReadOnlyCollection<Within> Within => GetElementValue(x => x.Within) ?? [];
+
+        [PresentationAPI("2.0")]
+        [JsonProperty(SeeAlsoJName)]
+        public IReadOnlyCollection<SeeAlso> SeeAlso => GetElementValue(x => x.SeeAlso) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(HomepageJName)]
-        public IReadOnlyCollection<Homepage> Homepage => homepages.AsReadOnly();
+        public IReadOnlyCollection<Homepage> Homepage => GetElementValue(x => x.Homepage) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(ProviderJName)]
-        public IReadOnlyCollection<Provider> Provider => providers.AsReadOnly();
+        public IReadOnlyCollection<Provider> Provider => GetElementValue(x => x.Provider) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(AccompanyingCanvasJName)]
-        public AccompanyingCanvas AccompanyingCanvas { get; private set; }
+        public AccompanyingCanvas? AccompanyingCanvas => GetElementValue(x => x.AccompanyingCanvas);
 
         [PresentationAPI("3.0", Notes = "Replaces viewingHint from API 2.x. Some values also valid in 2.x as viewingHint.")]
         [JsonProperty(BehaviorJName)]
-        public IReadOnlyCollection<Behavior> Behavior => behaviors.AsReadOnly();
-
-        [NavPlaceExtension("1.0")]
-        [JsonProperty(NavPlaceJName)]
-        public NavPlace NavPlace { get; private set; }
-
-        [GeoreferenceExtension("1.0")]
-        [JsonProperty(GeoreferenceJName)]
-        public Georeference Georeference { get; private set; }
+        public IReadOnlyCollection<Behavior> Behavior => GetElementValue(x => x.Behavior) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(RelatedJName)]
-        public string Related { get; private set; }
+        public string? Related => GetElementValue(x => x.Related);
 
         protected internal BaseNode(string id) : base(id)
         {
         }
+
         public BaseNode(string id, string type) : base(id, type)
         {
         }
 
-        public TBaseNode SetLabel(Label[] labels) => SetPropertyValue(a => a.labels, a => a.Label, this.labels = new List<Label>(labels));
-        public TBaseNode AddLabel(Label label) => SetPropertyValue(a => a.labels, a => a.Label, labels.Attach(label));
-        public TBaseNode RemoveLabel(Label label) => SetPropertyValue(a => a.labels, a => a.Label, labels.Detach(label));
+        public TBaseNode SetLabel(Label[] labels) => SetElementValue(a => a.Label, _ => [..labels]);
+        public TBaseNode AddLabel(Label label) => SetElementValue(a => a.Label, labels => labels.With(label));
+        public TBaseNode RemoveLabel(Label label) => SetElementValue(a => a.Label, labels => labels.Without(label));
 
-        public TBaseNode AddDescription(Description description) => SetPropertyValue(a => a.descriptions, a => a.Description, descriptions.Attach(description));
-        public TBaseNode RemoveDescription(Description description) => SetPropertyValue(a => a.descriptions, a => a.Description, descriptions.Detach(description));
+        public TBaseNode AddDescription(Description description) => SetElementValue(a => a.Description, collection => collection.With(description));
+        public TBaseNode RemoveDescription(Description description) => SetElementValue(a => a.Description, collection => collection.Without(description));
 
-        public TBaseNode AddMetadata(Metadata metadata) => SetPropertyValue(a => a.metadatas, a => a.Metadata, metadatas.Attach(metadata));
-        public TBaseNode RemoveMetadata(Metadata metadata) => SetPropertyValue(a => a.metadatas, a => a.Metadata, metadatas.Detach(metadata));
+        public TBaseNode AddMetadata(Metadata metadata) => SetElementValue(a => a.Metadata, (collection) => collection.With(metadata));
+        public TBaseNode RemoveMetadata(Metadata metadata) => SetElementValue(a => a.Metadata, (collection) => collection.Without(metadata));
 
-        public TBaseNode AddAttribution(Attribution attribution) => SetPropertyValue(a => a.attributions, a => a.Attribution, attributions.Attach(attribution));
-        public TBaseNode RemoveAttribution(Attribution attribution) => SetPropertyValue(a => a.attributions, a => a.Attribution, attributions.Detach(attribution));
+        public TBaseNode AddAttribution(Attribution attribution) => SetElementValue(a => a.Attribution, (collection) => collection.With(attribution));
+        public TBaseNode RemoveAttribution(Attribution attribution) => SetElementValue(a => a.Attribution, (collection) => collection.Without(attribution));
 
-        public TBaseNode AddSeeAlso(SeeAlso seeAlso) => SetPropertyValue(a => a.seeAloses, a => a.SeeAlso, seeAloses.Attach(seeAlso));
-        public TBaseNode RemoveSeeAlso(SeeAlso seeAlso) => SetPropertyValue(a => a.seeAloses, a => a.SeeAlso, seeAloses.Detach(seeAlso));
+        public TBaseNode AddSeeAlso(SeeAlso seeAlso) => SetElementValue(a => a.SeeAlso, (collection) => collection.With(seeAlso));
+        public TBaseNode RemoveSeeAlso(SeeAlso seeAlso) => SetElementValue(a => a.SeeAlso, (collection) => collection.Without(seeAlso));
 
-        public TBaseNode AddRendering(Rendering rendering) => SetPropertyValue(a => a.renderings, a => a.Rendering, renderings.Attach(rendering));
-        public TBaseNode RemoveRendering(Rendering rendering) => SetPropertyValue(a => a.renderings, a => a.Rendering, renderings.Detach(rendering));
+        public TBaseNode AddRendering(Rendering rendering) => SetElementValue(a => a.Rendering, (collection) => collection.With(rendering));
+        public TBaseNode RemoveRendering(Rendering rendering) => SetElementValue(a => a.Rendering, (collection) => collection.Without(rendering));
 
-        public TBaseNode AddHomepage(Homepage homepage) => SetPropertyValue(a => a.homepages, a => a.Homepage, homepages.Attach(homepage));
-        public TBaseNode RemoveHomepage(Homepage homepage) => SetPropertyValue(a => a.homepages, a => a.Homepage, homepages.Detach(homepage));
+        public TBaseNode AddHomepage(Homepage homepage) => SetElementValue(a => a.Homepage, (collection) => collection.With(homepage));
+        public TBaseNode RemoveHomepage(Homepage homepage) => SetElementValue(a => a.Homepage, (collection) => collection.Without(homepage));
 
-        public TBaseNode AddProvider(Provider provider) => SetPropertyValue(a => a.providers, a => a.Provider, providers.Attach(provider));
-        public TBaseNode RemoveProvider(Provider provider) => SetPropertyValue(a => a.providers, a => a.Provider, providers.Detach(provider));
+        public TBaseNode AddProvider(Provider provider) => SetElementValue(a => a.Provider, (collection) => collection.With(provider));
+        public TBaseNode RemoveProvider(Provider provider) => SetElementValue(a => a.Provider, (collection) => collection.Without(provider));
 
-        public TBaseNode SetAccompanyingCanvas(AccompanyingCanvas accompanyingCanvas) => SetPropertyValue(a => a.AccompanyingCanvas, accompanyingCanvas);
+        public TBaseNode AddBehavior(Behavior behavior) => SetElementValue(a => a.Behavior, (collection) => collection.With(behavior));
+        public TBaseNode RemoveBehavior(Behavior behavior) => SetElementValue(a => a.Behavior, (collection) => collection.Without(behavior));
 
-        public TBaseNode AddBehavior(Behavior behavior) => SetPropertyValue(a => a.behaviors, a => a.Behavior, behaviors.Attach(behavior));
-        public TBaseNode RemoveBehavior(Behavior behavior) => SetPropertyValue(a => a.behaviors, a => a.Behavior, behaviors.Detach(behavior));
+        public TBaseNode AddWithin(Within within) => SetElementValue(a => a.Within, (collection) => collection.With(within));
+        public TBaseNode RemoveWithin(Within within) => SetElementValue(a => a.Within, (collection) => collection.Without(within));
 
-        public TBaseNode AddWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Attach(within));
-        public TBaseNode RemoveWithin(Within within) => SetPropertyValue(a => a.withins, a => a.Within, withins.Detach(within));
-
-        public TBaseNode SetNavPlace(NavPlace navPlace) => SetPropertyValue(a => a.NavPlace, navPlace);
-
-        public TBaseNode SetGeoreference(Georeference georeference) => SetPropertyValue(a => a.Georeference, georeference);
-
-        public TBaseNode SetLogo(Logo logo) => SetPropertyValue(a => a.Logo, logo);
-        public TBaseNode SetThumbnail(Thumbnail thumbnail) => SetPropertyValue(a => a.Thumbnail, thumbnail);
-        public TBaseNode SetLicense(License license) => SetPropertyValue(a => a.License, license);
-        public TBaseNode SetViewingHint(ViewingHint viewingHint) => SetPropertyValue(a => a.ViewingHint, viewingHint);
-        public TBaseNode SetRelated(string related) => SetPropertyValue(a => a.Related, related);
+        public TBaseNode SetAccompanyingCanvas(AccompanyingCanvas accompanyingCanvas) => SetElementValue(a => a.AccompanyingCanvas, accompanyingCanvas);
+        public TBaseNode SetLogo(Logo logo) => SetElementValue(a => a.Logo, logo);
+        public TBaseNode SetThumbnail(Thumbnail thumbnail) => SetElementValue(a => a.Thumbnail, thumbnail);
+        public TBaseNode SetLicense(License license) => SetElementValue(a => a.License, license);
+        public TBaseNode SetViewingHint(ViewingHint viewingHint) => SetElementValue(a => a.ViewingHint, viewingHint);
+        public TBaseNode SetRelated(string related) => SetElementValue(a => a.Related, related);
     }
 }

@@ -8,16 +8,14 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Embedded.Resource
         public const string CharsJName = "chars";
         public const string LanguageJname = "language";
 
-        [JsonProperty(CharsJName)]
-        public string Chars { get; }
+        [JsonProperty(CharsJName)] public string Chars => GetElementValue(x => x.Chars)!;
 
-        [JsonProperty(LanguageJname)]
-        public string Language { get; }
+        [JsonProperty(LanguageJname)] public string Language => GetElementValue(x => x.Language)!;
 
         public EmbeddedContentResource(string chars, string language) : base("cnt:ContextAsText")
         {
-            Chars = chars;
-            Language = language;
+            SetElementValue(x => x.Chars, chars);
+            SetElementValue(x => x.Language, language);
         }
     }
 }

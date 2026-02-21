@@ -26,49 +26,45 @@ namespace IIIF.Manifests.Serializer.Nodes.CollectionNode
         public const string PrevJName = "prev";
         public const string StartIndexJName = "startIndex";
 
-        private readonly List<Collection> collections = new List<Collection>();
-        private readonly List<string> manifests = new List<string>();
-        private readonly List<object> members = new List<object>();
-
         [PresentationAPI("2.0")]
         [JsonProperty(Constants.ViewingDirectionJName)]
-        public ViewingDirection ViewingDirection { get; private set; }
+        public ViewingDirection? ViewingDirection => GetElementValue(x => x.ViewingDirection);
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(CollectionsJName)]
-        public IReadOnlyCollection<Collection> Collections => collections.AsReadOnly();
+        public IReadOnlyCollection<Collection> Collections => GetElementValue(x => x.Collections) ?? [];
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(ManifestsJName)]
-        public IReadOnlyCollection<string> Manifests => manifests.AsReadOnly();
+        public IReadOnlyCollection<string> Manifests => GetElementValue(x => x.Manifests) ?? [];
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(MembersJName)]
-        public IReadOnlyCollection<object> Members => members.AsReadOnly();
+        public IReadOnlyCollection<object> Members => GetElementValue(x => x.Members) ?? [];
 
         [PresentationAPI("2.0")]
         [JsonProperty(TotalJName)]
-        public int? Total { get; private set; }
+        public int? Total => GetElementValue(x => x.Total);
 
         [PresentationAPI("2.0", Notes = "Paging property")]
         [JsonProperty(FirstJName)]
-        public string First { get; private set; }
+        public string? First => GetElementValue(x => x.First);
 
         [PresentationAPI("2.0", Notes = "Paging property")]
         [JsonProperty(LastJName)]
-        public string Last { get; private set; }
+        public string? Last => GetElementValue(x => x.Last);
 
         [PresentationAPI("2.0", Notes = "Paging property")]
         [JsonProperty(NextJName)]
-        public string Next { get; private set; }
+        public string? Next => GetElementValue(x => x.Next);
 
         [PresentationAPI("2.0", Notes = "Paging property")]
         [JsonProperty(PrevJName)]
-        public string Prev { get; private set; }
+        public string? Prev => GetElementValue(x => x.Prev);
 
         [PresentationAPI("2.0", Notes = "Paging property")]
         [JsonProperty(StartIndexJName)]
-        public int? StartIndex { get; private set; }
+        public int? StartIndex => GetElementValue(x => x.StartIndex);
 
         internal Collection(string id) : base(id, "sc:Collection")
         {
@@ -77,22 +73,21 @@ namespace IIIF.Manifests.Serializer.Nodes.CollectionNode
         public Collection(string id, Label label) : this(id) => AddLabel(label);
         public Collection(string id, IEnumerable<Label> labels) : this(id) => labels.Enumerate(label => AddLabel(label));
 
-        public Collection SetViewingDirection(ViewingDirection viewingDirection) => SetPropertyValue(a => a.ViewingDirection, viewingDirection);
-        public Collection SetTotal(int total) => SetPropertyValue(a => a.Total, total);
-        public Collection SetFirst(string first) => SetPropertyValue(a => a.First, first);
-        public Collection SetLast(string last) => SetPropertyValue(a => a.Last, last);
-        public Collection SetNext(string next) => SetPropertyValue(a => a.Next, next);
-        public Collection SetPrev(string prev) => SetPropertyValue(a => a.Prev, prev);
-        public Collection SetStartIndex(int startIndex) => SetPropertyValue(a => a.StartIndex, startIndex);
+        public Collection SetViewingDirection(ViewingDirection viewingDirection) => SetElementValue(a => a.ViewingDirection, viewingDirection);
+        public Collection SetTotal(int total) => SetElementValue(a => a.Total, total);
+        public Collection SetFirst(string first) => SetElementValue(a => a.First, first);
+        public Collection SetLast(string last) => SetElementValue(a => a.Last, last);
+        public Collection SetNext(string next) => SetElementValue(a => a.Next, next);
+        public Collection SetPrev(string prev) => SetElementValue(a => a.Prev, prev);
+        public Collection SetStartIndex(int startIndex) => SetElementValue(a => a.StartIndex, startIndex);
 
-        public Collection AddCollection(Collection collection) => SetPropertyValue(a => a.collections, a => a.Collections, collections.Attach(collection));
-        public Collection RemoveCollection(Collection collection) => SetPropertyValue(a => a.collections, a => a.Collections, collections.Detach(collection));
+        public Collection AddCollection(Collection collection) => SetElementValue(a => a.Collections, x => x.With(collection));
+        public Collection RemoveCollection(Collection collection) => SetElementValue(a => a.Collections, x => x.Without(collection));
 
-        public Collection AddManifest(string manifestId) => SetPropertyValue(a => a.manifests, a => a.Manifests, manifests.Attach(manifestId));
-        public Collection RemoveManifest(string manifestId) => SetPropertyValue(a => a.manifests, a => a.Manifests, manifests.Detach(manifestId));
+        public Collection AddManifest(string manifestId) => SetElementValue(a => a.Manifests, collection => collection.With(manifestId));
+        public Collection RemoveManifest(string manifestId) => SetElementValue(a => a.Manifests, collection => collection.With(manifestId));
 
-        public Collection AddMember(object member) => SetPropertyValue(a => a.members, a => a.Members, members.Attach(member));
-        public Collection RemoveMember(object member) => SetPropertyValue(a => a.members, a => a.Members, members.Detach(member));
+        public Collection AddMember(object member) => SetElementValue(a => a.Members, collection => collection.With(member));
+        public Collection RemoveMember(object member) => SetElementValue(a => a.Members, collection => collection.With(member));
     }
 }
-

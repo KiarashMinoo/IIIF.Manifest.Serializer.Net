@@ -3,20 +3,14 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.DescriptionProperty
 {
-
     [JsonConverter(typeof(DescriptionJsonConverter))]
-    public class Description : ValuableItem<Description>
+    public class Description(string value) : ValuableItem<Description>(value)
     {
         public const string ValueJName = "@value";
         public const string LanguageJName = "@language";
 
-        [JsonProperty(LanguageJName)]
-        public string Language { get; private set; }
+        [JsonProperty(LanguageJName)] public string? Language => GetElementValue(x => x.Language);
 
-        public Description(string value) : base(value)
-        {
-        }
-
-        public Description SetLanguage(string language) => SetPropertyValue(a => a.Language, language);
+        public Description SetLanguage(string language) => SetElementValue(a => a.Language, language);
     }
 }

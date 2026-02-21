@@ -7,7 +7,7 @@ namespace IIIF.Manifests.Serializer.Properties.Interfaces;
 
 public static class IDimenssionSupportHelper
 {
-    public static T SetHeight<T>(this T item, JToken element) where T : BaseItem<T>, IDimenssionSupport<T>
+    public static T SetHeight<T>(this T item, JToken element) where T : BaseItem<T>, IDimensionSupport<T>
     {
         var jHeight = element.TryGetToken(Constants.HeightJName);
         if (jHeight != null)
@@ -16,7 +16,7 @@ public static class IDimenssionSupportHelper
         return item;
     }
 
-    public static T SetWidth<T>(this T item, JToken element) where T : BaseItem<T>, IDimenssionSupport<T>
+    public static T SetWidth<T>(this T item, JToken element) where T : BaseItem<T>, IDimensionSupport<T>
     {
         var jWidth = element.TryGetToken(Constants.WidthJName);
         if (jWidth != null)

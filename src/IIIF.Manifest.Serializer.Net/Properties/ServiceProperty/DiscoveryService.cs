@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
@@ -15,11 +16,9 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
     {
         public const string OrderedItemsJName = "orderedItems";
 
-        private readonly List<Activity> activities = new List<Activity>();
-
         [DiscoveryAPI("1.0")]
         [JsonProperty(IBaseService.ProfileJName)]
-        public string Profile { get; }
+        public string Profile => GetElementValue(x => x.Profile)!;
 
         /// <summary>
         /// Creates a new DiscoveryService.
@@ -29,7 +28,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// <param name="profile">The service profile</param>
         public DiscoveryService(string context, string id, string profile) : base(id, "OrderedCollection", context)
         {
-            Profile = profile;
+            SetElementValue(x => x.Profile, profile);
         }
 
         /// <summary>
@@ -37,28 +36,20 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// </summary>
         [DiscoveryAPI("1.0")]
         [JsonProperty(OrderedItemsJName)]
-        public IReadOnlyCollection<Activity> OrderedItems => activities;
+        public IReadOnlyCollection<Activity> OrderedItems => GetElementValue(x => x.OrderedItems) ?? [];
 
         /// <summary>
         /// Adds an activity to the ordered items.
         /// </summary>
         /// <param name="activity">The activity to add</param>
         /// <returns>This DiscoveryService for fluent API</returns>
-        public DiscoveryService AddActivity(Activity activity)
-        {
-            activities.Add(activity);
-            return this;
-        }
+        public DiscoveryService AddActivity(Activity activity) => SetElementValue(x => x.OrderedItems, collection => collection.With(activity));
 
         /// <summary>
         /// Removes an activity from the ordered items.
         /// </summary>
         /// <param name="activity">The activity to remove</param>
         /// <returns>This DiscoveryService for fluent API</returns>
-        public DiscoveryService RemoveActivity(Activity activity)
-        {
-            activities.Remove(activity);
-            return this;
-        }
+        public DiscoveryService RemoveActivity(Activity activity) => SetElementValue(x => x.OrderedItems, collection => collection.Without(activity));
     }
 }

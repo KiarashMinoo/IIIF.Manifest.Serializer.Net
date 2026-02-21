@@ -14,32 +14,25 @@ namespace IIIF.Manifests.Serializer.Nodes.LayerNode
     /// <remarks>
     /// Deprecated in IIIF Presentation API 3.0. Use AnnotationCollection instead.
     /// </remarks>
-    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", 
+    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
         ReplacedBy = "AnnotationCollection", Notes = "Layers removed in API 3.0")]
     [JsonConverter(typeof(LayerJsonConverter))]
-    public class Layer : BaseNode<Layer>
+    public class Layer(string id) : BaseNode<Layer>(id, "sc:Layer")
     {
         public const string OtherContentJName = "otherContent";
-
-        private readonly List<string> otherContent = new List<string>();
 
         /// <summary>
         /// References to AnnotationLists that belong to this layer.
         /// </summary>
         [JsonProperty(OtherContentJName)]
-        public IReadOnlyCollection<string> OtherContent => otherContent.AsReadOnly();
-
-        public Layer(string id) : base(id, "sc:Layer")
-        {
-        }
+        public IReadOnlyCollection<string> OtherContent => GetElementValue(x => x.OtherContent) ?? [];
 
         public Layer(string id, Label label) : this(id) => AddLabel(label);
 
-        public Layer AddOtherContent(string annotationListId) => 
-            SetPropertyValue(a => a.otherContent, a => a.OtherContent, otherContent.Attach(annotationListId));
-        
-        public Layer RemoveOtherContent(string annotationListId) => 
-            SetPropertyValue(a => a.otherContent, a => a.OtherContent, otherContent.Detach(annotationListId));
+        public Layer AddOtherContent(string annotationListId) =>
+            SetElementValue(a => a.OtherContent, collection => collection.With(annotationListId));
+
+        public Layer RemoveOtherContent(string annotationListId) =>
+            SetElementValue(a => a.OtherContent, collection => collection.Without(annotationListId));
     }
 }
-

@@ -18,8 +18,8 @@ namespace IIIF.Manifests.Serializer.Nodes.LayerNode
             return new Layer(jId.ToString());
         }
 
-        protected override Layer EnrichReadJson(Layer layer, JToken element, Type objectType, 
-            Layer existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Layer EnrichReadJson(Layer layer, JToken element, Type objectType,
+            Layer? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             layer = base.EnrichReadJson(layer, element, objectType, existingValue, hasExistingValue, serializer);
 

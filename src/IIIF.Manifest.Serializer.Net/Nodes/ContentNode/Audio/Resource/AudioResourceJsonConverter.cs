@@ -18,7 +18,7 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Audio.Resource
             var format = jFormat?.ToString() ?? "audio/mpeg";
             return new AudioResource(jId.ToString(), format);
         }
-        protected override AudioResource EnrichReadJson(AudioResource resource, JToken element, Type objectType, AudioResource existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override AudioResource EnrichReadJson(AudioResource resource, JToken element, Type objectType, AudioResource? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             resource = base.EnrichReadJson(resource, element, objectType, existingValue, hasExistingValue, serializer);
             var jDuration = element.TryGetToken(AudioResource.DurationJName);

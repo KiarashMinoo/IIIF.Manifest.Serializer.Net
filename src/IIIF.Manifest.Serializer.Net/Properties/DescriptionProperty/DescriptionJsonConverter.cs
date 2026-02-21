@@ -24,7 +24,7 @@ namespace IIIF.Manifests.Serializer.Properties.DescriptionProperty
             return base.CreateInstance(element, objectType, existingValue, hasExistingValue, serializer);
         }
 
-        protected override Description EnrichReadJson(Description item, JToken element, Type objectType, Description existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Description EnrichReadJson(Description item, JToken element, Type objectType, Description? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             item = base.EnrichReadJson(item, element, objectType, existingValue, hasExistingValue, serializer);
 

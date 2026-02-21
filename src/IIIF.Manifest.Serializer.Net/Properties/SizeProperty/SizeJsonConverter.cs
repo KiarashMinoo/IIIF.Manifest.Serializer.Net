@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
@@ -16,7 +16,7 @@ namespace IIIF.Manifests.Serializer.Properties.SizeProperty
             var height = jHeight?.Value<int>() ?? 0;
             return new Size(width, height);
         }
-        protected override Size EnrichReadJson(Size size, JToken element, Type objectType, Size existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Size EnrichReadJson(Size size, JToken element, Type objectType, Size? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             return size;
         }

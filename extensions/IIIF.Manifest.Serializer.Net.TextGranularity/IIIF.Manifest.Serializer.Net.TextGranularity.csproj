@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>IIIF.Manifests.Serializer.NavPlace</RootNamespace>
+    <RootNamespace>IIIF.Manifests.Serializer.TextGranularity</RootNamespace>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latestmajor</LangVersion>
-    <Nullable>disable</Nullable>
-    <PackageId>IIIF.Manifest.Serializer.Net.NavPlace</PackageId>
+    <Nullable>enable</Nullable>
+    <PackageId>IIIF.Manifest.Serializer.Net.TextGranularity</PackageId>
     <Version>1.0.0</Version>
     <Authors>IIIF Community</Authors>
-    <Description>IIIF navPlace Extension for geographic location support in IIIF manifests.</Description>
-    <PackageTags>iiif;manifest;navplace;geographic;location</PackageTags>
+    <Description>IIIF Text Granularity Extension for OCR text segmentation in IIIF manifests.</Description>
+    <PackageTags>iiif;manifest;text;granularity;ocr</PackageTags>
     <RepositoryUrl>https://github.com/IIIF/iiif.net</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
+    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
 {
     public class DiscoveryServiceJsonConverter : BaseItemJsonConverter<DiscoveryService>
     {
-        protected override DiscoveryService CreateInstance(JToken element, Type objectType, DiscoveryService existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override DiscoveryService CreateInstance(JToken element, Type objectType, DiscoveryService? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             var jContext = element.TryGetToken(DiscoveryService.ContextJName);
             if (jContext is null)
@@ -36,11 +36,10 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             return service;
         }
 
-        protected override DiscoveryService EnrichReadJson(DiscoveryService service, JToken element, Type objectType, DiscoveryService existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override DiscoveryService EnrichReadJson(DiscoveryService service, JToken element, Type objectType, DiscoveryService? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            // Handle ordered items (activities)
             var jOrderedItems = element.TryGetToken(DiscoveryService.OrderedItemsJName);
-            if (jOrderedItems != null && jOrderedItems is JArray activitiesArray)
+            if (jOrderedItems is JArray activitiesArray)
             {
                 foreach (var activityToken in activitiesArray)
                 {
@@ -59,25 +58,23 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         {
             base.EnrichMoreWriteJson(writer, value, serializer);
 
-            if (value != null)
+            if (!string.IsNullOrEmpty(value.Profile))
             {
-                if (!string.IsNullOrEmpty(value.Profile))
+                writer.WritePropertyName(IBaseService.ProfileJName);
+                writer.WriteValue(value.Profile);
+            }
+
+            // Serialize ordered items (activities)
+            if (value.OrderedItems.Any())
+            {
+                writer.WritePropertyName(DiscoveryService.OrderedItemsJName);
+                writer.WriteStartArray();
+                foreach (var activity in value.OrderedItems)
                 {
-                    writer.WritePropertyName(IBaseService.ProfileJName);
-                    writer.WriteValue(value.Profile);
+                    serializer.Serialize(writer, activity);
                 }
 
-                // Serialize ordered items (activities)
-                if (value.OrderedItems.Any())
-                {
-                    writer.WritePropertyName(DiscoveryService.OrderedItemsJName);
-                    writer.WriteStartArray();
-                    foreach (var activity in value.OrderedItems)
-                    {
-                        serializer.Serialize(writer, activity);
-                    }
-                    writer.WriteEndArray();
-                }
+                writer.WriteEndArray();
             }
         }
     }

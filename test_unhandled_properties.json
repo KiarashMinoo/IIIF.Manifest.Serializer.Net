@@ -1,0 +1,40 @@
+{
+  "@context": "http://iiif.io/api/presentation/2/context.json",
+  "@type": "sc:Manifest",
+  "@id": "https://example.org/manifest",
+  "label": "Test Manifest",
+  "customProperty": "customValue",
+  "extensionField": {
+    "nestedKey": "nestedValue"
+  },
+  "sequences": [
+    {
+      "@type": "sc:Sequence",
+      "@id": "https://example.org/sequence/1",
+      "canvases": [
+        {
+          "@type": "sc:Canvas",
+          "@id": "https://example.org/canvas/1",
+          "label": "Canvas 1",
+          "height": 1000,
+          "width": 800,
+          "images": [
+            {
+              "@type": "oa:Annotation",
+              "motivation": "sc:painting",
+              "resource": {
+                "@id": "https://example.org/image1.jpg",
+                "@type": "dctypes:Image",
+                "format": "image/jpeg",
+                "height": 1000,
+                "width": 800
+              },
+              "on": "https://example.org/canvas/1"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+

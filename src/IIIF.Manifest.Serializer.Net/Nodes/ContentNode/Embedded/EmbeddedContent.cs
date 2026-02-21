@@ -8,12 +8,11 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Embedded
     {
         public const string OnJName = "on";
 
-        [JsonProperty(OnJName)]
-        public string On { get; }
+        [JsonProperty(OnJName)] public string On => GetElementValue(x => x.On)!;
 
         public EmbeddedContent(string id, EmbeddedContentResource resource, string on) : base(id, "oa:Annotation", resource)
         {
-            On = on;
+            SetElementValue(x => x.On, on);
         }
     }
 }

@@ -14,7 +14,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
     {
         [SearchAPI("2.0")]
         [JsonProperty(IBaseService.ProfileJName)]
-        public string Profile { get; }
+        public string Profile => GetElementValue(x => x.Profile)!;
 
         /// <summary>
         /// Creates a new AutoCompleteService.
@@ -24,7 +24,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// <param name="profile">The service profile</param>
         public AutoCompleteService(string context, string id, string profile) : base(id, "AutoCompleteService2", context)
         {
-            Profile = profile;
+            SetElementValue(x => x.Profile, profile);
         }
     }
 }

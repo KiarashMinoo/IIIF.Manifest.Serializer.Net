@@ -40,7 +40,7 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment
             return new Segment(jId.ToString(), jResource.ToObject<SegmentResource>(), jOn.ToString());
         }
 
-        protected override Segment EnrichReadJson(Segment segment, JToken element, Type objectType, Segment existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Segment EnrichReadJson(Segment segment, JToken element, Type objectType, Segment? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             segment = base.EnrichReadJson(segment, element, objectType, existingValue, hasExistingValue, serializer);
             segment = SetSelector(element, segment);

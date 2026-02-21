@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
     public class BaseItemJsonConverter<TBaseItem> : TrackableObjectJsonConverter<TBaseItem>
         where TBaseItem : BaseItem<TBaseItem>
     {
-        protected bool DisableTypeChecking { get; set; } = false;
+        protected bool DisableTypeChecking { get; set; }
 
         private TBaseItem SetType(JToken element, TBaseItem baseItem)
         {
@@ -30,7 +30,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
             var jService = element.TryGetToken(BaseItem<TBaseItem>.ServiceJName);
             if (jService != null)
             {
-                IBaseService service = null;
+                IBaseService? service = null;
 
                 if (jService is JArray serviceArray)
                 {
@@ -60,7 +60,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
             return baseItem;
         }
 
-        private IBaseService DetectAndDeserializeService(JToken serviceToken)
+        private IBaseService? DetectAndDeserializeService(JToken serviceToken)
         {
             // Check the @type field to determine service type
             var jType = serviceToken.TryGetToken(BaseItem<TBaseItem>.TypeJName);
@@ -98,8 +98,14 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
                             if (profileValue.Contains("auth"))
                             {
                                 // Try Auth services
-                                try { return serviceToken.ToObject<Properties.ServiceProperty.AuthService1>(); }
-                                catch { return serviceToken.ToObject<Properties.ServiceProperty.AuthService2>(); }
+                                try
+                                {
+                                    return serviceToken.ToObject<Properties.ServiceProperty.AuthService1>();
+                                }
+                                catch
+                                {
+                                    return serviceToken.ToObject<Properties.ServiceProperty.AuthService2>();
+                                }
                             }
                             else if (profileValue.Contains("search"))
                             {
@@ -118,6 +124,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
                                 return serviceToken.ToObject<Properties.ServiceProperty.Service>();
                             }
                         }
+
                         break;
                 }
             }
@@ -133,8 +140,8 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
                 return null;
             }
         }
-        
-        protected override TBaseItem CreateInstance(JToken element, Type objectType, TBaseItem existingValue, bool hasExistingValue, JsonSerializer serializer)
+
+        protected override TBaseItem CreateInstance(JToken element, Type objectType, TBaseItem? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (element is JObject)
             {
@@ -148,7 +155,7 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
                 return (TBaseItem)Activator.CreateInstance(typeof(TBaseItem), element.Value<string>());
         }
 
-        protected override TBaseItem EnrichReadJson(TBaseItem item, JToken element, Type objectType, TBaseItem existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override TBaseItem EnrichReadJson(TBaseItem item, JToken element, Type objectType, TBaseItem? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             item = SetType(element, item);
             item = SetService(element, item);
@@ -161,38 +168,31 @@ namespace IIIF.Manifests.Serializer.Shared.BaseItem
 
         protected sealed override void EnrichWriteJson(JsonWriter writer, TBaseItem value, JsonSerializer serializer)
         {
-            if (value != null)
+            if (!string.IsNullOrEmpty(value.Context))
             {
-                writer.WriteStartObject();
-
-                if (!string.IsNullOrEmpty(value.Context))
-                {
-                    writer.WritePropertyName(BaseItem<TBaseItem>.ContextJName);
-                    writer.WriteValue(value.Context);
-                }
-
-                if (!string.IsNullOrEmpty(value.Id))
-                {
-                    writer.WritePropertyName(BaseItem<TBaseItem>.IdJName);
-                    writer.WriteValue(value.Id);
-                }
-
-                if (!string.IsNullOrEmpty(value.Type))
-                {
-                    writer.WritePropertyName(BaseItem<TBaseItem>.TypeJName);
-                    writer.WriteValue(value.Type);
-                }
-
-                if (value.Service != null)
-                {
-                    writer.WritePropertyName(BaseItem<TBaseItem>.ServiceJName);
-                    serializer.Serialize(writer, value.Service);
-                }
-
-                EnrichMoreWriteJson(writer, value, serializer);
-
-                writer.WriteEndObject();
+                writer.WritePropertyName(BaseItem<TBaseItem>.ContextJName);
+                writer.WriteValue(value.Context);
             }
+
+            if (!string.IsNullOrEmpty(value.Id))
+            {
+                writer.WritePropertyName(BaseItem<TBaseItem>.IdJName);
+                writer.WriteValue(value.Id);
+            }
+
+            if (!string.IsNullOrEmpty(value.Type))
+            {
+                writer.WritePropertyName(BaseItem<TBaseItem>.TypeJName);
+                writer.WriteValue(value.Type);
+            }
+
+            if (value.Service != null)
+            {
+                writer.WritePropertyName(BaseItem<TBaseItem>.ServiceJName);
+                serializer.Serialize(writer, value.Service);
+            }
+
+            EnrichMoreWriteJson(writer, value, serializer);
         }
     }
 }

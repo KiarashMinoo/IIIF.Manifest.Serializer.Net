@@ -7,20 +7,20 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Shared.FormatableItem
 {
     public class FormatableItemJsonConverter<TFormatableItem> : BaseItemJsonConverter<TFormatableItem>
-        where TFormatableItem : FormatableItem<TFormatableItem>
+        where TFormatableItem : FormattableItem<TFormatableItem>
     {
         public FormatableItemJsonConverter() => DisableTypeChecking = true;
 
         private TFormatableItem SetFormat(JToken element, TFormatableItem formatableItem)
         {
-            var jFormat = element.TryGetToken(FormatableItem<TFormatableItem>.FormatJName);
+            var jFormat = element.TryGetToken(FormattableItem<TFormatableItem>.FormatJName);
             if (jFormat != null)
                 formatableItem.SetFormat(jFormat.ToString());
 
             return formatableItem;
         }
 
-        protected override TFormatableItem EnrichReadJson(TFormatableItem item, JToken element, Type objectType, TFormatableItem existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override TFormatableItem EnrichReadJson(TFormatableItem item, JToken element, Type objectType, TFormatableItem? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             item = base.EnrichReadJson(item, element, objectType, existingValue, hasExistingValue, serializer);
 
@@ -37,7 +37,7 @@ namespace IIIF.Manifests.Serializer.Shared.FormatableItem
             {
                 if (!string.IsNullOrEmpty(value.Format))
                 {
-                    writer.WritePropertyName(FormatableItem<TFormatableItem>.FormatJName);
+                    writer.WritePropertyName(FormattableItem<TFormatableItem>.FormatJName);
                     writer.WriteValue(value.Format);
                 }
             }

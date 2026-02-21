@@ -11,18 +11,19 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment
         public const string SelectorJName = "selector";
 
 
-        [JsonProperty(MotivationJName)]
-        public string Motivation { get; } = "sc:painting";
+        [JsonProperty(MotivationJName)] public string Motivation => GetElementValue(x => x.Motivation)!;
 
-        [JsonProperty(OnJName)]
-        public string On { get; }
+        [JsonProperty(OnJName)] public string On => GetElementValue(x => x.On)!;
 
-        [JsonProperty(SelectorJName)]
-        public Selector.Selector Selector { get; private set; }
+        [JsonProperty(SelectorJName)] public Selector.Selector? Selector => GetElementValue(x => x.Selector);
 
 
-        public Segment(string id, SegmentResource resource, string on) : base(id, "oa:Annotation", resource) => On = on;
+        public Segment(string id, SegmentResource resource, string on) : base(id, "oa:Annotation", resource)
+        {
+            SetElementValue(x => x.Motivation, "sc:painting");
+            SetElementValue(x => x.On, on);
+        }
 
-        public Segment SetSelector(Selector.Selector selector) => SetPropertyValue(a => a.Selector, selector);
+        public Segment SetSelector(Selector.Selector selector) => SetElementValue(a => a.Selector, selector);
     }
 }

@@ -6,12 +6,11 @@ namespace IIIF.Manifests.Serializer.Properties
 {
     [PresentationAPI("2.0")]
     [JsonConverter(typeof(HomepageJsonConverter))]
-    public class Homepage : FormatableItem<Homepage>
+    public class Homepage : FormattableItem<Homepage>
     {
         public const string LabelJName = "label";
 
-        [JsonProperty(LabelJName)]
-        public string Label { get; }
+        [JsonProperty(LabelJName)] public string? Label => GetElementValue(x => x.Label);
 
         public Homepage(string id) : base(id)
         {
@@ -19,7 +18,7 @@ namespace IIIF.Manifests.Serializer.Properties
 
         public Homepage(string id, string label) : base(id)
         {
-            Label = label;
+            SetElementValue(x => x.Label, label);
         }
     }
 }

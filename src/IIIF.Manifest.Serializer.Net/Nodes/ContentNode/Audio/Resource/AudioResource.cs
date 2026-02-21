@@ -10,12 +10,14 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Audio.Resource
     public class AudioResource : BaseResource<AudioResource>
     {
         public const string DurationJName = "duration";
-        [JsonProperty(DurationJName)]
-        public double? Duration { get; private set; }
+
+        [JsonProperty(DurationJName)] public double? Duration => GetElementValue(x => x.Duration);
+
         public AudioResource(string id, string format) : base(id, "dctypes:Sound")
         {
             SetFormat(format);
         }
-        public AudioResource SetDuration(double duration) => SetPropertyValue(a => a.Duration, duration);
+
+        public AudioResource SetDuration(double duration) => SetElementValue(a => a.Duration, duration);
     }
 }

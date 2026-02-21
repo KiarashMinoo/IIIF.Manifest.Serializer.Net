@@ -117,7 +117,7 @@ namespace IIIF.Manifests.Serializer.Nodes.ManifestNode
 
         protected override Manifest CreateInstance(JToken element, Type objectType, Manifest existingValue, bool hasExistingValue, JsonSerializer serializer) => ConstructManifest(element);
 
-        protected override Manifest EnrichReadJson(Manifest manifest, JToken element, Type objectType, Manifest existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Manifest EnrichReadJson(Manifest manifest, JToken element, Type objectType, Manifest? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             manifest = base.EnrichReadJson(manifest, element, objectType, existingValue, hasExistingValue, serializer);
 

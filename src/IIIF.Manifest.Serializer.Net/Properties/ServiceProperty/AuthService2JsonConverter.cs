@@ -76,7 +76,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             return service;
         }
 
-        protected sealed override AuthService2 EnrichReadJson(AuthService2 service, JToken element, Type objectType, AuthService2 existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected sealed override AuthService2 EnrichReadJson(AuthService2 service, JToken element, Type objectType, AuthService2? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             service = SetTextProperties(element, service);
             service = SetServices(element, service, serializer);

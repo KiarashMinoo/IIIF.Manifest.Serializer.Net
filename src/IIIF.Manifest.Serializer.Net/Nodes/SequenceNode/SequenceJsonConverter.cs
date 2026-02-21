@@ -58,7 +58,7 @@ namespace IIIF.Manifests.Serializer.Nodes.SequenceNode
 
         protected override Sequence CreateInstance(JToken element, Type objectType, Sequence existingValue, bool hasExistingValue, JsonSerializer serializer) => ConstructSequence(element);
 
-        protected override Sequence EnrichReadJson(Sequence sequence, JToken element, Type objectType, Sequence existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override Sequence EnrichReadJson(Sequence sequence, JToken element, Type objectType, Sequence? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             sequence = base.EnrichReadJson(sequence, element, objectType, existingValue, hasExistingValue, serializer);
 

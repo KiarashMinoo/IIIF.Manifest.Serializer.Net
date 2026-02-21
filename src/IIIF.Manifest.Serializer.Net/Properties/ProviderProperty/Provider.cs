@@ -9,12 +9,11 @@ namespace IIIF.Manifests.Serializer.Properties.ProviderProperty
     /// </summary>
     [PresentationAPI("2.0")]
     [JsonConverter(typeof(ProviderJsonConverter))]
-    public class Provider : FormatableItem<Provider>
+    public class Provider : FormattableItem<Provider>
     {
         public const string LabelJName = "label";
 
-        [JsonProperty(LabelJName)]
-        public string Label { get; }
+        [JsonProperty(LabelJName)] public string? Label => GetElementValue(x => x.Label);
 
         public Provider(string id) : base(id, "Agent")
         {
@@ -22,7 +21,7 @@ namespace IIIF.Manifests.Serializer.Properties.ProviderProperty
 
         public Provider(string id, string label) : this(id)
         {
-            Label = label;
+            SetElementValue(x => x.Label, label);
         }
     }
 }

@@ -5,11 +5,48 @@ namespace IIIF.Manifests.Serializer.Helpers
 {
     public static class CollectionHelper
     {
+        extension<TItem>(IReadOnlyCollection<TItem>? collection)
+        {
+            /// <summary>
+            /// Creates a new IReadOnlyCollection with the specified item added.
+            /// </summary>
+            public IReadOnlyCollection<TItem> With(TItem item)
+            {
+                var list = new List<TItem>();
+
+                if (collection != null)
+                {
+                    list.AddRange(collection);
+                }
+
+                list.Add(item);
+
+                return list.AsReadOnly();
+            }
+
+            /// <summary>
+            /// Creates a new IReadOnlyCollection with the specified item removed.
+            /// </summary>
+            public IReadOnlyCollection<TItem> Without(TItem item)
+            {
+                var list = new List<TItem>();
+
+                if (collection != null)
+                {
+                    list.AddRange(collection);
+                }
+
+                list.Remove(item);
+                return list.AsReadOnly();
+            }
+        }
+
         public static TCollection Attach<TCollection, TItem>(this TCollection collection, TItem item) where TCollection : ICollection<TItem>
         {
             collection.Add(item);
             return collection;
         }
+
 
         public static TCollection AttachRange<TCollection, TItem>(this TCollection collection, IEnumerable<TItem> items) where TCollection : ICollection<TItem>
         {

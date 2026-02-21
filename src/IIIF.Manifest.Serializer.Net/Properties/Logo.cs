@@ -7,7 +7,7 @@ namespace IIIF.Manifests.Serializer.Properties
 {
     [PresentationAPI("2.0")]
     [JsonConverter(typeof(FormatableItemJsonConverter<Logo>))]
-    public class Logo : FormatableItem<Logo>
+    public class Logo : FormattableItem<Logo>
     {
         public Logo(string id) : base(id, "dctypes:Image")
         {

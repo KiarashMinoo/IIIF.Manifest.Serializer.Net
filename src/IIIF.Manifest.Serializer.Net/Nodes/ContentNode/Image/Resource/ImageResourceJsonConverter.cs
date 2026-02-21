@@ -40,7 +40,7 @@ namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource
 
             return new ImageResource(jId.ToString(), jFormat.ToString());
         }
-        protected override ImageResource EnrichReadJson(ImageResource resource, JToken element, Type objectType, ImageResource existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override ImageResource EnrichReadJson(ImageResource resource, JToken element, Type objectType, ImageResource? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             resource = base.EnrichReadJson(resource, element, objectType, existingValue, hasExistingValue, serializer);
 

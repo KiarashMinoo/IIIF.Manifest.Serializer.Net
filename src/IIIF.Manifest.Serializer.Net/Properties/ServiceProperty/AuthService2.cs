@@ -21,43 +21,41 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         public const string NoteJName = "note";
         public const string ConfirmLabelJName = "confirmLabel";
 
-        private readonly List<AuthService2> _services = new List<AuthService2>();
-
         /// <summary>
         /// The profile of the authentication service (active or external for access services).
         /// </summary>
-        public string Profile { get; private set; }
+        public string Profile => GetElementValue(a => a.Profile)!;
 
         /// <summary>
         /// User-facing label for the service (may be language map in full implementation).
         /// </summary>
-        public string Label { get; private set; }
+        public string? Label => GetElementValue(a => a.Label);
 
         /// <summary>
         /// Heading text for the authentication interface.
         /// </summary>
-        public string Heading { get; private set; }
+        public string? Heading => GetElementValue(a => a.Heading);
 
         /// <summary>
         /// Explanatory note for the authentication requirement.
         /// </summary>
-        public string Note { get; private set; }
+        public string? Note => GetElementValue(a => a.Note);
 
         /// <summary>
         /// Label for the confirmation button.
         /// </summary>
-        public string ConfirmLabel { get; private set; }
+        public string? ConfirmLabel => GetElementValue(a => a.ConfirmLabel);
 
         /// <summary>
         /// Nested services (e.g., access service within probe, token service within access, logout within token).
         /// </summary>
-        public IReadOnlyCollection<AuthService2> Services => _services.AsReadOnly();
+        public IReadOnlyCollection<AuthService2> Services => GetElementValue(a => a.Services) ?? [];
 
         /// <summary>
         /// Creates a new Auth API 2.0 service.
         /// </summary>
         /// <param name="id">Service identifier</param>
-        public AuthService2(string id) 
+        public AuthService2(string id)
             : base(id, string.Empty, "http://iiif.io/api/auth/2/context.json")
         {
         }
@@ -67,45 +65,45 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// </summary>
         /// <param name="id">Service identifier</param>
         /// <param name="profile">Auth profile (active or external)</param>
-        public AuthService2(string id, string profile) 
+        public AuthService2(string id, string profile)
             : base(id, string.Empty, "http://iiif.io/api/auth/2/context.json")
         {
-            Profile = profile;
+            SetElementValue(x => x.Profile, profile);
         }
 
         /// <summary>
         /// Set the profile for this authentication service.
         /// </summary>
-        public AuthService2 SetProfile(string profile) => SetPropertyValue(a => a.Profile, profile);
+        public AuthService2 SetProfile(string profile) => SetElementValue(a => a.Profile, profile);
 
         /// <summary>
         /// Set the label for this service.
         /// </summary>
-        public AuthService2 SetLabel(string label) => SetPropertyValue(a => a.Label, label);
+        public AuthService2 SetLabel(string label) => SetElementValue(a => a.Label, label);
 
         /// <summary>
         /// Set the heading for the authentication interface.
         /// </summary>
-        public AuthService2 SetHeading(string heading) => SetPropertyValue(a => a.Heading, heading);
+        public AuthService2 SetHeading(string heading) => SetElementValue(a => a.Heading, heading);
 
         /// <summary>
         /// Set the note explaining the authentication requirement.
         /// </summary>
-        public AuthService2 SetNote(string note) => SetPropertyValue(a => a.Note, note);
+        public AuthService2 SetNote(string note) => SetElementValue(a => a.Note, note);
 
         /// <summary>
         /// Set the confirm button label.
         /// </summary>
-        public AuthService2 SetConfirmLabel(string confirmLabel) => SetPropertyValue(a => a.ConfirmLabel, confirmLabel);
+        public AuthService2 SetConfirmLabel(string confirmLabel) => SetElementValue(a => a.ConfirmLabel, confirmLabel);
 
         /// <summary>
         /// Add a nested service (access, token, or logout service).
         /// </summary>
-        public AuthService2 AddService(AuthService2 service) => SetPropertyValue(a => a._services, a => a.Services, _services.Attach(service));
+        public AuthService2 AddService(AuthService2 service) => SetElementValue(a => a.Services, collection => collection.With(service));
 
         /// <summary>
         /// Remove a nested service.
         /// </summary>
-        public AuthService2 RemoveService(AuthService2 service) => SetPropertyValue(a => a._services, a => a.Services, _services.Detach(service));
+        public AuthService2 RemoveService(AuthService2 service) => SetElementValue(a => a.Services, collection => collection.Without(service));
     }
 }

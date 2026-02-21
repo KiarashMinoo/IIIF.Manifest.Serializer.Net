@@ -3,6 +3,6 @@
 public interface IBaseService
 {
     public const string ProfileJName = "profile";
-    
+
     string Profile { get; }
 }

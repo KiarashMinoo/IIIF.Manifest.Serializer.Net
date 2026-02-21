@@ -133,7 +133,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
             return service;
         }
 
-        protected sealed override Service EnrichReadJson(Service service, JToken element, Type objectType, Service existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected sealed override Service EnrichReadJson(Service service, JToken element, Type objectType, Service? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             service = service.SetHeight(element);
             service = service.SetWidth(element);
