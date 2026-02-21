@@ -1,34 +1,29 @@
-﻿using IIIF.Manifests.Serializer.Shared.Trackable;
+﻿using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
 /// <summary>
 /// A GeoJSON Feature representing a geographic area.
+/// Supports optional id property per the navPlace extension spec.
 /// </summary>
-public class Feature : TrackableObject<Feature>
+[JsonConverter(typeof(FeatureJsonConverter))]
+public class Feature(string id) : BaseItem<Feature>(id, "Feature")
 {
-    public const string TypeJName = "type";
     public const string GeometryJName = "geometry";
     public const string PropertiesJName = "properties";
-
-    [JsonProperty(TypeJName)] public string Type => GetElementValue(x => x.Type)!;
 
     [JsonProperty(GeometryJName)] public Geometry? Geometry => GetElementValue(x => x.Geometry);
 
     [JsonProperty(PropertiesJName)] public FeatureProperties? Properties => GetElementValue(x => x.Properties);
 
-    public Feature()
-    {
-        SetElementValue(x => x.Type, "Feature");
-    }
+    /// <summary>
+    /// Set the geometry for this Feature.
+    /// </summary>
+    public Feature SetGeometry(Geometry geometry) => SetElementValue(x => x.Geometry, geometry);
 
-    public Feature(Geometry geometry, string? label = null) : this()
-    {
-        SetElementValue(x => x.Geometry, geometry);
-        if (!string.IsNullOrEmpty(label))
-        {
-            SetElementValue(x => x.Properties, new FeatureProperties(label));
-        }
-    }
+    /// <summary>
+    /// Set the properties for this Feature.
+    /// </summary>
+    public Feature SetProperties(FeatureProperties properties) => SetElementValue(x => x.Properties, properties);
 }

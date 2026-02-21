@@ -15,22 +15,10 @@ namespace IIIF.Manifests.Serializer.Extensions;
 public class FeatureProperties : TrackableObject<FeatureProperties>
 {
     public const string LabelJName = "label";
-    public const string SummaryJName = "summary";
 
     [JsonProperty(LabelJName)] public IReadOnlyCollection<Label> Label => GetElementValue(x => x.Label) ?? [];
-
-    [JsonProperty(SummaryJName)] public string? Summary => GetElementValue(x => x.Summary);
-
-    public FeatureProperties()
-    {
-    }
 
     public FeatureProperties SetLabel(Label[] labels) => SetElementValue(a => a.Label, _ => [..labels]);
     public FeatureProperties AddLabel(Label label) => SetElementValue(a => a.Label, labels => labels.With(label));
     public FeatureProperties RemoveLabel(Label label) => SetElementValue(a => a.Label, labels => labels.Without(label));
-
-    /// <summary>
-    /// Set the summary for this feature properties.
-    /// </summary>
-    public FeatureProperties SetSummary(string summary) => SetElementValue(x => x.Summary, summary);
 }

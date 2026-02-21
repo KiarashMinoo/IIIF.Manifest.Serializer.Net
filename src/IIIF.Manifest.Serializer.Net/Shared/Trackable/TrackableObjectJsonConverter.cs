@@ -63,22 +63,25 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable
 
         public sealed override void WriteJson(JsonWriter writer, TTrackableObject? value, JsonSerializer serializer)
         {
-            if (value != null)
+            if (value == null)
             {
-                writer.Formatting = Formatting.Indented;
-
-                writer.WriteStartObject();
-
-                EnrichWriteJson(writer, value, serializer);
-
-                foreach (var (name, elementDescriptor) in value.ElementDescriptors.Where(x => x.Value.IsAdditional))
-                {
-                    writer.WritePropertyName(name);
-                    writer.WriteRawValue(elementDescriptor.Value.ToString());
-                }
-
-                writer.WriteEndObject();
+                writer.WriteNull();
+                return;
             }
+
+            writer.Formatting = Formatting.Indented;
+
+            writer.WriteStartObject();
+
+            EnrichWriteJson(writer, value, serializer);
+
+            foreach (var (name, elementDescriptor) in value.ElementDescriptors.Where(x => x.Value.IsAdditional))
+            {
+                writer.WritePropertyName(name);
+                writer.WriteRawValue(elementDescriptor.Value.ToString());
+            }
+
+            writer.WriteEndObject();
         }
     }
 }

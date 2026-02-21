@@ -33,10 +33,6 @@ namespace IIIF.Manifests.Serializer.Extensions
                 }
             }
 
-            var summaryToken = element.TryGetToken(FeatureProperties.SummaryJName);
-            if (summaryToken != null)
-                item.SetSummary(summaryToken.ToString());
-
             return item;
         }
 
@@ -56,12 +52,6 @@ namespace IIIF.Manifests.Serializer.Extensions
                 }
 
                 writer.WriteEndArray();
-            }
-
-            if (!string.IsNullOrWhiteSpace(value.Summary))
-            {
-                writer.WritePropertyName(FeatureProperties.SummaryJName);
-                writer.WriteValue(value.Summary);
             }
         }
     }

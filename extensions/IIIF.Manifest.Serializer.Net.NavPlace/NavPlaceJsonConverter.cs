@@ -1,33 +1,53 @@
 using System;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Shared.BaseItem;
+using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Extensions
 {
-    public class NavPlaceJsonConverter : JsonConverter<NavPlace>
+    public class NavPlaceJsonConverter : BaseItemJsonConverter<NavPlace>
     {
-        public override void WriteJson(JsonWriter writer, NavPlace? value, JsonSerializer serializer)
+        protected override NavPlace CreateInstance(JToken element, Type objectType, NavPlace? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if (value?.Features == null)
-            {
-                writer.WriteNull();
-                return;
-            }
+            var jId = element.TryGetToken(Feature.IdJName);
+            if (jId is null)
+                throw new JsonNodeRequiredException<Feature>(Feature.IdJName);
 
-            // Write the FeatureCollection directly
-            serializer.Serialize(writer, value.Features);
+            return new NavPlace(jId.ToString());
         }
 
-        public override NavPlace? ReadJson(JsonReader reader, Type objectType, NavPlace? existingValue, bool hasExistingValue, JsonSerializer serializer)
+        protected override NavPlace EnrichReadJson(NavPlace item, JToken element, Type objectType, NavPlace? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
-                return null;
+            var jFeatures = element.TryGetToken(NavPlace.FeaturesJName);
 
-            var jObject = JObject.Load(reader);
-            var features = jObject.ToObject<FeatureCollection>(serializer);
-            return features != null
-                ? new NavPlace(features)
-                : null;
+            if (jFeatures is JArray)
+            {
+                var features = jFeatures.ToObject<Feature[]>();
+                if (features != null)
+                    item.SetFeatures(features);
+            }
+
+            return item;
+        }
+
+        protected override void EnrichMoreWriteJson(JsonWriter writer, NavPlace value, JsonSerializer serializer)
+        {
+            base.EnrichMoreWriteJson(writer, value, serializer);
+
+            var features = value.Features;
+            if (features.Count > 0)
+            {
+                writer.WritePropertyName(NavPlace.FeaturesJName);
+
+                writer.WriteStartArray();
+
+                foreach (var feature in features)
+                    serializer.Serialize(writer, feature);
+
+                writer.WriteEndArray();
+            }
         }
     }
 }

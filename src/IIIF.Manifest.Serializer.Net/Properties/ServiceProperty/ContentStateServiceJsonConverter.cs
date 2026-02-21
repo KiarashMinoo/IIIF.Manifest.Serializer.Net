@@ -39,7 +39,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         {
             base.EnrichMoreWriteJson(writer, value, serializer);
 
-            if (value != null && !string.IsNullOrEmpty(value.Profile))
+            if (!string.IsNullOrEmpty(value.Profile))
             {
                 writer.WritePropertyName(IBaseService.ProfileJName);
                 writer.WriteValue(value.Profile);
