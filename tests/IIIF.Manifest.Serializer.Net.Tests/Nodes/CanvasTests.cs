@@ -1,7 +1,10 @@
-﻿using IIIF.Manifests.Serializer.Nodes.CanvasNode;
+﻿using System.Drawing;
+using IIIF.Manifests.Serializer.Nodes.CanvasNode;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
 using System.Linq;
+using IIIF.Manifests.Serializer.Extensions;
+using Point = IIIF.Manifests.Serializer.Extensions.Point;
 
 namespace IIIF.Manifests.Serializer.Tests.Nodes
 {
@@ -42,11 +45,11 @@ namespace IIIF.Manifests.Serializer.Tests.Nodes
             );
 
             var resource = new ImageResource(
-                "https://example.org/image.jpg",
-                "image/jpeg"
-            )
-            .SetHeight(2000)
-            .SetWidth(1500);
+                    "https://example.org/image.jpg",
+                    "image/jpeg"
+                )
+                .SetHeight(2000)
+                .SetWidth(1500);
 
             var image = new Image(
                 "https://example.org/anno/1",
@@ -127,18 +130,18 @@ namespace IIIF.Manifests.Serializer.Tests.Nodes
             );
 
             var resource = new ImageResource(
-                "https://example.org/image.jpg",
-                "image/jpeg"
-            )
-            .SetHeight(1000)
-            .SetWidth(800);
+                    "https://example.org/image.jpg",
+                    "image/jpeg"
+                )
+                .SetHeight(1000)
+                .SetWidth(800);
 
             var image = new Image(
-                "https://example.org/anno/1",
-                resource,
-                canvas.Id
-            )
-            .SetTextGranularity(TextGranularity.Line);
+                    "https://example.org/anno/1",
+                    resource,
+                    canvas.Id
+                )
+                .SetTextGranularity(TextGranularity.Line);
 
             canvas.AddImage(image);
 
@@ -171,11 +174,13 @@ namespace IIIF.Manifests.Serializer.Tests.Nodes
             var deserialized = JsonConvert.DeserializeObject<Canvas>(serialized);
 
             // Assert
-            deserialized.NavPlace.Should().NotBeNull();
-            deserialized.NavPlace.Features.Should().NotBeNull();
-            deserialized.NavPlace.Features.Type.Should().Be("FeatureCollection");
-            deserialized.NavPlace.Features.Features.Should().ContainSingle();
-            var feature = deserialized.NavPlace.Features.Features.First();
+            deserialized.Should().NotBeNull();
+            navPlace = deserialized!.GetNavPlace();
+            navPlace.Should().NotBeNull();
+            navPlace!.Features.Should().NotBeNull();
+            navPlace.Features.Type.Should().Be("FeatureCollection");
+            navPlace.Features.Features.Should().ContainSingle();
+            var feature = navPlace.Features.Features.First();
             feature.Type.Should().Be("Feature");
             feature.Geometry.Type.Should().Be("Point");
             feature.Geometry.Coordinates.Should().BeOfType<Point>();
@@ -198,10 +203,10 @@ namespace IIIF.Manifests.Serializer.Tests.Nodes
 
             var gcps = new[]
             {
-                new GroundControlPoint(100, 200, 9.938, 51.533),  // Top-left
+                new GroundControlPoint(100, 200, 9.938, 51.533), // Top-left
                 new GroundControlPoint(1900, 200, 9.950, 51.533), // Top-right
                 new GroundControlPoint(1900, 1300, 9.950, 51.520), // Bottom-right
-                new GroundControlPoint(100, 1300, 9.938, 51.520)   // Bottom-left
+                new GroundControlPoint(100, 1300, 9.938, 51.520) // Bottom-left
             };
 
             var transformation = new Transformation("polynomial", new { order = 1 });
@@ -227,4 +232,3 @@ namespace IIIF.Manifests.Serializer.Tests.Nodes
         }
     }
 }
-

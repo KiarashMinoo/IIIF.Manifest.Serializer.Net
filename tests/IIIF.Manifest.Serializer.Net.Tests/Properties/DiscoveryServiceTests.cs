@@ -1,6 +1,4 @@
 using IIIF.Manifests.Serializer.Properties.ServiceProperty;
-using Newtonsoft.Json;
-using Xunit;
 using System.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
@@ -16,16 +14,9 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
                 "http://iiif.io/api/discovery/1/changes"
             );
 
-            var activity = new Activity
-            {
-                Type = "Update",
-                Object = new ActivityObject
-                {
-                    Id = "https://example.org/manifest/1",
-                    Type = "Manifest"
-                },
-                EndTime = "2023-01-01T00:00:00Z"
-            };
+            var @object = new ActivityObject("https://example.org/manifest/1", "Manifest");
+
+            var activity = new Activity("Update", @object, "2023-01-01T00:00:00Z");
 
             discoveryService.AddActivity(activity);
 

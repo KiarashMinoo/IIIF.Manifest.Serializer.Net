@@ -7,10 +7,5 @@ namespace IIIF.Manifests.Serializer.Extensions
     /// Attribute for IIIF Text Granularity extension properties.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class TextGranularityExtensionAttribute : IIIFVersionAttribute
-    {
-        public TextGranularityExtensionAttribute(string version) : base(version)
-        {
-        }
-    }
+    public class TextGranularityExtensionAttribute(string version) : IIIFVersionAttribute(version);
 }

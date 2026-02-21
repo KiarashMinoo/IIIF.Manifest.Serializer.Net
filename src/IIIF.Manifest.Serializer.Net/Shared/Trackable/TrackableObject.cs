@@ -19,47 +19,47 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable
         protected internal virtual void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         protected internal virtual void OnPropertyChanging(string propertyName) => PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 
-        protected internal TTrackableObject SetElementValue<TValue>(
+        protected TTrackableObject SetElementValue<TValue>(
             string memberName,
             Func<TValue, TValue?> valueFactory,
             bool isAdditional = false
         ) => ((TTrackableObject)this).SetElementValue<TTrackableObject, TValue>(memberName, valueFactory, isAdditional);
 
-        protected internal TTrackableObject SetElementValue<TValue>(
+        protected TTrackableObject SetElementValue<TValue>(
             string memberName,
             TValue? value,
             bool isAdditional = false
         ) => ((TTrackableObject)this).SetElementValue<TTrackableObject, TValue>(memberName, value, isAdditional);
 
-        protected internal TTrackableObject SetElementValue<TValue>(
+        protected TTrackableObject SetElementValue<TValue>(
             Expression<Func<TTrackableObject, TValue>> expression,
             Func<TValue, TValue?> valueFactory,
             bool isAdditional = false
         ) => ((TTrackableObject)this).SetElementValue<TTrackableObject, TValue>(expression, valueFactory, isAdditional);
 
-        protected internal TTrackableObject SetElementValue<TValue>(
+        protected TTrackableObject SetElementValue<TValue>(
             Expression<Func<TTrackableObject, TValue>> expression,
             TValue? value,
             bool isAdditional = false
         ) => ((TTrackableObject)this).SetElementValue<TTrackableObject, TValue>(expression, value, isAdditional);
 
-        public TValue? GetElementValue<TValue>(
+        protected TValue? GetElementValue<TValue>(
             string memberName,
             out bool isModified,
             out bool isAdditional
         ) => ((TTrackableObject)this).GetElementValue<TTrackableObject, TValue>(memberName, out isModified, out isAdditional);
 
-        public TValue? GetElementValue<TValue>(
+        protected TValue? GetElementValue<TValue>(
             Expression<Func<TTrackableObject, TValue>> expression,
             out bool isModified,
             out bool isAdditional
         ) => ((TTrackableObject)this).GetElementValue<TTrackableObject, TValue>(expression, out isModified, out isAdditional);
 
-        public TValue? GetElementValue<TValue>(
+        protected TValue? GetElementValue<TValue>(
             string memberName
         ) => ((TTrackableObject)this).GetElementValue<TTrackableObject, TValue>(memberName);
 
-        public TValue? GetElementValue<TValue>(
+        protected TValue? GetElementValue<TValue>(
             Expression<Func<TTrackableObject, TValue>> expression
         ) => ((TTrackableObject)this).GetElementValue<TTrackableObject, TValue>(expression);
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using IIIF.Manifests.Serializer.Helpers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -47,7 +48,7 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable
             {
                 foreach (var property in jObject.Properties().Where(x => !rtn.ElementDescriptors.ContainsKey(x.Name)))
                 {
-                    rtn.SetElementValue(property.Name, property.Value);
+                    rtn.SetAdditionalElementValue(property.Name, property.Value.ToString(Formatting.None));
                 }
             }
 
@@ -73,7 +74,7 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable
                 foreach (var (name, elementDescriptor) in value.ElementDescriptors.Where(x => x.Value.IsAdditional))
                 {
                     writer.WritePropertyName(name);
-                    writer.WriteValue(elementDescriptor.Value);
+                    writer.WriteRawValue(elementDescriptor.Value.ToString());
                 }
 
                 writer.WriteEndObject();

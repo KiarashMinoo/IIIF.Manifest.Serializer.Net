@@ -29,7 +29,7 @@ namespace IIIF.Manifests.Serializer.Extensions
             jObject.WriteTo(writer);
         }
 
-        public override Georeference ReadJson(JsonReader reader, Type objectType, Georeference existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override Georeference? ReadJson(JsonReader reader, Type objectType, Georeference? existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
                 return null;

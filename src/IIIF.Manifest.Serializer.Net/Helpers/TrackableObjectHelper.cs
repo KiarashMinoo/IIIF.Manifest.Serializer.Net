@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using IIIF.Manifests.Serializer.Shared.Trackable;
+using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Helpers;
 
@@ -81,26 +82,6 @@ public static class TrackableObjectHelper
             return target.SetElementValue(memberNameSelectorExpression.Member.Name, value, isAdditional);
         }
 
-        public TTrackableObject SetAdditionalElementValue<TValue>(
-            string memberName,
-            Func<TValue, TValue?> valueFactory
-        ) => target.SetElementValue(memberName, valueFactory, isAdditional: true);
-
-        public TTrackableObject SetAdditionalElementValue<TValue>(
-            string memberName,
-            TValue? value
-        ) => target.SetElementValue(memberName, value, isAdditional: true);
-
-        public TTrackableObject SetAdditionalElementValue<TValue>(
-            Expression<Func<TTrackableObject, TValue>> expression,
-            Func<TValue, TValue?> valueFactory
-        ) => target.SetElementValue(expression, valueFactory, isAdditional: true);
-
-        public TTrackableObject SetAdditionalElementValue<TValue>(
-            Expression<Func<TTrackableObject, TValue>> expression,
-            TValue? value
-        ) => target.SetElementValue(expression, value, isAdditional: true);
-
         public TValue? GetElementValue<TValue>(
             string memberName,
             out bool isModified,
@@ -143,5 +124,31 @@ public static class TrackableObjectHelper
         public TValue? GetElementValue<TValue>(
             Expression<Func<TTrackableObject, TValue>> expression
         ) => target.GetElementValue<TTrackableObject, TValue>(expression, out _, out _);
+
+        //Additional
+
+        public TTrackableObject SetAdditionalElementValue<TValue>(
+            string memberName,
+            Func<TValue, TValue?> valueFactory
+        ) => target.SetElementValue(memberName, valueFactory, isAdditional: true);
+
+        public TTrackableObject SetAdditionalElementValue<TValue>(
+            string memberName,
+            TValue? value
+        ) => target.SetElementValue(memberName, value, isAdditional: true);
+
+        public TValue? GetAdditionalElementValue<TValue>(
+            string memberName,
+            out bool isModified
+        )
+        {
+            var value = target.GetElementValue<TTrackableObject, string>(memberName, out isModified, out var isAdditional);
+            return isAdditional && value is not null ? JsonConvert.DeserializeObject<TValue>(value) : default!;
+        }
+
+        public TValue? GetAdditionalElementValue<TValue>(string memberName)
+        {
+            return target.GetAdditionalElementValue<TTrackableObject, TValue>(memberName, out _);
+        }
     }
 }

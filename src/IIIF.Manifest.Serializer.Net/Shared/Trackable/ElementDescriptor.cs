@@ -1,14 +1,15 @@
+using System;
 using System.Collections.Generic;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable
 {
-    public class ElementDescriptor<TValueType>
+    public class ElementDescriptor<TValueType> : IDisposable
     {
         public TValueType OriginalValue { get; }
         public TValueType? ModifiedValue { get; }
+        public bool IsAdditional { get; }
         public TValueType Value => ModifiedValue ?? OriginalValue;
         public bool IsModified => ModifiedValue is not null && !EqualityComparer<TValueType>.Default.Equals(OriginalValue, ModifiedValue);
-        public bool IsAdditional { get; }
 
         internal ElementDescriptor(TValueType originalValue, bool isAdditional = false)
         {
@@ -16,13 +17,20 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable
             IsAdditional = isAdditional;
         }
 
-        internal ElementDescriptor(TValueType originalValue, TValueType modifiedValue) : this(originalValue)
+        internal ElementDescriptor(TValueType originalValue, TValueType modifiedValue, bool isAdditional = false) : this(originalValue)
         {
             ModifiedValue = modifiedValue;
+            IsAdditional = isAdditional;
         }
 
-        internal ElementDescriptor(ElementDescriptor<TValueType> elementDescriptor, TValueType modifiedValue) : this(elementDescriptor.OriginalValue, modifiedValue)
+        internal ElementDescriptor(ElementDescriptor<TValueType> elementDescriptor, TValueType modifiedValue)
+            : this(elementDescriptor.OriginalValue, modifiedValue, elementDescriptor.IsAdditional)
         {
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 
@@ -32,7 +40,7 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable
         {
         }
 
-        internal ElementDescriptor(object originalValue, object modifiedValue) : base(originalValue, modifiedValue)
+        internal ElementDescriptor(object originalValue, object modifiedValue, bool isAdditional = false) : base(originalValue, modifiedValue, isAdditional)
         {
         }
 

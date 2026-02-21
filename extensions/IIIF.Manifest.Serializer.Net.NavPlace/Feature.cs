@@ -25,7 +25,7 @@ public class Feature : TrackableObject<Feature>
         SetElementValue(x => x.Geometry, geometry);
         if (!string.IsNullOrEmpty(label))
         {
-            SetElementValue(x => x.Properties, new FeatureProperties { Label = label });
+            SetElementValue(x => x.Properties, new FeatureProperties(label));
         }
     }
 }
