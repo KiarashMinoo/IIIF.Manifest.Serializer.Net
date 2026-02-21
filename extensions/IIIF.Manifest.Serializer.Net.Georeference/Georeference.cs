@@ -1,9 +1,8 @@
-using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared;
+using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Georeference
+namespace IIIF.Manifests.Serializer.Extensions
 {
     /// <summary>
     /// Represents georeferencing information for maps using IIIF Georeference extension.
@@ -16,107 +15,47 @@ namespace IIIF.Manifests.Serializer.Georeference
         /// The type of georeferencing transformation.
         /// </summary>
         [JsonProperty("type")]
-        public string Type { get; private set; }
+        public string Type => GetElementValue(x => x.Type)!;
 
         /// <summary>
         /// The coordinate reference system (CRS) used.
         /// </summary>
         [JsonProperty("crs", NullValueHandling = NullValueHandling.Ignore)]
-        public string Crs { get; private set; }
+        public string? Crs => GetElementValue(x => x.Crs);
 
         /// <summary>
         /// Ground control points for transformation.
         /// </summary>
         [JsonProperty("gcps", NullValueHandling = NullValueHandling.Ignore)]
-        public GroundControlPoint[] Gcps { get; private set; }
+        public IReadOnlyCollection<GroundControlPoint> Gcps => GetElementValue(x => x.Gcps) ?? [];
 
         /// <summary>
         /// Transformation parameters.
         /// </summary>
         [JsonProperty("transformation", NullValueHandling = NullValueHandling.Ignore)]
-        public Transformation Transformation { get; private set; }
+        public Transformation? Transformation => GetElementValue(x => x.Transformation);
 
         /// <summary>
         /// Create a new Georeference with transformation type.
         /// </summary>
         public Georeference(string type)
         {
-            Type = type;
+            SetElementValue(x => x.Type, type);
         }
 
         /// <summary>
         /// Set the coordinate reference system.
         /// </summary>
-        public Georeference SetCrs(string crs)
-        {
-            Crs = crs;
-            return this;
-        }
+        public Georeference SetCrs(string crs) => SetElementValue(x => x.Crs, crs);
 
         /// <summary>
         /// Set ground control points.
         /// </summary>
-        public Georeference SetGcps(GroundControlPoint[] gcps)
-        {
-            Gcps = gcps;
-            return this;
-        }
+        public Georeference SetGcps(GroundControlPoint[] gcps) => SetElementValue(x => x.Gcps, gcps);
 
         /// <summary>
         /// Set transformation parameters.
         /// </summary>
-        public Georeference SetTransformation(Transformation transformation)
-        {
-            Transformation = transformation;
-            return this;
-        }
-    }
-
-    /// <summary>
-    /// A ground control point relating image pixels to geographic coordinates.
-    /// </summary>
-    public class GroundControlPoint
-    {
-        /// <summary>
-        /// Image coordinates (x, y) in pixels.
-        /// </summary>
-        [JsonProperty("image")]
-        public double[] Image { get; set; }
-
-        /// <summary>
-        /// Geographic coordinates (longitude, latitude) or (easting, northing).
-        /// </summary>
-        [JsonProperty("world")]
-        public double[] World { get; set; }
-
-        public GroundControlPoint(double imageX, double imageY, double worldX, double worldY)
-        {
-            Image = new[] { imageX, imageY };
-            World = new[] { worldX, worldY };
-        }
-    }
-
-    /// <summary>
-    /// Transformation parameters for georeferencing.
-    /// </summary>
-    public class Transformation
-    {
-        /// <summary>
-        /// Transformation type (e.g., "polynomial", "helmert").
-        /// </summary>
-        [JsonProperty("type")]
-        public string Type { get; set; }
-
-        /// <summary>
-        /// Transformation parameters as an array of coefficients.
-        /// </summary>
-        [JsonProperty("options")]
-        public object Options { get; set; }
-
-        public Transformation(string type, object options)
-        {
-            Type = type;
-            Options = options;
-        }
+        public Georeference SetTransformation(Transformation transformation) => SetElementValue(x => x.Transformation, transformation);
     }
 }

@@ -1,9 +1,7 @@
 ﻿using IIIF.Manifests.Serializer.Nodes.CanvasNode;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
-using IIIF.Manifests.Serializer.Properties;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Tests.Nodes
 {

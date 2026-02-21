@@ -1,5 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Examples.Cookbook;
-using IIIF.Manifests.Serializer.Net.Cookbook.Recipes;
+﻿using IIIF.Manifests.Serializer.Net.Cookbook.Recipes;
 using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using Newtonsoft.Json;
 

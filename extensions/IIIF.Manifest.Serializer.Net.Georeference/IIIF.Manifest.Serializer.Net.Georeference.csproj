@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>IIIF.Manifests.Serializer.Georeference</RootNamespace>
+    <RootNamespace>IIIF.Manifests.Serializer.Extensions</RootNamespace>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latestmajor</LangVersion>
     <Nullable>enable</Nullable>

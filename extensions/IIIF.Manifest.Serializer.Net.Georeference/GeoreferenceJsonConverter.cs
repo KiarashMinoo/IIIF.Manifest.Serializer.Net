@@ -1,13 +1,12 @@
 using System;
-using IIIF.Manifests.Serializer.Georeference;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Georeference
+namespace IIIF.Manifests.Serializer.Extensions
 {
     public class GeoreferenceJsonConverter : JsonConverter<Georeference>
     {
-        public override void WriteJson(JsonWriter writer, Georeference value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, Georeference? value, JsonSerializer serializer)
         {
             if (value == null)
             {

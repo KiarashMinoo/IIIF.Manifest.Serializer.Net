@@ -1,10 +1,8 @@
-using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared;
+using System;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
-using System;
 
-namespace IIIF.Manifests.Serializer.TextGranularity
+namespace IIIF.Manifests.Serializer.Extensions
 {
     /// <summary>
     /// Text granularity levels for IIIF Text Granularity extension.

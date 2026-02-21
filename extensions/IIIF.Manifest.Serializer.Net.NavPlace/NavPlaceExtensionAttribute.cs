@@ -1,16 +1,11 @@
 using System;
 using IIIF.Manifests.Serializer.Attributes;
 
-namespace IIIF.Manifests.Serializer.NavPlace
+namespace IIIF.Manifests.Serializer.Extensions
 {
     /// <summary>
     /// Attribute for IIIF navPlace extension properties.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class NavPlaceExtensionAttribute : IIIFVersionAttribute
-    {
-        public NavPlaceExtensionAttribute(string version) : base(version)
-        {
-        }
-    }
+    public class NavPlaceExtensionAttribute(string version) : IIIFVersionAttribute(version);
 }

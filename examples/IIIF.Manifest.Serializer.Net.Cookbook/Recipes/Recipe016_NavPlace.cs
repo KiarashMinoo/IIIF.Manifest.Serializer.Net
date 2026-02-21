@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes.CanvasNode;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
@@ -30,7 +31,7 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
                 "https://example.org/canvases/map1",
                 new Label("Historical Map of Göttingen"),
                 3000, // height
-                2500  // width
+                2500 // width
             );
 
             // Add geographic location using navPlace extension
@@ -40,11 +41,11 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 
             // Create the image resource for the map
             var imageResource = new ImageResource(
-                "https://example.org/images/goettingen-map.jpg",
-                "image/jpeg"
-            )
-            .SetHeight(3000)
-            .SetWidth(2500);
+                    "https://example.org/images/goettingen-map.jpg",
+                    "image/jpeg"
+                )
+                .SetHeight(3000)
+                .SetWidth(2500);
 
             // Create the painting annotation
             var image = new Image(

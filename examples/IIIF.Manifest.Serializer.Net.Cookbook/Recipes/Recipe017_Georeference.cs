@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes.CanvasNode;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
@@ -30,24 +31,24 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
                 "https://example.org/canvases/georef-map1",
                 new Label("Georeferenced Map of Göttingen (1890)"),
                 4000, // height
-                3200  // width
+                3200 // width
             );
 
             // Add georeferencing information using georeference extension
             // Ground control points relating image pixels to geographic coordinates
             var gcps = new[]
             {
-                new GroundControlPoint(200, 300, 9.920, 51.550),    // Top-left corner
-                new GroundControlPoint(3000, 300, 9.960, 51.550),   // Top-right corner
-                new GroundControlPoint(3000, 3700, 9.960, 51.510),  // Bottom-right corner
-                new GroundControlPoint(200, 3700, 9.920, 51.510)    // Bottom-left corner
+                new GroundControlPoint(200, 300, 9.920, 51.550), // Top-left corner
+                new GroundControlPoint(3000, 300, 9.960, 51.550), // Top-right corner
+                new GroundControlPoint(3000, 3700, 9.960, 51.510), // Bottom-right corner
+                new GroundControlPoint(200, 3700, 9.920, 51.510) // Bottom-left corner
             };
 
             // Define transformation (polynomial of order 1 = affine transformation)
             var transformation = new Transformation("polynomial", new { order = 1 });
 
             var georeference = new Georeference("Georeference")
-                .SetCrs("EPSG:4326")  // WGS84 latitude/longitude
+                .SetCrs("EPSG:4326") // WGS84 latitude/longitude
                 .SetGcps(gcps)
                 .SetTransformation(transformation);
 
@@ -55,11 +56,11 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 
             // Create the image resource for the map
             var imageResource = new ImageResource(
-                "https://example.org/images/goettingen-1890-georef.jpg",
-                "image/jpeg"
-            )
-            .SetHeight(4000)
-            .SetWidth(3200);
+                    "https://example.org/images/goettingen-1890-georef.jpg",
+                    "image/jpeg"
+                )
+                .SetHeight(4000)
+                .SetWidth(3200);
 
             // Create the painting annotation
             var image = new Image(

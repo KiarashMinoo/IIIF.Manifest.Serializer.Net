@@ -3,7 +3,7 @@ using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Examples.Cookbook
+namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 {
     /// <summary>
     /// Recipe demonstrating IIIF Content State API 1.0 integration.

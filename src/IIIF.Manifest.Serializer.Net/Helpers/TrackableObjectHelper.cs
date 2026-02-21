@@ -81,6 +81,26 @@ public static class TrackableObjectHelper
             return target.SetElementValue(memberNameSelectorExpression.Member.Name, value, isAdditional);
         }
 
+        public TTrackableObject SetAdditionalElementValue<TValue>(
+            string memberName,
+            Func<TValue, TValue?> valueFactory
+        ) => target.SetElementValue(memberName, valueFactory, isAdditional: true);
+
+        public TTrackableObject SetAdditionalElementValue<TValue>(
+            string memberName,
+            TValue? value
+        ) => target.SetElementValue(memberName, value, isAdditional: true);
+
+        public TTrackableObject SetAdditionalElementValue<TValue>(
+            Expression<Func<TTrackableObject, TValue>> expression,
+            Func<TValue, TValue?> valueFactory
+        ) => target.SetElementValue(expression, valueFactory, isAdditional: true);
+
+        public TTrackableObject SetAdditionalElementValue<TValue>(
+            Expression<Func<TTrackableObject, TValue>> expression,
+            TValue? value
+        ) => target.SetElementValue(expression, value, isAdditional: true);
+
         public TValue? GetElementValue<TValue>(
             string memberName,
             out bool isModified,
