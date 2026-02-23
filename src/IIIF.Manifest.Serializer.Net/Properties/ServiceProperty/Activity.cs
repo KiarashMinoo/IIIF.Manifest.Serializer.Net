@@ -14,16 +14,31 @@ public class Activity : TrackableObject<Activity>
     public const string ObjectJName = "object";
     public const string EndTimeJName = "endTime";
 
-    [JsonProperty(TypeJName)] public string Type => GetElementValue(x => x.Type)!;
+    [JsonProperty(TypeJName)]
+    public string Type
+    {
+        get => GetElementValue(x => x.Type)!;
+        private set => SetElementValue(value);
+    }
 
-    [JsonProperty(ObjectJName)] public ActivityObject Object => GetElementValue(x => x.Object)!;
+    [JsonProperty(ObjectJName)]
+    public ActivityObject Object
+    {
+        get => GetElementValue(x => x.Object)!;
+        private set => SetElementValue(value);
+    }
 
-    [JsonProperty(EndTimeJName)] public string EndTime => GetElementValue(x => x.EndTime)!;
+    [JsonProperty(EndTimeJName)]
+    public string EndTime
+    {
+        get => GetElementValue(x => x.EndTime)!;
+        private set => SetElementValue(value);
+    }
 
     public Activity(string type, ActivityObject @object, string endTime)
     {
-        SetElementValue(x => x.Type, type);
-        SetElementValue(x => x.Object, @object);
-        SetElementValue(x => x.EndTime, endTime);
+        Type = type;
+        Object = @object;
+        EndTime = endTime;
     }
 }

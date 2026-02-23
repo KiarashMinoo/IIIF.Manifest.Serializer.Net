@@ -1,7 +1,7 @@
 ﻿using System;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes.ManifestNode;
-using IIIF.Manifests.Serializer.Properties.DescriptionProperty;
+using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Examples.Examples

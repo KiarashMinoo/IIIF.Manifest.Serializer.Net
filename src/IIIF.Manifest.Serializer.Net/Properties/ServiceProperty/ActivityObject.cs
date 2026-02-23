@@ -13,13 +13,24 @@ public class ActivityObject : TrackableObject<ActivityObject>
     public const string IdJName = "id";
     public const string TypeJName = "type";
 
-    [JsonProperty(IdJName)] public string Id => GetElementValue(x => x.Id)!;
+    [JsonProperty(IdJName)]
+    public string Id
+    {
+        get => GetElementValue(x => x.Id)!;
+        private set => SetElementValue(value);
+    }
 
-    [JsonProperty(TypeJName)] public string Type => GetElementValue(x => x.Type)!;
+    [JsonProperty(TypeJName)]
+    public string Type
+    {
+        get => GetElementValue(x => x.Type)!;
+        private set => SetElementValue(value);
+    }
 
+    [JsonConstructor]
     public ActivityObject(string id, string type)
     {
-        SetElementValue(x => x.Id, id);
-        SetElementValue(x => x.Type, type);
+        Id = id;
+        Type = type;
     }
 }

@@ -3,43 +3,75 @@ using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.MetadataProperty
+namespace IIIF.Manifests.Serializer.Properties.MetadataProperty;
+
+public class Metadata : TrackableObject<Metadata>
 {
-    [JsonConverter(typeof(MetadataJsonConverter))]
-    public class Metadata : TrackableObject<Metadata>
+    public const string LabelJName = "label";
+    public const string ValueJName = "value";
+
+    [JsonProperty(LabelJName)]
+    public string Label
     {
-        public const string LabelJName = "label";
-        public const string ValueJName = "value";
+        get => GetElementValue(x => x.Label)!;
+        private set => SetElementValue(value);
+    }
 
-        [JsonProperty(LabelJName)] public string Label => GetElementValue(x => x.Label)!;
+    [JsonProperty(ValueJName)]
+    public IReadOnlyCollection<MetadataValue.MetadataValue> Value
+    {
+        get => GetElementValue(x => x.Value) ?? [];
+        private set => SetElementValue(value);
+    }
 
-        [JsonProperty(ValueJName)] public IReadOnlyCollection<MetadataValue.MetadataValue> Value => GetElementValue(x => x.Value) ?? [];
+    [JsonConstructor]
+    private Metadata(string label)
+    {
+        Label = label;
+    }
 
-        public Metadata(string label, MetadataValue.MetadataValue value)
-        {
-            SetElementValue(x => x.Label, label);
-            AddValue(value);
-        }
+    public Metadata(string label, MetadataValue.MetadataValue value) : this(label)
+    {
+        Value = [value];
+    }
 
-        public Metadata(string label, string value) : this(label, new MetadataValue.MetadataValue(value))
-        {
-        }
+    public Metadata(string label, string value) : this(label, new MetadataValue.MetadataValue(value))
+    {
+    }
 
-        public Metadata(string label, string value, string language) : this(label, new MetadataValue.MetadataValue(value, language))
-        {
-        }
+    public Metadata(string label, string value, string language) : this(label, new MetadataValue.MetadataValue(value, language))
+    {
+    }
 
-        public Metadata AddValue(MetadataValue.MetadataValue value) => SetElementValue(a => a.Value, collection => collection.With(value));
-        public Metadata AddValue(string value, string language) => AddValue(new MetadataValue.MetadataValue(value, language));
-        public Metadata AddValue(string value) => AddValue(new MetadataValue.MetadataValue(value));
+    public Metadata AddValue(MetadataValue.MetadataValue value)
+    {
+        Value = Value.With(value);
+        return this;
+    }
 
-        public Metadata ResetValue(MetadataValue.MetadataValue value)
-        {
-            SetElementValue(x => x.Value, []);
-            return AddValue(value);
-        }
+    public Metadata AddValue(string value, string language)
+    {
+        return AddValue(new MetadataValue.MetadataValue(value, language));
+    }
 
-        public Metadata ResetValue(string value, string language) => ResetValue(new MetadataValue.MetadataValue(value, language));
-        public Metadata ResetValue(string value) => ResetValue(new MetadataValue.MetadataValue(value));
+    public Metadata AddValue(string value)
+    {
+        return AddValue(new MetadataValue.MetadataValue(value));
+    }
+
+    public Metadata ResetValue(MetadataValue.MetadataValue value)
+    {
+        Value = [value];
+        return this;
+    }
+
+    public Metadata ResetValue(string value, string language)
+    {
+        return ResetValue(new MetadataValue.MetadataValue(value, language));
+    }
+
+    public Metadata ResetValue(string value)
+    {
+        return ResetValue(new MetadataValue.MetadataValue(value));
     }
 }

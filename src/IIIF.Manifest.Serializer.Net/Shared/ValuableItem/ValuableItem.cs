@@ -7,11 +7,15 @@ namespace IIIF.Manifests.Serializer.Shared.ValuableItem
     public class ValuableItem<TValuableItem> : TrackableObject<TValuableItem>
         where TValuableItem : ValuableItem<TValuableItem>
     {
-        public string Value => GetElementValue(x => x.Value)!;
+        public virtual string Value
+        {
+            get { return GetElementValue(x => x.Value)!; }
+            private set => SetElementValue(value);
+        }
 
         public ValuableItem(string value)
         {
-            SetElementValue(x => x.Value, value);
+            Value = value;
         }
     }
 }

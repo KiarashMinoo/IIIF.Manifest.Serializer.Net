@@ -6,7 +6,7 @@ using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using Newtonsoft.Json;
 using IIIFManifest = IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest;
-using IIIFDescription = IIIF.Manifests.Serializer.Properties.DescriptionProperty.Description;
+using IIIFDescription = IIIF.Manifests.Serializer.Properties.Description;
 
 namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 {

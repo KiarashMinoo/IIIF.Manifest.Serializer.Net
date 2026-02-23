@@ -1,14 +1,13 @@
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue;
+namespace IIIF.Manifests.Serializer.Properties;
 
 [method: JsonConstructor]
-public class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
+public class Description(string value) : ValuableItem<Description>(value)
 {
     public const string ValueJName = "@value";
     public const string LanguageJName = "@language";
-
 
     [JsonProperty(ValueJName)] public override string Value => base.Value;
 
@@ -19,10 +18,9 @@ public class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
         private set => SetElementValue(value);
     }
 
-    public MetadataValue(string value, string language) : this(value)
+    public Description SetLanguage(string language)
     {
         Language = language;
+        return this;
     }
-
-    public MetadataValue SetValue(string value) => SetElementValue(a => a.Value, value);
 }

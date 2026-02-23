@@ -109,20 +109,21 @@ public static class TrackableObjectHelper
                             bindingList.Add(item);
                         }
 
-                        bindingList.ListChanged += BindingListOnListChanged;
-
                         // Cast IBindingList to TValue (which should be compatible with the BindingList<T> type)
                         value = (TValue)bindingList;
                     }
                 }
 
+                (value as IBindingList)?.ListChanged += BindingListOnListChanged;
+                (value as INotifyPropertyChanging)?.PropertyChanging += NotifyPropertyChangingOnPropertyChanging;
+                (value as INotifyPropertyChanged)?.PropertyChanged += NotifyPropertyChangedOnPropertyChanged;
+
                 if (elementDescriptor is not null)
                 {
-                    // Unsubscribe from old binding list event
-                    if (elementDescriptor.Value is IBindingList oldBindingList)
-                    {
-                        oldBindingList.ListChanged -= BindingListOnListChanged;
-                    }
+                    // Unsubscribe from old element events
+                    (elementDescriptor.Value as IBindingList)?.ListChanged -= BindingListOnListChanged;
+                    (elementDescriptor.Value as INotifyPropertyChanging)?.PropertyChanging -= NotifyPropertyChangingOnPropertyChanging;
+                    (elementDescriptor.Value as INotifyPropertyChanged)?.PropertyChanged -= NotifyPropertyChangedOnPropertyChanged;
 
                     target.ElementDescriptors[memberName] = new ElementDescriptor(elementDescriptor, value);
                 }
@@ -139,6 +140,16 @@ public static class TrackableObjectHelper
             void BindingListOnListChanged(object sender, ListChangedEventArgs e)
             {
                 target.OnPropertyChanged(memberName, e.ListChangedType);
+            }
+
+            void NotifyPropertyChangingOnPropertyChanging(object sender, PropertyChangingEventArgs e)
+            {
+                target.OnPropertyChanged(memberName);
+            }
+
+            void NotifyPropertyChangedOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+            {
+                target.OnPropertyChanged(memberName);
             }
         }
 

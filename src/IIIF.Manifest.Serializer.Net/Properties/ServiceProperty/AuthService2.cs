@@ -12,7 +12,6 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
     /// Used for active and external authentication patterns with improved user experience.
     /// </summary>
     [AuthAPI("2.0", Notes = "Auth API 2.0 service with probe/access patterns.")]
-    [JsonConverter(typeof(AuthService2JsonConverter))]
     public class AuthService2 : BaseItem<AuthService2>, IBaseService
     {
         public const string ProfileJName = "profile";
@@ -24,37 +23,62 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         /// <summary>
         /// The profile of the authentication service (active or external for access services).
         /// </summary>
-        public string Profile => GetElementValue(a => a.Profile)!;
+        public string Profile
+        {
+            get => GetElementValue(a => a.Profile)!;
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// User-facing label for the service (may be language map in full implementation).
         /// </summary>
-        public string? Label => GetElementValue(a => a.Label);
+        public string? Label
+        {
+            get => GetElementValue(a => a.Label);
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// Heading text for the authentication interface.
         /// </summary>
-        public string? Heading => GetElementValue(a => a.Heading);
+        public string? Heading
+        {
+            get => GetElementValue(a => a.Heading);
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// Explanatory note for the authentication requirement.
         /// </summary>
-        public string? Note => GetElementValue(a => a.Note);
+        public string? Note
+        {
+            get => GetElementValue(a => a.Note);
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// Label for the confirmation button.
         /// </summary>
-        public string? ConfirmLabel => GetElementValue(a => a.ConfirmLabel);
+        public string? ConfirmLabel
+        {
+            get => GetElementValue(a => a.ConfirmLabel);
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// Nested services (e.g., access service within probe, token service within access, logout within token).
         /// </summary>
-        public IReadOnlyCollection<AuthService2> Services => GetElementValue(a => a.Services) ?? [];
+        public IReadOnlyCollection<AuthService2> Services
+        {
+            get => GetElementValue(a => a.Services) ?? [];
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// Creates a new Auth API 2.0 service.
         /// </summary>
         /// <param name="id">Service identifier</param>
+        [JsonConstructor]
         public AuthService2(string id)
             : base(id, string.Empty, "http://iiif.io/api/auth/2/context.json")
         {
@@ -68,7 +92,7 @@ namespace IIIF.Manifests.Serializer.Properties.ServiceProperty
         public AuthService2(string id, string profile)
             : base(id, string.Empty, "http://iiif.io/api/auth/2/context.json")
         {
-            SetElementValue(x => x.Profile, profile);
+            Profile = profile;
         }
 
         /// <summary>
