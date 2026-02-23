@@ -1,6 +1,5 @@
 using System;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;

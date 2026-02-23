@@ -5,7 +5,6 @@ using IIIF.Manifests.Serializer.Nodes.SequenceNode;
 using IIIF.Manifests.Serializer.Nodes.StructureNode;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.BaseNode;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

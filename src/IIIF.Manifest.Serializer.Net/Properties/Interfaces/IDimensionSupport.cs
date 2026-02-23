@@ -1,5 +1,4 @@
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Interfaces

@@ -8,7 +8,6 @@ using IIIF.Manifests.Serializer.Nodes.ContentNode.Video;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.BaseNode;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.CanvasNode

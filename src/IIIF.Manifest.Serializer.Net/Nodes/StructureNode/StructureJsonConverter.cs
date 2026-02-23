@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared.BaseNode;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

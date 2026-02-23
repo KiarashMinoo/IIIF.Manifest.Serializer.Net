@@ -8,10 +8,9 @@ using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.ProviderProperty;
 using IIIF.Manifests.Serializer.Properties.RenderingProperty;
 using IIIF.Manifests.Serializer.Properties.WithinProperty;
-using IIIF.Manifests.Serializer.Shared.BaseItem;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Shared.BaseNode
+namespace IIIF.Manifests.Serializer.Shared
 {
     public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNode<TBaseNode>
     {
@@ -32,67 +31,132 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         public const string BehaviorJName = "behavior";
         public const string RelatedJName = "related";
 
-        [JsonProperty(LabelJName)] public IReadOnlyCollection<Label> Label => GetElementValue(x => x.Label) ?? [];
+        [JsonProperty(LabelJName)]
+        public IReadOnlyCollection<Label> Label
+        {
+            get => GetElementValue(x => x.Label) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(DescriptionJName)]
-        public IReadOnlyCollection<Description> Description => GetElementValue(x => x.Description) ?? [];
+        [JsonProperty(DescriptionJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Description> Description
+        {
+            get => GetElementValue(x => x.Description) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(MetadataJName)]
-        public IReadOnlyCollection<Metadata> Metadata => GetElementValue(x => x.Metadata) ?? [];
+        [JsonProperty(MetadataJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Metadata> Metadata
+        {
+            get => GetElementValue(x => x.Metadata) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(AttributionJName)]
-        public IReadOnlyCollection<Attribution> Attribution => GetElementValue(x => x.Attribution) ?? [];
+        [JsonProperty(AttributionJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Attribution> Attribution
+        {
+            get => GetElementValue(x => x.Attribution) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
         [JsonProperty(LogoJName)]
-        public Logo? Logo => GetElementValue(x => x.Logo);
+        public Logo? Logo
+        {
+            get => GetElementValue(x => x.Logo);
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
         [JsonProperty(ThumbnailJName)]
-        public Thumbnail? Thumbnail => GetElementValue(x => x.Thumbnail);
+        public Thumbnail? Thumbnail
+        {
+            get => GetElementValue(x => x.Thumbnail);
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
         [JsonProperty(LicenseJName)]
-        public License? License => GetElementValue(x => x.License);
+        public License? License
+        {
+            get => GetElementValue(x => x.License);
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
         [JsonProperty(ViewingHintJName)]
-        public ViewingHint? ViewingHint => GetElementValue(x => x.ViewingHint);
+        public ViewingHint? ViewingHint
+        {
+            get => GetElementValue(x => x.ViewingHint);
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(RenderingJName)]
-        public IReadOnlyCollection<Rendering> Rendering => GetElementValue(x => x.Rendering) ?? [];
+        [JsonProperty(RenderingJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Rendering> Rendering
+        {
+            get => GetElementValue(x => x.Rendering) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(WithinJName)]
-        public IReadOnlyCollection<Within> Within => GetElementValue(x => x.Within) ?? [];
+        [JsonProperty(WithinJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Within> Within
+        {
+            get => GetElementValue(x => x.Within) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(SeeAlsoJName)]
-        public IReadOnlyCollection<SeeAlso> SeeAlso => GetElementValue(x => x.SeeAlso) ?? [];
+        [JsonProperty(SeeAlsoJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<SeeAlso> SeeAlso
+        {
+            get => GetElementValue(x => x.SeeAlso) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(HomepageJName)]
-        public IReadOnlyCollection<Homepage> Homepage => GetElementValue(x => x.Homepage) ?? [];
+        [JsonProperty(HomepageJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Homepage> Homepage
+        {
+            get => GetElementValue(x => x.Homepage) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(ProviderJName)]
-        public IReadOnlyCollection<Provider> Provider => GetElementValue(x => x.Provider) ?? [];
+        [JsonProperty(ProviderJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Provider> Provider
+        {
+            get => GetElementValue(x => x.Provider) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
         [JsonProperty(AccompanyingCanvasJName)]
-        public AccompanyingCanvas? AccompanyingCanvas => GetElementValue(x => x.AccompanyingCanvas);
+        public AccompanyingCanvas? AccompanyingCanvas
+        {
+            get => GetElementValue(x => x.AccompanyingCanvas);
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("3.0", Notes = "Replaces viewingHint from API 2.x. Some values also valid in 2.x as viewingHint.")]
-        [JsonProperty(BehaviorJName)]
-        public IReadOnlyCollection<Behavior> Behavior => GetElementValue(x => x.Behavior) ?? [];
+        [JsonProperty(BehaviorJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        public IReadOnlyCollection<Behavior> Behavior
+        {
+            get => GetElementValue(x => x.Behavior) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [PresentationAPI("2.0")]
         [JsonProperty(RelatedJName)]
-        public string? Related => GetElementValue(x => x.Related);
+        public string? Related
+        {
+            get => GetElementValue(x => x.Related);
+            private set => SetElementValue(value);
+        }
 
         protected internal BaseNode(string id) : base(id)
         {
@@ -102,15 +166,45 @@ namespace IIIF.Manifests.Serializer.Shared.BaseNode
         {
         }
 
-        public TBaseNode SetLabel(Label[] labels) => SetElementValue(a => a.Label, _ => [..labels]);
-        public TBaseNode AddLabel(Label label) => SetElementValue(a => a.Label, labels => labels.With(label));
-        public TBaseNode RemoveLabel(Label label) => SetElementValue(a => a.Label, labels => labels.Without(label));
+        public TBaseNode SetLabel(IReadOnlyCollection<Label> labels)
+        {
+            Label = labels;
+            return (TBaseNode)this;
+        }
 
-        public TBaseNode AddDescription(Description description) => SetElementValue(a => a.Description, collection => collection.With(description));
-        public TBaseNode RemoveDescription(Description description) => SetElementValue(a => a.Description, collection => collection.Without(description));
+        public TBaseNode AddLabel(Label label)
+        {
+            return SetLabel(Label.With(label));
+        }
 
-        public TBaseNode AddMetadata(Metadata metadata) => SetElementValue(a => a.Metadata, (collection) => collection.With(metadata));
-        public TBaseNode RemoveMetadata(Metadata metadata) => SetElementValue(a => a.Metadata, (collection) => collection.Without(metadata));
+        public TBaseNode RemoveLabel(Label label)
+        {
+            return SetLabel(Label.Without(label));
+        }
+
+        public TBaseNode AddDescription(Description description)
+        {
+            Description = Description.With(description);
+            return (TBaseNode)this;
+        }
+
+        public TBaseNode RemoveDescription(Description description)
+        {
+            Description = Description.Without(description);
+            return (TBaseNode)this;
+        }
+
+        public TBaseNode AddMetadata(Metadata metadata)
+        {
+            Metadata = Metadata.With(metadata);
+            return (TBaseNode)this;
+        }
+
+        public TBaseNode RemoveMetadata(Metadata metadata)
+        {
+            Metadata = Metadata.Without(metadata);
+            return (TBaseNode)this;
+        }
 
         public TBaseNode AddAttribution(Attribution attribution) => SetElementValue(a => a.Attribution, (collection) => collection.With(attribution));
         public TBaseNode RemoveAttribution(Attribution attribution) => SetElementValue(a => a.Attribution, (collection) => collection.Without(attribution));

@@ -12,16 +12,19 @@ namespace IIIF.Manifests.Serializer.Helpers
             /// </summary>
             public IReadOnlyCollection<TItem> With(TItem item)
             {
-                var list = new List<TItem>();
+                var hashSet = new HashSet<TItem>();
 
                 if (collection != null)
                 {
-                    list.AddRange(collection);
+                    foreach (var tItem in collection)
+                    {
+                        hashSet.Add(tItem);
+                    }
                 }
 
-                list.Add(item);
+                hashSet.Add(item);
 
-                return list.AsReadOnly();
+                return hashSet;
             }
 
             /// <summary>
@@ -29,15 +32,19 @@ namespace IIIF.Manifests.Serializer.Helpers
             /// </summary>
             public IReadOnlyCollection<TItem> Without(TItem item)
             {
-                var list = new List<TItem>();
+                var hashSet = new HashSet<TItem>();
 
                 if (collection != null)
                 {
-                    list.AddRange(collection);
+                    foreach (var tItem in collection)
+                    {
+                        hashSet.Add(tItem);
+                    }
                 }
 
-                list.Remove(item);
-                return list.AsReadOnly();
+                hashSet.Remove(item);
+
+                return hashSet;
             }
         }
 

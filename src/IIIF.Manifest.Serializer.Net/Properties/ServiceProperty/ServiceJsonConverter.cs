@@ -5,7 +5,6 @@ using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Properties.SizeProperty;
 using IIIF.Manifests.Serializer.Properties.TileProperty;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.BaseItem;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;

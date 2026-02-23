@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using IIIF.Manifests.Serializer.Shared.BaseItem;
+using IIIF.Manifests.Serializer.Shared;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.ContentNode.Segment.Selector

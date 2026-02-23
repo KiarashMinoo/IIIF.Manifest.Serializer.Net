@@ -1,0 +1,3 @@
+namespace IIIF.Manifests.Serializer.Shared.Trackable;
+
+public delegate void TrackableObjectPropertyChangingEventHandler(object sender, TrackableObjectPropertyChangingEventArgs args);

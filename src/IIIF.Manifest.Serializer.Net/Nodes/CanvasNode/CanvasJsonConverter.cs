@@ -7,7 +7,6 @@ using IIIF.Manifests.Serializer.Nodes.ContentNode.OtherContent;
 using IIIF.Manifests.Serializer.Nodes.ContentNode.Video;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.BaseNode;
 using IIIF.Manifests.Serializer.Shared.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
