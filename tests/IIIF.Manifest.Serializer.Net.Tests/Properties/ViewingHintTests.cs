@@ -1,7 +1,6 @@
-﻿using IIIF.Manifests.Serializer.Nodes.CanvasNode;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.SequenceNode;
+﻿using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {

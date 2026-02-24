@@ -1,6 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
-using IIIF.Manifests.Serializer.Properties.TileProperty;
+﻿using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
+using IIIF.Manifests.Serializer.Properties.Services;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {
@@ -31,12 +30,12 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
         {
             // Arrange
             var service = new Service(
-                "http://iiif.io/api/image/2/context.json",
-                "https://example.org/iiif/image1",
-                "http://iiif.io/api/image/2/level2.json"
-            )
-            .SetHeight(2000)
-            .SetWidth(1500);
+                    "http://iiif.io/api/image/2/context.json",
+                    "https://example.org/iiif/image1",
+                    "http://iiif.io/api/image/2/level2.json"
+                )
+                .SetHeight(2000)
+                .SetWidth(1500);
 
             // Act
             var json = JsonConvert.SerializeObject(service, Formatting.Indented);
@@ -56,13 +55,13 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
                 "https://example.org/iiif/image1",
                 "http://iiif.io/api/image/2/level2.json"
             );
-            
+
             var tile1 = new Tile().SetWidth(512);
             tile1.AddScaleFactor(1).AddScaleFactor(2).AddScaleFactor(4).AddScaleFactor(8);
-            
+
             var tile2 = new Tile().SetWidth(1024);
             tile2.AddScaleFactor(1).AddScaleFactor(2).AddScaleFactor(4);
-            
+
             service.AddTile(tile1).AddTile(tile2);
 
             // Act
@@ -80,18 +79,18 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
         {
             // Arrange
             var resource = new ImageResource(
-                "https://example.org/image.jpg",
-                "image/jpeg"
-            )
-            .SetHeight(2000)
-            .SetWidth(1500);
+                    "https://example.org/image.jpg",
+                    "image/jpeg"
+                )
+                .SetHeight(2000)
+                .SetWidth(1500);
 
             var service = new Service(
                 "http://iiif.io/api/image/2/context.json",
                 "https://example.org/iiif/image1",
                 "http://iiif.io/api/image/2/level1.json"
             );
-            
+
             var tile = new Tile().SetWidth(512);
             tile.AddScaleFactor(1).AddScaleFactor(2).AddScaleFactor(4).AddScaleFactor(8);
             service.AddTile(tile);
@@ -109,4 +108,3 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
         }
     }
 }
-

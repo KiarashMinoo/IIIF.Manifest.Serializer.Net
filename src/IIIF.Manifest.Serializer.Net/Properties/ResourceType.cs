@@ -10,12 +10,8 @@ namespace IIIF.Manifests.Serializer.Properties
     /// </summary>
     [PresentationAPI("2.0", Notes = "Type values vary between 2.x (sc: prefix) and 3.0 (no prefix).")]
     [JsonConverter(typeof(ValuableItemJsonConverter<ResourceType>))]
-    public class ResourceType : ValuableItem<ResourceType>
+    public class ResourceType(string value) : ValuableItem<ResourceType>(value)
     {
-        public ResourceType(string value) : base(value)
-        {
-        }
-
         // IIIF Presentation 3.0 types
         public static ResourceType Collection => new ResourceType("Collection");
         public static ResourceType Manifest => new ResourceType("Manifest");

@@ -50,6 +50,12 @@ public class ObjectArrayJsonConverter : JsonConverter
                 arrayList.Add(enumerator.Current);
             }
 
+            if (arrayList.Count == 0)
+            {
+                writer.WriteNull();
+                return;
+            }
+
             if (arrayList.Count == 1)
             {
                 serializer.Serialize(writer, arrayList[0]);

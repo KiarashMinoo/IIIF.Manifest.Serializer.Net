@@ -1,9 +1,8 @@
 using System.Linq;
-using IIIF.Manifests.Serializer.Nodes.CanvasNode;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.OtherContent;
-using IIIF.Manifests.Serializer.Nodes.SequenceNode;
+using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.Contents.OtherContent;
 
 namespace IIIF.Manifests.Serializer.Tests.Cookbook
 {

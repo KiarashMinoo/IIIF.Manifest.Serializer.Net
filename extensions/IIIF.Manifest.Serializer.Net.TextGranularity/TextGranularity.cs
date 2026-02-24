@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -8,9 +9,13 @@ namespace IIIF.Manifests.Serializer.Extensions
     /// Text granularity levels for IIIF Text Granularity extension.
     /// Defines the level of text segmentation available in OCR or text content.
     /// </summary>
-    [JsonConverter(typeof(TextGranularityJsonConverter))]
+    [JsonConverter(typeof(ValuableItemJsonConverter<TextGranularity>))]
     public class TextGranularity : ValuableItem<TextGranularity>
     {
+        private TextGranularity(string value) : base(value)
+        {
+        }
+
         /// <summary>
         /// Character-level text granularity for individual character positioning.
         /// </summary>
@@ -36,9 +41,6 @@ namespace IIIF.Manifests.Serializer.Extensions
         /// </summary>
         public static readonly TextGranularity Page = new TextGranularity("page");
 
-        private TextGranularity(string value) : base(value)
-        {
-        }
 
         /// <summary>
         /// Parse a string value to a TextGranularity instance.
@@ -59,7 +61,7 @@ namespace IIIF.Manifests.Serializer.Extensions
         /// <summary>
         /// Try to parse a string value to a TextGranularity instance.
         /// </summary>
-        public static bool TryParse(string value, out TextGranularity result)
+        public static bool TryParse(string value, [MaybeNullWhen(false)] out TextGranularity result)
         {
             try
             {

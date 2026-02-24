@@ -1,9 +1,9 @@
 ﻿using System.Drawing;
-using IIIF.Manifests.Serializer.Nodes.CanvasNode;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Image.Resource;
 using System.Linq;
 using IIIF.Manifests.Serializer.Extensions;
+using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using Point = IIIF.Manifests.Serializer.Extensions.Point;
 
 namespace IIIF.Manifests.Serializer.Tests.Nodes

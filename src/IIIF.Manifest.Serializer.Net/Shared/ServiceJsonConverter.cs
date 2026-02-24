@@ -1,5 +1,6 @@
 ﻿using System;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -85,24 +86,24 @@ public class ServiceJsonConverter : JsonConverter
             {
                 case "ImageService2":
                 case "ImageService3":
-                    return serviceToken.ToObject<Properties.ServiceProperty.Service>();
+                    return serviceToken.ToObject<Properties.Services.Service>();
                 case "AuthCookieService1":
                 case "AuthTokenService1":
                 case "AuthLogoutService1":
-                    return serviceToken.ToObject<Properties.ServiceProperty.AuthService1>();
+                    return serviceToken.ToObject<AuthService1>();
                 case "AuthProbeService2":
                 case "AuthAccessService2":
                 case "AuthAccessTokenService2":
                 case "AuthLogoutService2":
-                    return serviceToken.ToObject<Properties.ServiceProperty.AuthService2>();
+                    return serviceToken.ToObject<AuthService2>();
                 case "SearchService2":
-                    return serviceToken.ToObject<Properties.ServiceProperty.SearchService>();
+                    return serviceToken.ToObject<SearchService>();
                 case "AutoCompleteService2":
-                    return serviceToken.ToObject<Properties.ServiceProperty.AutoCompleteService>();
+                    return serviceToken.ToObject<AutoCompleteService>();
                 case "OrderedCollection":
-                    return serviceToken.ToObject<Properties.ServiceProperty.DiscoveryService>();
+                    return serviceToken.ToObject<DiscoveryService>();
                 case "ContentStateService":
-                    return serviceToken.ToObject<Properties.ServiceProperty.ContentStateService>();
+                    return serviceToken.ToObject<ContentStateService>();
                 default:
                     // Try to detect by profile or other means
                     var jProfile = serviceToken.TryGetToken(ProfileJName);
@@ -114,13 +115,13 @@ public class ServiceJsonConverter : JsonConverter
                             // Try Auth services
                             try
                             {
-                                return serviceToken.ToObject<Properties.ServiceProperty.AuthService1>();
+                                return serviceToken.ToObject<AuthService1>();
                             }
                             catch (JsonException)
                             {
                                 try
                                 {
-                                    return serviceToken.ToObject<Properties.ServiceProperty.AuthService2>();
+                                    return serviceToken.ToObject<AuthService2>();
                                 }
                                 catch (JsonException)
                                 {
@@ -130,19 +131,19 @@ public class ServiceJsonConverter : JsonConverter
                         }
                         else if (profileValue.Contains("search", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<Properties.ServiceProperty.SearchService>();
+                            return serviceToken.ToObject<SearchService>();
                         }
                         else if (profileValue.Contains("discovery", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<Properties.ServiceProperty.DiscoveryService>();
+                            return serviceToken.ToObject<DiscoveryService>();
                         }
                         else if (profileValue.Contains("content-state", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<Properties.ServiceProperty.ContentStateService>();
+                            return serviceToken.ToObject<ContentStateService>();
                         }
                         else if (profileValue.Contains("image", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<Properties.ServiceProperty.Service>();
+                            return serviceToken.ToObject<Properties.Services.Service>();
                         }
                     }
 
@@ -153,7 +154,7 @@ public class ServiceJsonConverter : JsonConverter
         // Fallback: try to deserialize as the most common service type (ImageService)
         try
         {
-            return serviceToken.ToObject<Properties.ServiceProperty.Service>();
+            return serviceToken.ToObject<Properties.Services.Service>();
         }
         catch (JsonException)
         {

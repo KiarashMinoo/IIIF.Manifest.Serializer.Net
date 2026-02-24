@@ -10,12 +10,8 @@ namespace IIIF.Manifests.Serializer.Properties
     /// </summary>
     [PresentationAPI("2.0", Notes = "Motivation values. sc:painting in 2.x, painting in 3.0.")]
     [JsonConverter(typeof(ValuableItemJsonConverter<Motivation>))]
-    public class Motivation : ValuableItem<Motivation>
+    public class Motivation(string value) : ValuableItem<Motivation>(value)
     {
-        public Motivation(string value) : base(value)
-        {
-        }
-
         // IIIF Presentation motivations
         public static Motivation Painting => new Motivation("painting");
         public static Motivation Supplementing => new Motivation("supplementing");

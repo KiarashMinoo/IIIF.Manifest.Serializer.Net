@@ -1,5 +1,5 @@
 using System.Linq;
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Properties.Services;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {
@@ -9,20 +9,20 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
         public void AuthService2_ShouldSerializeActivePattern()
         {
             // Arrange
-            var logoutService = new AuthService2("https://auth.example.org/logout");
+            var logoutService = new AuthService2("https://auth.example.org/logout", Profile.AuthLogout.Value);
 
-            var tokenService = new AuthService2("https://auth.example.org/token")
-                .AddService(logoutService);
+            var tokenService = new AuthService2("https://auth.example.org/token", Profile.AuthToken.Value);
 
             var accessService = new AuthService2(
-                "https://auth.example.org/access",
-                "active"
-            )
-            .SetLabel("Login to Access")
-            .SetHeading("Authentication Required")
-            .SetNote("Please log in to view this content.")
-            .SetConfirmLabel("Login")
-            .AddService(tokenService);
+                    "https://auth.example.org/access",
+                    "active"
+                )
+                .SetLabel("Login to Access")
+                .SetHeading("Authentication Required")
+                .SetNote("Please log in to view this content.")
+                .SetConfirmLabel("Login")
+                .AddService(logoutService)
+                .AddService(tokenService);
 
             var probeService = new AuthService2("https://auth.example.org/probe")
                 .AddService(accessService);
@@ -68,12 +68,12 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
         {
             // Arrange
             var accessService = new AuthService2(
-                "https://auth.example.org/access",
-                "external"
-            )
-            .SetLabel("External Login")
-            .SetHeading("External Authentication")
-            .SetNote("You will be redirected to an external login page.");
+                    "https://auth.example.org/access",
+                    "external"
+                )
+                .SetLabel("External Login")
+                .SetHeading("External Authentication")
+                .SetNote("You will be redirected to an external login page.");
 
             // Act
             var json = JsonConvert.SerializeObject(accessService, Formatting.Indented);
@@ -89,11 +89,11 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
         {
             // Arrange
             var originalService = new AuthService2(
-                "https://auth.example.org/probe"
-            )
-            .SetLabel("Test Service")
-            .SetHeading("Test Heading")
-            .SetNote("Test note");
+                    "https://auth.example.org/probe"
+                )
+                .SetLabel("Test Service")
+                .SetHeading("Test Heading")
+                .SetNote("Test note");
 
             var originalJson = JsonConvert.SerializeObject(originalService, Formatting.Indented);
 
@@ -115,10 +115,10 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
                 .AddService(logoutService);
 
             var accessService = new AuthService2(
-                "https://auth.example.org/access",
-                "active"
-            )
-            .AddService(tokenService);
+                    "https://auth.example.org/access",
+                    "active"
+                )
+                .AddService(tokenService);
 
             var probeService = new AuthService2("https://auth.example.org/probe")
                 .AddService(accessService);
@@ -230,7 +230,7 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
             authService.Should().NotBeNull();
             authService.Id.Should().Be("https://auth.example.org/probe");
             authService.Services.Should().HaveCount(1);
-            
+
             var accessService = authService.Services.First();
             accessService.Id.Should().Be("https://auth.example.org/access");
             accessService.Profile.Should().Be("active");

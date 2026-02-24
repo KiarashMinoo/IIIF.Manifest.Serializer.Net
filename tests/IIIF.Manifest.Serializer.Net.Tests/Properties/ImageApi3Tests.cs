@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
-using IIIF.Manifests.Serializer.Properties.SizeProperty;
-using IIIF.Manifests.Serializer.Properties.TileProperty;
+using IIIF.Manifests.Serializer.Properties.Services;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {

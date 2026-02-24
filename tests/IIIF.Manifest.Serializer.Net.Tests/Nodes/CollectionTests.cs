@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Nodes.CollectionNode;
+﻿using IIIF.Manifests.Serializer.Nodes;
 
 namespace IIIF.Manifests.Serializer.Tests.Nodes
 {

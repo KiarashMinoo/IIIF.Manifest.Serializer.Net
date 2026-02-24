@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Properties.Services;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {
@@ -89,7 +89,7 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
             authService.ConfirmLabel.Should().Be("Login");
             authService.FailureHeader.Should().Be("Login Failed");
             authService.FailureDescription.Should().Be("Authentication was unsuccessful.");
-            authService.Services.Should().HaveCount(2);
+            authService.Service.Should().HaveCount(2);
         }
 
         [Fact]

@@ -3,12 +3,11 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue;
 
-[method: JsonConstructor]
+[JsonConverter(typeof(ValuableItemJsonConverter<MetadataValue>))]
 public class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
 {
     public const string ValueJName = "@value";
     public const string LanguageJName = "@language";
-
 
     [JsonProperty(ValueJName)] public override string Value => base.Value;
 

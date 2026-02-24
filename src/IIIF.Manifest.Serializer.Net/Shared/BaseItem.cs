@@ -38,10 +38,10 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IContextSupport w
         private set => SetElementValue(value);
     }
 
-    [JsonProperty(ServiceJName, ItemConverterType = typeof(ServiceJsonConverter))]
-    public IBaseService? Service
+    [JsonProperty(ServiceJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+    public IReadOnlyCollection<IBaseService> Service
     {
-        get => GetElementValue(x => x.Service);
+        get => GetElementValue(x => x.Service) ?? [];
         private set => SetElementValue(value);
     }
 
@@ -91,7 +91,19 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IContextSupport w
 
     public TBaseItem SetService<TService>(TService service) where TService : IBaseService
     {
-        Service = service;
+        Service = [service];
+        return (TBaseItem)this;
+    }
+
+    public TBaseItem AddService<TService>(TService service) where TService : IBaseService
+    {
+        Service = Service.With(service);
+        return (TBaseItem)this;
+    }
+
+    public TBaseItem RemoveService<TService>(TService service) where TService : IBaseService
+    {
+        Service = Service.Without(service);
         return (TBaseItem)this;
     }
 }

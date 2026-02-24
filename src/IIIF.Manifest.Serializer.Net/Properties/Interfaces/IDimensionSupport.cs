@@ -8,11 +8,6 @@ namespace IIIF.Manifests.Serializer.Properties.Interfaces
         where TItem : BaseItem<TItem>, IDimensionSupport<TItem>
     {
         [JsonProperty(Constants.HeightJName)] int? Height { get; }
-
         [JsonProperty(Constants.WidthJName)] int? Width { get; }
-
-
-        TItem SetHeight(int height);
-        TItem SetWidth(int width);
     }
 }

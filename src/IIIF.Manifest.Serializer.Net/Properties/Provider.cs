@@ -2,7 +2,7 @@ using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.ProviderProperty;
+namespace IIIF.Manifests.Serializer.Properties;
 
 /// <summary>
 /// IIIF Provider property - describes the organization providing the resource.

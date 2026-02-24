@@ -1,5 +1,5 @@
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
 using System.Linq;
+using IIIF.Manifests.Serializer.Properties.Services;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
 {

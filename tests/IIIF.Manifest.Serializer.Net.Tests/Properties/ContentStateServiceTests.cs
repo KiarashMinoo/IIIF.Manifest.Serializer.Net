@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Properties.Services;
 using Newtonsoft.Json;
 using Xunit;
 

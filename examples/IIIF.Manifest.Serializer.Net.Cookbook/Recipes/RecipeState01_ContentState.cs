@@ -1,6 +1,6 @@
-using IIIF.Manifests.Serializer.Nodes.ManifestNode;
+using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Properties.Services;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes

@@ -10,12 +10,8 @@ namespace IIIF.Manifests.Serializer.Properties
     /// </summary>
     [PresentationAPI("2.0", Notes = "In 2.x use 'license', in 3.0 use 'rights'. Values are the same.")]
     [JsonConverter(typeof(ValuableItemJsonConverter<Rights>))]
-    public class Rights : ValuableItem<Rights>
+    public class Rights(string value) : ValuableItem<Rights>(value)
     {
-        public Rights(string value) : base(value)
-        {
-        }
-
         // Creative Commons 4.0
         public static Rights CcBy => new Rights("http://creativecommons.org/licenses/by/4.0/");
         public static Rights CcBySa => new Rights("http://creativecommons.org/licenses/by-sa/4.0/");

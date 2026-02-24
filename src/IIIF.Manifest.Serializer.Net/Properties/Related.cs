@@ -2,14 +2,8 @@ using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties
-{
-    [PresentationAPI("2.0")]
-    [JsonConverter(typeof(FormatableItemJsonConverter<>))]
-    public class Related : FormattableItem<Related>
-    {
-        public Related(string id) : base(id)
-        {
-        }
-    }
-}
+namespace IIIF.Manifests.Serializer.Properties;
+
+[PresentationAPI("2.0")]
+[method: JsonConstructor]
+public class Related(string id) : FormattableItem<Related>(id);

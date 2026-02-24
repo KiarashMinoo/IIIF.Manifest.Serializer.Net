@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Nodes.ContentNode.Image;
+﻿using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 

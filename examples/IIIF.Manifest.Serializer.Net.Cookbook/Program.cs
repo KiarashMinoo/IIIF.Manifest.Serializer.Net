@@ -1,5 +1,6 @@
 ﻿using IIIF.Manifests.Serializer.Net.Cookbook.Recipes;
-using IIIF.Manifests.Serializer.Properties.ServiceProperty;
+using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Properties.Services;
 using Newtonsoft.Json;
 
 Console.WriteLine("=== IIIF Cookbook Recipes (Presentation API 2.0) ===");
@@ -42,7 +43,7 @@ Console.WriteLine();
 // Deserialization round-trip test for basic recipe
 Console.WriteLine("--- [Basic] Round-trip: Deserialize → Reserialize (0001) ---");
 var basicJson = Recipe001_SimpleImage.ToJson();
-var basicManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest>(basicJson);
+var basicManifest = JsonConvert.DeserializeObject<Manifest>(basicJson);
 var basicReserialized = JsonConvert.SerializeObject(basicManifest, Formatting.Indented);
 Console.WriteLine($"  Round-trip OK: {basicManifest != null && basicManifest.Sequences.Count == 1}");
 Console.WriteLine();
@@ -95,7 +96,7 @@ Console.WriteLine();
 // Deserialization round-trip for structures
 Console.WriteLine("--- [Structure] Round-trip: Deserialize → Reserialize (TOC) ---");
 var tocJson = Recipe003_BookWithTOC.ToJson();
-var tocManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest>(tocJson);
+var tocManifest = JsonConvert.DeserializeObject<Manifest>(tocJson);
 Console.WriteLine($"  Round-trip OK: {tocManifest != null && tocManifest.Structures?.Count > 0}");
 Console.WriteLine();
 
@@ -125,7 +126,7 @@ Console.WriteLine();
 // Deserialization round-trip for image service
 Console.WriteLine("--- [Image] Round-trip: Deserialize → Reserialize (Image Service) ---");
 var imgJson = Recipe002_ImageService.ToJson();
-var imgManifest = JsonConvert.DeserializeObject<IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest>(imgJson);
+var imgManifest = JsonConvert.DeserializeObject<Manifest>(imgJson);
 var imgCanvas = System.Linq.Enumerable.First(System.Linq.Enumerable.First(imgManifest.Sequences).Canvases);
 var imgRes = System.Linq.Enumerable.First(imgCanvas.Images).Resource;
 Console.WriteLine($"  Round-trip OK: {imgRes.Service is Service { Tiles.Count: > 0 }}");

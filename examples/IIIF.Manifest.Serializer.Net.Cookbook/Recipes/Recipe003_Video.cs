@@ -1,10 +1,9 @@
-using IIIF.Manifests.Serializer.Nodes.CanvasNode;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Video;
-using IIIF.Manifests.Serializer.Nodes.ContentNode.Video.Resource;
-using IIIF.Manifests.Serializer.Nodes.SequenceNode;
+using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Video;
+using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json;
-using IIIFManifest = IIIF.Manifests.Serializer.Nodes.ManifestNode.Manifest;
+using IIIFManifest = IIIF.Manifests.Serializer.Nodes.Manifest;
 
 namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
 {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.ValuableItem;
@@ -54,6 +55,13 @@ public class ValuableItemJsonConverter<TValuableItem> : JsonConverter<TValuableI
         }
 
         // Create instance using the string constructor
-        return (TValuableItem)Activator.CreateInstance(typeof(TValuableItem), stringValue)!;
+        // Use BindingFlags to find constructors regardless of visibility (public, private, internal)
+        return (TValuableItem)Activator.CreateInstance(
+            typeof(TValuableItem),
+            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+            null,
+            [stringValue],
+            null
+        )!;
     }
 }

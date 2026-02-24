@@ -12,15 +12,11 @@ namespace IIIF.Manifests.Serializer.Properties
     /// <remarks>
     /// In IIIF Presentation API 3.0, viewingHint is replaced by behavior.
     /// </remarks>
-    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", 
+    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
         ReplacedBy = "behavior", Notes = "viewingHint renamed to behavior in API 3.0")]
     [JsonConverter(typeof(ValuableItemJsonConverter<ViewingHint>))]
-    public class ViewingHint : ValuableItem<ViewingHint>
+    public class ViewingHint(string value) : ValuableItem<ViewingHint>(value)
     {
-        public ViewingHint(string value) : base(value)
-        {
-        }
-
         /// <summary>
         /// Valid on Collection, Manifest. Each canvas represents a separate page/view.
         /// Implies that viewers should show one or few pages at a time.
@@ -59,4 +55,3 @@ namespace IIIF.Manifests.Serializer.Properties
         public static ViewingHint MultiPart => new ViewingHint("multi-part");
     }
 }
-

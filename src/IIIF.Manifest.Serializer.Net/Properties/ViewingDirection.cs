@@ -1,4 +1,3 @@
-using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
@@ -11,12 +10,8 @@ namespace IIIF.Manifests.Serializer.Properties
     /// </summary>
     [PresentationAPI("2.0", Notes = "Supported in both 2.x and 3.0")]
     [JsonConverter(typeof(ValuableItemJsonConverter<ViewingDirection>))]
-    public class ViewingDirection : ValuableItem<ViewingDirection>
+    public class ViewingDirection(string value) : ValuableItem<ViewingDirection>(value)
     {
-        public ViewingDirection(string value) : base(value)
-        {
-        }
-
         public static ViewingDirection Ltr => new ViewingDirection("left-to-right");
         public static ViewingDirection Rtl => new ViewingDirection("right-to-left");
         public static ViewingDirection Ttb => new ViewingDirection("top-to-bottom");

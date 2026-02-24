@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Nodes.StructureNode;
+﻿using IIIF.Manifests.Serializer.Nodes;
 
 namespace IIIF.Manifests.Serializer.Tests.Nodes
 {

@@ -10,21 +10,19 @@ namespace IIIF.Manifests.Serializer.Properties
     /// </summary>
     [ImageAPI("2.0", Notes = "Supported in both Image API 2.x and 3.0")]
     [JsonConverter(typeof(ValuableItemJsonConverter<ImageFormat>))]
-    public class ImageFormat : ValuableItem<ImageFormat>
+    public class ImageFormat(string value) : ValuableItem<ImageFormat>(value)
     {
-        public ImageFormat(string value) : base(value)
-        {
-        }
-
         // Common image formats
-        public static ImageFormat Jpg => new ImageFormat("jpg");
-        public static ImageFormat Png => new ImageFormat("png");
-        public static ImageFormat Gif => new ImageFormat("gif");
-        public static ImageFormat Webp => new ImageFormat("webp");
-        public static ImageFormat Tif => new ImageFormat("tif");
-        public static ImageFormat Jp2 => new ImageFormat("jp2");
-        public static ImageFormat Pdf => new ImageFormat("pdf");
-        public static ImageFormat Avif => new ImageFormat("avif");
-        public static ImageFormat Heic => new ImageFormat("heic");
+        public static ImageFormat Jpg => "jpg";
+        public static ImageFormat Png => "png";
+        public static ImageFormat Gif => "gif";
+        public static ImageFormat Webp => "webp";
+        public static ImageFormat Tif => "tif";
+        public static ImageFormat Jp2 => "jp2";
+        public static ImageFormat Pdf => "pdf";
+        public static ImageFormat Avif => "avif";
+        public static ImageFormat Heic => "heic";
+
+        public static implicit operator ImageFormat(string value) => new(value);
     }
 }

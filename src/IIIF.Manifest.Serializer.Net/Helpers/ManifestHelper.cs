@@ -2,7 +2,6 @@ using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Properties;
 using System.Collections.Generic;
 using System.Linq;
-using IIIF.Manifests.Serializer.Nodes.ManifestNode;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue;
 

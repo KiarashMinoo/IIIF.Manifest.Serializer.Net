@@ -1,8 +1,5 @@
 ﻿using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Nodes.CanvasNode;
-using IIIF.Manifests.Serializer.Nodes.CollectionNode;
-using IIIF.Manifests.Serializer.Nodes.ManifestNode;
-using IIIF.Manifests.Serializer.Nodes.StructureNode;
+using IIIF.Manifests.Serializer.Nodes;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 

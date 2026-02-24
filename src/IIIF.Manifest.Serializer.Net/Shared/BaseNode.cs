@@ -2,11 +2,7 @@ using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Properties.AccompanyingCanvasProperty;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
-using IIIF.Manifests.Serializer.Properties.ProviderProperty;
-using IIIF.Manifests.Serializer.Properties.RenderingProperty;
-using IIIF.Manifests.Serializer.Properties.WithinProperty;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared
