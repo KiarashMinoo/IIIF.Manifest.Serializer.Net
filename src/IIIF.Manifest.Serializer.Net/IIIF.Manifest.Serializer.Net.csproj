@@ -11,4 +11,16 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Shared\Trackable\TrackableObject.Getters.cs">
+      <DependentUpon>TrackableObject.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Shared\Trackable\TrackableObject.Setters.cs">
+      <DependentUpon>TrackableObject.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Shared\Trackable\TrackableObject.AdditionalPropertiesHandler.cs">
+      <DependentUpon>TrackableObject.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

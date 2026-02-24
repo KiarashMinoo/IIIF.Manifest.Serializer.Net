@@ -26,7 +26,7 @@ namespace IIIF.Manifests.Serializer.Nodes
         [JsonProperty(Constants.HeightJName)]
         public int? Height
         {
-            get => GetElementValue(x => x.Height);
+            get => GetElementValue<int>();
             private set => SetElementValue(value);
         }
 
@@ -34,7 +34,7 @@ namespace IIIF.Manifests.Serializer.Nodes
         [JsonProperty(Constants.WidthJName)]
         public int? Width
         {
-            get => GetElementValue(x => x.Width);
+            get => GetElementValue<int>();
             private set => SetElementValue(value);
         }
 
@@ -45,7 +45,7 @@ namespace IIIF.Manifests.Serializer.Nodes
         [JsonProperty(DurationJName)]
         public double? Duration
         {
-            get => GetElementValue(x => x.Duration);
+            get => GetElementValue<double>();
             private set => SetElementValue(value);
         }
 

@@ -11,14 +11,32 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// Per the navPlace spec, the value of properties is a JSON object with zero or more properties.
 /// Terms used in properties should be described by registered IIIF API extensions or local linked data contexts.
 /// </summary>
-[JsonConverter(typeof(FeaturePropertiesJsonConverter))]
 public class FeatureProperties : TrackableObject<FeatureProperties>
 {
     public const string LabelJName = "label";
 
-    [JsonProperty(LabelJName)] public IReadOnlyCollection<Label> Label => GetElementValue(x => x.Label) ?? [];
+    [JsonProperty(LabelJName)]
+    public IReadOnlyCollection<Label> Label
+    {
+        get => GetElementValue(x => x.Label) ?? [];
+        private set => SetElementValue(value);
+    }
 
-    public FeatureProperties SetLabel(Label[] labels) => SetElementValue(a => a.Label, _ => [..labels]);
-    public FeatureProperties AddLabel(Label label) => SetElementValue(a => a.Label, labels => labels.With(label));
-    public FeatureProperties RemoveLabel(Label label) => SetElementValue(a => a.Label, labels => labels.Without(label));
+    public FeatureProperties SetLabel(IReadOnlyCollection<Label> labels)
+    {
+        Label = labels;
+        return this;
+    }
+
+    public FeatureProperties AddLabel(Label label)
+    {
+        Label = Label.With(label);
+        return this;
+    }
+
+    public FeatureProperties RemoveLabel(Label label)
+    {
+        Label = Label.Without(label);
+        return this;
+    }
 }

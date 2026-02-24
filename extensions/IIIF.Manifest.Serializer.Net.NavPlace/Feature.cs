@@ -7,15 +7,24 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// A GeoJSON Feature representing a geographic area.
 /// Supports optional id property per the navPlace extension spec.
 /// </summary>
-[JsonConverter(typeof(FeatureJsonConverter))]
 public class Feature(string id) : BaseItem<Feature>(id, "Feature")
 {
     public const string GeometryJName = "geometry";
     public const string PropertiesJName = "properties";
 
-    [JsonProperty(GeometryJName)] public Geometry? Geometry => GetElementValue(x => x.Geometry);
+    [JsonProperty(GeometryJName)]
+    public Geometry? Geometry
+    {
+        get => GetElementValue(x => x.Geometry);
+        private set => SetElementValue(value);
+    }
 
-    [JsonProperty(PropertiesJName)] public FeatureProperties? Properties => GetElementValue(x => x.Properties);
+    [JsonProperty(PropertiesJName)]
+    public FeatureProperties? Properties
+    {
+        get => GetElementValue(x => x.Properties);
+        private set => SetElementValue(value);
+    }
 
     /// <summary>
     /// Set the geometry for this Feature.

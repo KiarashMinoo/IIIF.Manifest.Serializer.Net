@@ -1,4 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
+﻿using System.Linq;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Properties.Services;
 
 namespace IIIF.Manifests.Serializer.Tests.Properties
@@ -102,9 +103,9 @@ namespace IIIF.Manifests.Serializer.Tests.Properties
             var deserialized = JsonConvert.DeserializeObject<ImageResource>(json);
 
             // Assert
-            deserialized.Service.Should().NotBeNull();
-            deserialized.Service.Profile.Should().Be("http://iiif.io/api/image/2/level1.json");
-            deserialized.Service.As<Service>().Tiles.Should().ContainSingle();
+            deserialized.Service.FirstOrDefault().Should().NotBeNull();
+            deserialized.Service.FirstOrDefault().Profile.Should().Be("http://iiif.io/api/image/2/level1.json");
+            deserialized.Service.FirstOrDefault().As<Service>().Tiles.Should().ContainSingle();
         }
     }
 }

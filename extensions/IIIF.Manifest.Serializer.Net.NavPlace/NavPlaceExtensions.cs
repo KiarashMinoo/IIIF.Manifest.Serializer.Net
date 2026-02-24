@@ -17,7 +17,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public Canvas SetNavPlace(NavPlace navPlace)
         {
-            return canvas.SetAdditionalElementValue(NavPlace.NavPlaceJName, navPlace);
+            return canvas.SetAdditionalProperty(NavPlace.NavPlaceJName, navPlace);
         }
 
         /// <summary>
@@ -25,7 +25,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public NavPlace? GetNavPlace()
         {
-            return canvas.GetAdditionalElementValue<Canvas, NavPlace>(NavPlace.NavPlaceJName);
+            return canvas.GetAdditionalProperty<Canvas, NavPlace>(NavPlace.NavPlaceJName);
         }
     }
 
@@ -36,7 +36,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public Manifest SetNavPlace(NavPlace navPlace)
         {
-            return manifest.SetAdditionalElementValue(NavPlace.NavPlaceJName, navPlace);
+            return manifest.SetAdditionalProperty(NavPlace.NavPlaceJName, navPlace);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public NavPlace? GetNavPlace()
         {
-            return manifest.GetAdditionalElementValue<Manifest, NavPlace>(NavPlace.NavPlaceJName);
+            return manifest.GetAdditionalProperty<Manifest, NavPlace>(NavPlace.NavPlaceJName);
         }
     }
 
@@ -55,7 +55,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public Structure SetNavPlace(NavPlace navPlace)
         {
-            return structure.SetAdditionalElementValue(NavPlace.NavPlaceJName, navPlace);
+            return structure.SetAdditionalProperty(NavPlace.NavPlaceJName, navPlace);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public NavPlace? GetNavPlace()
         {
-            return structure.GetAdditionalElementValue<Structure, NavPlace>(NavPlace.NavPlaceJName);
+            return structure.GetAdditionalProperty<Structure, NavPlace>(NavPlace.NavPlaceJName);
         }
     }
 
@@ -74,7 +74,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public Collection SetNavPlace(NavPlace navPlace)
         {
-            return collection.SetAdditionalElementValue(NavPlace.NavPlaceJName, navPlace);
+            return collection.SetAdditionalProperty(NavPlace.NavPlaceJName, navPlace);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ public static class NavPlaceExtensions
         /// </summary>
         public NavPlace? GetNavPlace()
         {
-            return collection.GetAdditionalElementValue<Collection, NavPlace>(NavPlace.NavPlaceJName);
+            return collection.GetAdditionalProperty<Collection, NavPlace>(NavPlace.NavPlaceJName);
         }
     }
 }

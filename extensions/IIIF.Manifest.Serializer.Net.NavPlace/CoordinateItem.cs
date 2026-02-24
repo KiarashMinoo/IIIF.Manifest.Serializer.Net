@@ -4,23 +4,63 @@ using IIIF.Manifests.Serializer.Shared.Trackable;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
-public class CoordinateItem : TrackableObject<CoordinateItem>
+public class CoordinateItem : TrackableObject<CoordinateItem>, ICoordinateItemSupport<CoordinateItem>
 {
-    public double? X => GetElementValue(x => x.X);
-    public double? Y => GetElementValue(x => x.Y);
-    public IReadOnlyCollection<CoordinateItem> Subitems => GetElementValue(x => x.Subitems) ?? [];
+    public double? Longitude
+    {
+        get => GetElementValue(x => x.Longitude);
+        private set => SetElementValue(value);
+    }
+
+    public double? Latitude
+    {
+        get => GetElementValue(x => x.Latitude);
+        private set => SetElementValue(value);
+    }
+
+    public double? Altitude
+    {
+        get => GetElementValue(x => x.Altitude);
+        private set => SetElementValue(value);
+    }
+
+    public IReadOnlyCollection<CoordinateItem> Coordinates
+    {
+        get => GetElementValue(x => x.Coordinates) ?? [];
+        private set => SetElementValue(value);
+    }
 
     public CoordinateItem(CoordinateItem[] coordinateItems)
     {
-        SetElementValue(x => x.Subitems, [..coordinateItems]);
+        SetElementValue(x => x.Coordinates, [..coordinateItems]);
     }
 
-    public CoordinateItem(double x, double y)
+    public CoordinateItem(double longitude, double latitude)
     {
-        SetElementValue(a => a.X, x);
-        SetElementValue(a => a.Y, y);
+        Longitude = longitude;
+        Latitude = latitude;
     }
 
-    public CoordinateItem AddSubitem(CoordinateItem item) => SetElementValue(a => a.Subitems, labels => labels.With(item));
-    public CoordinateItem RemoveSubitem(CoordinateItem item) => SetElementValue(a => a.Subitems, labels => labels.Without(item));
+    public CoordinateItem(double longitude, double latitude, double altitude) : this(longitude, latitude)
+    {
+        Altitude = altitude;
+    }
+
+    public CoordinateItem SetCoordinates(IReadOnlyCollection<CoordinateItem> coordinates)
+    {
+        Coordinates = coordinates;
+        return this;
+    }
+
+    public CoordinateItem AddCoordinate(CoordinateItem coordinate)
+    {
+        Coordinates = Coordinates.With(coordinate);
+        return this;
+    }
+
+    public CoordinateItem RemoveAddCoordinate(CoordinateItem coordinate)
+    {
+        Coordinates = Coordinates.Without(coordinate);
+        return this;
+    }
 }
