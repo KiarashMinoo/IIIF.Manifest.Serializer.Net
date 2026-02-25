@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using IIIF.Manifests.Serializer.Extensions.Transformations;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 

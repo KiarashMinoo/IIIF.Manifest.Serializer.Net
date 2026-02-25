@@ -1,4 +1,5 @@
 using IIIF.Manifests.Serializer.Extensions;
+using IIIF.Manifests.Serializer.Extensions.Transformations;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
