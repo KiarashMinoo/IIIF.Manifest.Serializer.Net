@@ -5,7 +5,6 @@ using IIIF.Manifests.Serializer.Extensions.Transformations;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
-using Point = IIIF.Manifests.Serializer.Extensions.Point;
 
 namespace IIIF.Manifests.Serializer.Tests.Nodes
 {

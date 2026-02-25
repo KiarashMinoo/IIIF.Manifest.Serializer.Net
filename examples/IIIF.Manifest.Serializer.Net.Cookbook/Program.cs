@@ -40,6 +40,11 @@ Console.WriteLine("--- [Basic] Recipe 0002: Simplest Manifest - Audio ---");
 Console.WriteLine(Recipe002_Audio.ToJson());
 Console.WriteLine();
 
+// Cookbook 0029 — Metadata on any Resource
+Console.WriteLine("--- [Basic] Recipe 0029: Metadata on any Resource ---");
+Console.WriteLine(Recipe0029_MetadataAnywhere.ToJson());
+Console.WriteLine();
+
 // Deserialization round-trip test for basic recipe
 Console.WriteLine("--- [Basic] Round-trip: Deserialize → Reserialize (0001) ---");
 var basicJson = Recipe001_SimpleImage.ToJson();
@@ -78,6 +83,11 @@ Console.WriteLine(Recipe008_BookBehavior.ToJsonContinuous());
 Console.WriteLine();
 Console.WriteLine("--- [Properties] Recipe 0011c: Individuals Behavior ---");
 Console.WriteLine(Recipe008_BookBehavior.ToJsonIndividuals());
+Console.WriteLine();
+
+// Cookbook 0117 — Image Thumbnail for Manifest
+Console.WriteLine("--- [Properties] Recipe 0117: Image Thumbnail for Manifest ---");
+Console.WriteLine(Recipe0117_ThumbnailManifest.ToJson());
 Console.WriteLine();
 
 // ═══════════════════════════════════════════════════════
@@ -200,6 +210,35 @@ Console.WriteLine();
 Console.WriteLine("--- [State] Recipe State 1: Content State API 1.0 ---");
 Console.WriteLine(RecipeState01_ContentState.ToJson());
 Console.WriteLine();
+
+// ═══════════════════════════════════════════════════════
+// LINKING & METADATA RECIPES
+// ═══════════════════════════════════════════════════════
+Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
+Console.WriteLine("║         LINKING & METADATA RECIPES                    ║");
+Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
+Console.WriteLine();
+
+// Cookbook 0046 — Providing Alternative Representations (Rendering)
+Console.WriteLine("--- [Linking] Recipe 0046: Providing Alternative Representations ---");
+Console.WriteLine(Recipe0046_Rendering.ToJson());
+Console.WriteLine();
+
+// Cookbook 0047 — Linking to Web Page of an Object (Homepage)
+Console.WriteLine("--- [Linking] Recipe 0047: Linking to Web Page of an Object ---");
+Console.WriteLine(Recipe0047_Homepage.ToJson());
+Console.WriteLine();
+
+// Cookbook 0053 — Linking to Structured Metadata (SeeAlso)
+Console.WriteLine("--- [Linking] Recipe 0053: Linking to Structured Metadata ---");
+Console.WriteLine(Recipe0053_SeeAlso.ToJson());
+Console.WriteLine();
+
+// Cookbook 0032 — Simple Collection
+Console.WriteLine("--- [Linking] Recipe 0032: Simple Collection ---");
+Console.WriteLine(Recipe0032_Collection.ToJsonCollection());
+Console.WriteLine();
+
 Console.WriteLine("╔═══════════════════════════════════════════════════════╗");
 Console.WriteLine("║  AUDIO/VISUAL, ANNOTATION & GEO RECIPES               ║");
 Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
