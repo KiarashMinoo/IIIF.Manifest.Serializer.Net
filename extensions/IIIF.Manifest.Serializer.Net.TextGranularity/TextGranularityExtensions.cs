@@ -1,14 +1,18 @@
-﻿using IIIF.Manifests.Serializer.Nodes.Contents.Image;
+﻿using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using IIIF.Manifests.Serializer.Shared.Trackable;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
 public static class TextGranularityExtensions
 {
-    extension(Image image)
+    extension<TResource>(TResource resource) where TResource : IBaseResource, IAdditionalPropertiesSupport<TResource>
     {
-        public Image SetTextGranularity(TextGranularity textGranularity)
+        public TResource SetTextGranularity(TextGranularity textGranularity)
         {
-            return image;
+            return resource;
         }
+
+        public TextGranularity? TextGranularity => resource.GetAdditionalProperty<TResource, TextGranularity>(TextGranularity.TextGranularityJName);
     }
 }

@@ -11,6 +11,8 @@ namespace IIIF.Manifests.Serializer.Extensions
     /// </summary>
     public class TextGranularity : ValuableItem<TextGranularity>
     {
+        public const string TextGranularityJName = "textGranularity";
+
         private TextGranularity(string value) : base(value)
         {
         }
