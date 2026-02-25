@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
-[JsonConverter(typeof(ValuableItemJsonConverter<GeometryType>))]
 public class GeometryType : ValuableItem<GeometryType>
 {
     private GeometryType(string value) : base(value)

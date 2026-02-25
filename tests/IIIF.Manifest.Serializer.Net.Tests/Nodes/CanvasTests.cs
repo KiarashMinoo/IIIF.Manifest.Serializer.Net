@@ -175,7 +175,7 @@ namespace IIIF.Manifests.Serializer.Tests.Nodes
 
             // Assert
             deserialized.Should().NotBeNull();
-            navPlace = deserialized!.GetNavPlace();
+            navPlace = deserialized!.NavPlace;
             navPlace.Should().NotBeNull();
             navPlace!.Features.Should().NotBeNull();
             navPlace.Features.Type.Should().Be("FeatureCollection");

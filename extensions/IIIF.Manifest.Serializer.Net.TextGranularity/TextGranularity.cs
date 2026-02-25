@@ -9,7 +9,6 @@ namespace IIIF.Manifests.Serializer.Extensions
     /// Text granularity levels for IIIF Text Granularity extension.
     /// Defines the level of text segmentation available in OCR or text content.
     /// </summary>
-    [JsonConverter(typeof(ValuableItemJsonConverter<TextGranularity>))]
     public class TextGranularity : ValuableItem<TextGranularity>
     {
         private TextGranularity(string value) : base(value)

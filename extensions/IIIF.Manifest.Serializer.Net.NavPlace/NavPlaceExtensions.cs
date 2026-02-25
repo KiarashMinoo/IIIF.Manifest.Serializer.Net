@@ -23,10 +23,7 @@ public static class NavPlaceExtensions
         /// <summary>
         /// Get the navPlace property from this Canvas.
         /// </summary>
-        public NavPlace? GetNavPlace()
-        {
-            return canvas.GetAdditionalProperty<Canvas, NavPlace>(NavPlace.NavPlaceJName);
-        }
+        public NavPlace? NavPlace => canvas.GetAdditionalProperty<Canvas, NavPlace>(NavPlace.NavPlaceJName);
     }
 
     extension(Manifest manifest)
@@ -42,10 +39,7 @@ public static class NavPlaceExtensions
         /// <summary>
         /// Get the navPlace property from this Manifest.
         /// </summary>
-        public NavPlace? GetNavPlace()
-        {
-            return manifest.GetAdditionalProperty<Manifest, NavPlace>(NavPlace.NavPlaceJName);
-        }
+        public NavPlace? NavPlace => manifest.GetAdditionalProperty<Manifest, NavPlace>(NavPlace.NavPlaceJName);
     }
 
     extension(Structure structure)
@@ -61,10 +55,7 @@ public static class NavPlaceExtensions
         /// <summary>
         /// Get the navPlace property from this Structure (Range).
         /// </summary>
-        public NavPlace? GetNavPlace()
-        {
-            return structure.GetAdditionalProperty<Structure, NavPlace>(NavPlace.NavPlaceJName);
-        }
+        public NavPlace? NavPlace => structure.GetAdditionalProperty<Structure, NavPlace>(NavPlace.NavPlaceJName);
     }
 
     extension(Collection collection)
@@ -80,9 +71,6 @@ public static class NavPlaceExtensions
         /// <summary>
         /// Get the navPlace property from this Collection.
         /// </summary>
-        public NavPlace? GetNavPlace()
-        {
-            return collection.GetAdditionalProperty<Collection, NavPlace>(NavPlace.NavPlaceJName);
-        }
+        public NavPlace? NavPlace => collection.GetAdditionalProperty<Collection, NavPlace>(NavPlace.NavPlaceJName);
     }
 }

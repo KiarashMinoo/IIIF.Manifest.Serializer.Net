@@ -8,6 +8,7 @@ namespace IIIF.Manifests.Serializer.Extensions
     /// <summary>
     /// Represents a geographic location using GeoJSON-LD for IIIF navPlace extension.
     /// This is a simplified implementation compatible with Presentation API 2.0.
+    /// Per RFC 7946 and navPlace extension, this is a FeatureCollection containing Features.
     /// </summary>
     public class NavPlace : BaseItem<NavPlace>
     {

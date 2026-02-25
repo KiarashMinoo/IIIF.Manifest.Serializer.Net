@@ -12,20 +12,10 @@ namespace IIIF.Manifests.Serializer.Shared;
 /// Supports multiple service types including Image API, Auth API, Search API, Discovery API, and Content State API.
 /// Automatically detects service type based on @type field or profile property.
 /// </summary>
-public class ServiceJsonConverter : JsonConverter
+public class ServiceJsonConverter : JsonConverter<IBaseService>
 {
     private const string TypeJName = "@type";
     private const string ProfileJName = "profile";
-
-    /// <summary>
-    /// Determines whether this converter can convert objects of the specified type.
-    /// </summary>
-    /// <param name="objectType">The type to check.</param>
-    /// <returns>True if the type implements IBaseService; otherwise, false.</returns>
-    public override bool CanConvert(Type objectType)
-    {
-        return typeof(IBaseService).IsAssignableFrom(objectType);
-    }
 
     /// <summary>
     /// Reads JSON and deserializes it into an appropriate service object.
@@ -35,9 +25,10 @@ public class ServiceJsonConverter : JsonConverter
     /// <param name="reader">The JSON reader.</param>
     /// <param name="objectType">The type of object to deserialize.</param>
     /// <param name="existingValue">The existing value being replaced.</param>
+    /// <param name="hasExistingValue">Whether an existing value is present.</param>
     /// <param name="serializer">The JSON serializer.</param>
     /// <returns>A deserialized service object, or null if no valid service is found.</returns>
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+    public override IBaseService? ReadJson(JsonReader reader, Type objectType, IBaseService? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
         IBaseService? service = null;
 
@@ -170,7 +161,7 @@ public class ServiceJsonConverter : JsonConverter
     /// <param name="writer">The JSON writer.</param>
     /// <param name="value">The service object to serialize.</param>
     /// <param name="serializer">The JSON serializer.</param>
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    public override void WriteJson(JsonWriter writer, IBaseService? value, JsonSerializer serializer)
     {
         serializer.Serialize(writer, value);
     }

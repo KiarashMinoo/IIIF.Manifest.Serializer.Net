@@ -9,7 +9,6 @@ namespace IIIF.Manifests.Serializer.Properties
     /// Can be used directly with static properties or by creating custom values.
     /// </summary>
     [PresentationAPI("2.0", Notes = "Motivation values. sc:painting in 2.x, painting in 3.0.")]
-    [JsonConverter(typeof(ValuableItemJsonConverter<Motivation>))]
     public class Motivation(string value) : ValuableItem<Motivation>(value)
     {
         // IIIF Presentation motivations

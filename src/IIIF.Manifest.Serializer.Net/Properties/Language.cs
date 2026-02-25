@@ -9,7 +9,6 @@ namespace IIIF.Manifests.Serializer.Properties
     /// Can be used directly with static properties or by creating custom values.
     /// </summary>
     [PresentationAPI("2.0", Notes = "Language tags used in both 2.x and 3.0 for internationalized strings.")]
-    [JsonConverter(typeof(ValuableItemJsonConverter<Language>))]
     public class Language(string value) : ValuableItem<Language>(value)
     {
         // Common languages

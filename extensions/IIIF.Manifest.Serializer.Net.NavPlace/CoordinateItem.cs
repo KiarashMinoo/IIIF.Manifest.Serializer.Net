@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Trackable;
+using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
+[JsonConverter(typeof(CoordinateItemJsonConverter))]
 public class CoordinateItem : TrackableObject<CoordinateItem>, ICoordinateItemSupport<CoordinateItem>
 {
     public double? Longitude
@@ -28,6 +30,10 @@ public class CoordinateItem : TrackableObject<CoordinateItem>, ICoordinateItemSu
     {
         get => GetElementValue(x => x.Coordinates) ?? [];
         private set => SetElementValue(value);
+    }
+
+    internal CoordinateItem()
+    {
     }
 
     public CoordinateItem(CoordinateItem[] coordinateItems)

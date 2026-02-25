@@ -9,7 +9,6 @@ namespace IIIF.Manifests.Serializer.Properties
     /// Replaces viewingHint in API 3.0 with expanded capabilities.
     /// </summary>
     [PresentationAPI("3.0", Notes = "Replaces viewingHint from API 2.x. Some values also valid in 2.x as viewingHint.")]
-    [JsonConverter(typeof(ValuableItemJsonConverter<Behavior>))]
     public class Behavior : ValuableItem<Behavior>
     {
         private Behavior(string value) : base(value)

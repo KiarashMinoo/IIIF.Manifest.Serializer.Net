@@ -8,20 +8,27 @@ namespace IIIF.Manifests.Serializer.Extensions
     /// Represents georeferencing information for maps using IIIF Georeference extension.
     /// This allows associating geographic coordinates with image pixels.
     /// </summary>
-    [JsonConverter(typeof(GeoreferenceJsonConverter))]
     public class Georeference : TrackableObject<Georeference>
     {
         /// <summary>
         /// The type of georeferencing transformation.
         /// </summary>
         [JsonProperty("type")]
-        public string Type => GetElementValue(x => x.Type)!;
+        public string Type
+        {
+            get => GetElementValue(x => x.Type)!;
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// The coordinate reference system (CRS) used.
         /// </summary>
         [JsonProperty("crs", NullValueHandling = NullValueHandling.Ignore)]
-        public string? Crs => GetElementValue(x => x.Crs);
+        public string? Crs
+        {
+            get => GetElementValue(x => x.Crs);
+            private set => SetElementValue(value);
+        }
 
         /// <summary>
         /// Ground control points for transformation.
