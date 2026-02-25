@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
@@ -19,6 +20,7 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
     ///   - v3 thumbnail array → v2 thumbnail property
     ///   - v3 ImageService3 → v2 IIIF Image API 2.0 service
     /// </summary>
+    [PresentationAPI("2.0", Notes = "Thumbnail property available in both Presentation API 2.x and 3.0. In v3 it's an array, in v2 it's a single value.")]
     public static class Recipe0117_ThumbnailManifest
     {
         public static IIIFManifest Create()

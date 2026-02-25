@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
@@ -23,6 +24,7 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
     ///   - v3 requiredStatement → v2 attribution
     ///   - Metadata structure remains compatible between versions
     /// </summary>
+    [PresentationAPI("2.0", Notes = "Metadata property available in both Presentation API 2.x and 3.0. In v3 uses language maps, in v2 uses plain strings.")]
     public static class Recipe0029_MetadataAnywhere
     {
         public static IIIFManifest Create()

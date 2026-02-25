@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
@@ -25,6 +26,7 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
     ///   - v3 homepage with language/format → v2 homepage with label/format
     ///   - v3 label language map → v2 label as string
     /// </summary>
+    [PresentationAPI("2.0", Notes = "Homepage property available in both Presentation API 2.x (called 'related' in early drafts) and 3.0.")]
     public static class Recipe0047_Homepage
     {
         public static IIIFManifest Create()

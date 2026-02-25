@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
@@ -22,6 +23,7 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
     ///   - v3 rendering with label language map → v2 rendering with label as string
     ///   - v3 viewingDirection → v2 viewingDirection (same property)
     /// </summary>
+    [PresentationAPI("2.0", Notes = "Rendering property available in both Presentation API 2.x and 3.0. Provides alternative format representations.")]
     public static class Recipe0046_Rendering
     {
         public static IIIFManifest Create()

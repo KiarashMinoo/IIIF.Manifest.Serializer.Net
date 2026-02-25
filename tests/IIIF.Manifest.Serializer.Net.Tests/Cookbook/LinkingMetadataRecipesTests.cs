@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Properties;
@@ -18,6 +19,7 @@ namespace IIIF.Manifests.Serializer.Tests.Cookbook
     ///   - 0053: Linking to Structured Metadata (SeeAlso)
     ///   - 0117: Image Thumbnail for Manifest
     /// </summary>
+    [PresentationAPI("2.0", Notes = "Tests verify v2 serialization for linking and metadata properties that are compatible with both API 2.x and 3.0.")]
     public class LinkingMetadataRecipesTests
     {
         #region Recipe 0029: Metadata on any Resource

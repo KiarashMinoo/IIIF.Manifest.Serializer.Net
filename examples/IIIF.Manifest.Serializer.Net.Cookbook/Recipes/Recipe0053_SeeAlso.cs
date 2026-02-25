@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
@@ -25,6 +26,7 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
     ///   - v3 seeAlso with type/format/profile → v2 seeAlso with @type/format/profile
     ///   - Both versions support multiple seeAlso entries
     /// </summary>
+    [PresentationAPI("2.0", Notes = "SeeAlso property available in both Presentation API 2.x and 3.0. Used for linking to machine-readable metadata.")]
     public static class Recipe0053_SeeAlso
     {
         public static IIIFManifest Create()

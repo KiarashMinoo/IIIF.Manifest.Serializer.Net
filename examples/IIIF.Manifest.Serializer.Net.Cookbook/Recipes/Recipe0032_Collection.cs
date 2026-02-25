@@ -1,3 +1,4 @@
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
@@ -22,6 +23,7 @@ namespace IIIF.Manifests.Serializer.Net.Cookbook.Recipes
     ///   - v3 items with Collections → v2 collections array (nested collections)
     ///   - Both versions support metadata, thumbnail, and other descriptive properties
     /// </summary>
+    [PresentationAPI("2.0", Notes = "Collection type available in both Presentation API 2.x and 3.0. In v3 uses 'items', in v2 uses 'manifests'/'collections'.")]
     public static class Recipe0032_Collection
     {
         public static Collection CreateCollection()
