@@ -22,4 +22,25 @@
     <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="GeometryJsonConverter.cs">
+      <DependentUpon>Geometry.cs</DependentUpon>
+    </Compile>
+    <Compile Update="GeometryType.cs">
+      <DependentUpon>Geometry.cs</DependentUpon>
+    </Compile>
+    <Compile Update="CoordinateItemJsonConverter.cs">
+      <DependentUpon>CoordinateItem.cs</DependentUpon>
+    </Compile>
+    <Compile Update="CoordinateItem.cs">
+      <DependentUpon>Geometry.cs</DependentUpon>
+    </Compile>
+    <Compile Update="ICoordinateItemSupport.cs">
+      <DependentUpon>Geometry.cs</DependentUpon>
+    </Compile>
+    <Compile Update="FeatureProperties.cs">
+      <DependentUpon>Feature.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>
