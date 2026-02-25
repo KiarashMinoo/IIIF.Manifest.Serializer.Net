@@ -16,7 +16,7 @@ public static class TransformationExtensions
         /// <summary>
         /// Set the navPlace property on this Canvas.
         /// </summary>
-        public TNode SetNavPlace(Transformation navPlace)
+        public TNode SetTransformation(Transformation navPlace)
         {
             return node.SetAdditionalProperty(Transformation.TransformationJName, navPlace);
         }
@@ -24,6 +24,6 @@ public static class TransformationExtensions
         /// <summary>
         /// Get the navPlace property from this Canvas.
         /// </summary>
-        public Transformation? NavPlace => node.GetAdditionalProperty<TNode, Transformation>(Transformation.TransformationJName);
+        public Transformation? Transformation => node.GetAdditionalProperty<TNode, Transformation>(Transformation.TransformationJName);
     }
 }

@@ -20,6 +20,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj"/>
+        <ProjectReference Include="..\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
     </ItemGroup>
 
 </Project>

@@ -17,5 +17,30 @@ namespace IIIF.Manifests.Serializer.Shared.ValuableItem
         {
             Value = value;
         }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is not null && (ReferenceEquals(obj, this) || obj is ValuableItem<TValuableItem> other && Equals(other));
+        }
+
+        protected virtual bool Equals(ValuableItem<TValuableItem>? other)
+        {
+            return other is not null && other.Value.Equals(Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return !string.IsNullOrWhiteSpace(Value) ? Value.GetHashCode() : 0;
+        }
+
+        public static bool operator ==(ValuableItem<TValuableItem>? left, ValuableItem<TValuableItem>? right)
+        {
+            return left?.Equals(right) ?? right is null;
+        }
+
+        public static bool operator !=(ValuableItem<TValuableItem>? left, ValuableItem<TValuableItem>? right)
+        {
+            return !(left == right);
+        }
     }
 }

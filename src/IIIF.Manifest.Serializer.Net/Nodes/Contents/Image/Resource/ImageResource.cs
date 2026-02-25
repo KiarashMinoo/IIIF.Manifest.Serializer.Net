@@ -23,7 +23,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource
         }
 
         [JsonConstructor]
-        private ImageResource(string id, string format) : base(id, "dctypes:Image")
+        private ImageResource(string id, string format) : base(id, ResourceType.Image)
         {
             SetFormat(format);
         }

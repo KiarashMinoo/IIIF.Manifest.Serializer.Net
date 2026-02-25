@@ -21,9 +21,9 @@ namespace IIIF.Manifests.Serializer.Properties
         public static ResourceType AnnotationCollection => new ResourceType("AnnotationCollection");
 
         // Content types
-        public static ResourceType Image => new ResourceType("Image");
-        public static ResourceType Video => new ResourceType("Video");
-        public static ResourceType Sound => new ResourceType("Sound");
+        public static ResourceType Image => new ResourceType("dctypes:Image");
+        public static ResourceType Video => new ResourceType("dctypes:MovingImage");
+        public static ResourceType Sound => new ResourceType("dctypes:Sound");
         public static ResourceType Text => new ResourceType("Text");
         public static ResourceType Dataset => new ResourceType("Dataset");
         public static ResourceType Model => new ResourceType("Model");

@@ -1,4 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Properties.Interfaces;
+﻿using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
@@ -33,7 +34,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource
             private set => SetElementValue(value);
         }
 
-        public VideoResource(string id, string format) : base(id, "dctypes:MovingImage")
+        public VideoResource(string id, string format) : base(id, ResourceType.Video)
         {
             SetFormat(format);
         }

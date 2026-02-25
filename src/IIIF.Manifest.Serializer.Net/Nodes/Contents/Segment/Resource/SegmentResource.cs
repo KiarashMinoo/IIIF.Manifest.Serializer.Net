@@ -1,9 +1,10 @@
+using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Segment.Resource
 {
-    public class SegmentResource(string id, string type) : BaseResource<SegmentResource>(id, type)
+    public class SegmentResource(string id, ResourceType type) : BaseResource<SegmentResource>(id, type)
     {
         public const string FullJName = "full";
 

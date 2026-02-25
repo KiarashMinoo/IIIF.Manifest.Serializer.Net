@@ -1,4 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Shared.Content.Resources;
+﻿using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource
@@ -17,7 +18,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource
             private set => SetElementValue(value);
         }
 
-        public AudioResource(string id, string format) : base(id, "dctypes:Sound")
+        public AudioResource(string id, string format) : base(id,  ResourceType.Sound)
         {
             SetFormat(format);
         }
