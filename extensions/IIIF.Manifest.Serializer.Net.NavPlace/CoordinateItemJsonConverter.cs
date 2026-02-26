@@ -7,37 +7,6 @@ namespace IIIF.Manifests.Serializer.Extensions;
 
 public class CoordinateItemJsonConverter : JsonConverter<CoordinateItem>
 {
-    public override void WriteJson(JsonWriter writer, CoordinateItem? value, JsonSerializer serializer)
-    {
-        if (value is null)
-        {
-            writer.WriteNull();
-            return;
-        }
-
-        writer.WriteStartArray();
-
-        if (value.Coordinates.Count == 0)
-        {
-            writer.WriteValue(value.Longitude);
-            writer.WriteValue(value.Latitude);
-
-            if (value.Altitude > 0)
-            {
-                writer.WriteValue(value.Altitude);
-            }
-        }
-        else
-        {
-            foreach (var coordinate in value.Coordinates)
-            {
-                serializer.Serialize(writer, coordinate);
-            }
-        }
-
-        writer.WriteEndArray();
-    }
-
     public override CoordinateItem ReadJson(JsonReader reader, Type objectType, CoordinateItem? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
         existingValue = new CoordinateItem();
@@ -72,5 +41,36 @@ public class CoordinateItemJsonConverter : JsonConverter<CoordinateItem>
         };
 
         return existingValue;
+    }
+
+    public override void WriteJson(JsonWriter writer, CoordinateItem? value, JsonSerializer serializer)
+    {
+        if (value is null)
+        {
+            writer.WriteNull();
+            return;
+        }
+
+        writer.WriteStartArray();
+
+        if (value.Coordinates.Count == 0)
+        {
+            writer.WriteValue(value.Longitude);
+            writer.WriteValue(value.Latitude);
+
+            if (value.Altitude > 0)
+            {
+                writer.WriteValue(value.Altitude);
+            }
+        }
+        else
+        {
+            foreach (var coordinate in value.Coordinates)
+            {
+                serializer.Serialize(writer, coordinate);
+            }
+        }
+
+        writer.WriteEndArray();
     }
 }

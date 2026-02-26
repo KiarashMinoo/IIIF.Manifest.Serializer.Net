@@ -9,6 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties
     /// Specifies the direction in which a set of Canvases should be displayed.
     /// </summary>
     [PresentationAPI("2.0", Notes = "Supported in both 2.x and 3.0")]
+    [JsonConverter(typeof(ValuableItemJsonConverter<ViewingDirection>))]
     public class ViewingDirection(string value) : ValuableItem<ViewingDirection>(value)
     {
         public static ViewingDirection Ltr => new ViewingDirection("left-to-right");

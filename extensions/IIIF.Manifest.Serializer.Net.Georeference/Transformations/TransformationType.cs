@@ -1,7 +1,9 @@
 ﻿using IIIF.Manifests.Serializer.Shared.ValuableItem;
+using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions.Transformations;
 
+[JsonConverter(typeof(ValuableItemJsonConverter<TransformationType>))]
 public class TransformationType(string value) : ValuableItem<TransformationType>(value)
 {
     /// <summary>

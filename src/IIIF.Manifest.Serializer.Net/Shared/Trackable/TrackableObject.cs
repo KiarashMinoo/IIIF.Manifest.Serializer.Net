@@ -1,14 +1,46 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
-public partial class TrackableObject<TTrackableObject> : INotifyPropertyChanging, INotifyPropertyChanged
+public class TrackableObject
+{
+    protected static JsonSerializerSettings JsonSerializerSettings { get; } = new()
+    {
+        Formatting = Formatting.Indented,
+        NullValueHandling = NullValueHandling.Ignore,
+        DefaultValueHandling = DefaultValueHandling.Ignore,
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+        ContractResolver = new IIIFJsonContractResolver()
+    };
+
+    public string Serialize() => JsonConvert.SerializeObject(this, JsonSerializerSettings);
+
+    public static TTrackableObject Parse<TTrackableObject>(string json)
+        where TTrackableObject : TrackableObject
+        => !TryParse<TTrackableObject>(json, out var trackableObject)
+            ? throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json))
+            : trackableObject;
+
+    public static bool TryParse<TTrackableObject>(string json, [MaybeNullWhen(false)] out TTrackableObject trackableObject)
+        where TTrackableObject : TrackableObject
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            trackableObject = null;
+            return false;
+        }
+
+        trackableObject = JsonConvert.DeserializeObject<TTrackableObject>(json, JsonSerializerSettings);
+        return trackableObject is not null;
+    }
+}
+
+public partial class TrackableObject<TTrackableObject> : TrackableObject, INotifyPropertyChanging, INotifyPropertyChanged
     where TTrackableObject : TrackableObject<TTrackableObject>
 {
     [JsonIgnore] internal readonly Dictionary<string, ElementDescriptor> ElementDescriptors = [];
@@ -129,23 +161,26 @@ public partial class TrackableObject<TTrackableObject> : INotifyPropertyChanging
             var valueType = value.GetType();
             var isEnumerable = value is IEnumerable and not string;
 
-            if (isEnumerable && valueType.IsGenericType)
+            if (isEnumerable)
             {
-                // Check if it's IEnumerable<T> or List<T> or similar collection
-                if (typeof(IEnumerable<>).IsAssignableFrom(valueType))
+                var elementType = valueType
+                                      .GetInterfaces()
+                                      .Concat([valueType])
+                                      .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                      .Select(t => t.GetGenericArguments()[0])
+                                      .FirstOrDefault()
+                                  ?? typeof(object);
+
+                var bindingListType = typeof(BindingList<>).MakeGenericType(elementType);
+                var bindingList = (IBindingList)Activator.CreateInstance(bindingListType)!;
+
+                foreach (var item in (IEnumerable)value)
                 {
-                    var elementType = valueType.GetGenericArguments()[0];
-                    var bindingListType = typeof(BindingList<>).MakeGenericType(elementType);
-                    var bindingList = (IBindingList)Activator.CreateInstance(bindingListType)!;
-
-                    foreach (var item in (IEnumerable)value)
-                    {
-                        bindingList.Add(item);
-                    }
-
-                    // Cast IBindingList to TValue (which should be compatible with the BindingList<T> type)
-                    value = (TValue)bindingList;
+                    bindingList.Add(item);
                 }
+
+                // Cast IBindingList to TValue (which should be compatible with the BindingList<T> type)
+                value = (TValue)bindingList;
             }
 
             (value as IBindingList)?.ListChanged += BindingListOnListChanged;

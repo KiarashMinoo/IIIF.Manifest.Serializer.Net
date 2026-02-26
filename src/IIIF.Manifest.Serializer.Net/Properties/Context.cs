@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// Can be used directly with static properties or by creating custom values.
 /// </summary>
 [IIIFVersion("1.0", Notes = "Context URLs identify the API version being used.")]
-[method: JsonConstructor]
+[JsonConverter(typeof(ValuableItemJsonConverter<Context>))]
 public class Context(string value) : ValuableItem<Context>(value)
 {
     // IIIF Presentation API contexts

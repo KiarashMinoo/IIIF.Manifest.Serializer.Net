@@ -9,6 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties
     /// Can be used directly with static properties or by creating custom values.
     /// </summary>
     [PresentationAPI("2.0", Notes = "Type values vary between 2.x (sc: prefix) and 3.0 (no prefix).")]
+    [JsonConverter(typeof(ValuableItemJsonConverter<ResourceType>))]
     public class ResourceType(string value) : ValuableItem<ResourceType>(value)
     {
         // IIIF Presentation 3.0 types

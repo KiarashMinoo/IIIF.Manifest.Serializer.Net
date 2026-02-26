@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared;
@@ -39,11 +38,18 @@ public class ObjectArrayJsonConverter : JsonConverter
 
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     {
-        if (value is IEnumerable enumerable)
+        if (value is null)
+        {
+            writer.WriteNull();
+            return;
+        }
+
+        var isEnumerable = value is IEnumerable and not string;
+        if (isEnumerable)
         {
             var arrayList = new ArrayList();
 
-            var enumerator = enumerable.GetEnumerator();
+            var enumerator = ((IEnumerable)value!).GetEnumerator();
             using var _ = enumerator as IDisposable;
             while (enumerator.MoveNext())
             {

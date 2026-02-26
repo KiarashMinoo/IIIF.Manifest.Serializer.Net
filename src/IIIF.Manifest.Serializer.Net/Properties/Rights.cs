@@ -9,6 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties
     /// Can be used directly with static properties or by creating custom values.
     /// </summary>
     [PresentationAPI("2.0", Notes = "In 2.x use 'license', in 3.0 use 'rights'. Values are the same.")]
+    [JsonConverter(typeof(ValuableItemJsonConverter<Rights>))]
     public class Rights(string value) : ValuableItem<Rights>(value)
     {
         // Creative Commons 4.0

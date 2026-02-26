@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Service;
 using IIIF.Manifests.Serializer.Shared.Trackable;
@@ -24,7 +22,8 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IContextSupport w
 
     string IContextSupport.Context => Context.ElementAt(0);
 
-    [JsonProperty(ContextJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+    [JsonProperty(ContextJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<string> Context
     {
         get => GetElementValue(x => x.Context) ?? [DefaultContext];
@@ -38,7 +37,8 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IContextSupport w
         private set => SetElementValue(value);
     }
 
-    [JsonProperty(ServiceJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+    [JsonProperty(ServiceJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<IBaseService> Service
     {
         get => GetElementValue(x => x.Service) ?? [];

@@ -1,21 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj" />
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
-    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-  </ItemGroup>
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>IIIF.Manifests.Serializer.Net.Cookbook</RootNamespace>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
+  </ItemGroup>
 
 </Project>

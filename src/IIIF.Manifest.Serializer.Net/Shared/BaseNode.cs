@@ -34,7 +34,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(DescriptionJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(DescriptionJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Description> Description
         {
             get => GetElementValue(x => x.Description) ?? [];
@@ -42,7 +43,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(MetadataJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(MetadataJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Metadata> Metadata
         {
             get => GetElementValue(x => x.Metadata) ?? [];
@@ -50,7 +52,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(AttributionJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(AttributionJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Attribution> Attribution
         {
             get => GetElementValue(x => x.Attribution) ?? [];
@@ -90,7 +93,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(RenderingJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(RenderingJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Rendering> Rendering
         {
             get => GetElementValue(x => x.Rendering) ?? [];
@@ -98,7 +102,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(WithinJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(WithinJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Within> Within
         {
             get => GetElementValue(x => x.Within) ?? [];
@@ -106,7 +111,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(SeeAlsoJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(SeeAlsoJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<SeeAlso> SeeAlso
         {
             get => GetElementValue(x => x.SeeAlso) ?? [];
@@ -114,7 +120,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(HomepageJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(HomepageJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Homepage> Homepage
         {
             get => GetElementValue(x => x.Homepage) ?? [];
@@ -122,7 +129,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("2.0")]
-        [JsonProperty(ProviderJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(ProviderJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Provider> Provider
         {
             get => GetElementValue(x => x.Provider) ?? [];
@@ -138,7 +146,8 @@ namespace IIIF.Manifests.Serializer.Shared
         }
 
         [PresentationAPI("3.0", Notes = "Replaces viewingHint from API 2.x. Some values also valid in 2.x as viewingHint.")]
-        [JsonProperty(BehaviorJName, ItemConverterType = typeof(ObjectArrayJsonConverter))]
+        [JsonProperty(BehaviorJName)]
+        [JsonConverter(typeof(ObjectArrayJsonConverter))]
         public IReadOnlyCollection<Behavior> Behavior
         {
             get => GetElementValue(x => x.Behavior) ?? [];

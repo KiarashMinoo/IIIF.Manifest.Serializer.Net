@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Helpers
 {
     public static class ManifestHelper
     {
-        public static Manifest SetMetadata(this Manifest manifest, string label, string value, string language = null)
+        public static Manifest SetMetadata(this Manifest manifest, string label, string value, string? language = null)
         {
             var metadata = manifest.Metadata.FirstOrDefault(a => a.Label == label);
             if (metadata != null)
@@ -36,7 +36,7 @@ namespace IIIF.Manifests.Serializer.Helpers
             return manifest;
         }
 
-        public static IReadOnlyCollection<MetadataValue> GetMetadata(this Manifest manifest, string label)
+        public static IReadOnlyCollection<MetadataValue>? GetMetadata(this Manifest manifest, string label)
             => manifest.Metadata.FirstOrDefault(metadata => metadata.Label == label)?.Value;
     }
 }

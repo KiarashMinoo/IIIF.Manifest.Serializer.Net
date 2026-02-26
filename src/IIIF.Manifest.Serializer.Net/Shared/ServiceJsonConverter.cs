@@ -163,6 +163,12 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
     /// <param name="serializer">The JSON serializer.</param>
     public override void WriteJson(JsonWriter writer, IBaseService? value, JsonSerializer serializer)
     {
+        if (value is null)
+        {
+            writer.WriteNull();
+            return;
+        }
+
         serializer.Serialize(writer, value);
     }
 }

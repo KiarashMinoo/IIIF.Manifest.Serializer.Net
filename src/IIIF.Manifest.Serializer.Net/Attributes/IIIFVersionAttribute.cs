@@ -26,17 +26,17 @@ namespace IIIF.Manifests.Serializer.Attributes
         /// <summary>
         /// The version in which this feature was deprecated (if applicable).
         /// </summary>
-        public string DeprecatedInVersion { get; set; }
+        public string DeprecatedInVersion { get; set; } = null!;
 
         /// <summary>
         /// Suggested replacement for deprecated features.
         /// </summary>
-        public string ReplacedBy { get; set; }
+        public string ReplacedBy { get; set; } = null!;
 
         /// <summary>
         /// Additional notes about version compatibility.
         /// </summary>
-        public string Notes { get; set; }
+        public string Notes { get; set; } = null!;
 
         /// <summary>
         /// Creates an attribute indicating API version support.

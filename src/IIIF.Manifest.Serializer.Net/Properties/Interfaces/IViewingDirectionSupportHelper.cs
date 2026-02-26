@@ -9,8 +9,11 @@ public static class IViewingDirectionSupportHelper
     public static T SetViewingDirection<T>(this T item, JToken element) where T : BaseNode<T>, IViewingDirectionSupport<T>
     {
         var jViewingDirection = element.TryGetToken(Constants.ViewingDirectionJName);
-        if (jViewingDirection != null)
-            item.SetViewingDirection(jViewingDirection.ToObject<ViewingDirection>());
+        var viewingDirection = jViewingDirection?.ToObject<ViewingDirection>();
+        if (viewingDirection != null)
+        {
+            item.SetViewingDirection(viewingDirection);
+        }
 
         return item;
     }

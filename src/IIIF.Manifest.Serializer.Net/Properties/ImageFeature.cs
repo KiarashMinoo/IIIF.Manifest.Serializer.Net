@@ -9,6 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// Can be used directly with static properties or by creating custom values.
 /// </summary>
 [ImageAPI("2.0", Notes = "Supported in both Image API 2.x and 3.0. Feature names consistent across versions.")]
+[JsonConverter(typeof(ValuableItemJsonConverter<ImageFeature>))]
 public class ImageFeature(string value) : ValuableItem<ImageFeature>(value)
 {
     // Region features
