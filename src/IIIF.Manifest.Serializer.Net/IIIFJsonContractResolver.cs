@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Reflection;
-using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -19,16 +19,19 @@ public class IIIFJsonContractResolver : DefaultContractResolver
             switch (value)
             {
                 case null:
-                    return false;
+                    return TrackableObject.JsonSerializerSettings.NullValueHandling == NullValueHandling.Include || property.NullValueHandling == NullValueHandling.Include;
                 case string str:
-                    return !string.IsNullOrWhiteSpace(str);
+                    return TrackableObject.JsonSerializerSettings.NullValueHandling == NullValueHandling.Include || property.NullValueHandling == NullValueHandling.Include || !string.IsNullOrWhiteSpace(str);
                 case IEnumerable enumerable:
                 {
-                    var enumerator = enumerable.GetEnumerator();
-                    using var _ = enumerator as IDisposable;
-                    if (!enumerator.MoveNext())
+                    if (TrackableObject.JsonSerializerSettings.DefaultValueHandling != DefaultValueHandling.Include && property.DefaultValueHandling != DefaultValueHandling.Include)
                     {
-                        return false;
+                        var enumerator = enumerable.GetEnumerator();
+                        using var _ = enumerator as IDisposable;
+                        if (!enumerator.MoveNext())
+                        {
+                            return false;
+                        }
                     }
 
                     break;

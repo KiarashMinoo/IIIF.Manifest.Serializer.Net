@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
 public class TrackableObject
 {
-    protected static JsonSerializerSettings JsonSerializerSettings { get; } = new()
+    protected internal static JsonSerializerSettings JsonSerializerSettings { get; } = new()
     {
         Formatting = Formatting.Indented,
         NullValueHandling = NullValueHandling.Ignore,
