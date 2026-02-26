@@ -6,10 +6,4 @@ namespace IIIF.Manifests.Serializer.Attributes;
 /// Indicates this feature is part of IIIF Auth API.
 /// </summary>
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false)]
-public class AuthAPIAttribute : IIIFVersionAttribute
-{
-    public AuthAPIAttribute(string minVersion, string maxVersion = null) 
-        : base(minVersion, maxVersion)
-    {
-    }
-}
+public class AuthAPIAttribute(string minVersion, string? maxVersion = null) : IIIFVersionAttribute(minVersion, maxVersion);

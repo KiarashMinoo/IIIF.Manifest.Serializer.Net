@@ -16,7 +16,7 @@ namespace IIIF.Manifests.Serializer.Attributes
         /// <summary>
         /// The maximum IIIF API version that supports this feature (null = current/latest).
         /// </summary>
-        public string MaxVersion { get; }
+        public string? MaxVersion { get; }
 
         /// <summary>
         /// Indicates if this feature is deprecated in newer versions.
@@ -43,7 +43,7 @@ namespace IIIF.Manifests.Serializer.Attributes
         /// </summary>
         /// <param name="minVersion">Minimum supported version (e.g., "2.0")</param>
         /// <param name="maxVersion">Maximum supported version (null = still supported)</param>
-        public IIIFVersionAttribute(string minVersion, string maxVersion = null)
+        public IIIFVersionAttribute(string minVersion, string? maxVersion = null)
         {
             MinVersion = minVersion;
             MaxVersion = maxVersion;

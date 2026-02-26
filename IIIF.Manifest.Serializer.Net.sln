@@ -17,7 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IIIF.Manifest.Serializer.Ne
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1E032212-EB55-4231-A74E-5C5B7E28F687}"
 	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
 		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
