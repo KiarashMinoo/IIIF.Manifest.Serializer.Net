@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -22,6 +22,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\examples\IIIF.Manifest.Serializer.Net.Cookbook\IIIF.Manifest.Serializer.Net.Cookbook.csproj" />
+    <ProjectReference Include="..\..\examples\IIIF.Manifest.Serializer.Net.Examples\IIIF.Manifest.Serializer.Net.Examples.csproj" />
     <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj" />
     <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
     <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj" />
@@ -29,4 +31,3 @@
   </ItemGroup>
 
 </Project>
-

@@ -248,7 +248,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     public TBaseNode SetLicense(License license) => SetElementValue(a => a.License, license);
 
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Replaced by behavior.")]
-    internal TBaseNode SetViewingHint(ViewingHint viewingHint) => SetElementValue(a => a.ViewingHint, viewingHint);
+    public TBaseNode SetViewingHint(ViewingHint viewingHint) => SetElementValue(a => a.ViewingHint, viewingHint);
 
     public TBaseNode SetRelated(string related) => SetElementValue(a => a.Related, related);
 
@@ -278,5 +278,6 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return (TBaseNode)this;
     }
 }
+
 
 

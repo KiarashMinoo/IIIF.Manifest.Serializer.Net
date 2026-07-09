@@ -53,13 +53,13 @@ public class ObsoleteCompatibilityTests
     }
 
     [Fact]
-    public void SetViewingHint_Should_NotBePublicWriteApi()
+    public void SetViewingHint_Should_BePublicWriteApi()
     {
         var method = typeof(BaseNode<Manifest>).GetMethod(
             "SetViewingHint",
             BindingFlags.Instance | BindingFlags.Public);
 
-        method.Should().BeNull();
+        method.Should().NotBeNull();
     }
 
     [Fact]
