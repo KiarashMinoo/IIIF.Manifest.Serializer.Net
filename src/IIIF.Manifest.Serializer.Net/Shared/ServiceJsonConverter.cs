@@ -1,10 +1,11 @@
 ﻿using System;
+using IIIF.Manifests.Serializer;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Shared.Service;
+using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace IIIF.Manifests.Serializer.Shared;
 
@@ -19,14 +20,19 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
     private const string ProfileJName = "profile";
 
     // IBaseService carries this converter so element-typed collections (IReadOnlyCollection<IBaseService>) resolve it,
-    // but that also makes every implementer inherit it. Deserializing leaf types below must skip this converter for
-    // the leaf type itself, or ToObject<TService>() would re-enter ReadJson and recurse forever.
+    // but that also makes every implementer inherit it. Reading/writing leaf types below must skip this converter for
+    // the leaf type itself, or ToObject<TService>()/serializer.Serialize(writer, value) would re-enter this converter
+    // (recursing forever on read, or silently writing null via ReferenceLoopHandling.Ignore on write).
     private static readonly JsonSerializer LeafSerializer = JsonSerializer.Create(new JsonSerializerSettings
     {
+        Formatting = TrackableObject.JsonSerializerSettings.Formatting,
+        NullValueHandling = TrackableObject.JsonSerializerSettings.NullValueHandling,
+        DefaultValueHandling = TrackableObject.JsonSerializerSettings.DefaultValueHandling,
+        ReferenceLoopHandling = TrackableObject.JsonSerializerSettings.ReferenceLoopHandling,
         ContractResolver = new LeafContractResolver()
     });
 
-    private sealed class LeafContractResolver : DefaultContractResolver
+    private sealed class LeafContractResolver : IIIFJsonContractResolver
     {
         protected override JsonConverter? ResolveContractConverter(Type objectType)
         {
@@ -187,6 +193,9 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
             return;
         }
 
-        serializer.Serialize(writer, value);
+        // value's runtime type (e.g. Service) also inherits this converter via the IBaseService attribute, so
+        // serializer.Serialize(writer, value) would re-enter this method. Use LeafSerializer to write the
+        // concrete object's own properties instead of recursing back into this converter.
+        LeafSerializer.Serialize(writer, value);
     }
 }

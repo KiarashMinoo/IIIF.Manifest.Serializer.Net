@@ -26,49 +26,98 @@ namespace IIIF.Manifests.Serializer.Properties.Services
 
         [ImageAPI("2.0")]
         [JsonProperty(IBaseService.ProfileJName)]
-        public string Profile => GetElementValue(x => x.Profile)!;
+        public string Profile
+        {
+            get => GetElementValue(x => x.Profile)!;
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("2.0")]
         [JsonProperty(Constants.HeightJName)]
-        public int? Height => GetElementValue(x => x.Height);
+        public int? Height
+        {
+            get => GetElementValue(x => x.Height);
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("2.0")]
         [JsonProperty(Constants.WidthJName)]
-        public int? Width => GetElementValue(x => x.Width);
+        public int? Width
+        {
+            get => GetElementValue(x => x.Width);
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("2.0")]
         [JsonProperty(TilesJName)]
-        public IReadOnlyCollection<Tile> Tiles => GetElementValue(x => x.Tiles) ?? [];
+        public IReadOnlyCollection<Tile> Tiles
+        {
+            get => GetElementValue(x => x.Tiles) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("2.0")]
         [JsonProperty(SizesJName)]
-        public IReadOnlyCollection<Size> Sizes => GetElementValue(x => x.Sizes) ?? [];
+        public IReadOnlyCollection<Size> Sizes
+        {
+            get => GetElementValue(x => x.Sizes) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("3.0", Notes = "Added in Image API 3.0")]
         [JsonProperty(MaxWidthJName)]
-        public int? MaxWidth => GetElementValue(x => x.MaxWidth);
+        public int? MaxWidth
+        {
+            get => GetElementValue(x => x.MaxWidth);
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("3.0", Notes = "Added in Image API 3.0")]
         [JsonProperty(MaxHeightJName)]
-        public int? MaxHeight => GetElementValue(x => x.MaxHeight);
+        public int? MaxHeight
+        {
+            get => GetElementValue(x => x.MaxHeight);
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("3.0", Notes = "Added in Image API 3.0")]
         [JsonProperty(MaxAreaJName)]
-        public long? MaxArea => GetElementValue(x => x.MaxArea);
+        public long? MaxArea
+        {
+            get => GetElementValue(x => x.MaxArea);
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("3.0", Notes = "Added in Image API 3.0")]
         [JsonProperty(RightsJName)]
-        public Rights? Rights => GetElementValue(x => x.Rights);
+        public Rights? Rights
+        {
+            get => GetElementValue(x => x.Rights);
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("3.0", Notes = "Added in Image API 3.0")]
         [JsonProperty(PreferredFormatsJName)]
-        public IReadOnlyCollection<ImageFormat> PreferredFormats => GetElementValue(x => x.PreferredFormats) ?? [];
+        public IReadOnlyCollection<ImageFormat> PreferredFormats
+        {
+            get => GetElementValue(x => x.PreferredFormats) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [ImageAPI("3.0", Notes = "Added in Image API 3.0")]
         [JsonProperty(ExtraQualitiesJName)]
-        public IReadOnlyCollection<ImageQuality> ExtraQualities => GetElementValue(x => x.ExtraQualities) ?? [];
+        public IReadOnlyCollection<ImageQuality> ExtraQualities
+        {
+            get => GetElementValue(x => x.ExtraQualities) ?? [];
+            private set => SetElementValue(value);
+        }
 
-        [JsonProperty(ExtraFeaturesJName)] public IReadOnlyCollection<ImageFeature> ExtraFeatures => GetElementValue(x => x.ExtraFeatures) ?? [];
+        [JsonProperty(ExtraFeaturesJName)]
+        public IReadOnlyCollection<ImageFeature> ExtraFeatures
+        {
+            get => GetElementValue(x => x.ExtraFeatures) ?? [];
+            private set => SetElementValue(value);
+        }
 
         [JsonConstructor]
         private Service(string id, string profile) : base(id, string.Empty)
