@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
@@ -32,28 +34,41 @@ namespace IIIF.Manifests.Serializer.Nodes
             private set => SetElementValue(value);
         }
 
+        /// <summary>
+        /// Legacy (2.x) view of nested Collections. Computed from
+        /// <see cref="BaseNode{TBaseNode}.Items"/> (the 3.0-native storage).
+        /// </summary>
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(CollectionsJName)]
         public IReadOnlyCollection<Collection> Collections
         {
-            get => GetElementValue(x => x.Collections) ?? [];
-            private set => SetElementValue(value);
+            get => Items.OfType<Collection>().ToList();
+            private set => ReplaceItemsOfType(value ?? []);
         }
 
+        /// <summary>
+        /// Legacy (2.x) view of referenced Manifest ids. Computed from
+        /// <see cref="BaseNode{TBaseNode}.Items"/> — each id backs a minimal 3.0-native
+        /// <see cref="Manifest"/> stub (2.x only ever carried the bare id, never a full object).
+        /// </summary>
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(ManifestsJName)]
         public IReadOnlyCollection<string> Manifests
         {
-            get => GetElementValue(x => x.Manifests) ?? [];
-            private set => SetElementValue(value);
+            get => Items.OfType<Manifest>().Select(x => x.Id).ToList();
+            private set => ReplaceItemsOfType((value ?? []).Select(id => new Manifest(id)));
         }
 
+        /// <summary>
+        /// Legacy (2.1) view of the ordered, mixed Manifest/Collection list — the closest 2.x
+        /// analogue to 3.0 <c>items</c>. Computed directly from <see cref="BaseNode{TBaseNode}.Items"/>.
+        /// </summary>
         [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(MembersJName)]
         public IReadOnlyCollection<object> Members
         {
-            get => GetElementValue(x => x.Members) ?? [];
-            private set => SetElementValue(value);
+            get => Items.Select(x => (object)x).ToList();
+            private set => ReplaceMembers(value ?? []);
         }
 
         [PresentationAPI("2.0")]
@@ -154,40 +169,129 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
         public Collection AddCollection(Collection collection)
         {
-            Collections = Collections.With(collection);
+            AddItem(collection);
             return this;
         }
 
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
         public Collection RemoveCollection(Collection collection)
         {
-            Collections = Collections.Without(collection);
+            RemoveItem(collection);
             return this;
         }
 
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddManifestReference instead.", error: true)]
         public Collection AddManifest(string manifestId)
         {
-            Manifests = Manifests.With(manifestId);
+            AddItem(new Manifest(manifestId));
             return this;
         }
 
+        /// <summary>
+        /// Adds a reference to a Manifest by id — the 3.0-preferred replacement for the legacy
+        /// bare-id <c>manifests</c> array. 2.x never carried more than the id for these
+        /// references, so this constructs a minimal, label-less Manifest stub internally.
+        /// </summary>
+        public Collection AddManifestReference(string manifestId)
+        {
+            AddItem(new Manifest(manifestId));
+            return this;
+        }
+
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddManifestReference instead.", error: true)]
         public Collection RemoveManifest(string manifestId)
         {
-            Manifests = Manifests.Without(manifestId);
+            var existing = Items.OfType<Manifest>().FirstOrDefault(x => x.Id == manifestId);
+            if (existing is not null)
+            {
+                RemoveItem(existing);
+            }
+
             return this;
         }
 
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
         public Collection AddMember(object member)
         {
-            Members = Members.With(member);
+            switch (member)
+            {
+                case Manifest manifest:
+                    AddItem(manifest);
+                    break;
+                case Collection collection:
+                    AddItem(collection);
+                    break;
+                case string manifestId:
+                    AddItem(new Manifest(manifestId));
+                    break;
+            }
+
             return this;
         }
 
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
         public Collection RemoveMember(object member)
         {
-            Members = Members.Without(member);
+            switch (member)
+            {
+                case Manifest or Collection:
+                    RemoveItem((IBaseItem)member);
+                    break;
+                case string manifestId:
+                    RemoveManifestItem(manifestId);
+                    break;
+            }
+
             return this;
+        }
+
+        private void RemoveManifestItem(string manifestId)
+        {
+            var existing = Items.OfType<Manifest>().FirstOrDefault(x => x.Id == manifestId);
+            if (existing is not null)
+            {
+                RemoveItem(existing);
+            }
+        }
+
+        private void ReplaceItemsOfType<TItem>(IEnumerable<TItem> replacements) where TItem : IBaseItem
+        {
+            foreach (var existing in Items.OfType<TItem>().ToList())
+            {
+                RemoveItem(existing);
+            }
+
+            foreach (var item in replacements)
+            {
+                AddItem(item);
+            }
+        }
+
+        private void ReplaceMembers(IEnumerable<object> members)
+        {
+            foreach (var existing in Items.ToList())
+            {
+                RemoveItem(existing);
+            }
+
+            foreach (var member in members)
+            {
+                switch (member)
+                {
+                    case Manifest manifest:
+                        AddItem(manifest);
+                        break;
+                    case Collection collection:
+                        AddItem(collection);
+                        break;
+                    case string manifestId:
+                        AddItem(new Manifest(manifestId));
+                        break;
+                }
+            }
         }
     }
 }

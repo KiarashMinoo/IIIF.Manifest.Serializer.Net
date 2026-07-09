@@ -1,4 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Helpers;
+﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Trackable;
@@ -15,7 +16,7 @@ public static class NavPlaceExtensions
     extension<TNode>(TNode node) where TNode : BaseNode<TNode>, IAdditionalPropertiesSupport<TNode>
     {
         /// <summary>
-        /// Set the navPlace property on this Canvas.
+        /// Set the navPlace property on this resource.
         /// </summary>
         public TNode SetNavPlace(NavPlace navPlace)
         {
@@ -23,8 +24,9 @@ public static class NavPlaceExtensions
         }
 
         /// <summary>
-        /// Get the navPlace property from this Canvas.
+        /// Get the navPlace property from this resource.
         /// </summary>
+        [NavPlaceExtension("2.0")]
         public NavPlace? NavPlace => node.GetAdditionalProperty<TNode, NavPlace>(NavPlace.NavPlaceJName);
     }
 }

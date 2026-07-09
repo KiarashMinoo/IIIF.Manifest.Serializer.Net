@@ -1,5 +1,6 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
 using Newtonsoft.Json.Linq;
@@ -36,18 +37,14 @@ public class Recipe0002Tests
             on: canvas.Id
         );
 
-        canvas.AddAudio(audio);
-
-        var sequence = new Sequence(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0"
-        );
-        sequence.AddCanvas(canvas);
+        canvas.AddAnnotation(new Annotation(audio.Id, audio.Resource, audio.On));
 
         var manifest = new Manifest(
             id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
             label: new Label("Simplest Audio Example 1")
         );
-        manifest.AddSequence(sequence);
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0");
 
         // Act
         var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
@@ -121,18 +118,14 @@ public class Recipe0002Tests
             on: canvas.Id
         );
 
-        canvas.AddAudio(audio);
-
-        var sequence = new Sequence(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0"
-        );
-        sequence.AddCanvas(canvas);
+        canvas.AddAnnotation(new Annotation(audio.Id, audio.Resource, audio.On));
 
         var manifest = new Manifest(
             id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
             label: new Label("Simplest Audio Example 1")
         );
-        manifest.AddSequence(sequence);
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0");
 
         // Act - Serialize to JSON
         var json = JsonConvert.SerializeObject(manifest);

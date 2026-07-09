@@ -18,6 +18,7 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
 {
     private const string TypeJName = "@type";
     private const string ProfileJName = "profile";
+    private const string ContextJName = "@context";
 
     // IBaseService carries this converter so element-typed collections (IReadOnlyCollection<IBaseService>) resolve it,
     // but that also makes every implementer inherit it. Reading/writing leaf types below must skip this converter for
@@ -93,76 +94,84 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
     private IBaseService? DetectAndDeserializeService(JToken serviceToken)
     {
         // Check the @type field to determine service type
-        var jType = serviceToken.TryGetToken(TypeJName);
-        if (jType != null)
+        var typeValue = serviceToken.TryGetToken(TypeJName)?.ToString();
+        switch (typeValue)
         {
-            var typeValue = jType.ToString();
-            switch (typeValue)
-            {
-                case "ImageService2":
-                case "ImageService3":
-                    return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
-                case "AuthCookieService1":
-                case "AuthTokenService1":
-                case "AuthLogoutService1":
-                    return serviceToken.ToObject<AuthService1>(LeafSerializer);
-                case "AuthProbeService2":
-                case "AuthAccessService2":
-                case "AuthAccessTokenService2":
-                case "AuthLogoutService2":
-                    return serviceToken.ToObject<AuthService2>(LeafSerializer);
-                case "SearchService2":
-                    return serviceToken.ToObject<SearchService>(LeafSerializer);
-                case "AutoCompleteService2":
-                    return serviceToken.ToObject<AutoCompleteService>(LeafSerializer);
-                case "OrderedCollection":
-                    return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
-                case "ContentStateService":
-                    return serviceToken.ToObject<ContentStateService>(LeafSerializer);
-                default:
-                    // Try to detect by profile or other means
-                    var jProfile = serviceToken.TryGetToken(ProfileJName);
-                    if (jProfile != null)
-                    {
-                        var profileValue = jProfile.ToString();
-                        if (profileValue.Contains("auth", StringComparison.OrdinalIgnoreCase))
-                        {
-                            // Try Auth services
-                            try
-                            {
-                                return serviceToken.ToObject<AuthService1>(LeafSerializer);
-                            }
-                            catch (JsonException)
-                            {
-                                try
-                                {
-                                    return serviceToken.ToObject<AuthService2>(LeafSerializer);
-                                }
-                                catch (JsonException)
-                                {
-                                    // Neither auth service format worked, continue to fallback
-                                }
-                            }
-                        }
-                        else if (profileValue.Contains("search", StringComparison.OrdinalIgnoreCase))
-                        {
-                            return serviceToken.ToObject<SearchService>(LeafSerializer);
-                        }
-                        else if (profileValue.Contains("discovery", StringComparison.OrdinalIgnoreCase))
-                        {
-                            return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
-                        }
-                        else if (profileValue.Contains("content-state", StringComparison.OrdinalIgnoreCase))
-                        {
-                            return serviceToken.ToObject<ContentStateService>(LeafSerializer);
-                        }
-                        else if (profileValue.Contains("image", StringComparison.OrdinalIgnoreCase))
-                        {
-                            return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
-                        }
-                    }
+            case "ImageService2":
+            case "ImageService3":
+                return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
+            case "AuthCookieService1":
+            case "AuthTokenService1":
+            case "AuthLogoutService1":
+                return serviceToken.ToObject<AuthService1>(LeafSerializer);
+            case "AuthProbeService2":
+            case "AuthAccessService2":
+            case "AuthAccessTokenService2":
+            case "AuthLogoutService2":
+                return serviceToken.ToObject<AuthService2>(LeafSerializer);
+            case "SearchService2":
+                return serviceToken.ToObject<SearchService>(LeafSerializer);
+            case "AutoCompleteService2":
+                return serviceToken.ToObject<AutoCompleteService>(LeafSerializer);
+            case "OrderedCollection":
+                return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
+            case "ContentStateService":
+                return serviceToken.ToObject<ContentStateService>(LeafSerializer);
+        }
 
-                    break;
+        // @type was missing or unrecognized (common for Image/Auth services, whose constructors
+        // in this SDK never set an explicit @type) - fall back to detecting by profile/context.
+        var jProfile = serviceToken.TryGetToken(ProfileJName);
+        if (jProfile != null)
+        {
+            var profileValue = jProfile.ToString();
+            if (profileValue.Contains("auth", StringComparison.OrdinalIgnoreCase))
+            {
+                // @type alone can't tell Auth 1.0 from 2.0 apart when absent, and both classes'
+                // JSON shapes overlap enough that the "wrong" one often deserializes without
+                // throwing - so use the (always-set-by-this-SDK) @context as the primary signal.
+                var contextValue = serviceToken.TryGetToken(ContextJName)?.ToString() ?? string.Empty;
+                var preferAuth2 = contextValue.Contains("/auth/2/", StringComparison.OrdinalIgnoreCase)
+                    || profileValue.Contains("/auth/2/", StringComparison.OrdinalIgnoreCase);
+
+                Func<IBaseService?> primary = preferAuth2
+                    ? () => serviceToken.ToObject<AuthService2>(LeafSerializer)
+                    : () => serviceToken.ToObject<AuthService1>(LeafSerializer);
+                Func<IBaseService?> secondary = preferAuth2
+                    ? () => serviceToken.ToObject<AuthService1>(LeafSerializer)
+                    : () => serviceToken.ToObject<AuthService2>(LeafSerializer);
+
+                try
+                {
+                    return primary();
+                }
+                catch (JsonException)
+                {
+                    try
+                    {
+                        return secondary();
+                    }
+                    catch (JsonException)
+                    {
+                        // Neither auth service format worked, continue to fallback
+                    }
+                }
+            }
+            else if (profileValue.Contains("search", StringComparison.OrdinalIgnoreCase))
+            {
+                return serviceToken.ToObject<SearchService>(LeafSerializer);
+            }
+            else if (profileValue.Contains("discovery", StringComparison.OrdinalIgnoreCase))
+            {
+                return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
+            }
+            else if (profileValue.Contains("content-state", StringComparison.OrdinalIgnoreCase))
+            {
+                return serviceToken.ToObject<ContentStateService>(LeafSerializer);
+            }
+            else if (profileValue.Contains("image", StringComparison.OrdinalIgnoreCase))
+            {
+                return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
             }
         }
 

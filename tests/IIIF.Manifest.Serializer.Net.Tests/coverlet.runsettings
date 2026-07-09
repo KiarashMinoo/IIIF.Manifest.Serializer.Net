@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <!-- Coverage is measured for the core library and extension packages only.
+               Cookbook/Examples/Tests assemblies are demo/harness code, not the SDK surface. -->
+          <Include>[IIIF.Manifest.Serializer.Net]*,[IIIF.Manifest.Serializer.Net.NavPlace]*,[IIIF.Manifest.Serializer.Net.Georeference]*,[IIIF.Manifest.Serializer.Net.TextGranularity]*</Include>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

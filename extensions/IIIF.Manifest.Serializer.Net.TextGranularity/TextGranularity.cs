@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,6 +11,7 @@ namespace IIIF.Manifests.Serializer.Extensions
     /// Defines the level of text segmentation available in OCR or text content.
     /// </summary>
     [JsonConverter(typeof(ValuableItemJsonConverter<TextGranularity>))]
+    [TextGranularityExtension("3.0")]
     public class TextGranularity : ValuableItem<TextGranularity>
     {
         public const string TextGranularityJName = "textGranularity";

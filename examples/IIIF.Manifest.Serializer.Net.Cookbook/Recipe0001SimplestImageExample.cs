@@ -1,6 +1,7 @@
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Properties;
 
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
@@ -25,24 +26,20 @@ public sealed class Recipe0001SimplestImageExample : CookbookExampleBase
             width: 1200
         );
 
-        var image = new Image(
+        var annotation = new Annotation(
             id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image",
-            resource: imageResource,
-            on: canvas.Id
+            body: imageResource,
+            target: canvas.Id
         );
 
-        canvas.AddImage(image);
-
-        var sequence = new Sequence(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0"
-        );
-        sequence.AddCanvas(canvas);
+        canvas.AddAnnotation(annotation);
 
         var manifest = new Manifest(
             id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json",
             label: new Label("Single Image Example")
         );
-        manifest.AddSequence(sequence);
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
 
         manifest.AddContext("TestContext");
 

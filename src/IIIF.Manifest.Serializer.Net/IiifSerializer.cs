@@ -1,5 +1,6 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
@@ -9,9 +10,11 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using IIIF.Manifests.Serializer.Shared.Service;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using AnnotationNode = IIIF.Manifests.Serializer.Nodes.Contents.Annotation.Annotation;
 
 namespace IIIF.Manifests.Serializer;
 
@@ -59,6 +62,138 @@ public static class IiifSerializer
         };
     }
 
+    public static string Serialize(Collection collection)
+    {
+        return Serialize(collection, IiifSerializerOptions.Default);
+    }
+
+    public static string Serialize(Collection collection, IiifSerializerOptions? options)
+    {
+        if (collection is null)
+        {
+            throw new ArgumentNullException(nameof(collection));
+        }
+
+        options ??= IiifSerializerOptions.Default;
+
+        return options.Version switch
+        {
+            IiifPresentationVersion.V2_0 or IiifPresentationVersion.V2_1 => JsonConvert.SerializeObject(collection, TrackableObject.JsonSerializerSettings),
+            IiifPresentationVersion.V3_0 => WriteV3Collection(collection).ToString(Formatting.Indented),
+            _ => throw new NotSupportedException($"Unsupported IIIF Presentation API version: {options.Version}.")
+        };
+    }
+
+    public static Collection DeserializeCollection(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json));
+        }
+
+        var version = IiifPresentationVersionDetector.Detect(json);
+        return version switch
+        {
+            IiifPresentationVersion.V3_0 => ReadV3Collection(JObject.Parse(json)),
+            IiifPresentationVersion.V2_0 or IiifPresentationVersion.V2_1 => JsonConvert.DeserializeObject<Collection>(json, TrackableObject.JsonSerializerSettings)
+                ?? throw new JsonSerializationException("Could not deserialize IIIF collection."),
+            _ => throw new JsonSerializationException("Could not detect IIIF Presentation API version.")
+        };
+    }
+
+    private static JObject WriteV3Collection(Collection collection)
+    {
+        var obj = new JObject
+        {
+            ["@context"] = "http://iiif.io/api/presentation/3/context.json",
+            ["id"] = collection.Id,
+            ["type"] = "Collection"
+        };
+
+        WriteLanguageMap(obj, "label", collection.Label.Select(x => x.Value));
+
+        var behaviorValues = collection.Behavior.Select(x => x.Value).ToList();
+#pragma warning disable CS0618
+        if (behaviorValues.Count == 0 && collection.ViewingHint is not null)
+        {
+            behaviorValues.Add(collection.ViewingHint.Value);
+        }
+#pragma warning restore CS0618
+
+        if (behaviorValues.Count > 0)
+        {
+            obj["behavior"] = new JArray(behaviorValues);
+        }
+
+        if (collection.ViewingDirection is not null)
+        {
+            obj["viewingDirection"] = collection.ViewingDirection.Value;
+        }
+
+        var items = collection.Items.Select(WriteV3CollectionItem).ToList();
+        if (items.Count > 0)
+        {
+            obj["items"] = new JArray(items);
+        }
+
+        return obj;
+    }
+
+    private static JObject WriteV3CollectionItem(IBaseItem item)
+    {
+        var itemObj = new JObject
+        {
+            ["id"] = item.Id,
+            ["type"] = item switch
+            {
+                Collection => "Collection",
+                Manifest => "Manifest",
+                _ => item.Type
+            }
+        };
+
+        var label = item switch
+        {
+            Collection nested => nested.Label.Select(x => x.Value),
+            Manifest manifest => manifest.Label.Select(x => x.Value),
+            _ => Enumerable.Empty<string>()
+        };
+
+        WriteLanguageMap(itemObj, "label", label);
+
+        return itemObj;
+    }
+
+    private static Collection ReadV3Collection(JObject obj)
+    {
+        var collection = new Collection(ReadRequiredString(obj, "id"), ReadLabels(obj["label"]).FirstOrDefault() ?? new Label("Untitled"));
+
+        foreach (var behavior in ReadStringArray(obj["behavior"]))
+        {
+            collection.AddBehavior(new Behavior(behavior));
+        }
+
+        foreach (var itemObj in obj["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
+        {
+            switch ((string?)itemObj["type"])
+            {
+                case "Collection":
+                    collection.AddItem(new Collection(ReadRequiredString(itemObj, "id"), ReadLabels(itemObj["label"]).FirstOrDefault() ?? new Label("Untitled")));
+                    break;
+                case "Manifest":
+                    var manifestStub = new Manifest(ReadRequiredString(itemObj, "id"));
+                    foreach (var label in ReadLabels(itemObj["label"]))
+                    {
+                        manifestStub.AddLabel(label);
+                    }
+                    collection.AddItem(manifestStub);
+                    break;
+            }
+        }
+
+        return collection;
+    }
+
     private static JObject WriteV3Manifest(Manifest manifest)
     {
         var obj = new JObject
@@ -94,17 +229,58 @@ public static class IiifSerializer
             obj["items"] = new JArray(canvases);
         }
 
+        var structures = manifest.Structures.Select(WriteV3Range).ToList();
+        if (structures.Count > 0)
+        {
+            obj["structures"] = new JArray(structures);
+        }
+
+        var services = manifest.Services.Select(WriteV3Service).ToList();
+        if (services.Count > 0)
+        {
+            obj["services"] = new JArray(services);
+        }
+
         return obj;
     }
 
-    private static IEnumerable<Canvas> GetManifestCanvases(Manifest manifest)
+    private static JObject WriteV3Service(IBaseService service)
     {
-        if (manifest.Items.OfType<Canvas>().Any())
+        var token = JObject.FromObject(service, JsonSerializer.Create(TrackableObject.JsonSerializerSettings));
+        Rename(token, "@id", "id");
+        Rename(token, "@context", "context");
+        token.Remove("@type");
+        return token;
+    }
+
+    private static IEnumerable<Canvas> GetManifestCanvases(Manifest manifest) => manifest.Items.OfType<Canvas>();
+
+    private static JObject WriteV3Range(Structure structure)
+    {
+        var obj = new JObject
         {
-            return manifest.Items.OfType<Canvas>();
+            ["id"] = structure.Id,
+            ["type"] = "Range"
+        };
+
+        WriteLanguageMap(obj, "label", structure.Label.Select(x => x.Value));
+
+        var items = structure.Items.Select(WriteV3RangeItem).ToList();
+        if (items.Count > 0)
+        {
+            obj["items"] = new JArray(items);
         }
 
-        return manifest.Sequences.SelectMany(x => x.Canvases);
+        return obj;
+    }
+
+    private static JObject WriteV3RangeItem(IBaseItem item)
+    {
+        return item switch
+        {
+            Structure nested => WriteV3Range(nested),
+            _ => new JObject { ["id"] = item.Id, ["type"] = item.Type }
+        };
     }
 
     private static JObject WriteV3Canvas(Canvas canvas)
@@ -132,36 +308,40 @@ public static class IiifSerializer
             obj["duration"] = canvas.Duration.Value;
         }
 
-        var annotations = canvas.Images.Select(x => WriteV3Annotation(x.Id, x.Motivation, x.Resource, x.On))
-            .Concat(canvas.Audios.Select(x => WriteV3Annotation(x.Id, x.Motivation, x.Resource, x.On)))
-            .Concat(canvas.Videos.Select(x => WriteV3Annotation(x.Id, x.Motivation, x.Resource, x.On)))
-            .ToList();
-
-        if (annotations.Count > 0)
+        var pages = canvas.Items.OfType<AnnotationPage>().Select(WriteV3AnnotationPage).ToList();
+        if (pages.Count > 0)
         {
-            obj["items"] = new JArray
-            {
-                new JObject
-                {
-                    ["id"] = $"{canvas.Id}/page",
-                    ["type"] = "AnnotationPage",
-                    ["items"] = new JArray(annotations)
-                }
-            };
+            obj["items"] = new JArray(pages);
+        }
+
+        var annotationRefs = canvas.Annotations.Select(x => new JObject { ["id"] = x.Id, ["type"] = "AnnotationPage" }).ToList();
+        if (annotationRefs.Count > 0)
+        {
+            obj["annotations"] = new JArray(annotationRefs);
         }
 
         return obj;
     }
 
-    private static JObject WriteV3Annotation(string id, string motivation, IBaseResource resource, string target)
+    private static JObject WriteV3AnnotationPage(AnnotationPage page)
     {
         return new JObject
         {
-            ["id"] = id,
+            ["id"] = page.Id,
+            ["type"] = "AnnotationPage",
+            ["items"] = new JArray(page.Items.OfType<AnnotationNode>().Select(WriteV3Annotation))
+        };
+    }
+
+    private static JObject WriteV3Annotation(AnnotationNode annotation)
+    {
+        return new JObject
+        {
+            ["id"] = annotation.Id,
             ["type"] = "Annotation",
-            ["motivation"] = NormalizeMotivation(motivation),
-            ["body"] = WriteV3Resource(resource),
-            ["target"] = target
+            ["motivation"] = NormalizeMotivation(annotation.Motivation),
+            ["body"] = WriteV3Resource(annotation.Body),
+            ["target"] = annotation.Target
         };
     }
 
@@ -192,18 +372,54 @@ public static class IiifSerializer
             manifest.AddBehavior(new Behavior(behavior));
         }
 
-        var sequence = new Sequence($"{manifest.Id}/sequence/normal");
         foreach (var canvasObj in obj["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
         {
-            sequence.AddCanvas(ReadV3Canvas(canvasObj));
+            manifest.AddItem(ReadV3Canvas(canvasObj));
         }
 
-        if (sequence.Canvases.Count > 0)
+        foreach (var structureObj in obj["structures"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
         {
-            manifest.AddSequence(sequence);
+            manifest.AddStructure(ReadV3Range(structureObj));
+        }
+
+        foreach (var serviceObj in obj["services"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
+        {
+            if (ReadV3Service(serviceObj) is { } service)
+            {
+                manifest.AddTopLevelService(service);
+            }
         }
 
         return manifest;
+    }
+
+    private static IBaseService? ReadV3Service(JObject obj)
+    {
+        var normalized = (JObject)obj.DeepClone();
+        Rename(normalized, "id", "@id");
+        Rename(normalized, "context", "@context");
+        Rename(normalized, "type", "@type");
+        return normalized.ToObject<IBaseService>();
+    }
+
+    private static Structure ReadV3Range(JObject obj)
+    {
+        var structure = new Structure(ReadRequiredString(obj, "id"), ReadLabels(obj["label"]).FirstOrDefault() ?? new Label("Untitled"));
+
+        foreach (var itemObj in obj["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
+        {
+            switch ((string?)itemObj["type"])
+            {
+                case "Range":
+                    structure.AddItem(ReadV3Range(itemObj));
+                    break;
+                case "Canvas":
+                    structure.AddItem(new CanvasReference(ReadRequiredString(itemObj, "id")));
+                    break;
+            }
+        }
+
+        return structure;
     }
 
     private static Canvas ReadV3Canvas(JObject obj)
@@ -219,55 +435,64 @@ public static class IiifSerializer
 
         foreach (var annotationObj in obj["items"]?.OfType<JObject>().SelectMany(x => x["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) ?? Enumerable.Empty<JObject>())
         {
-            ReadV3Annotation(canvas, annotationObj);
+            if (ReadV3Annotation(canvas, annotationObj) is { } annotation)
+            {
+                canvas.AddAnnotation(annotation);
+            }
+        }
+
+        foreach (var annotationsRef in obj["annotations"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
+        {
+            canvas.AddAnnotationPageReference(new AnnotationPage(ReadRequiredString(annotationsRef, "id")));
         }
 
         return canvas;
     }
 
-    private static void ReadV3Annotation(Canvas canvas, JObject obj)
+    private static AnnotationNode? ReadV3Annotation(Canvas canvas, JObject obj)
     {
         if (obj["body"] is not JObject body)
         {
-            return;
+            return null;
         }
 
         var annotationId = ReadRequiredString(obj, "id");
         var target = (string?)obj["target"] ?? canvas.Id;
         var format = (string?)body["format"] ?? string.Empty;
         var bodyId = ReadRequiredString(body, "id");
+        var motivation = (string?)obj["motivation"] ?? "painting";
 
-        switch ((string?)body["type"])
+        IBaseResource? resource = (string?)body["type"] switch
         {
-            case "Image":
-                var image = new Image(annotationId, new ImageResource(bodyId, format).SetHeight((int?)body["height"] ?? canvas.Height ?? 1).SetWidth((int?)body["width"] ?? canvas.Width ?? 1), target);
-                canvas.AddImage(image);
-                break;
-            case "Sound":
-                var audioResource = new AudioResource(bodyId, format);
-                if ((double?)body["duration"] is { } audioDuration)
-                {
-                    audioResource.SetDuration(audioDuration);
-                }
-                canvas.AddAudio(new Audio(annotationId, audioResource, target));
-                break;
-            case "Video":
-                var videoResource = new VideoResource(bodyId, format);
-                if ((int?)body["height"] is { } videoHeight)
-                {
-                    videoResource.SetHeight(videoHeight);
-                }
-                if ((int?)body["width"] is { } videoWidth)
-                {
-                    videoResource.SetWidth(videoWidth);
-                }
-                if ((double?)body["duration"] is { } videoDuration)
-                {
-                    videoResource.SetDuration(videoDuration);
-                }
-                canvas.AddVideo(new Video(annotationId, videoResource, target));
-                break;
+            "Image" => new ImageResource(bodyId, format)
+                .SetHeight((int?)body["height"] ?? canvas.Height ?? 1)
+                .SetWidth((int?)body["width"] ?? canvas.Width ?? 1),
+            "Sound" => (double?)body["duration"] is { } audioDuration
+                ? new AudioResource(bodyId, format).SetDuration(audioDuration)
+                : new AudioResource(bodyId, format),
+            "Video" => BuildVideoResource(bodyId, format, body),
+            _ => null
+        };
+
+        return resource is null ? null : new AnnotationNode(annotationId, resource, target).SetMotivation(motivation);
+    }
+
+    private static VideoResource BuildVideoResource(string bodyId, string format, JObject body)
+    {
+        var videoResource = new VideoResource(bodyId, format);
+        if ((int?)body["height"] is { } videoHeight)
+        {
+            videoResource.SetHeight(videoHeight);
         }
+        if ((int?)body["width"] is { } videoWidth)
+        {
+            videoResource.SetWidth(videoWidth);
+        }
+        if ((double?)body["duration"] is { } videoDuration)
+        {
+            videoResource.SetDuration(videoDuration);
+        }
+        return videoResource;
     }
 
     private static void WriteLanguageMap(JObject obj, string name, IEnumerable<string> values)

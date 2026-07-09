@@ -1,6 +1,7 @@
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Properties;
 
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
@@ -27,24 +28,20 @@ public sealed class Recipe0002SimplestAudioExample : CookbookExampleBase
 
         canvas.SetDuration(1985.024);
 
-        var audio = new Audio(
+        var annotation = new Annotation(
             id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas/page/annotation",
-            resource: audioResource,
-            on: canvas.Id
+            body: audioResource,
+            target: canvas.Id
         );
 
-        canvas.AddAudio(audio);
-
-        var sequence = new Sequence(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0"
-        );
-        sequence.AddCanvas(canvas);
+        canvas.AddAnnotation(annotation);
 
         var manifest = new Manifest(
             id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
             label: new Label("Simplest Audio Example 1")
         );
-        manifest.AddSequence(sequence);
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0");
 
         return manifest;
     }

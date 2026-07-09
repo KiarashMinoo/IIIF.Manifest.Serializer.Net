@@ -164,8 +164,14 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         private set => SetElementValue(value);
     }
 
-    [JsonProperty(ItemsJName)]
-    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    /// <summary>
+    /// 3.0-native primary storage for this node's child items (Canvas/Range references on a Manifest,
+    /// AnnotationPage/Annotation on a Canvas, etc). Deliberately <see cref="JsonIgnoreAttribute"/>d: every
+    /// IIIF version has a different JSON shape for "child items", so no generic reflection-based serializer
+    /// should ever touch this property directly. Version-aware readers/writers (see IiifSerializer) read and
+    /// write it explicitly instead.
+    /// </summary>
+    [JsonIgnore]
     public IReadOnlyCollection<IBaseItem> Items
     {
         get => GetElementValue(x => x.Items) ?? [];

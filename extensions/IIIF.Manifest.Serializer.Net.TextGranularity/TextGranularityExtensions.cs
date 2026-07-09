@@ -1,4 +1,5 @@
 ﻿using System;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
@@ -10,6 +11,7 @@ public static class TextGranularityExtensions
 {
     extension<TResource>(TResource resource) where TResource : IBaseResource, IAdditionalPropertiesSupport<TResource>
     {
+        [TextGranularityExtension("3.0")]
         public TResource SetTextGranularity(TextGranularity textGranularity)
         {
             return resource.Type == ResourceType.Annotation
@@ -17,6 +19,7 @@ public static class TextGranularityExtensions
                 : throw new InvalidOperationException("The textGranularity property is only valid for resources of type Annotation.");
         }
 
+        [TextGranularityExtension("3.0")]
         public TextGranularity? TextGranularity => resource.Type == ResourceType.Annotation
             ? resource.GetAdditionalProperty<TResource, TextGranularity>(TextGranularity.TextGranularityJName)
             : null;

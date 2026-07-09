@@ -1,6 +1,7 @@
 using System.Linq;
 using IIIF.Manifests.Serializer;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
@@ -156,11 +157,12 @@ public class IiifSerializerTests
         var resource = new ImageResource("https://example.org/image.png", ImageFormat.Png)
             .SetHeight(1000)
             .SetWidth(800);
-        canvas.AddImage(new Image("https://example.org/annotation/1", resource, canvas.Id));
+        canvas.AddAnnotation(new Annotation("https://example.org/annotation/1", resource, canvas.Id));
 
-        var sequence = new Sequence("https://example.org/sequence/normal").AddCanvas(canvas);
-        return new Manifest("https://example.org/manifest", new Label("Single Image Example"))
-            .AddSequence(sequence);
+        var manifest = new Manifest("https://example.org/manifest", new Label("Single Image Example"));
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://example.org/sequence/normal");
+        return manifest;
     }
 
     private static Manifest CreateAudioManifest()
@@ -169,10 +171,11 @@ public class IiifSerializerTests
             .SetDuration(10.5);
         var resource = new AudioResource("https://example.org/audio.mp4", "audio/mp4")
             .SetDuration(10.5);
-        canvas.AddAudio(new Audio("https://example.org/annotation/1", resource, canvas.Id));
+        canvas.AddAnnotation(new Annotation("https://example.org/annotation/1", resource, canvas.Id));
 
-        var sequence = new Sequence("https://example.org/sequence/normal").AddCanvas(canvas);
-        return new Manifest("https://example.org/manifest", new Label("Audio Example"))
-            .AddSequence(sequence);
+        var manifest = new Manifest("https://example.org/manifest", new Label("Audio Example"));
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://example.org/sequence/normal");
+        return manifest;
     }
 }

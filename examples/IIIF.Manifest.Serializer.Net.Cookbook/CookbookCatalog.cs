@@ -15,6 +15,7 @@ using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
@@ -59,15 +60,16 @@ public static class CookbookCatalog
     {
         var manifest = CreateManifest("https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json", "Single Image Example");
         var canvas = CreateCanvas("https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1", "p. 1", 1800, 1200);
-        canvas.AddImage(CreateImage(
+        canvas.AddAnnotation(ToAnnotation(CreateImage(
             "https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image",
             canvas.Id,
             "http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png",
             "image/png",
             1800,
-            1200));
+            1200)));
 
-        manifest.AddSequence(new Sequence("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0").AddCanvas(canvas));
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
         return manifest;
     }
 
@@ -75,12 +77,13 @@ public static class CookbookCatalog
     {
         var manifest = CreateManifest("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json", "Simplest Audio Example 1");
         var canvas = CreateCanvas("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas", "Mahler, Symphony No. 3: CD 1", 1, 1).SetDuration(1985.024);
-        canvas.AddAudio(new Audio(
+        canvas.AddAnnotation(new Annotation(
             "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas/page/annotation",
             new AudioResource("https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4", "audio/mp4").SetDuration(1985.024),
             canvas.Id));
 
-        manifest.AddSequence(new Sequence("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0").AddCanvas(canvas));
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0");
         return manifest;
     }
 
@@ -88,12 +91,13 @@ public static class CookbookCatalog
     {
         var manifest = CreateManifest("https://example.org/cookbook/video/manifest", "Video Example");
         var canvas = CreateCanvas("https://example.org/cookbook/video/canvas", "Video", 720, 1280).SetDuration(60.5);
-        canvas.AddVideo(new Video(
+        canvas.AddAnnotation(new Annotation(
             "https://example.org/cookbook/video/annotation/1",
             new VideoResource("https://example.org/cookbook/video.mp4", "video/mp4").SetHeight(720).SetWidth(1280).SetDuration(60.5),
             canvas.Id));
 
-        manifest.AddSequence(new Sequence("https://example.org/cookbook/video/sequence/normal").AddCanvas(canvas));
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://example.org/cookbook/video/sequence/normal");
         return manifest;
     }
 
@@ -125,30 +129,30 @@ public static class CookbookCatalog
             .SetMaxArea(6000000);
 
         image.Resource.AddService(service);
-        canvas.AddImage(image);
-        manifest.AddSequence(new Sequence("https://example.org/cookbook/deep-zoom/sequence/normal").AddCanvas(canvas));
+        canvas.AddAnnotation(ToAnnotation(image));
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://example.org/cookbook/deep-zoom/sequence/normal");
         return manifest;
     }
 
     private static Manifest CreateBookManifest()
     {
         var manifest = CreateManifest("https://example.org/cookbook/book/manifest", "Book Example");
-        var sequence = new Sequence("https://example.org/cookbook/book/sequence/normal");
 
         for (var index = 1; index <= 3; index++)
         {
             var canvas = CreateCanvas($"https://example.org/cookbook/book/canvas/p{index}", $"Page {index}", 2000, 1400);
-            canvas.AddImage(CreateImage(
+            canvas.AddAnnotation(ToAnnotation(CreateImage(
                 $"https://example.org/cookbook/book/annotation/p{index:D4}-image",
                 canvas.Id,
                 $"https://example.org/cookbook/book/images/page{index}.jpg",
                 "image/jpeg",
                 2000,
-                1400));
-            sequence.AddCanvas(canvas);
+                1400)));
+            manifest.AddItem(canvas);
         }
 
-        manifest.AddSequence(sequence);
+        manifest.SetSequenceId("https://example.org/cookbook/book/sequence/normal");
         return manifest;
     }
 
@@ -157,7 +161,7 @@ public static class CookbookCatalog
         var manifest = CreateBookManifest();
         manifest.SetViewingDirection(ViewingDirection.Ltr);
         manifest.SetViewingHint(ViewingHint.Paged);
-        manifest.Sequences.First().SetViewingDirection(ViewingDirection.Ltr).SetStartCanvas(new StartCanvas("https://example.org/cookbook/book/canvas/p2"));
+        manifest.SetStart("https://example.org/cookbook/book/canvas/p2");
         return manifest;
     }
 
@@ -173,29 +177,31 @@ public static class CookbookCatalog
     {
         var manifest = CreateManifest("https://example.org/cookbook/audio/manifest", "Audio with Accompanying Image");
         var imageCanvas = CreateCanvas("https://example.org/cookbook/audio/canvas/image", "Cover", 1000, 1000);
-        imageCanvas.AddImage(CreateImage(
+        imageCanvas.AddAnnotation(ToAnnotation(CreateImage(
             "https://example.org/cookbook/audio/annotation/image",
             imageCanvas.Id,
             "https://example.org/cookbook/audio/cover.jpg",
             "image/jpeg",
             1000,
-            1000));
+            1000)));
 
         var audioCanvas = CreateCanvas("https://example.org/cookbook/audio/canvas/audio", "Audio", 1, 1).SetDuration(180.0);
-        audioCanvas.AddAudio(new Audio(
+        audioCanvas.AddAnnotation(new Annotation(
             "https://example.org/cookbook/audio/annotation/audio",
             new AudioResource("https://example.org/cookbook/audio/track.mp3", "audio/mpeg").SetDuration(180.0),
             audioCanvas.Id));
 
         manifest.SetAccompanyingCanvas(new AccompanyingCanvas(imageCanvas.Id));
-        manifest.AddSequence(new Sequence("https://example.org/cookbook/audio/sequence/normal").AddCanvas(audioCanvas).AddCanvas(imageCanvas));
+        manifest.AddItem(audioCanvas);
+        manifest.AddItem(imageCanvas);
+        manifest.SetSequenceId("https://example.org/cookbook/audio/sequence/normal");
         return manifest;
     }
 
     private static Manifest CreateStartCanvasManifest()
     {
         var manifest = CreateBookManifest();
-        manifest.Sequences.First().SetStartCanvas(new StartCanvas("https://example.org/cookbook/book/canvas/p3"));
+        manifest.SetStart("https://example.org/cookbook/book/canvas/p3");
         return manifest;
     }
 
@@ -216,16 +222,17 @@ public static class CookbookCatalog
                     new Feature("https://example.org/cookbook/map/feature/1")
                         .SetGeometry(new Geometry(GeometryType.Point).AddCoordinate(new CoordinateItem(40.7128, -74.0060)))
                         .SetProperties(new FeatureProperties().AddLabel(new Label("New York")))));
-        manifest.AddSequence(new Sequence("https://example.org/cookbook/map/sequence/normal").AddCanvas(CreateCanvas("https://example.org/cookbook/map/canvas", "Map", 1000, 1000)));
+        manifest.AddItem(CreateCanvas("https://example.org/cookbook/map/canvas", "Map", 1000, 1000));
+        manifest.SetSequenceId("https://example.org/cookbook/map/sequence/normal");
         return manifest;
     }
 
     private static Collection CreateCollectionManifest()
     {
         var collection = new Collection("https://example.org/cookbook/collection", new Label("Collection Example"));
-        collection.AddManifest("https://example.org/cookbook/book/manifest");
-        collection.AddManifest("https://example.org/cookbook/audio/manifest");
-        collection.AddCollection(new Collection("https://example.org/cookbook/collection/sub", new Label("Sub Collection")));
+        collection.AddManifestReference("https://example.org/cookbook/book/manifest");
+        collection.AddManifestReference("https://example.org/cookbook/audio/manifest");
+        collection.AddItem(new Collection("https://example.org/cookbook/collection/sub", new Label("Sub Collection")));
         collection.SetViewingHint(ViewingHint.Individuals);
         return collection;
     }
@@ -234,9 +241,9 @@ public static class CookbookCatalog
     {
         var manifest = CreateBookManifest();
         var structure = new Structure("https://example.org/cookbook/book/range/chapters", new Label("Chapters"));
-        structure.AddCanvas("https://example.org/cookbook/book/canvas/p1");
-        structure.AddCanvas("https://example.org/cookbook/book/canvas/p2");
-        structure.AddCanvas("https://example.org/cookbook/book/canvas/p3");
+        structure.AddCanvasReference("https://example.org/cookbook/book/canvas/p1");
+        structure.AddCanvasReference("https://example.org/cookbook/book/canvas/p2");
+        structure.AddCanvasReference("https://example.org/cookbook/book/canvas/p3");
         manifest.AddStructure(structure);
         return manifest;
     }
@@ -268,9 +275,10 @@ public static class CookbookCatalog
     {
         var manifest = CreateManifest("https://example.org/cookbook/composite/manifest", "Composite Image Example");
         var canvas = CreateCanvas("https://example.org/cookbook/composite/canvas", "Composite", 1200, 1800);
-        canvas.AddImage(CreateImage("https://example.org/cookbook/composite/annotation/1", canvas.Id, "https://example.org/cookbook/composite/image-1.jpg", "image/jpeg", 1200, 900));
-        canvas.AddImage(CreateImage("https://example.org/cookbook/composite/annotation/2", canvas.Id, "https://example.org/cookbook/composite/image-2.jpg", "image/jpeg", 1200, 900));
-        manifest.AddSequence(new Sequence("https://example.org/cookbook/composite/sequence/normal").AddCanvas(canvas));
+        canvas.AddAnnotation(ToAnnotation(CreateImage("https://example.org/cookbook/composite/annotation/1", canvas.Id, "https://example.org/cookbook/composite/image-1.jpg", "image/jpeg", 1200, 900)));
+        canvas.AddAnnotation(ToAnnotation(CreateImage("https://example.org/cookbook/composite/annotation/2", canvas.Id, "https://example.org/cookbook/composite/image-2.jpg", "image/jpeg", 1200, 900)));
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://example.org/cookbook/composite/sequence/normal");
         return manifest;
     }
 
@@ -319,6 +327,8 @@ public static class CookbookCatalog
         var resource = new ImageResource(resourceId, format).SetHeight(height).SetWidth(width);
         return new Image(annotationId, resource, canvasId);
     }
+
+    private static Annotation ToAnnotation(Image image) => new(image.Id, image.Resource, image.On);
 }
 
 

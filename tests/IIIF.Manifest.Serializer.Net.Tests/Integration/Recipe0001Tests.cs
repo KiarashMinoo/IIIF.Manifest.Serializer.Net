@@ -1,5 +1,6 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using Newtonsoft.Json.Linq;
@@ -36,18 +37,14 @@ public class Recipe0001Tests
             on: canvas.Id
         );
 
-        canvas.AddImage(image);
-
-        var sequence = new Sequence(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0"
-        );
-        sequence.AddCanvas(canvas);
+        canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
 
         var manifest = new Manifest(
             id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json",
             label: new Label("Single Image Example")
         );
-        manifest.AddSequence(sequence);
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
 
         // Act
         var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
@@ -125,18 +122,14 @@ public class Recipe0001Tests
             on: canvas.Id
         );
 
-        canvas.AddImage(image);
-
-        var sequence = new Sequence(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0"
-        );
-        sequence.AddCanvas(canvas);
+        canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
 
         var manifest = new Manifest(
             id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json",
             label: new Label("Single Image Example")
         );
-        manifest.AddSequence(sequence);
+        manifest.AddItem(canvas);
+        manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
 
         // Act - Serialize to JSON
         var json = JsonConvert.SerializeObject(manifest);
@@ -180,8 +173,6 @@ public class Recipe0001Tests
             label: new Label("Multi-page Book Example")
         );
 
-        var sequence = new Sequence(id: "https://example.org/iiif/book1/sequence/normal");
-
         // Add multiple pages
         for (int i = 1; i <= 3; i++)
         {
@@ -205,11 +196,11 @@ public class Recipe0001Tests
                 on: canvas.Id
             );
 
-            canvas.AddImage(image);
-            sequence.AddCanvas(canvas);
+            canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
+            manifest.AddItem(canvas);
         }
 
-        manifest.AddSequence(sequence);
+        manifest.SetSequenceId("https://example.org/iiif/book1/sequence/normal");
 
         // Act
         var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
@@ -255,16 +246,13 @@ public class Recipe0001Tests
             on: canvas.Id
         );
 
-        canvas.AddImage(image);
-
-        var sequence = new Sequence();
-        sequence.AddCanvas(canvas);
+        canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
 
         var manifest = new Manifest(
             id: "https://example.org/manifest.json",
             label: new Label("Test Manifest")
         );
-        manifest.AddSequence(sequence);
+        manifest.AddItem(canvas);
 
         // Act
         var json = JsonConvert.SerializeObject(manifest);

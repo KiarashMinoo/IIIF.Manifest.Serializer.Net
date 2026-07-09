@@ -39,3 +39,40 @@ jobs:
 
       - name: Test
         run: dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj --configuration Release --no-build
+
+      # Release strips PDBs (DebugSymbols=false, DebugType=None in Directory.Build.props), so
+      # coverlet has nothing to instrument against a Release build - it silently reports 0%.
+      # Coverage is measured against a separate Debug build instead.
+      - name: Test with coverage (Debug)
+        run: >
+          dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
+          --configuration Debug
+          --collect:"XPlat Code Coverage"
+          --settings tests/IIIF.Manifest.Serializer.Net.Tests/coverlet.runsettings
+          --results-directory ./coverage-raw
+
+      - name: Generate coverage report
+        if: always()
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool --version 5.4.4
+          reportgenerator \
+            -reports:"coverage-raw/**/coverage.cobertura.xml" \
+            -targetdir:coverage-report \
+            -reporttypes:"MarkdownSummaryGithub;Cobertura"
+
+      - name: Publish coverage summary
+        if: always()
+        run: |
+          summary_file=$(find coverage-report -iname "*summary*github*.md" -print -quit)
+          if [ -n "$summary_file" ]; then
+            cat "$summary_file" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No coverage summary file found under coverage-report/." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report

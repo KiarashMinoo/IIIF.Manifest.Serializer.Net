@@ -99,4 +99,46 @@ public class IiifPresentationVersionDetectorTests
 
         IiifPresentationVersionDetector.Detect(token).Should().Be(IiifPresentationVersion.V3_0);
     }
+
+    [Fact]
+    public void Detect_Should_ReturnV2_1_When_CollectionHasLegacyType()
+    {
+        const string json = """
+                            {
+                              "@id": "https://example.org/collection",
+                              "@type": "sc:Collection",
+                              "manifests": []
+                            }
+                            """;
+
+        IiifPresentationVersionDetector.Detect(json).Should().Be(IiifPresentationVersion.V2_1);
+    }
+
+    [Fact]
+    public void Detect_Should_ReturnV3_When_CollectionHasLatestType()
+    {
+        const string json = """
+                            {
+                              "id": "https://example.org/collection",
+                              "type": "Collection",
+                              "items": []
+                            }
+                            """;
+
+        IiifPresentationVersionDetector.Detect(json).Should().Be(IiifPresentationVersion.V3_0);
+    }
+
+    [Fact]
+    public void Detect_Should_ReturnV3_When_CollectionContextIsPresentation3()
+    {
+        const string json = """
+                            {
+                              "@context": "http://iiif.io/api/presentation/3/context.json",
+                              "id": "https://example.org/collection",
+                              "type": "Collection"
+                            }
+                            """;
+
+        IiifPresentationVersionDetector.Detect(json).Should().Be(IiifPresentationVersion.V3_0);
+    }
 }
