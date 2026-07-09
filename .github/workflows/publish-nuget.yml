@@ -1,0 +1,70 @@
+name: Publish NuGet Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Package channel to publish
+        type: choice
+        required: true
+        default: release
+        options:
+          - release
+          - prerelease
+      version-suffix:
+        description: Optional version suffix for prerelease builds
+        required: false
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Restore
+        run: dotnet restore IIIF.Manifest.Serializer.Net.sln
+
+      - name: Build
+        run: dotnet build IIIF.Manifest.Serializer.Net.sln --configuration Release --no-restore
+
+      - name: Pack main package
+        run: |
+          if [ "${{ inputs.channel }}" = "prerelease" ] && [ -n "${{ inputs.version-suffix }}" ]; then
+            dotnet pack src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
+          else
+            dotnet pack src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj --configuration Release --no-build
+          fi
+
+      - name: Pack extension packages
+        run: |
+          if [ "${{ inputs.channel }}" = "prerelease" ] && [ -n "${{ inputs.version-suffix }}" ]; then
+            dotnet pack extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
+            dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
+            dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
+          else
+            dotnet pack extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj --configuration Release --no-build
+            dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj --configuration Release --no-build
+            dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj --configuration Release --no-build
+          fi
+
+      - name: Push packages to NuGet
+        run: |
+          dotnet nuget push src/IIIF.Manifest.Serializer.Net/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push extensions/IIIF.Manifest.Serializer.Net.NavPlace/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push extensions/IIIF.Manifest.Serializer.Net.Georeference/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          dotnet nuget push extensions/IIIF.Manifest.Serializer.Net.TextGranularity/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

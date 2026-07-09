@@ -12,13 +12,11 @@ on:
   workflow_dispatch: {}
 
 permissions:
-  contents: write
-  actions: write
-  packages: write
+  contents: read
 
 jobs:
   validate:
-    if: github.event_name == 'pull_request'
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -41,21 +39,3 @@ jobs:
 
       - name: Test
         run: dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj --configuration Release --no-build
-
-  beta-ci:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop'
-    uses: KiarashMinoo/.github/.github/workflows/reusable-beta-ci.yml@main
-    with:
-      solution-path: 'IIIF.Manifest.Serializer.Net.sln'
-    secrets:
-      gh-token: ${{ secrets.GH_TOKEN }}
-      nuget-api-key: ${{ secrets.NUGET_API_KEY }}
-
-  release-ci:
-    if: github.event_name != 'pull_request' && startsWith(github.ref, 'refs/heads/release/')
-    uses: KiarashMinoo/.github/.github/workflows/reusable-release-ci.yml@main
-    with:
-      solution-path: 'IIIF.Manifest.Serializer.Net.sln'
-    secrets:
-      gh-token: ${{ secrets.GH_TOKEN }}
-      nuget-api-key: ${{ secrets.NUGET_API_KEY }}
