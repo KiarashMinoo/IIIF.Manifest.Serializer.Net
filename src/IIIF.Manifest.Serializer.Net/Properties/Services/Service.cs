@@ -12,7 +12,6 @@ namespace IIIF.Manifests.Serializer.Properties.Services
     /// IIIF Image API Service descriptor - provides info about image server capabilities.
     /// </summary>
     [ImageAPI("2.0", Notes = "Service descriptor for Image API. Properties vary between 2.x and 3.0.")]
-    [JsonConverter(typeof(ServiceJsonConverter))]
     public class Service : BaseItem<Service>, IDimensionSupport<Service>, IBaseService
     {
         public const string TilesJName = "tiles";
@@ -70,6 +69,12 @@ namespace IIIF.Manifests.Serializer.Properties.Services
         public IReadOnlyCollection<ImageQuality> ExtraQualities => GetElementValue(x => x.ExtraQualities) ?? [];
 
         [JsonProperty(ExtraFeaturesJName)] public IReadOnlyCollection<ImageFeature> ExtraFeatures => GetElementValue(x => x.ExtraFeatures) ?? [];
+
+        [JsonConstructor]
+        private Service(string id, string profile) : base(id, string.Empty)
+        {
+            SetElementValue(x => x.Profile, profile);
+        }
 
         public Service(string context, string id, string profile) : base(id, string.Empty, context)
         {

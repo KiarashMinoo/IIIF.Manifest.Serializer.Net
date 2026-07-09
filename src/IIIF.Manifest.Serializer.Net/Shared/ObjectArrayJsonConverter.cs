@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared;
@@ -13,27 +14,29 @@ public class ObjectArrayJsonConverter : JsonConverter
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
         var elementType = objectType.GetGenericArguments()[0];
-
-        var arrayList = new ArrayList();
+        var listType = typeof(List<>).MakeGenericType(elementType);
+        var list = (IList)Activator.CreateInstance(listType)!;
 
         if (reader.TokenType == JsonToken.StartArray)
         {
             while (reader.Read())
             {
                 if (reader.TokenType == JsonToken.EndArray)
+                {
                     break;
+                }
 
                 var item = serializer.Deserialize(reader, elementType);
-                arrayList.Add(item!);
+                list.Add(item!);
             }
         }
         else
         {
             var item = serializer.Deserialize(reader, elementType);
-            arrayList.Add(item!);
+            list.Add(item!);
         }
 
-        return arrayList;
+        return list;
     }
 
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
@@ -49,7 +52,7 @@ public class ObjectArrayJsonConverter : JsonConverter
         {
             var arrayList = new ArrayList();
 
-            var enumerator = ((IEnumerable)value!).GetEnumerator();
+            var enumerator = ((IEnumerable)value).GetEnumerator();
             using var _ = enumerator as IDisposable;
             while (enumerator.MoveNext())
             {

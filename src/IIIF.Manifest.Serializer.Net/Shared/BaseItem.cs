@@ -5,7 +5,13 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared;
 
-public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IContextSupport where TBaseItem : BaseItem<TBaseItem>
+public interface IBaseItem
+{
+    string Id { get; }
+    string? Type { get; }
+}
+
+public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseItem, IContextSupport where TBaseItem : BaseItem<TBaseItem>
 {
     public const string DefaultContext = "http://iiif.io/api/presentation/2/context.json";
     public const string ContextJName = "@context";
@@ -62,6 +68,14 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IContextSupport w
         Context = [context];
     }
 
+    internal TBaseItem SetType(string type)
+    {
+        Type = type;
+        return (TBaseItem)this;
+    }
+
+    //Context
+
     public TBaseItem SetContext(IReadOnlyCollection<string> context)
     {
         Context = context;
@@ -83,9 +97,11 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IContextSupport w
         return SetContext(Context.Without(context));
     }
 
-    internal TBaseItem SetType(string type)
+    //Service
+
+    public TBaseItem SetService(IReadOnlyCollection<IBaseService> services)
     {
-        Type = type;
+        Service = [..services];
         return (TBaseItem)this;
     }
 

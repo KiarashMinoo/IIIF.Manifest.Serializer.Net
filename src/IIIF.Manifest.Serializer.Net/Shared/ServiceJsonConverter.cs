@@ -4,6 +4,7 @@ using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace IIIF.Manifests.Serializer.Shared;
 
@@ -16,6 +17,23 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
 {
     private const string TypeJName = "@type";
     private const string ProfileJName = "profile";
+
+    // IBaseService carries this converter so element-typed collections (IReadOnlyCollection<IBaseService>) resolve it,
+    // but that also makes every implementer inherit it. Deserializing leaf types below must skip this converter for
+    // the leaf type itself, or ToObject<TService>() would re-enter ReadJson and recurse forever.
+    private static readonly JsonSerializer LeafSerializer = JsonSerializer.Create(new JsonSerializerSettings
+    {
+        ContractResolver = new LeafContractResolver()
+    });
+
+    private sealed class LeafContractResolver : DefaultContractResolver
+    {
+        protected override JsonConverter? ResolveContractConverter(Type objectType)
+        {
+            var converter = base.ResolveContractConverter(objectType);
+            return converter is ServiceJsonConverter ? null : converter;
+        }
+    }
 
     /// <summary>
     /// Reads JSON and deserializes it into an appropriate service object.
@@ -77,24 +95,24 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
             {
                 case "ImageService2":
                 case "ImageService3":
-                    return serviceToken.ToObject<Properties.Services.Service>();
+                    return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
                 case "AuthCookieService1":
                 case "AuthTokenService1":
                 case "AuthLogoutService1":
-                    return serviceToken.ToObject<AuthService1>();
+                    return serviceToken.ToObject<AuthService1>(LeafSerializer);
                 case "AuthProbeService2":
                 case "AuthAccessService2":
                 case "AuthAccessTokenService2":
                 case "AuthLogoutService2":
-                    return serviceToken.ToObject<AuthService2>();
+                    return serviceToken.ToObject<AuthService2>(LeafSerializer);
                 case "SearchService2":
-                    return serviceToken.ToObject<SearchService>();
+                    return serviceToken.ToObject<SearchService>(LeafSerializer);
                 case "AutoCompleteService2":
-                    return serviceToken.ToObject<AutoCompleteService>();
+                    return serviceToken.ToObject<AutoCompleteService>(LeafSerializer);
                 case "OrderedCollection":
-                    return serviceToken.ToObject<DiscoveryService>();
+                    return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
                 case "ContentStateService":
-                    return serviceToken.ToObject<ContentStateService>();
+                    return serviceToken.ToObject<ContentStateService>(LeafSerializer);
                 default:
                     // Try to detect by profile or other means
                     var jProfile = serviceToken.TryGetToken(ProfileJName);
@@ -106,13 +124,13 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
                             // Try Auth services
                             try
                             {
-                                return serviceToken.ToObject<AuthService1>();
+                                return serviceToken.ToObject<AuthService1>(LeafSerializer);
                             }
                             catch (JsonException)
                             {
                                 try
                                 {
-                                    return serviceToken.ToObject<AuthService2>();
+                                    return serviceToken.ToObject<AuthService2>(LeafSerializer);
                                 }
                                 catch (JsonException)
                                 {
@@ -122,19 +140,19 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
                         }
                         else if (profileValue.Contains("search", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<SearchService>();
+                            return serviceToken.ToObject<SearchService>(LeafSerializer);
                         }
                         else if (profileValue.Contains("discovery", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<DiscoveryService>();
+                            return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
                         }
                         else if (profileValue.Contains("content-state", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<ContentStateService>();
+                            return serviceToken.ToObject<ContentStateService>(LeafSerializer);
                         }
                         else if (profileValue.Contains("image", StringComparison.OrdinalIgnoreCase))
                         {
-                            return serviceToken.ToObject<Properties.Services.Service>();
+                            return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
                         }
                     }
 
@@ -145,7 +163,7 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
         // Fallback: try to deserialize as the most common service type (ImageService)
         try
         {
-            return serviceToken.ToObject<Properties.Services.Service>();
+            return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
         }
         catch (JsonException)
         {

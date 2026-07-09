@@ -19,13 +19,18 @@ public class AutoCompleteService : BaseItem<AutoCompleteService>, IBaseService
         private set => SetElementValue(value);
     }
 
+    [JsonConstructor]
+    private AutoCompleteService(string id, string profile) : base(id, "AutoCompleteService2")
+    {
+        Profile = profile;
+    }
+
     /// <summary>
     /// Creates a new AutoCompleteService.
     /// </summary>
     /// <param name="context">The IIIF context URL</param>
     /// <param name="id">The service identifier</param>
     /// <param name="profile">The service profile</param>
-    [JsonConstructor]
     public AutoCompleteService(string context, string id, string profile) : base(id, "AutoCompleteService2", context)
     {
         Profile = profile;

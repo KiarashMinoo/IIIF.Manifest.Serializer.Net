@@ -1,0 +1,35 @@
+version: 2
+updates:
+  - package-ecosystem: "nuget"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:30"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 10
+    groups:
+      test-packages:
+        patterns:
+          - "xunit*"
+          - "FluentAssertions"
+          - "Microsoft.NET.Test.Sdk"
+      json-packages:
+        patterns:
+          - "Newtonsoft.Json"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:30"
+      timezone: "UTC"
+    labels:
+      - "dependencies"
+      - "security"
+      - "ci"
+    open-pull-requests-limit: 5

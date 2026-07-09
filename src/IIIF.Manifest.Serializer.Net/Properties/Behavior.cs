@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Properties
     [JsonConverter(typeof(ValuableItemJsonConverter<Behavior>))]
     public class Behavior : ValuableItem<Behavior>
     {
-        private Behavior(string value) : base(value)
+        public Behavior(string value) : base(value)
         {
         }
 

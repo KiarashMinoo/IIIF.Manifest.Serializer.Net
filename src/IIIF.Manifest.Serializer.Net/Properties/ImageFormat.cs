@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -13,15 +13,15 @@ namespace IIIF.Manifests.Serializer.Properties
     public class ImageFormat(string value) : ValuableItem<ImageFormat>(value)
     {
         // Common image formats
-        public static ImageFormat Jpg => "jpg";
-        public static ImageFormat Png => "png";
-        public static ImageFormat Gif => "gif";
-        public static ImageFormat Webp => "webp";
-        public static ImageFormat Tif => "tif";
-        public static ImageFormat Jp2 => "jp2";
-        public static ImageFormat Pdf => "pdf";
-        public static ImageFormat Avif => "avif";
-        public static ImageFormat Heic => "heic";
+        public static ImageFormat Jpg => "image/jpeg";
+        public static ImageFormat Png => "image/png";
+        public static ImageFormat Gif => "image/gif";
+        public static ImageFormat Webp => "image/webp";
+        public static ImageFormat Tif => "image/tiff";
+        public static ImageFormat Jp2 => "image/jp2";
+        public static ImageFormat Pdf => "application/pdf";
+        public static ImageFormat Avif => "image/avif";
+        public static ImageFormat Heic => "image/heic";
 
         public static implicit operator ImageFormat(string value) => new(value);
     }

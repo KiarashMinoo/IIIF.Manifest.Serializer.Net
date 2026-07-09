@@ -34,13 +34,18 @@ namespace IIIF.Manifests.Serializer.Properties.Services
             private set => SetElementValue(value);
         }
 
+        [JsonConstructor]
+        private SearchService(string id, string profile) : base(id, "SearchService2")
+        {
+            Profile = profile;
+        }
+
         /// <summary>
         /// Creates a new SearchService.
         /// </summary>
         /// <param name="context">The IIIF context URL</param>
         /// <param name="id">The service identifier</param>
         /// <param name="profile">The service profile</param>
-        [JsonConstructor]
         public SearchService(string context, string id, string profile) : base(id, "SearchService2", context)
         {
             Profile = profile;

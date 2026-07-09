@@ -57,12 +57,14 @@ namespace IIIF.Manifests.Serializer.Nodes
             private set => SetElementValue(value);
         }
 
+        [JsonProperty(nameof(Audios))]
         public IReadOnlyCollection<Audio> Audios
         {
             get => GetElementValue(x => x.Audios) ?? [];
             private set => SetElementValue(value);
         }
 
+        [JsonProperty(nameof(Videos))]
         public IReadOnlyCollection<Video> Videos
         {
             get => GetElementValue(x => x.Videos) ?? [];
@@ -115,3 +117,5 @@ namespace IIIF.Manifests.Serializer.Nodes
         }
     }
 }
+
+

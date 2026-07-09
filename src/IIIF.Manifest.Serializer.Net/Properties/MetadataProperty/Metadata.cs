@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
@@ -18,6 +19,7 @@ public class Metadata : TrackableObject<Metadata>
     }
 
     [JsonProperty(ValueJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<MetadataValue.MetadataValue> Value
     {
         get => GetElementValue(x => x.Value) ?? [];
