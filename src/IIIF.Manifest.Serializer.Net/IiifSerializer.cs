@@ -136,6 +136,8 @@ public static class IiifSerializer
             obj["items"] = new JArray(items);
         }
 
+        WriteV3RightsRequiredStatementPartOf(collection, obj);
+
         return obj;
     }
 
@@ -191,6 +193,8 @@ public static class IiifSerializer
             }
         }
 
+        ReadV3RightsRequiredStatementPartOf(obj, collection);
+
         return collection;
     }
 
@@ -241,7 +245,58 @@ public static class IiifSerializer
             obj["services"] = new JArray(services);
         }
 
+        WriteV3RightsRequiredStatementPartOf(manifest, obj);
+
         return obj;
+    }
+
+    private static void WriteV3RightsRequiredStatementPartOf<TBaseNode>(BaseNode<TBaseNode> node, JObject obj) where TBaseNode : BaseNode<TBaseNode>
+    {
+        if (node.Rights is not null)
+        {
+            obj["rights"] = node.Rights.Value;
+        }
+
+        if (node.RequiredStatement is not null)
+        {
+            obj["requiredStatement"] = new JObject
+            {
+                ["label"] = BuildLanguageMapToken(node.RequiredStatement.Label.Select(x => x.Value)),
+                ["value"] = BuildLanguageMapToken(node.RequiredStatement.Value.Select(x => x.Value))
+            };
+        }
+
+        var partOf = node.PartOf.Select(x => new JObject { ["id"] = x.Id, ["type"] = x.Type }).ToList();
+        if (partOf.Count > 0)
+        {
+            obj["partOf"] = new JArray(partOf);
+        }
+    }
+
+    private static void ReadV3RightsRequiredStatementPartOf<TBaseNode>(JObject obj, BaseNode<TBaseNode> node) where TBaseNode : BaseNode<TBaseNode>
+    {
+        if ((string?)obj["rights"] is { } rights)
+        {
+            node.SetRights(new Rights(rights));
+        }
+
+        if (obj["requiredStatement"] is JObject requiredStatementObj)
+        {
+            var label = ReadLabels(requiredStatementObj["label"]);
+            var value = ReadLabels(requiredStatementObj["value"]).Select(x => new Description(x.Value)).ToList();
+            node.SetRequiredStatement(new RequiredStatement(label, value));
+        }
+
+        foreach (var partOfObj in obj["partOf"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
+        {
+            node.AddPartOf(new PartOf(ReadRequiredString(partOfObj, "id"), (string?)partOfObj["type"] ?? "Manifest"));
+        }
+    }
+
+    private static JToken BuildLanguageMapToken(IEnumerable<string> values)
+    {
+        var list = values.Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
+        return new JObject { ["none"] = new JArray(list) };
     }
 
     private static JObject WriteV3Service(IBaseService service)
@@ -389,6 +444,8 @@ public static class IiifSerializer
                 manifest.AddTopLevelService(service);
             }
         }
+
+        ReadV3RightsRequiredStatementPartOf(obj, manifest);
 
         return manifest;
     }

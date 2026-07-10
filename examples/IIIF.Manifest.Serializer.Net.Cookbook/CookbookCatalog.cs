@@ -169,7 +169,7 @@ public static class CookbookCatalog
     {
         var manifest = CreateSimpleImageManifest();
         manifest.SetThumbnail(new Thumbnail("https://example.org/cookbook/preview/thumb.jpg"));
-        manifest.SetRelated("https://example.org/cookbook/preview/full-view");
+        manifest.AddHomepage(new Homepage("https://example.org/cookbook/preview/full-view"));
         return manifest;
     }
 
@@ -289,8 +289,8 @@ public static class CookbookCatalog
         manifest.AddMetadata(new Metadata("Author", "Jean Dupont", "fr"));
         manifest.AddHomepage(new Homepage("https://example.org/cookbook/object", "Object page"));
         manifest.AddRendering(new Rendering("https://example.org/cookbook/object.pdf", "PDF"));
-        manifest.SetLicense(new License("https://creativecommons.org/licenses/by/4.0/"));
-        manifest.SetRelated("https://example.org/cookbook/related");
+        manifest.SetRights(Rights.CcBy);
+        manifest.AddHomepage(new Homepage("https://example.org/cookbook/related"));
         manifest.AddSeeAlso(new SeeAlso("https://example.org/cookbook/record.json").SetFormat("application/json"));
         return manifest;
     }

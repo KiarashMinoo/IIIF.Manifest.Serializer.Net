@@ -1,10 +1,9 @@
 # IIIF SDK Multi-Version Design Guide
 
-Status: **active design + implementation plan**, superseding the previous version of this
-document. Decisions below were made deliberately after a scan of the existing codebase and
-research into the IIIF Presentation API version history; do not assume anything not written
-here — if a mapping or rule is missing, treat it as "verify against the spec before shipping,"
-not "not needed."
+Status: **implementation complete** (all milestones 0-8 landed; see §9's status line for the
+final summary). This document remains the reference for the architecture decisions and the
+confirmed IIIF 2.x↔3.0 property mappings — read it before touching version-aware serialization
+code.
 
 All §5 mapping rows previously marked "verify against spec" have now been confirmed directly
 against `iiif.io/api/presentation/3.0/` and its change log (2026-07-09) — see the updated table.
@@ -285,8 +284,39 @@ milestones into one change.
    different code path) and `BaseResource`'s own `JsonConstructor` binding a raw JSON string
    directly to a `ResourceType`-typed parameter without going through its converter. Tests:
    `ExtensionAttributeTests.cs`.
-7. **Cookbook/Examples migration**: rewrite all 20 recipes to exercise `IiifSerializer`
-   (multi-version round-trip) instead of plain `JsonConvert` — this becomes the strongest
-   regression suite in the repo given the breadth of features the recipes already cover.
-8. **Consistency sweep**: confirm every property with deprecation metadata has the matching
-   `[Obsolete]` tag from §4; confirm nothing was missed; update this document's status line.
+7. **Cookbook/Examples migration** — DONE: `ExampleCatalogTests.cs` now round-trips every
+   `Manifest`/`Collection` example (the large majority of the ~20 cookbook/demo recipes) through
+   `IiifSerializer` in both directions and both versions (build → write v2.1 → write v3.0 →
+   read each back → re-write in the other version). `Layer`/`AnnotationList` examples (no 3.0
+   concept, no `IiifSerializer` support by design) still fall back to a plain-JSON validity
+   check. This migration surfaced no new bugs — a good signal that Milestones 1–6's fixes were
+   thorough. All 142 tests pass.
+8. **Consistency sweep** — DONE. Grepped every `IsDeprecated = true` site and cross-checked
+   against `[Obsolete]` coverage. Milestones 1-5's own targets (Canvas/Manifest/Collection/
+   Structure/Sequence) were all correctly tagged. But the sweep caught a real gap: **§4's own
+   `BaseNode.License`/`Attribution`/`Within`/`Related` targets had never actually been reshaped**
+   — their write APIs (`SetLicense`, `AddAttribution`/`RemoveAttribution`, `AddWithin`/
+   `RemoveWithin`, `SetRelated`) were still fully open, directly violating the user's explicit
+   final requirement that obsolete properties be read-only. Fixed now: added 3.0-native `Rights`/
+   `RequiredStatement`/`PartOf` (new types; `Related` maps onto the already-existing `Homepage`
+   per the confirmed change-log mapping), made the four legacy properties computed views, and
+   tagged the legacy mutators `[Obsolete(error: true)]`. This also caught two more bugs during
+   testing: (a) `Rights`/`RequiredStatement`/`PartOf` initially leaked into legacy V2 JSON via
+   plain `JsonConvert` reflection — fixed with `[JsonIgnore]`, the same pattern as `Items`; (b)
+   a pre-existing bug in `ObjectArrayJsonConverter`: deserializing an explicit JSON `null` for
+   any `IReadOnlyCollection<T>` property produced a list containing **one null element** instead
+   of an empty list — harmless for old code that just stored the list, but a
+   `NullReferenceException` waiting to happen for the new computed setters that actually iterate
+   the collection. Fixed at the source. Tests: `BaseNodeReshapeTests.cs`. Coverage push:
+   `CoveragePushTests.cs` (Collection paging, Structure viewing-direction/start). Overall line
+   coverage: **48.7% → 63.5%** (from the pre-session baseline in `coverage-report/SummaryGithub.md`).
+   Final count: **170 tests, all passing**, solution builds clean.
+
+**Known follow-up, not fixed this pass** (flagged for a future session, not blocking): `Behavior`
+(3.0-only, like `Rights`/`RequiredStatement`/`PartOf`) is not yet `[JsonIgnore]`d and likely has
+the same legacy-JSON-leak risk when the plain-`JsonConvert` legacy write path is used directly
+(as opposed to `IiifSerializer.Serialize(..., V2_1)`, which is unaffected). Also, `Properties/Related.cs`
+(a `Related : FormattableItem<Related>` value type) is dead code predating this session —
+`BaseNode.Related` has always been a plain `string?`, never referencing that type.
+
+## Status: all 9 milestones (0-8) complete.

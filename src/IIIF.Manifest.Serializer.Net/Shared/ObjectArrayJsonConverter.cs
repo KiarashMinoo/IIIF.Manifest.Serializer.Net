@@ -17,6 +17,14 @@ public class ObjectArrayJsonConverter : JsonConverter
         var listType = typeof(List<>).MakeGenericType(elementType);
         var list = (IList)Activator.CreateInstance(listType)!;
 
+        // An explicit JSON null means "no values" - an empty collection, not a single null
+        // element. Without this, downstream code that maps/derives from the collection (e.g. a
+        // computed legacy view) can throw a NullReferenceException on that phantom element.
+        if (reader.TokenType == JsonToken.Null)
+        {
+            return list;
+        }
+
         if (reader.TokenType == JsonToken.StartArray)
         {
             while (reader.Read())
