@@ -259,8 +259,32 @@ milestones into one change.
    inline `AddService`/`RemoveService` to avoid confusing the two concepts) with full
    `IiifSerializer` V3 read/write; per §5's decision, write always inlines (nothing populates
    this from the inline `service` automatically — no dedup). Tests: `ServiceRoundTripTests.cs`.
-6. **Extensions**: apply the dead `*ExtensionAttribute`s; verify round-trip through the reshaped
-   core.
+6. **Extensions** — DONE, and this milestone surfaced the most significant bug found in the
+   whole reshape effort. Applied `NavPlaceExtensionAttribute`/`GeoreferenceExtensionAttribute`/
+   `TextGranularityExtensionAttribute` to the relevant extension properties/methods/types (they
+   were confirmed genuinely dead code beforehand — zero references anywhere).
+   **Critical fix**: writing the "confirm these extensions round-trip" tests this milestone
+   asked for proved they did **not round-trip at all** — `SetNavPlace`/`SetTransformation`/
+   `SetResourceCoords`/`SetTextGranularity` store into `ElementDescriptors` with
+   `IsAdditional=true`, but nothing ever serialized that data into JSON (no `[JsonExtensionData]`
+   or equivalent existed), so extension data set via any of these three packages was silently
+   dropped on every serialize — the packages did not do what they were shipped to do. Fixed by:
+   1. Adding a `[JsonExtensionData]`-backed `AdditionalPropertiesDictionary` bridge to
+      `TrackableObject<T>` that surfaces `IsAdditional=true` entries for write and accepts
+      unmapped JSON keys back into `ElementDescriptors` for read.
+   2. Excluding `JToken` from the "wrap enumerable values in `BindingList<T>`" heuristic in
+      `SetElementValue` — `JObject` implements `IEnumerable`, so without this exclusion a raw
+      JToken value read back via extension data got corrupted into a single-item
+      `BindingList<JToken>` instead of stored as a scalar.
+   3. Lazily converting the raw JToken/primitive stored by extension-data reads to the real
+      requested type on first typed access in `GetElementValue` (applying whatever
+      `JsonConverter` that type declares, e.g. `ValuableItemJsonConverter<TextGranularity>`),
+      caching the converted result in place.
+   Also fixed two smaller pre-existing bugs found by the same tests: `ServiceJsonConverter`'s
+   Auth1/Auth2 profile-based detection (same class of bug as Milestone 5's fix, just for a
+   different code path) and `BaseResource`'s own `JsonConstructor` binding a raw JSON string
+   directly to a `ResourceType`-typed parameter without going through its converter. Tests:
+   `ExtensionAttributeTests.cs`.
 7. **Cookbook/Examples migration**: rewrite all 20 recipes to exercise `IiifSerializer`
    (multi-version round-trip) instead of plain `JsonConvert` — this becomes the strongest
    regression suite in the repo given the breadth of features the recipes already cover.

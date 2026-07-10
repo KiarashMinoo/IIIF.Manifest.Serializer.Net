@@ -16,8 +16,17 @@ public class BaseResource<TBaseResource> : FormattableItem<TBaseResource>, IBase
     {
     }
 
+    // Newtonsoft's constructor-parameter matching binds a raw JSON string value directly to this
+    // ctor without applying ResourceType's own JsonConverter, so a ResourceType-typed
+    // JsonConstructor throws InvalidCastException when deserializing a bare BaseResource. Take
+    // the raw string instead (matching how the inherited "@type" property is itself a string)
+    // and keep the ResourceType overload as a plain, non-JsonConstructor convenience.
     [JsonConstructor]
-    public BaseResource(string id, ResourceType type) : base(id, type.Value)
+    public BaseResource(string id, string type) : base(id, type)
+    {
+    }
+
+    public BaseResource(string id, ResourceType type) : this(id, type.Value)
     {
     }
 }
@@ -29,6 +38,10 @@ public class BaseResource : BaseResource<BaseResource>
     }
 
     [JsonConstructor]
+    public BaseResource(string id, string type) : base(id, type)
+    {
+    }
+
     public BaseResource(string id, ResourceType type) : base(id, type)
     {
     }

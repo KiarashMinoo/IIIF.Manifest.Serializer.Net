@@ -157,9 +157,13 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
         }
         else
         {
-            // Check if value is an enumerable (but not a string) that needs to be wrapped in a BindingList
+            // Check if value is an enumerable (but not a string) that needs to be wrapped in a BindingList.
+            // JToken (JObject/JArray) is deliberately excluded even though it implements IEnumerable:
+            // it only ever reaches here as a raw, not-yet-typed value read via the JsonExtensionData
+            // bridge for additional/extension properties, and must be stored as an atomic scalar so it
+            // can be lazily converted to its real type on first typed access (see GetElementValue).
             var valueType = value.GetType();
-            var isEnumerable = value is IEnumerable and not string;
+            var isEnumerable = value is IEnumerable and not string and not Newtonsoft.Json.Linq.JToken;
 
             if (isEnumerable)
             {
@@ -266,12 +270,89 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             }
             catch (InvalidCastException)
             {
-                return default;
+                // Additional properties round-trip through JsonExtensionData as raw JTokens or
+                // (for simple scalars) raw CLR primitives - Newtonsoft has no type information
+                // for an unmapped key. Convert lazily on first typed access, applying whatever
+                // JsonConverter TValue itself declares (e.g. ValuableItemJsonConverter), and
+                // cache the result so this only happens once.
+                try
+                {
+                    var token = elementDescriptor.Value as Newtonsoft.Json.Linq.JToken
+                        ?? Newtonsoft.Json.Linq.JToken.FromObject(elementDescriptor.Value);
+                    var converted = token.ToObject<TValue>();
+                    target.ElementDescriptors[memberName] = new ElementDescriptor(converted!, elementDescriptor.IsAdditional);
+                    return converted;
+                }
+                catch (JsonException)
+                {
+                    return default;
+                }
             }
         }
 
         isModified = false;
         isAdditional = false;
         return default;
+    }
+
+    /// <summary>
+    /// Bridges "additional" (extension) ElementDescriptors to Newtonsoft's JsonExtensionData
+    /// mechanism, so properties set via <see cref="IAdditionalPropertiesSupport{TAdditionalPropertiesSupport}"/>
+    /// (e.g. the navPlace/Georeference/TextGranularity extension packages) actually survive a
+    /// JSON round-trip instead of only existing in-memory. Newtonsoft calls the getter once per
+    /// serialize/deserialize and both enumerates it (write) and calls Add on it (read); since this
+    /// wrapper always proxies the same underlying ElementDescriptors, a fresh instance each call
+    /// behaves identically to a cached one.
+    /// </summary>
+    [JsonExtensionData]
+    private IDictionary<string, object?> AdditionalPropertiesData => new AdditionalPropertiesDictionary(this);
+
+    private sealed class AdditionalPropertiesDictionary(TrackableObject<TTrackableObject> owner) : IDictionary<string, object?>
+    {
+        private IEnumerable<KeyValuePair<string, ElementDescriptor>> AdditionalEntries =>
+            owner.ElementDescriptors.Where(kvp => kvp.Value.IsAdditional);
+
+        public object? this[string key]
+        {
+            get => AdditionalEntries.FirstOrDefault(kvp => kvp.Key == key).Value?.Value;
+            set => Add(key, value);
+        }
+
+        public void Add(string key, object? value) => owner.SetElementValue(value, isAdditional: true, memberName: key);
+
+        public void Add(KeyValuePair<string, object?> item) => Add(item.Key, item.Value);
+
+        public bool ContainsKey(string key) => AdditionalEntries.Any(kvp => kvp.Key == key);
+
+        public bool TryGetValue(string key, out object? value)
+        {
+            var match = AdditionalEntries.FirstOrDefault(kvp => kvp.Key == key);
+            value = match.Value?.Value;
+            return match.Value is not null;
+        }
+
+        public ICollection<string> Keys => AdditionalEntries.Select(kvp => kvp.Key).ToList();
+        public ICollection<object?> Values => AdditionalEntries.Select(kvp => (object?)kvp.Value.Value).ToList();
+        public int Count => AdditionalEntries.Count();
+        public bool IsReadOnly => false;
+
+        public bool Contains(KeyValuePair<string, object?> item) => ContainsKey(item.Key);
+
+        public void CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex)
+        {
+            foreach (var kvp in this)
+            {
+                array[arrayIndex++] = kvp;
+            }
+        }
+
+        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() =>
+            AdditionalEntries.Select(kvp => new KeyValuePair<string, object?>(kvp.Key, kvp.Value.Value)).GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool Remove(string key) => throw new NotSupportedException("Additional properties cannot be removed through the extension-data view.");
+        public bool Remove(KeyValuePair<string, object?> item) => throw new NotSupportedException("Additional properties cannot be removed through the extension-data view.");
+        public void Clear() => throw new NotSupportedException("Additional properties cannot be cleared through the extension-data view.");
     }
 }

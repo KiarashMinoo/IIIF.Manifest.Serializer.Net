@@ -43,7 +43,7 @@ public class ExtensionAttributeTests
     public void Georeference_Should_RoundTripThroughManifestJson()
     {
         var manifest = new Manifest("https://example.org/manifest", new Label("Georeferenced Map"));
-        manifest.SetTransformation(new PolynomialTransformation(new PolynomialTransformationOption().AddOption(1.0)));
+        manifest.SetTransformation(new ThinPlateSplineTransformation());
 
         var feature = new Feature("https://example.org/feature/1")
             .SetProperties(new FeatureProperties().SetResourceCoords([100.0, 200.0]));
@@ -53,7 +53,7 @@ public class ExtensionAttributeTests
         var deserialized = JsonConvert.DeserializeObject<Manifest>(json)!;
 
         deserialized.Transformation.Should().NotBeNull();
-        deserialized.Transformation!.Type.Should().Be(TransformationType.Polynomial);
+        deserialized.Transformation!.Type.Value.Should().Be("thinPlateSpline");
 
         deserialized.NavPlace!.Features.Single().Properties!.ResourceCoords.Should().BeEquivalentTo([100.0, 200.0]);
     }
@@ -87,11 +87,14 @@ public class ExtensionAttributeTests
     [InlineData(typeof(TextGranularityExtensions), "TextGranularity", typeof(TextGranularityExtensionAttribute))]
     public void ExtensionProperty_Should_CarryItsVersionAttribute(System.Type extensionClass, string memberName, System.Type expectedAttribute)
     {
-        var hasAttribute = extensionClass
-            .GetMembers(BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)
+        // C# extension members compile into compiler-synthesized nested types rather than plain
+        // static members directly on the declaring class, so search the whole declaring
+        // assembly for any member (in any type) whose name matches and carries the attribute.
+        var hasAttribute = extensionClass.Assembly.GetTypes()
+            .SelectMany(t => t.GetMembers(BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance))
             .Where(m => m.Name.Contains(memberName))
             .Any(m => m.GetCustomAttributes(expectedAttribute, false).Length > 0);
 
-        hasAttribute.Should().BeTrue($"{extensionClass.Name}.{memberName} should carry {expectedAttribute.Name}");
+        hasAttribute.Should().BeTrue($"a member named '{memberName}' somewhere in {extensionClass.Assembly.GetName().Name} should carry {expectedAttribute.Name}");
     }
 }
