@@ -3,30 +3,30 @@
 
 |||
 |:---|:---|
-| Generated on: | 7/11/2026 - 11:53:23 AM |
-| Coverage date: | 7/11/2026 - 11:52:22 AM |
+| Generated on: | 7/11/2026 - 1:50:40 PM |
+| Coverage date: | 7/11/2026 - 1:50:30 PM |
 | Parser: | Cobertura |
 | Assemblies: | 4 |
 | Classes: | 156 |
 | Files: | 155 |
-| **Line coverage:** | 72.3% (2726 of 3766) |
-| Covered lines: | 2726 |
-| Uncovered lines: | 1040 |
-| Coverable lines: | 3766 |
-| Total lines: | 9705 |
-| **Branch coverage:** | 69.5% (784 of 1128) |
-| Covered branches: | 784 |
-| Total branches: | 1128 |
+| **Line coverage:** | 72.5% (2751 of 3794) |
+| Covered lines: | 2751 |
+| Uncovered lines: | 1043 |
+| Coverable lines: | 3794 |
+| Total lines: | 9796 |
+| **Branch coverage:** | 69.8% (816 of 1168) |
+| Covered branches: | 816 |
+| Total branches: | 1168 |
 | **Method coverage:** | [Feature is only available for sponsors](https://reportgenerator.io/pro) |
 
 </details>
 
 ## Coverage
-<details><summary>IIIF.Manifest.Serializer.Net - 71.5%</summary>
+<details><summary>IIIF.Manifest.Serializer.Net - 71.6%</summary>
 
 |**Name**|**Line**|**Branch**|
 |:---|---:|---:|
-|**IIIF.Manifest.Serializer.Net**|**71.5%**|**68.5%**|
+|**IIIF.Manifest.Serializer.Net**|**71.6%**|**68.9%**|
 |IIIF.Manifests.Serializer.Attributes.AuthAPIAttribute|100%||
 |IIIF.Manifests.Serializer.Attributes.ContentStateAPIAttribute|100%||
 |IIIF.Manifests.Serializer.Attributes.DiscoveryAPIAttribute|100%||
@@ -45,7 +45,7 @@
 |IIIF.Manifests.Serializer.Helpers.ManifestHelper|0%|0%|
 |IIIF.Manifests.Serializer.IIIFJsonContractResolver|100%|75%|
 |IIIF.Manifests.Serializer.IiifPresentationVersionDetector|84.6%|78.5%|
-|IIIF.Manifests.Serializer.IiifSerializer|94.5%|76%|
+|IIIF.Manifests.Serializer.IiifSerializer|94.5%|77%|
 |IIIF.Manifests.Serializer.IiifSerializerOptions|100%||
 |IIIF.Manifests.Serializer.Nodes.AnnotationList|50%|100%|
 |IIIF.Manifests.Serializer.Nodes.Canvas|74.6%|80.7%|
@@ -56,10 +56,10 @@
 |IIIF.Manifests.Serializer.Nodes.Contents.Audio.Audio|100%||
 |IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource.AudioResource|100%||
 |IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentState|69.2%|50%|
-|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateCodec|75%|58.3%|
-|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateFragmentS<br/>elector|100%|50%|
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateCodec|82.1%|58.3%|
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStatePointSele<br/>ctor|100%|50%|
 |IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateTarget|100%||
-|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateTargetJso<br/>nConverter|90%|72.5%|
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateTargetJso<br/>nConverter|90%|67.5%|
 |IIIF.Manifests.Serializer.Nodes.Contents.Embedded.EmbeddedContent|0%||
 |IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource.EmbeddedContentR<br/>esource|100%||
 |IIIF.Manifests.Serializer.Nodes.Contents.Image.Image|100%||
@@ -77,7 +77,7 @@
 |IIIF.Manifests.Serializer.Nodes.Structure|50%|47.3%|
 |IIIF.Manifests.Serializer.Properties.AccompanyingCanvas|100%||
 |IIIF.Manifests.Serializer.Properties.Attribution|100%||
-|IIIF.Manifests.Serializer.Properties.Behavior|21%||
+|IIIF.Manifests.Serializer.Properties.Behavior|36.8%||
 |IIIF.Manifests.Serializer.Properties.Context|0%||
 |IIIF.Manifests.Serializer.Properties.Description|25%||
 |IIIF.Manifests.Serializer.Properties.Homepage|100%||
@@ -96,7 +96,6 @@
 |IIIF.Manifests.Serializer.Properties.PartOf|100%||
 |IIIF.Manifests.Serializer.Properties.Profile|0%||
 |IIIF.Manifests.Serializer.Properties.Provider|100%||
-|IIIF.Manifests.Serializer.Properties.Related|0%||
 |IIIF.Manifests.Serializer.Properties.Rendering|83.3%||
 |IIIF.Manifests.Serializer.Properties.RequiredStatement|100%|50%|
 |IIIF.Manifests.Serializer.Properties.ResourceType|15.6%||
@@ -140,11 +139,12 @@
 |IIIF.Manifests.Serializer.Properties.ViewingHint|37.5%||
 |IIIF.Manifests.Serializer.Properties.Within|28.5%||
 |IIIF.Manifests.Serializer.Shared.BaseItem`1|52.7%|75%|
-|IIIF.Manifests.Serializer.Shared.BaseNode`1|59.4%|91.3%|
+|IIIF.Manifests.Serializer.Shared.BaseNode`1|58.6%|91.3%|
 |IIIF.Manifests.Serializer.Shared.Content.BaseContent`1|37.5%|50%|
 |IIIF.Manifests.Serializer.Shared.Content.BaseContent`2|100%||
 |IIIF.Manifests.Serializer.Shared.Content.Resources.BaseResource|66.6%||
-|IIIF.Manifests.Serializer.Shared.Content.Resources.BaseResource`1|100%|50%|
+|IIIF.Manifests.Serializer.Shared.Content.Resources.BaseResource`1|70%|50%|
+|IIIF.Manifests.Serializer.Shared.Content.Resources.BaseResourceJsonConverte<br/>r|85.2%|77%|
 |IIIF.Manifests.Serializer.Shared.Exceptions.JsonNodeRequiredException`1|0%||
 |IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJArray`1|0%||
 |IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJObject`1|0%||

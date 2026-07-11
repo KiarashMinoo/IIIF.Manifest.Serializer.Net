@@ -34,11 +34,9 @@ public class GeoreferenceAnnotationTests
         obj["type"]!.ToString().Should().Be("Annotation");
         obj["motivation"]!.ToString().Should().Be("georeferencing");
         obj["target"]!.ToString().Should().Be("https://example.org/canvas.json");
-        // NavPlace (the body FeatureCollection) still uses BaseItem's @id/@type shape - fixing
-        // that to match the spec's unprefixed body example is a NavPlace-package-wide concern
-        // (its own default context/id-type convention), out of scope for this milestone's task
-        // of modeling the Annotation wrapper itself.
-        obj["body"]!["@type"]!.ToString().Should().Be("FeatureCollection");
+        // NavPlace (the body FeatureCollection) now uses unprefixed id/type (round 2, Milestone 23),
+        // matching the spec's own Georeference Annotation body example.
+        obj["body"]!["type"]!.ToString().Should().Be("FeatureCollection");
         obj["@context"]!.Should().HaveCount(2);
     }
 

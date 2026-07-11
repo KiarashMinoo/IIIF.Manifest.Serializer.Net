@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
@@ -114,17 +115,30 @@ namespace IIIF.Manifests.Serializer.Nodes
             private set => SetElementValue(value);
         }
 
-        [PresentationAPI("2.0")]
+        /// <summary>
+        /// Reuses <see cref="AnnotationTarget"/> since "start" allows the same shapes an
+        /// Annotation's target does (spec: a plain reference, or a SpecificResource+selector for
+        /// e.g. starting mid-recording at a given time - cookbook recipe 0015-start).
+        /// </summary>
+        [PresentationAPI("3.0", Notes = "3.0-only; 2.x used a Sequence's startCanvas instead (a plain Canvas reference).")]
         [JsonProperty(StartJName)]
-        public string? Start
+        public AnnotationTarget? Start
         {
             get => GetElementValue(a => a.Start);
             private set => SetElementValue(value);
         }
 
-        [PresentationAPI("2.0")]
+        /// <summary>
+        /// A full Canvas shown before this Manifest's own content is available/rendered. 3.0-only
+        /// - despite the pre-existing (and wrong) "2.0" tag this property previously carried, 2.x
+        /// has no placeholderCanvas concept at all. See also <see cref="Canvas.PlaceholderCanvas"/>,
+        /// which is what cookbook recipe 0013-placeholderCanvas actually exercises (this
+        /// Manifest-level property has the identical shape per spec §5.4.2, just not covered by
+        /// a recipe).
+        /// </summary>
+        [PresentationAPI("3.0")]
         [JsonProperty(PlaceholderCanvasJName)]
-        public string? PlaceholderCanvas
+        public Canvas? PlaceholderCanvas
         {
             get => GetElementValue(a => a.PlaceholderCanvas);
             private set => SetElementValue(value);
@@ -150,13 +164,13 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        public Manifest SetStart(string start)
+        public Manifest SetStart(AnnotationTarget start)
         {
             Start = start;
             return this;
         }
 
-        public Manifest SetPlaceholderCanvas(string placeholderCanvas)
+        public Manifest SetPlaceholderCanvas(Canvas placeholderCanvas)
         {
             PlaceholderCanvas = placeholderCanvas;
             return this;
@@ -226,7 +240,7 @@ namespace IIIF.Manifests.Serializer.Nodes
 
             if (Start is not null)
             {
-                primary.SetStartCanvas(new StartCanvas(Start));
+                primary.SetStartCanvas(new StartCanvas(Start.SourceId));
             }
 
             return [primary, .. AdditionalSequences];

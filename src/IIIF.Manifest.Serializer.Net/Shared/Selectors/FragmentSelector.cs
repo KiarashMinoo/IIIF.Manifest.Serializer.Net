@@ -1,15 +1,13 @@
-using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
+namespace IIIF.Manifests.Serializer.Shared.Selectors;
 
 /// <summary>
-/// The Media Fragments region selector a Content State 1.0 target uses to point at a specific
-/// region of a Canvas/image (the only selector shape this SDK models for Content State targets).
+/// A W3C "FragmentSelector" conforming to the Media Fragments spec - selects a spatial region
+/// (<c>xywh=x,y,w,h</c>) or temporal range (<c>t=start,end</c>) of the targeted resource.
 /// </summary>
-[ContentStateAPI("1.0")]
-public class ContentStateFragmentSelector : TrackableObject<ContentStateFragmentSelector>
+public class FragmentSelector : TrackableObject<FragmentSelector>, ISelector
 {
     public const string TypeJName = "type";
     public const string ConformsToJName = "conformsTo";
@@ -38,13 +36,13 @@ public class ContentStateFragmentSelector : TrackableObject<ContentStateFragment
     }
 
     [JsonConstructor]
-    public ContentStateFragmentSelector(string value)
+    public FragmentSelector(string value)
     {
         Type = "FragmentSelector";
         ConformsTo = MediaFragmentConformsTo;
         Value = value;
     }
 
-    public static ContentStateFragmentSelector ForRegion(int x, int y, int width, int height) =>
+    public static FragmentSelector ForRegion(int x, int y, int width, int height) =>
         new($"xywh={x},{y},{width},{height}");
 }

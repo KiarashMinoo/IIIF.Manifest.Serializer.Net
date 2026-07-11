@@ -77,6 +77,11 @@ public class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
     {
         var token = JToken.Load(reader);
 
+        if (token.Type == JTokenType.Null)
+        {
+            return null;
+        }
+
         if (token.Type == JTokenType.String)
         {
             return new GeoreferenceTarget(token.ToString());
@@ -104,7 +109,7 @@ public class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
 
     private static GeoreferenceTarget ReadResource(JToken? token)
     {
-        if (token is null)
+        if (token is null || token.Type == JTokenType.Null)
         {
             throw new JsonSerializationException("Georeference Annotation target is missing a resource reference.");
         }

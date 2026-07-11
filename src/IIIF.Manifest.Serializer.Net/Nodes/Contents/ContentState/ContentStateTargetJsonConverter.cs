@@ -20,9 +20,13 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
             return;
         }
 
-        if (value.Selector is null && value.PartOfId is null)
+        // Only a PointSelector requires the SpecificResource wrapper (spec §5.2) - partOf lives on
+        // the resource reference itself either way (spec §5.1's own region-targeting example puts
+        // partOf directly on the bare target, and §5.2's example puts it on the SpecificResource's
+        // "source", never on the wrapper).
+        if (value.PointSelector is null)
         {
-            WriteResourceReference(writer, value.Id, value.ResourceType, null);
+            WriteResourceReference(writer, value.Id, value.ResourceType, (value.PartOfId, value.PartOfType));
             return;
         }
 
@@ -31,17 +35,17 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
         writer.WriteValue("SpecificResource");
         writer.WritePropertyName("source");
         WriteResourceReference(writer, value.Id, value.ResourceType, (value.PartOfId, value.PartOfType));
-        if (value.Selector is not null)
+        if (value.PointSelector is not null)
         {
             writer.WritePropertyName("selector");
-            serializer.Serialize(writer, value.Selector);
+            serializer.Serialize(writer, value.PointSelector);
         }
         writer.WriteEndObject();
     }
 
     private static void WriteResourceReference(JsonWriter writer, string id, string? resourceType, (string? Id, string? Type)? partOf)
     {
-        if (resourceType is null && partOf is null)
+        if (resourceType is null && partOf?.Id is null)
         {
             writer.WriteValue(id);
             return;
@@ -76,6 +80,11 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
     {
         var token = JToken.Load(reader);
 
+        if (token.Type == JTokenType.Null)
+        {
+            return null;
+        }
+
         if (token.Type == JTokenType.String)
         {
             return new ContentStateTarget(token.ToString());
@@ -87,7 +96,7 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
             var target = ReadResourceReference(obj["source"]);
             if (obj["selector"] is { } selectorToken)
             {
-                target.SetSelector(selectorToken.ToObject<ContentStateFragmentSelector>(serializer)!);
+                target.SetPointSelector(selectorToken.ToObject<ContentStatePointSelector>(serializer)!);
             }
 
             return target;
@@ -98,7 +107,7 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
 
     private static ContentStateTarget ReadResourceReference(JToken? token)
     {
-        if (token is null)
+        if (token is null || token.Type == JTokenType.Null)
         {
             throw new JsonSerializationException("Content State target is missing a resource reference.");
         }

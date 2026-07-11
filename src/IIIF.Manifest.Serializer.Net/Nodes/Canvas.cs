@@ -28,6 +28,7 @@ namespace IIIF.Manifests.Serializer.Nodes
         public const string OtherContentsJName = "otherContent";
         public const string DurationJName = "duration";
         public const string AnnotationsJName = "annotations";
+        public const string PlaceholderCanvasJName = "placeholderCanvas";
 
         [PresentationAPI("2.0")]
         [JsonProperty(Constants.HeightJName)]
@@ -105,11 +106,30 @@ namespace IIIF.Manifests.Serializer.Nodes
             private set => Annotations = (value ?? []).Select(ToAnnotationPageReference).ToList();
         }
 
+        /// <summary>
+        /// A full Canvas shown before this Canvas's own content is available/rendered - e.g. a
+        /// poster frame for a video (cookbook recipe 0013-placeholderCanvas). 3.0-only; there is
+        /// no 2.x equivalent shape.
+        /// </summary>
+        [PresentationAPI("3.0")]
+        [JsonProperty(PlaceholderCanvasJName)]
+        public Canvas? PlaceholderCanvas
+        {
+            get => GetElementValue(x => x.PlaceholderCanvas);
+            private set => SetElementValue(value);
+        }
+
         public Canvas(string id, Label label, int height, int width) : base(id, "sc:Canvas")
         {
             AddLabel(label);
             Height = height;
             Width = width;
+        }
+
+        public Canvas SetPlaceholderCanvas(Canvas placeholderCanvas)
+        {
+            PlaceholderCanvas = placeholderCanvas;
+            return this;
         }
 
         [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with an ImageResource body and use AddAnnotation instead.", error: true)]
@@ -197,9 +217,9 @@ namespace IIIF.Manifests.Serializer.Nodes
             }
         }
 
-        private static Image ToImage(Annotation annotation) => new(annotation.Id, (ImageResource)annotation.Body, annotation.Target);
-        private static Audio ToAudio(Annotation annotation) => new(annotation.Id, (AudioResource)annotation.Body, annotation.Target);
-        private static Video ToVideo(Annotation annotation) => new(annotation.Id, (VideoResource)annotation.Body, annotation.Target);
+        private static Image ToImage(Annotation annotation) => new(annotation.Id, (ImageResource)annotation.Body, annotation.Target.SourceId);
+        private static Audio ToAudio(Annotation annotation) => new(annotation.Id, (AudioResource)annotation.Body, annotation.Target.SourceId);
+        private static Video ToVideo(Annotation annotation) => new(annotation.Id, (VideoResource)annotation.Body, annotation.Target.SourceId);
         private static OtherContent ToOtherContent(AnnotationPage page) => new(page.Id);
 
         private static Annotation ToAnnotation(Image image) => new(image.Id, image.Resource, image.On);

@@ -729,18 +729,275 @@ examples/Cookbook, tests):
   Lowest-covered new areas are mostly `[JsonConstructor]`-only classes' rarely-hit branches
   (`SearchAnnotationCollectionRef`, `AuthLogoutService2`) rather than untested surface area.
 
-## Status: all 19 milestones (0-19) complete.
+### Status of Milestones 0-19: complete (superseded by the final status at the end of this document)
 
-Summary of what changed since §§0-8 (the Presentation API core versioning work): the
-`github.com/IIIF/awesome-iiif` comparison in §10 found the *surrounding* standards (Auth, Search,
-Discovery, Content State, Image, plus the navPlace/Georeference/Text Granularity extensions) were
-materially incomplete or, in a few cases, actively wrong (missing `type` on write, a fabricated
-enum value, a conflated collection/page model). Milestones 9-18 closed each of those gaps with the
-same discipline as the core work: 3.0-native-first modeling, `[JsonIgnore]`d computed views where a
-type spans conventions, tests landing with every change, and — critically — several of the
-"cross-cutting bugs" found in Milestone 9 turned out to have siblings only surfaced by later
-milestones exercising the same code paths differently (the `@context` mis-rename found while fixing
-Milestone 9's own `@type` bug; the `ServiceJsonConverter` recursion-guard gap found only once Auth
-2.0 introduced genuinely nested polymorphic services in Milestone 11). No regressions were
-introduced in any of the 9 milestones — every existing test continued passing throughout, and each
-milestone's own new tests are additive.
+## 11. Round 2: re-comparison against awesome-iiif
+
+A second deep pass (research delegated to an agent, prompted with round 1's own findings so it
+wouldn't re-report them) re-checked the same 6 APIs + 3 extensions against the current code,
+independently sanity-checked round 1's explicitly-flagged "Known follow-up, not fixed this pass"
+notes (legitimate round-2 candidates by definition), and confirmed no new standards/extensions
+exist in awesome-iiif's Standards section or `IIIF/api`'s extension registry beyond what round 1
+already covered. Found 5 concrete gaps, tracked as Milestones 20-24:
+
+### Milestone 20: DONE — fix Behavior leaking into legacy V2.x JSON
+
+`BaseNode.Behavior` was missing the `[JsonIgnore]` its Milestone-8 siblings (`Rights`/
+`RequiredStatement`/`PartOf`) got — flagged as a suspected risk in §8's own follow-up note, now
+confirmed by direct inspection: `IiifSerializer`'s 2.x write path is plain
+`JsonConvert.SerializeObject(node, TrackableObject.JsonSerializerSettings)`, which walks the whole
+object graph via reflection, so any `Manifest`/`Collection`/`Canvas` (any `BaseNode`) with
+`Behavior` set leaked a spurious `"behavior"` key into 2.0/2.1 JSON that the 2.x spec doesn't define
+at all.
+
+Fixed by adding `[JsonIgnore]`, matching the established pattern exactly. This also surfaced a
+second, narrower pre-existing gap while fixing the first: `WriteV3Canvas`/`WriteV3Range` (the V3
+Canvas/Structure hand-rolled writers) never wrote `"behavior"` at all, unlike `WriteV3Manifest`/
+`WriteV3Collection` which already did inline. Factored the duplicated Manifest/Collection
+inline logic into shared `WriteV3Behavior`/`ReadV3Behavior` helpers (mirroring the existing
+`WriteV3RightsRequiredStatementPartOf` pattern) and wired them into all four `BaseNode` writers/readers
+(Manifest, Collection, Canvas, Range) uniformly, so Canvas/Range now support `behavior` in V3 output
+for the first time.
+
+Tests: `BehaviorLegacyLeakTests.cs` (6 new — Manifest/Collection no-leak-into-V2.1, Canvas no-leak
+via plain `JsonConvert`, and full V3 round trips for Manifest/Canvas/Structure). Full suite: **226
+tests, all passing**, 0 build warnings/errors introduced.
+
+### Milestone 21: DONE — Content State PointSelector, plus a real correction to Milestone 10
+
+Round 2's research flagged a missing `PointSelector` (AV deep-linking, spec §5.2). Fetching the
+actual spec source (`source/content-state/1.0/index.md`) to model it precisely turned up something
+bigger: **Milestone 10's `ContentStateFragmentSelector` doesn't correspond to anything in the real
+spec.** `grep`-ing the entire spec document for `FragmentSelector` returns zero matches — Content
+State 1.0's only documented region-targeting pattern (§5.1) is a plain Media Fragments suffix on the
+target `id` itself (`"id": ".../canvas7#xywh=1000,2000,1000,2000"`), with `partOf` sitting directly
+on that same object; `SpecificResource` only appears once in the whole spec, for the PointSelector
+case. So Milestone 10 invented a wrapper shape (`{"type":"SpecificResource","source":...,
+"selector":{"type":"FragmentSelector",...}}`) that no real Content State 1.0 consumer would produce
+or expect - the same class of defect as finding 2's original complaint about `ContentStateService`.
+
+Fixed by:
+- Deleting `ContentStateFragmentSelector.cs` outright (no external consumers existed yet - added and
+  removed within the same session, never released).
+- Adding `ContentStatePointSelector` (new, spec-accurate: `{"type":"PointSelector","t":14.5}`) and
+  renaming `ContentStateTarget.Selector` → `PointSelector` of that type.
+- Fixing `ContentStateTargetJsonConverter`: the SpecificResource wrapper is now triggered *only* by
+  `PointSelector` being set (not by `PartOfId`, which the old code incorrectly also treated as a
+  wrapper trigger) - `partOf` now always lives on the resource-reference object itself, matching
+  both of the spec's own examples (§5.1's bare target, §5.2's SpecificResource `source`), never on
+  the wrapper.
+- Region-targeting needs no new code at all - the existing bare-URI/typed-reference constructor
+  already covers it; callers just include the `#xywh=...` fragment in the `id` they pass.
+
+Tests: rewrote the affected cases in `ContentStateTests.cs` to match the corrected shapes (region
+via fragment-on-id + direct `partOf`, PointSelector via the SpecificResource wrapper, codec round
+trip using a time offset instead of a region). Full suite: **227 tests, all passing**, 0 build
+warnings/errors introduced.
+
+### Milestone 22: DONE — polymorphic dispatch for Annotation.Body
+
+Added `BaseResourceJsonConverter` (`Shared/Content/Resources/`), attached to the `IBaseResource`
+interface, dispatching on `@type`/`type` to `ImageResource`/`AudioResource`/`VideoResource`/
+`EmbeddedContentResource`, falling back to plain `BaseResource` for anything unrecognized (e.g. a
+`SegmentResource.Full` reference). Needed the identical recursion-guard `LeafContractResolver`
+pattern Milestone 9 built for `ServiceJsonConverter` (suppress the converter for concrete leaf
+types, keep it active for the bare `IBaseResource` interface type) — copied deliberately rather than
+reinvented, since that exact bug (and fix) was already worked out and tested.
+
+This closes the "Known follow-up" flagged in Milestone 13 and re-confirmed by round 2's independent
+check: a standalone `Annotation` (e.g. a Content Search 2.0 result in `SearchResponse.Items`)
+previously threw trying to instantiate the `IBaseResource` interface directly when round-tripped
+through plain `JsonConvert`/`TrackableObject.Parse` rather than `IiifSerializer`'s hand-built V3
+Canvas reader. `SearchResponseTests.cs`'s hit-highlighting test, which had explicitly worked around
+this by not exercising `Items`, now does.
+
+Building this surfaced one more independent, real bug: `EmbeddedContentResource`'s constructor
+passed its own type-string literal as the *id* parameter (via `BaseResource`'s single-arg overload)
+and misspelled it (`"cnt:ContextAsText"` instead of `"cnt:ContentAsText"`) - so the resource's
+`@type` was never actually being set at all, and its `@id` was garbage. Fixed to pass an empty id
+(matching the spec convention that an embedded literal text body has no dereferenceable `@id`) and
+the correctly-spelled type.
+
+Tests: `AnnotationBodyDispatchTests.cs` (5 new — Image/Audio/Video/EmbeddedContent body round trips
+through plain `JsonConvert`/`TrackableObject.Parse`, plus a direct regression test confirming
+`SearchResponse.Items` now round-trips too); `SearchResponseTests.cs` strengthened to actually
+exercise `Items` in its round-trip test instead of working around the gap. Full suite: **232 tests,
+all passing**, 0 build warnings/errors introduced.
+
+### Milestone 23: DONE — switch navPlace Feature/NavPlace to unprefixed id/type
+
+`extensions/IIIF.Manifest.Serializer.Net.NavPlace/{Feature.cs,NavPlace.cs}` inherited `BaseItem`
+(`@id`/`@type`), flagged in Milestone 17's "Known follow-up" and re-confirmed by round 2's
+independent check. Verified directly against the spec source
+(`source/extension/navplace/index.md`): every example uses unprefixed `id`/`type` throughout,
+confirming navPlace (like Search 2.0/Discovery 1.0/Auth 2.0, fixed the same way in Milestone 9)
+postdates Presentation 3.0 with no 2.x form. Switched both classes from `BaseItem<T>` to
+`UnprefixedBaseItem<T>` — a pure base-class swap requiring no call-site changes, since
+`UnprefixedBaseItem`'s constructor overloads were deliberately built (Milestone 9) to mirror
+`BaseItem`'s exactly. This also incidentally fixes `NavPlace`/`Feature`'s default `@context` (was
+Presentation 2.x's URI via `BaseItem.DefaultContext`; now Presentation 3.0's, matching
+`UnprefixedBaseItem.DefaultContext`) — spotted during round 2's own research pass while comparing
+output against the spec's Georeference full-example.
+
+Updated `GeoreferenceAnnotationTests.cs` (Milestone 17), which had a comment explicitly noting the
+old `@type`-prefixed shape as a deferred limitation — now asserts the corrected unprefixed shape.
+
+**Known follow-up, not fixed this pass**: embedded `Feature`/`NavPlace` instances still always write
+some `@context` value (falling back to the class default when unset), whereas the spec's own
+examples show no `@context` at all on an embedded FeatureCollection/Feature (only the top-level
+Manifest carries `@context`, as a combined array). Suppressing `@context` entirely for the
+common embedded case would need a per-class override hook `UnprefixedBaseItem` doesn't currently
+expose; out of scope for a targeted id/type-shape fix.
+
+Tests: `NavPlaceUnprefixedShapeTests.cs` (3 new — `NavPlace`/`Feature` write unprefixed id/type, full
+round trip including nested `Geometry`/`FeatureProperties`). Full suite: **235 tests, all passing**,
+0 build warnings/errors introduced.
+
+### Milestone 24: DONE — remove dead Related.cs + final verification sweep
+
+Deleted `Properties/Related.cs` (a `Related : FormattableItem<Related>` value type) — confirmed
+unreferenced: `BaseNode.Related` has always been a plain computed `string?` view over `Homepage`
+(see §8), never touching this type. Flagged as dead code in §8's own follow-up note and
+re-confirmed by round 2's independent check; same class of pre-session/pre-round leftover as
+`AuthService.cs` (Milestone 18).
+
+Final checks across the whole solution (all 6 projects: core library, 3 extension packages,
+examples/Cookbook, tests):
+
+- `dotnet build` (full solution, clean): **0 warnings, 0 errors**.
+- `dotnet test`: **235 tests, all passing**.
+- Coverage (coverlet + ReportGenerator): overall line coverage **72.5%** (2751/3794 lines), branch
+  coverage 69.8% — up slightly from Milestone 19's 72.3%, consistent with round 2 adding a modest
+  amount of new, well-tested code (`ContentStatePointSelector`, `BaseResourceJsonConverter`) without
+  materially changing the codebase's size.
+
+Summary of what changed across both rounds: round 1 (§§0-9) reshaped the Presentation API core
+around 3.0-native storage with computed legacy views for 2.x compatibility, then (§10) found the
+*surrounding* standards (Auth, Search, Discovery, Content State, Image, plus the navPlace/
+Georeference/Text Granularity extensions) materially incomplete or, in a few cases, actively wrong
+(missing `type` on write, a fabricated enum value, a conflated collection/page model) and closed
+each gap with the same discipline: 3.0-native-first modeling, `[JsonIgnore]`d computed views where a
+type spans conventions, tests landing with every change. Round 2 (§11) re-verified round 1's own
+work by fetching primary spec sources directly rather than trusting memory, which caught real
+defects invented *during* round 1 itself — most notably Milestone 10's `ContentStateFragmentSelector`,
+a wrapper shape that appears nowhere in the actual Content State 1.0 spec (fixed in Milestone 21) —
+alongside independently-flagged "Known follow-up" items that were legitimate round-2 candidates by
+round 1's own admission (Behavior's legacy-JSON leak, Annotation.Body's missing polymorphic
+dispatch, navPlace's `@id`/`@type` shape). No regressions were introduced across either round —
+every existing test kept passing throughout, and each milestone's own new tests are additive. The
+recurring lesson across both rounds: several "cross-cutting" fixes turned out to have siblings only
+surfaced once a *later* milestone exercised the same code path differently (the `@context`
+mis-rename found while fixing Milestone 9's own `@type` bug; the `ServiceJsonConverter`
+recursion-guard gap found only once Auth 2.0 introduced genuinely nested polymorphic services in
+Milestone 11; `BaseResourceJsonConverter` needing the identical recursion-guard pattern in
+Milestone 22) — a reason to keep verifying against primary sources and real round trips rather than
+declaring a section "done" from reasoning alone.
+
+## Round 3: IIIF Cookbook recipe fidelity (Milestones 1-10, this round's own numbering)
+
+Scope: implement every real recipe in `github.com/IIIF/cookbook-recipes` (73 folders; 2 -
+`0231-transcript-meta-recipe` and `0466-link-for-loading-manifest` - are prose-only with no
+manifest JSON, leaving 71 real recipes) as a faithful C# builder in
+`examples/IIIF.Manifest.Serializer.Net.Cookbook/CookbookCatalog.cs`. `iiif.io/demos/` was checked
+twice (once on request) and confirmed to be an external-links showcase page with no manifest
+content of its own - not a source for examples.
+
+**Groups A-H (Milestones 1-8): new SDK modeling required by at least one recipe**, found by
+fetching every recipe's real JSON directly (not just its prose) and diffing against the SDK's
+existing capability:
+
+- **A** - `Annotation.Target`/`Manifest.Start` generalized from a bare string to a polymorphic
+  `AnnotationTarget` (bare URI, typed reference, or SpecificResource+selector), plus four selector
+  types (`FragmentSelector`, `PointSelector`, `ImageApiSelector`, `SvgSelector`) and a
+  `SpecificResource` body wrapper. Implicit `string`→`AnnotationTarget` conversion kept every
+  pre-existing call site compiling. Found and fixed two real Newtonsoft bugs here: a
+  `[JsonConstructor]` parameter binding by wire-name to the wrong (plural) contract, and an
+  unguarded null-token cast in the target converters (proactively fixed in three sibling
+  converters, not just the one that failed).
+- **B** - `TextualBody` (W3C inline text body: `type`/`value`/`format`/`language`, no `id`),
+  distinct from the legacy `EmbeddedContentResource` (`cnt:ContentAsText`).
+- **C** - `Choice` body type (`type:"Choice"`, `items:[...]`, always an array even with one item -
+  given its own `ChoiceJsonConverter` rather than the collapsing `ObjectArrayJsonConverter` used
+  elsewhere). Required by both language alternatives (0346) and format/quality alternatives (0434) -
+  same shape, different motivations.
+- **D** - `Annotation.TimeMode` (trim/scale/loop) - a genuine spec property with no recipe
+  exercising it directly, added anyway since "compare against the spec" was the mandate for the
+  awesome-iiif pass and applies equally here.
+- **E** - `Canvas.PlaceholderCanvas` (a full embedded Canvas). Found `Manifest.PlaceholderCanvas`
+  already existed but was modeled as a bare string tagged `2.0` - both wrong (3.0-only, and always
+  a full Canvas object per spec) - fixed alongside adding the Canvas-level property.
+- **F** - `AnnotationCollection` (W3C paged list: `total`/`first`/`last`) - a standalone top-level
+  document type, distinct from both the IIIF `Collection` resource and `AnnotationPage`. Given its
+  own `Serialize`/`DeserializeAnnotationCollection` entry points mirroring `Collection`'s.
+- **G** - `AnnotationPage.PartOf`/`Next`/`Prev` (paging linkage back to an `AnnotationCollection`) -
+  `PartOf` already existed generically on every `BaseNode<T>` but was never wired into the
+  hand-rolled Canvas writer/reader for `AnnotationPage` references specifically.
+- **H** - navPlace's `Feature` made to implement `IBaseResource` so a bare GeoJSON Feature can
+  stand in as an Annotation body (0139) - distinct from navPlace's usual Manifest/Canvas-level
+  property. Since core cannot reference the navPlace extension assembly, added a
+  `ResourceTypeRegistry` (extension types self-register their type-name from a static constructor)
+  that both `BaseResourceJsonConverter` and `IiifSerializer`'s hand-rolled reader consult as a
+  fallback.
+- **Group I** (found only while writing the catalog, not in the original gap analysis) -
+  `Annotation.Body` also needed array support (multiple sibling bodies, not `Choice`'s mutually
+  exclusive alternatives - recipes 0022/0103/0258/0377), added via the identical
+  `Bodies`+computed-`Body` pattern already used for `Targets`/`Target`.
+
+**Milestone 9: the 71-recipe catalog itself**, built from real JSON fetched directly (six parallel
+research passes covering all 71 recipes, cross-checked against a handful fetched by hand earlier in
+the session) rather than from recipe prose alone. Writing the catalog surfaced a second wave of
+gaps - all in `IiifSerializer`'s hand-rolled V3 reader/writer, not in the data model itself - found
+by literally dumping the SDK's own V3 output for several recipes and diffing against the real JSON,
+the same discipline as round 2:
+
+- `Summary` (3.0's rename of 2.x `description`) **did not exist as a class member at all** -
+  discovered only because recipe 0006 needed it. Added as the 3.0-native storage on `BaseNode<T>`,
+  with `Description` becoming a computed legacy view (a straight rename, unlike
+  `Attribution`→`RequiredStatement`'s restructuring).
+- `Metadata`, `Thumbnail`, `Rendering`, `Homepage`, `SeeAlso`, `Provider` were **all completely
+  unwired from `IiifSerializer`** - real properties existed on `BaseNode<T>` and could be set via
+  fluent methods, but the hand-rolled V3 Manifest/Collection/Canvas/Range writer and reader never
+  touched any of them, so every one of these properties was silently dropped on any V3 round trip.
+  Wired generically (`WriteV3NodeExtras`/`ReadV3NodeExtras`) for all four `BaseNode` types;
+  `Provider` wired separately since it's Manifest/Collection-only per spec. `Thumbnail`/`Logo` also
+  gained `Height`/`Width` (`IDimensionSupport`), and `SeeAlso` gained `Profile`/`Label`/`Type`.
+- `Label` **had no per-entry language support at all** (only `Description`/`MetadataValue` did) -
+  discovered when recipes 0006/0010/0011's multi-language labels couldn't be expressed. Added
+  `Label.Language` (inert on `Label`'s own `ValuableItemJsonConverter`, consulted only by
+  `IiifSerializer`'s own language-map-grouping helpers) and taught every `label`-writing call site
+  to group by language instead of dumping everything under `"none"`.
+- An embedded per-resource `service` (e.g. an Image API service on a painting body) wrote with raw
+  `@id`/`@context`/`@type` and collapsed to a bare object instead of an array when there was only
+  one - wrong on both counts per every real recipe with an image service (the vast majority of the
+  catalog). Fixed by rebuilding `service` explicitly in `WriteV3Resource` via a new
+  `IBaseResource.Service` default-interface member (so every existing resource type gets it for
+  free) and a `WriteV3EmbeddedResourceService` variant that strips `@context` - kept distinct from
+  the pre-existing `WriteV3Service` used for `Manifest.Services`, which an existing test asserts
+  *does* keep its own `@context`. The read side had the same bug in the opposite direction: `service`
+  was never read back into the body resource at all.
+- `Canvas.Annotations` (secondary/commenting/tagging AnnotationPages) **always wrote as a bare
+  `{id,type}` stub**, even when the `AnnotationPage` object had items added to it - silently
+  dropping the actual annotation content for roughly a third of the catalog (every recipe with a
+  secondary tagging/commenting/supplementing page: 0019, 0021, 0045, 0074, 0103, 0135, 0139, 0219,
+  0258, 0261, 0266, 0326, 0346, 0377, 0464, and others). Only a couple of recipes (0269, 0306)
+  deliberately use the external-reference form - the rest embed fully. Fixed by having
+  `WriteV3AnnotationPageReference` check whether the page has items and embed
+  (`WriteV3AnnotationPage`-shaped) instead of stubbing when it does; the reader gained the
+  symmetric `items` parsing.
+
+None of these were caught by the existing test suite before this round, because no prior test
+built a Manifest with `Summary`/`Metadata`/`Thumbnail`/etc. and then round-tripped it through
+`IiifSerializer` (as opposed to plain `JsonConvert`) - the gap was invisible until the cookbook
+catalog started exercising exactly that path at scale.
+
+**Milestone 10**: final sweep. Full solution build (6 projects): 0 warnings, 0 errors. Full test
+suite: 329 tests, all passing, including a dedicated round-trip test per new SDK feature and an
+automatic per-catalog-entry round-trip test for all 78 `CookbookCatalog` entries (71 recipe numbers;
+a few recipes with two structurally distinct manifests, or a manifest plus a standalone
+AnnotationCollection/ContentState document, contribute more than one catalog entry). Spot-checked
+several catalog entries' actual `IiifSerializer` output against the real recipe JSON directly
+(not just "does it round-trip without throwing") to catch the `service`/`Canvas.Annotations` gaps
+above - a reminder that a passing round-trip test proves internal consistency, not fidelity to an
+external reference document.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete.

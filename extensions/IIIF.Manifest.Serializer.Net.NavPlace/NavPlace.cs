@@ -6,11 +6,14 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Extensions
 {
     /// <summary>
-    /// Represents a geographic location using GeoJSON-LD for IIIF navPlace extension.
-    /// This is a simplified implementation compatible with Presentation API 2.0.
-    /// Per RFC 7946 and navPlace extension, this is a FeatureCollection containing Features.
+    /// Represents a geographic location using GeoJSON-LD for IIIF navPlace extension - a
+    /// FeatureCollection containing Features (RFC 7946). navPlace postdates Presentation 3.0 (no
+    /// 2.x form), so - like Search 2.0/Discovery 1.0/Auth 2.0 (Milestone 9) - it uses unprefixed
+    /// "id"/"type" rather than BaseItem's "@id"/"@type" (this class is also reused directly as the
+    /// Georeference extension's Annotation body - see <c>GeoreferenceAnnotation</c> - whose own
+    /// spec example likewise shows unprefixed id/type).
     /// </summary>
-    public class NavPlace : BaseItem<NavPlace>
+    public class NavPlace : UnprefixedBaseItem<NavPlace>
     {
         public const string NavPlaceJName = "navPlace";
         public const string FeaturesJName = "features";

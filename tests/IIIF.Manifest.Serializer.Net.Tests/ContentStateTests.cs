@@ -39,34 +39,50 @@ public class ContentStateTests
     }
 
     [Fact]
-    public void ContentState_Should_WriteSpecificResourceWithFragmentSelectorAndPartOf()
+    public void ContentState_Should_WriteRegionAsMediaFragmentSuffixOnId_NotASpecificResource()
     {
-        var target = new ContentStateTarget("https://example.org/manifest/canvas1", "Canvas")
-            .SetSelector(100, 100, 300, 200)
-            .SetPartOf("https://example.org/manifest");
-        var contentState = new ContentState(target).SetId("https://example.org/content-state/1");
+        // Content State 1.0 §5.1 has no SpecificResource/selector form for region-targeting at
+        // all - its own spec example expresses a region as a plain Media Fragments suffix on the
+        // target id, so the bare-string/typed-reference constructor already covers this case.
+        var target = new ContentStateTarget("https://example.org/object1/canvas7#xywh=1000,2000,1000,2000", "Canvas")
+            .SetPartOf("https://example.org/object1/manifest");
+        var contentState = new ContentState(target);
+
+        var obj = JObject.Parse(contentState.Serialize());
+        var targetObj = (JObject)obj["target"]!;
+
+        targetObj["id"]!.ToString().Should().Be("https://example.org/object1/canvas7#xywh=1000,2000,1000,2000");
+        targetObj["type"]!.ToString().Should().Be("Canvas");
+        targetObj["partOf"]![0]!["id"]!.ToString().Should().Be("https://example.org/object1/manifest");
+    }
+
+    [Fact]
+    public void ContentState_Should_WriteSpecificResourceWithPointSelectorAndPartOf()
+    {
+        var target = new ContentStateTarget("https://example.org/iiif/id1/canvas1", "Canvas")
+            .SetPointSelector(14.5)
+            .SetPartOf("https://example.org/iiif/id1/manifest");
+        var contentState = new ContentState(target).SetId("https://example.org/import/2");
 
         var obj = JObject.Parse(contentState.Serialize());
         var targetObj = (JObject)obj["target"]!;
 
         targetObj["type"]!.ToString().Should().Be("SpecificResource");
         var source = (JObject)targetObj["source"]!;
-        source["id"]!.ToString().Should().Be("https://example.org/manifest/canvas1");
+        source["id"]!.ToString().Should().Be("https://example.org/iiif/id1/canvas1");
         source["type"]!.ToString().Should().Be("Canvas");
-        source["partOf"]![0]!["id"]!.ToString().Should().Be("https://example.org/manifest");
-        source["partOf"]![0]!["type"]!.ToString().Should().Be("Manifest");
+        source["partOf"]![0]!["id"]!.ToString().Should().Be("https://example.org/iiif/id1/manifest");
 
         var selector = (JObject)targetObj["selector"]!;
-        selector["type"]!.ToString().Should().Be("FragmentSelector");
-        selector["conformsTo"]!.ToString().Should().Be("http://www.w3.org/TR/media-frags/");
-        selector["value"]!.ToString().Should().Be("xywh=100,100,300,200");
+        selector["type"]!.ToString().Should().Be("PointSelector");
+        selector["t"]!.Value<double>().Should().Be(14.5);
     }
 
     [Fact]
     public void ContentState_Should_RoundTripThroughSerializeAndParse()
     {
         var target = new ContentStateTarget("https://example.org/manifest/canvas1", "Canvas")
-            .SetSelector(1, 2, 3, 4)
+            .SetPointSelector(14.5)
             .SetPartOf("https://example.org/manifest");
         var original = new ContentState(target).SetId("https://example.org/content-state/1");
 
@@ -77,7 +93,7 @@ public class ContentStateTests
         var roundTripped = deserialized.Target.Single();
         roundTripped.Id.Should().Be("https://example.org/manifest/canvas1");
         roundTripped.ResourceType.Should().Be("Canvas");
-        roundTripped.Selector!.Value.Should().Be("xywh=1,2,3,4");
+        roundTripped.PointSelector!.T.Should().Be(14.5);
         roundTripped.PartOfId.Should().Be("https://example.org/manifest");
         roundTripped.PartOfType.Should().Be("Manifest");
     }
@@ -101,7 +117,7 @@ public class ContentStateTests
     public void ContentStateCodec_Should_RoundTripThroughBase64UrlEncoding()
     {
         var contentState = new ContentState(
-            new ContentStateTarget("https://example.org/manifest/canvas1", "Canvas").SetSelector(10, 20, 30, 40))
+            new ContentStateTarget("https://example.org/manifest/canvas1", "Canvas").SetPointSelector(10.5))
             .SetId("https://example.org/content-state/1");
 
         var encoded = ContentStateCodec.Encode(contentState);
@@ -113,7 +129,7 @@ public class ContentStateTests
         decoded.Id.Should().Be("https://example.org/content-state/1");
         var target = decoded.Target.Single();
         target.Id.Should().Be("https://example.org/manifest/canvas1");
-        target.Selector!.Value.Should().Be("xywh=10,20,30,40");
+        target.PointSelector!.T.Should().Be(10.5);
     }
 
     [Fact]

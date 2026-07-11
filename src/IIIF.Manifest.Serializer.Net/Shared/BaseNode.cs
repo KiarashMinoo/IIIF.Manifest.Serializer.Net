@@ -36,12 +36,31 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         private set => SetElementValue(value);
     }
 
-    [PresentationAPI("2.0")]
+    /// <summary>
+    /// Legacy (2.x) view of <see cref="Summary"/> (the 3.0-native storage) - a straight rename,
+    /// unlike <see cref="Attribution"/>/<see cref="RequiredStatement"/> which also restructured.
+    /// </summary>
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "summary")]
     [JsonProperty(DescriptionJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Description> Description
     {
-        get => GetElementValue(x => x.Description) ?? [];
+        get => Summary;
+        private set => Summary = value;
+    }
+
+    /// <summary>
+    /// 3.0-native replacement for <see cref="Description"/>. Deliberately <see cref="JsonIgnoreAttribute"/>d,
+    /// same reasoning as <see cref="RequiredStatement"/>: the hand-built V3 reader/writer in
+    /// IiifSerializer already reads/writes it explicitly.
+    /// </summary>
+    public const string SummaryJName = "summary";
+
+    [PresentationAPI("3.0", Notes = "Replaces description from API 2.x. Straight rename, no structural change.")]
+    [JsonIgnore]
+    public IReadOnlyCollection<Description> Summary
+    {
+        get => GetElementValue(x => x.Summary) ?? [];
         private set => SetElementValue(value);
     }
 
@@ -206,9 +225,15 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         private set => SetElementValue(value);
     }
 
+    /// <summary>
+    /// 3.0-only; no 2.x equivalent shape (2.x uses <see cref="ViewingHint"/> instead). Deliberately
+    /// <see cref="JsonIgnoreAttribute"/>d - same reasoning as <see cref="RequiredStatement"/>:
+    /// <c>IiifSerializer</c> already reads/writes it explicitly via a shared V3 helper (covering
+    /// Manifest/Collection/Canvas/Range), so generic reflection-based serialization must never
+    /// touch it too, or it leaks into legacy V2.x JSON via plain JsonConvert.
+    /// </summary>
     [PresentationAPI("3.0", Notes = "Replaces viewingHint from API 2.x. Some values also valid in 2.x as viewingHint.")]
-    [JsonProperty(BehaviorJName)]
-    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    [JsonIgnore]
     public IReadOnlyCollection<Behavior> Behavior
     {
         get => GetElementValue(x => x.Behavior) ?? [];
@@ -277,6 +302,24 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     public TBaseNode RemoveDescription(Description description)
     {
         Description = Description.Without(description);
+        return (TBaseNode)this;
+    }
+
+    public TBaseNode SetSummary(IReadOnlyCollection<Description> summary)
+    {
+        Summary = summary;
+        return (TBaseNode)this;
+    }
+
+    public TBaseNode AddSummary(Description summary)
+    {
+        Summary = Summary.With(summary);
+        return (TBaseNode)this;
+    }
+
+    public TBaseNode RemoveSummary(Description summary)
+    {
+        Summary = Summary.Without(summary);
         return (TBaseNode)this;
     }
 

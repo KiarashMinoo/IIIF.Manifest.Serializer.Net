@@ -33,16 +33,20 @@ public class SearchResponseTests
     [Fact]
     public void SearchResponse_Should_RoundTripHitHighlightingAndPaging()
     {
-        // Items (search-result Annotations) reuses the core Presentation 3.0 Annotation type,
-        // whose Body's polymorphic dispatch only round-trips via IiifSerializer's hand-built V3
-        // reader (not plain JsonConvert) - a pre-existing gap outside this milestone's scope, so
-        // this test exercises the new paging/hit-highlighting fields on their own instead.
+        // Items (search-result Annotations) reuses the core Presentation 3.0 Annotation type;
+        // its Body's polymorphic dispatch (Milestone 22, round 2) now round-trips through plain
+        // JsonConvert/TrackableObject.Parse too, not just IiifSerializer's hand-built V3 reader.
+        var annotation = new Annotation("https://example.org/annotation/anno-bird",
+            new EmbeddedContentResource("A bird in the hand is worth two in the bush", "en"),
+            "https://example.org/canvas1#xywh=100,100,250,20");
+
         var hitAnnotation = new SearchHitAnnotation(
                 new SearchHitTarget("https://example.org/annotation/anno-bird",
                     [new SearchTextQuoteSelector("birds").SetPrefix("There are two ").SetSuffix(" in the bush")]))
             .SetId("https://example.org/annotation/match-1");
 
         var response = new SearchResponse("https://example.org/service/manifest/search?q=bird")
+            .AddItem(annotation)
             .SetAnnotations(new SearchHitAnnotationPage([hitAnnotation]))
             .SetPartOf(new SearchAnnotationCollectionRef("https://example.org/search/results").SetTotal(1))
             .SetNext(new SearchResourceReference("https://example.org/search?page=2", "AnnotationPage"))
@@ -51,6 +55,7 @@ public class SearchResponseTests
 
         var deserialized = TrackableObject.Parse<SearchResponse>(response.Serialize());
 
+        deserialized.Items.Single().Id.Should().Be("https://example.org/annotation/anno-bird");
         var hit = deserialized.Annotations!.Items.Single();
         hit.Motivation.Should().Be("contextualizing");
         hit.Target.Source.Should().Be("https://example.org/annotation/anno-bird");

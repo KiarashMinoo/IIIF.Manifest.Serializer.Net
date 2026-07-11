@@ -1,16 +1,42 @@
+using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Content.Resources;
 
+[JsonConverter(typeof(BaseResourceJsonConverter))]
 public interface IBaseResource
 {
     ResourceType? Type { get; }
+
+    /// <summary>
+    /// Default empty for resources with no service concept (TextualBody, Choice,
+    /// SpecificResource) - automatically satisfied without any code change by every
+    /// <see cref="BaseResource{TBaseResource}"/>-derived type, which already exposes this exact
+    /// member via its inherited <c>BaseItem.Service</c>. Lets IiifSerializer's hand-rolled
+    /// WriteV3Resource rebuild a spec-correct, always-array "service" regardless of which concrete
+    /// resource type it's writing, without a per-type switch.
+    /// </summary>
+    IReadOnlyCollection<IBaseService> Service => [];
 }
 
 public class BaseResource<TBaseResource> : FormattableItem<TBaseResource>, IBaseResource where TBaseResource : BaseResource<TBaseResource>
 {
+    public const string LabelJName = "label";
+
     ResourceType? IBaseResource.Type => !string.IsNullOrWhiteSpace(base.Type) ? new ResourceType(base.Type) : null;
+
+    // Per spec §3 Structural Properties table, a Content resource (Image/Sound/Video/Text) may
+    // carry its own "label" - used e.g. by Choice-body items to name each alternative
+    // (cookbook recipes 0033-choice/0434-choice-av, "Natural Light" vs "X-Ray", "MP3" vs "FLAC").
+    [JsonProperty(LabelJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    public IReadOnlyCollection<Label> Label
+    {
+        get => GetElementValue(x => x.Label) ?? [];
+        private set => SetElementValue(value);
+    }
 
     protected internal BaseResource(string id) : base(id)
     {
@@ -28,6 +54,17 @@ public class BaseResource<TBaseResource> : FormattableItem<TBaseResource>, IBase
 
     public BaseResource(string id, ResourceType type) : this(id, type.Value)
     {
+    }
+
+    public TBaseResource SetLabel(IReadOnlyCollection<Label> labels)
+    {
+        Label = labels;
+        return (TBaseResource)this;
+    }
+
+    public TBaseResource SetLabel(Label label)
+    {
+        return SetLabel([label]);
     }
 }
 

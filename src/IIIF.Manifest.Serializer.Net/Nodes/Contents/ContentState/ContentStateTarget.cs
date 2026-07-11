@@ -5,11 +5,15 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 
 /// <summary>
-/// A Content State 1.0 target - the resource (and optionally a region of it) a content state
-/// points at. Serializes as one of the three shapes the spec allows, chosen automatically by
+/// A Content State 1.0 target - the resource (and optionally a point in time within it) a content
+/// state points at. Serializes as one of the three shapes the spec allows, chosen automatically by
 /// <see cref="ContentStateTargetJsonConverter"/> based on which fields are set: a bare URI string
 /// (just <see cref="Id"/>), a typed resource reference (<see cref="Id"/> + <see cref="ResourceType"/>),
-/// or a full SpecificResource wrapping a <see cref="Selector"/> and/or a <see cref="PartOfId"/> Manifest.
+/// or a full SpecificResource wrapping a <see cref="PointSelector"/> and/or a <see cref="PartOfId"/>
+/// Manifest. Region-targeting (spec §5.1) has no SpecificResource/selector form at all - the spec's
+/// own example expresses it as a Media Fragments suffix on the plain <see cref="Id"/> URI itself
+/// (e.g. <c>"https://example.org/canvas7#xywh=1000,2000,1000,2000"</c>), which the bare-string
+/// constructor already supports directly.
 /// </summary>
 [ContentStateAPI("1.0")]
 [JsonConverter(typeof(ContentStateTargetJsonConverter))]
@@ -29,10 +33,13 @@ public class ContentStateTarget : TrackableObject<ContentStateTarget>
         private set => SetElementValue(value);
     }
 
+    /// <summary>
+    /// Selects a single point in time within the targeted AV recording (spec §5.2).
+    /// </summary>
     [ContentStateAPI("1.0")]
-    public ContentStateFragmentSelector? Selector
+    public ContentStatePointSelector? PointSelector
     {
-        get => GetElementValue(x => x.Selector);
+        get => GetElementValue(x => x.PointSelector);
         private set => SetElementValue(value);
     }
 
@@ -56,14 +63,13 @@ public class ContentStateTarget : TrackableObject<ContentStateTarget>
         ResourceType = resourceType;
     }
 
-    public ContentStateTarget SetSelector(ContentStateFragmentSelector selector)
+    public ContentStateTarget SetPointSelector(ContentStatePointSelector pointSelector)
     {
-        Selector = selector;
+        PointSelector = pointSelector;
         return this;
     }
 
-    public ContentStateTarget SetSelector(int x, int y, int width, int height) =>
-        SetSelector(ContentStateFragmentSelector.ForRegion(x, y, width, height));
+    public ContentStateTarget SetPointSelector(double t) => SetPointSelector(new ContentStatePointSelector(t));
 
     public ContentStateTarget SetPartOf(string partOfId, string partOfType = "Manifest")
     {

@@ -22,7 +22,11 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource
             private set => SetElementValue(value);
         }
 
-        public EmbeddedContentResource(string chars, string language) : base("cnt:ContextAsText")
+        // No @id at all is the norm for an embedded "cnt:ContentAsText" body (it's a literal
+        // inline value, not a dereferenceable resource) - previously this constructor
+        // accidentally passed the type string itself as @id (via the single-arg base(id) overload)
+        // and misspelled it ("ContextAsText"), so @type was never actually set at all.
+        public EmbeddedContentResource(string chars, string language) : base(string.Empty, "cnt:ContentAsText")
         {
             Chars = chars;
             Language = language;
