@@ -2,6 +2,7 @@
 using IIIF.Manifests.Serializer;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Services;
+using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Shared.Service;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
@@ -18,7 +19,6 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
 {
     private const string TypeJName = "@type";
     private const string ProfileJName = "profile";
-    private const string ContextJName = "@context";
 
     // IBaseService carries this converter so element-typed collections (IReadOnlyCollection<IBaseService>) resolve it,
     // but that also makes every implementer inherit it. Reading/writing leaf types below must skip this converter for
@@ -38,7 +38,15 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
         protected override JsonConverter? ResolveContractConverter(Type objectType)
         {
             var converter = base.ResolveContractConverter(objectType);
-            return converter is ServiceJsonConverter ? null : converter;
+
+            // Only suppress the converter for concrete leaf types (which inherit it via the
+            // interface-attribute quirk noted above, and would otherwise recurse into
+            // ServiceJsonConverter.ReadJson/WriteJson for themselves). Auth 2.0's services nest
+            // *other* services polymorphically (e.g. AuthProbeService2.Service holding
+            // AuthAccessService2), so when objectType is the interface itself, the converter must
+            // stay active to dispatch to the right concrete type - otherwise Newtonsoft tries to
+            // instantiate IBaseService directly and throws.
+            return converter is ServiceJsonConverter && objectType != typeof(IBaseService) ? null : converter;
         }
     }
 
@@ -93,98 +101,136 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
     /// <returns>A deserialized service object, or null if the service type cannot be determined.</returns>
     private IBaseService? DetectAndDeserializeService(JToken serviceToken)
     {
-        // Check the @type field to determine service type
-        var typeValue = serviceToken.TryGetToken(TypeJName)?.ToString();
+        // Check @type (Auth/Image services, which still model @id/@type via BaseItem) or the
+        // unprefixed "type" (Search/Discovery/Auth2/ContentState services, which postdate the
+        // Presentation 3.0 "no @ prefix" convention and never had a prefixed form) to determine
+        // service type. A V3 manifest's top-level "services" array always writes id/type
+        // unprefixed regardless of which shape the leaf class models internally, so both keys
+        // must be checked here, and the token normalized to whichever shape the leaf class needs
+        // before ToObject() runs its constructor binding.
+        var typeValue = serviceToken.TryGetToken(TypeJName)?.ToString() ?? serviceToken.TryGetToken("type")?.ToString();
         switch (typeValue)
         {
             case "ImageService2":
             case "ImageService3":
-                return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
+                return WithPrefixedIdType(serviceToken).ToObject<Properties.Services.Service>(LeafSerializer);
             case "AuthCookieService1":
             case "AuthTokenService1":
             case "AuthLogoutService1":
-                return serviceToken.ToObject<AuthService1>(LeafSerializer);
+                return WithPrefixedIdType(serviceToken).ToObject<AuthService1>(LeafSerializer);
             case "AuthProbeService2":
+                return WithUnprefixedIdType(serviceToken).ToObject<AuthProbeService2>(LeafSerializer);
             case "AuthAccessService2":
+                return WithUnprefixedIdType(serviceToken).ToObject<AuthAccessService2>(LeafSerializer);
             case "AuthAccessTokenService2":
+                return WithUnprefixedIdType(serviceToken).ToObject<AuthAccessTokenService2>(LeafSerializer);
             case "AuthLogoutService2":
-                return serviceToken.ToObject<AuthService2>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<AuthLogoutService2>(LeafSerializer);
             case "SearchService2":
-                return serviceToken.ToObject<SearchService>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<SearchService>(LeafSerializer);
             case "AutoCompleteService2":
-                return serviceToken.ToObject<AutoCompleteService>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<AutoCompleteService>(LeafSerializer);
             case "OrderedCollection":
-                return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<DiscoveryService>(LeafSerializer);
             case "ContentStateService":
-                return serviceToken.ToObject<ContentStateService>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<ContentStateService>(LeafSerializer);
         }
 
-        // @type was missing or unrecognized (common for Image/Auth services, whose constructors
-        // in this SDK never set an explicit @type) - fall back to detecting by profile/context.
+        // @type was missing or unrecognized (common for Image/Auth 1.0 services, whose
+        // constructors in this SDK never set an explicit @type - unlike Auth 2.0, whose 4 real
+        // service types above always populate their own literal `type`, and so always resolve via
+        // the switch and never reach this fallback in practice) - detect by profile/context.
         var jProfile = serviceToken.TryGetToken(ProfileJName);
         if (jProfile != null)
         {
             var profileValue = jProfile.ToString();
             if (profileValue.Contains("auth", StringComparison.OrdinalIgnoreCase))
             {
-                // @type alone can't tell Auth 1.0 from 2.0 apart when absent, and both classes'
-                // JSON shapes overlap enough that the "wrong" one often deserializes without
-                // throwing - so use the (always-set-by-this-SDK) @context as the primary signal.
-                var contextValue = serviceToken.TryGetToken(ContextJName)?.ToString() ?? string.Empty;
-                var preferAuth2 = contextValue.Contains("/auth/2/", StringComparison.OrdinalIgnoreCase)
-                    || profileValue.Contains("/auth/2/", StringComparison.OrdinalIgnoreCase);
-
-                Func<IBaseService?> primary = preferAuth2
-                    ? () => serviceToken.ToObject<AuthService2>(LeafSerializer)
-                    : () => serviceToken.ToObject<AuthService1>(LeafSerializer);
-                Func<IBaseService?> secondary = preferAuth2
-                    ? () => serviceToken.ToObject<AuthService1>(LeafSerializer)
-                    : () => serviceToken.ToObject<AuthService2>(LeafSerializer);
-
                 try
                 {
-                    return primary();
+                    return WithPrefixedIdType(serviceToken).ToObject<AuthService1>(LeafSerializer);
                 }
                 catch (JsonException)
                 {
-                    try
-                    {
-                        return secondary();
-                    }
-                    catch (JsonException)
-                    {
-                        // Neither auth service format worked, continue to fallback
-                    }
+                    // Not a valid Auth 1.0 shape either - continue to fallback.
                 }
             }
             else if (profileValue.Contains("search", StringComparison.OrdinalIgnoreCase))
             {
-                return serviceToken.ToObject<SearchService>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<SearchService>(LeafSerializer);
             }
             else if (profileValue.Contains("discovery", StringComparison.OrdinalIgnoreCase))
             {
-                return serviceToken.ToObject<DiscoveryService>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<DiscoveryService>(LeafSerializer);
             }
             else if (profileValue.Contains("content-state", StringComparison.OrdinalIgnoreCase))
             {
-                return serviceToken.ToObject<ContentStateService>(LeafSerializer);
+                return WithUnprefixedIdType(serviceToken).ToObject<ContentStateService>(LeafSerializer);
             }
             else if (profileValue.Contains("image", StringComparison.OrdinalIgnoreCase))
             {
-                return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
+                return WithPrefixedIdType(serviceToken).ToObject<Properties.Services.Service>(LeafSerializer);
             }
         }
 
         // Fallback: try to deserialize as the most common service type (ImageService)
         try
         {
-            return serviceToken.ToObject<Properties.Services.Service>(LeafSerializer);
+            return WithPrefixedIdType(serviceToken).ToObject<Properties.Services.Service>(LeafSerializer);
         }
         catch (JsonException)
         {
             // If deserialization fails, return null (unknown service type)
             return null;
         }
+    }
+
+    /// <summary>
+    /// Clones <paramref name="serviceToken"/> with its id/type keys normalized to the "@id"/"@type"
+    /// shape that BaseItem-derived leaf services (Image, Auth 1.0, Auth 2.0) bind their constructor
+    /// parameters against. A no-op when the token already uses that shape.
+    /// </summary>
+    private static JToken WithPrefixedIdType(JToken serviceToken)
+    {
+        if (serviceToken is not JObject { } obj || obj["id"] is null && obj["type"] is null)
+        {
+            return serviceToken;
+        }
+
+        var clone = (JObject)obj.DeepClone();
+        RenameIfPresent(clone, "id", "@id");
+        RenameIfPresent(clone, "type", "@type");
+        return clone;
+    }
+
+    /// <summary>
+    /// Clones <paramref name="serviceToken"/> with its id/type keys normalized to the unprefixed
+    /// "id"/"type" shape that services postdating Presentation 3.0 (Search, AutoComplete, Discovery,
+    /// Content State, Auth 2.0) bind their constructor parameters against. A no-op when the token
+    /// already uses that shape.
+    /// </summary>
+    private static JToken WithUnprefixedIdType(JToken serviceToken)
+    {
+        if (serviceToken is not JObject { } obj || obj["@id"] is null && obj["@type"] is null)
+        {
+            return serviceToken;
+        }
+
+        var clone = (JObject)obj.DeepClone();
+        RenameIfPresent(clone, "@id", "id");
+        RenameIfPresent(clone, "@type", "type");
+        return clone;
+    }
+
+    private static void RenameIfPresent(JObject obj, string oldName, string newName)
+    {
+        if (obj[oldName] is not { } value || obj[newName] is not null)
+        {
+            return;
+        }
+
+        obj.Remove(oldName);
+        obj[newName] = value;
     }
 
     /// <summary>

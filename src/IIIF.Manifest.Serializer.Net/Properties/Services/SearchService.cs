@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services
     /// IIIF Content Search API 2.0 Service - provides search functionality for IIIF resources.
     /// </summary>
     [SearchAPI("2.0", Notes = "Content Search API 2.0 service for searching within manifests.")]
-    public class SearchService : BaseItem<SearchService>, IBaseService
+    public class SearchService : UnprefixedBaseItem<SearchService>, IBaseService
     {
         public new const string ServiceJName = "service";
 

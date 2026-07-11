@@ -11,6 +11,7 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Segment.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Services;
+using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using Newtonsoft.Json;
@@ -43,7 +44,11 @@ public static class DemoCatalog
         manifest.SetSequenceId("https://example.org/demo/search/sequence/normal");
         manifest.AddService(new SearchService("http://iiif.io/api/search/2/context.json", "https://example.org/demo/search/service", "http://iiif.io/api/search/0/search").AddService(new AutoCompleteService("http://iiif.io/api/search/2/context.json", "https://example.org/demo/search/autocomplete", "http://iiif.io/api/search/0/autocomplete")));
         manifest.AddService(new ContentStateService("http://iiif.io/api/content-state/1/context.json", "https://example.org/demo/content-state", "http://iiif.io/api/content-state/v1/state"));
-        manifest.AddService(new AuthService2("https://example.org/demo/auth/login", "http://iiif.io/api/auth/2/login").SetLabel("Login").SetHeading("Sign in").SetNote("Protected content").SetConfirmLabel("Continue"));
+        var accessTokenService = new AuthAccessTokenService2("https://example.org/demo/auth/token");
+        var accessService = new AuthAccessService2("https://example.org/demo/auth/login", "active", accessTokenService)
+            .SetLabel("Login").SetHeading("Sign in").SetNote("Protected content").SetConfirmLabel("Continue")
+            .SetLogoutService(new AuthLogoutService2("https://example.org/demo/auth/logout", "Logout"));
+        manifest.AddService(new AuthProbeService2("https://example.org/demo/auth/probe", accessService));
         return manifest;
     }
 

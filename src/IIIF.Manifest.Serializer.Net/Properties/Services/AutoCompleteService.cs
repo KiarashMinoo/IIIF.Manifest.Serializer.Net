@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 /// IIIF Content Search API 2.0 AutoComplete Service - provides autocomplete functionality for search.
 /// </summary>
 [SearchAPI("2.0", Notes = "AutoComplete service for Content Search API 2.0.")]
-public class AutoCompleteService : BaseItem<AutoCompleteService>, IBaseService
+public class AutoCompleteService : UnprefixedBaseItem<AutoCompleteService>, IBaseService
 {
     [SearchAPI("2.0")]
     [JsonProperty(IBaseService.ProfileJName)]

@@ -8,12 +8,23 @@ namespace IIIF.Manifests.Serializer.Properties
     public class Tile : TrackableObject<Tile>
     {
         public const string WidthJName = "width";
+        public const string HeightJName = "height";
         public const string ScaleFactorsJName = "scaleFactors";
 
         [JsonProperty(WidthJName)]
         public int? Width
         {
             get => GetElementValue(x => x.Width);
+            private set => SetElementValue(value);
+        }
+
+        /// <summary>
+        /// Optional per spec - defaults to <see cref="Width"/> when omitted.
+        /// </summary>
+        [JsonProperty(HeightJName)]
+        public int? Height
+        {
+            get => GetElementValue(x => x.Height);
             private set => SetElementValue(value);
         }
 
@@ -27,6 +38,12 @@ namespace IIIF.Manifests.Serializer.Properties
         public Tile SetWidth(int width)
         {
             Width = width;
+            return this;
+        }
+
+        public Tile SetHeight(int height)
+        {
+            Height = height;
             return this;
         }
 

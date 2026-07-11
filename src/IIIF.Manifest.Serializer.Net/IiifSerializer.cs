@@ -303,8 +303,7 @@ public static class IiifSerializer
     {
         var token = JObject.FromObject(service, JsonSerializer.Create(TrackableObject.JsonSerializerSettings));
         Rename(token, "@id", "id");
-        Rename(token, "@context", "context");
-        token.Remove("@type");
+        Rename(token, "@type", "type");
         return token;
     }
 
@@ -452,11 +451,10 @@ public static class IiifSerializer
 
     private static IBaseService? ReadV3Service(JObject obj)
     {
-        var normalized = (JObject)obj.DeepClone();
-        Rename(normalized, "id", "@id");
-        Rename(normalized, "context", "@context");
-        Rename(normalized, "type", "@type");
-        return normalized.ToObject<IBaseService>();
+        // A V3 manifest's "services" array always writes id/type unprefixed (see WriteV3Service);
+        // ServiceJsonConverter normalizes to whichever shape the detected leaf class needs, so no
+        // renaming is required here.
+        return obj.ToObject<IBaseService>();
     }
 
     private static Structure ReadV3Range(JObject obj)

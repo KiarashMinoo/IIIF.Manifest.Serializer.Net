@@ -319,4 +319,428 @@ the same legacy-JSON-leak risk when the plain-`JsonConvert` legacy write path is
 (a `Related : FormattableItem<Related>` value type) is dead code predating this session —
 `BaseNode.Related` has always been a plain `string?`, never referencing that type.
 
-## Status: all 9 milestones (0-8) complete.
+### Status of Milestones 0-8: complete (superseded by the final status at the end of this document)
+
+## 10. Extended standards coverage (Auth/Search/Discovery/Content State/Image API, extensions)
+
+Follow-up pass, prompted by a deep comparison against `github.com/IIIF/awesome-iiif`'s "Standards"
+section (Auth, Content Search, Change Discovery, Content State, Image APIs + navPlace/Georeference/
+Text Granularity extensions) — the awesome-iiif list itself is a directory of external tools, not
+a spec, but its Standards section is the right checklist of what a manifest/service-descriptor
+library like this one should model. The Presentation API core (already fully reshaped in §§1-9)
+was explicitly out of scope for this comparison. Findings, in priority order:
+
+1. **Cross-cutting bugs** (found first, affect everything below):
+   - `WriteV3Service` (`IiifSerializer.cs`) does `token.Remove("@type")` instead of renaming it to
+     `type` — every service written into the new `Manifest.Services` top-level array (Milestone 5)
+     silently loses its type in V3 output. Real regression from this session's own work.
+   - `Service` (Image) and `AuthService2` never populate `Type` in any constructor — a manifest
+     built with this library embedding an image or Auth 2.0 service never identifies what kind of
+     service it is via `type`/`@type` at all.
+   - `AuthService2`/`SearchService`/`AutoCompleteService`/`DiscoveryService`/`ContentStateService`
+     all inherit `BaseItem<T>`, which hardcodes `@id`/`@type` — but Auth 2.0, Search 2.0, Discovery
+     1.0, and Content State 1.0 all postdate Presentation 3.0 and use unprefixed `id`/`type` in
+     their own spec examples (only Auth 1.0, contemporaneous with Presentation 2.x, correctly uses
+     `@id`/`@type`). `Activity`/`ActivityObject` already get this right by declaring their own
+     unprefixed properties instead of inheriting `BaseItem`.
+2. **Content State 1.0 — 0% modeled, biggest gap.** No `ContentState` object exists at all (an
+   Annotation with `motivation: "contentState"`, `target` polymorphic over Canvas/Manifest/
+   SpecificResource+Selector/bare URI), and no base64url `iiif-content` encode/decode helper —
+   pure client-side logic, no server needed, squarely in scope for a manifest-authoring library
+   wanting to build/parse IIIF deep links. The existing `ContentStateService` class models a
+   `{"type": "ContentStateService", "profile"}` shape that doesn't correspond to anything in the
+   actual spec (Content State 1.0 has no discoverable "service" concept at all).
+3. **Auth 2.0 — one flat class standing in for four distinct service types.** Spec defines
+   `AuthProbeService2`, `AuthAccessService2`, `AuthAccessTokenService2`, `AuthLogoutService2` with
+   different required/optional fields (`id` must be *absent* for `external`-profile access
+   services; `errorHeading`/`errorNote` on Probe/AccessToken; `label`/`heading`/`note`/
+   `confirmLabel` are language maps, not plain strings) — plus the response shapes
+   (`AuthProbeResult2`: `status`/`substitute`/`location`/`heading`/`note`; `AuthAccessToken2`/
+   `AuthAccessTokenError2`: `accessToken`/`expiresIn`/`messageId`/error `profile` codes) are
+   unmodeled entirely.
+4. **Discovery 1.0 — no real paging.** `DiscoveryService` is missing `first`/`last` (spec-required)
+   /`totalItems`/`seeAlso`/`partOf`/`rights`, and there's no distinct `OrderedCollectionPage` type
+   (collection and page are conflated). `Activity` is missing `id`/`startTime`/`summary`/`actor`/
+   `target` (the last makes `Move` activities structurally unrepresentable). `ActivityObject` is
+   missing `canonical`/`seeAlso`/`provider`.
+5. **Search 2.0 — response shapes unmodeled.** The search-result `AnnotationPage` (hits, `ignored`
+   params, `partOf`/`next`/`prev`/`startIndex` paging) and autocomplete's `TermPage` (`items` of
+   `Term`: `value`/`total`/`label`/`language`/`service`) have no C# types. The existing `profile`
+   property on `SearchService`/`AutoCompleteService` isn't actually part of the 2.0 spec (a Search
+   1.0 holdover) — harmless as an extension point, just not spec-required.
+6. **Image API — `Service` (embedded descriptor) incomplete, no standalone info.json type.**
+   Missing `protocol` (spec-required), `extraFormats`, `Tile.Height`. No type represents a
+   freestanding info.json document (different JSON shape than the embedded-service form: `id`/
+   `type` unprefixed at top level vs. `@id`/`@type` when embedded via `BaseItem`).
+7. **Text Granularity extension — wrong enum values.** Spec defines `page`/`block`/`paragraph`/
+   `line`/`word`/`glyph`; the code has `character` (not a spec term at all) instead of `glyph`,
+   and is missing `paragraph` entirely. Real documents using `"glyph"`/`"paragraph"` throw in
+   `Parse`.
+8. **navPlace — missing `geometries`** on `Geometry` for the `GeometryCollection` case (an array of
+   nested `Geometry` objects, distinct from `coordinates`). Otherwise verified complete.
+9. **Georeference — top-level Annotation wrapper unmodeled.** The `transformation`/`resourceCoords`
+   property-level pieces are correct, but the spec's actual Georeference construct is a full W3C
+   Annotation (`motivation: "georeferencing"`, `target`: `SpecificResource`+`Selector` over the
+   Canvas/Image, `body`: the FeatureCollection) — currently `transformation` is just an
+   additional-property settable directly on any `BaseNode`, with no annotation wrapper at all.
+10. **Dead code**: `Properties/Services/AuthService.cs` (context `/auth/0/`) duplicates
+    `AuthService1`, is unreachable via `ServiceJsonConverter`, and predates the "there was never a
+    Presentation 1.0" correction from §1 — same class of leftover as the `Related.cs` dead code
+    noted in §8's follow-up. `ServiceJsonConverter`'s Auth-1.0-only `@type` switch cases
+    (`AuthCookieService1`/etc.) don't correspond to any `@type` the spec actually defines (Auth 1.0
+    typing is profile-driven, not `@type`-driven) — not incorrect, just documentation-shaped
+    fiction; the profile-based fallback is what actually resolves these in practice.
+
+Milestones 9-19 below track implementing this list, same discipline as §§1-9: tests land with
+each change, `[Obsolete(error: true)]` on anything a fix genuinely replaces, no regressions.
+
+### Milestone 9: DONE — cross-cutting service bugs (type write/dispatch)
+
+Fixed the three bugs from finding 1 above, scoped tightly to avoid redoing work that Milestones
+10/11 will replace anyway:
+
+- `WriteV3Service` (`IiifSerializer.cs`) now renames `@type` → `type` instead of removing it, and
+  no longer mis-renames `@context` → `context` (a second bug found while fixing the first — `@context`
+  is a JSON-LD keyword that stays prefixed in Presentation 3.0; only `id`/`type` lose the `@`).
+- `SearchService`, `AutoCompleteService`, `DiscoveryService` now inherit a new `UnprefixedBaseItem<T>`
+  (`Shared/UnprefixedBaseItem.cs`) instead of `BaseItem<T>` — same shape/constructor pattern, but
+  `IdJName`/`TypeJName` are unprefixed (`id`/`type`) with `@context` staying prefixed, matching how
+  `Activity`/`ActivityObject` already modeled their own properties. `ContentStateService` was left on
+  `BaseItem` for now since Milestone 10 replaces it outright with a real Content State 1.0 object.
+  `Service` (Image) and `AuthService2` were left as-is too — both already have a real `Type`-population
+  gap, but `AuthService2` is being split into 4 types in Milestone 11 and `Service`'s `type` is
+  version-dependent (`ImageService2` vs `ImageService3`, no single correct hardcoded value) and is
+  addressed properly in Milestone 14 instead of hardcoding a guess now.
+- `ServiceJsonConverter`'s type-dispatch switch now checks both `@type` and unprefixed `type` (a V3
+  manifest's top-level `services` array always writes id/type unprefixed on the wire regardless of
+  which shape the leaf C# class models internally), and normalizes the token to whichever shape the
+  detected leaf class's constructor actually binds against via two new helpers, `WithPrefixedIdType`/
+  `WithUnprefixedIdType` — both no-ops when the token already matches, so the existing profile-based
+  Auth1/Auth2 fallback path needed no behavioral changes beyond calling them.
+- `IiifSerializer.ReadV3Service` no longer blindly renames every service's id/context/type to the
+  `@`-prefixed shape before dispatch (that blind reversal was only safe while every leaf class was
+  `BaseItem`-shaped; it would have silently broken constructor binding for the newly-unprefixed
+  classes) — detection/normalization now lives entirely in `ServiceJsonConverter`, which knows which
+  shape each leaf type needs.
+
+Tests: `Milestone9ServiceFixTests.cs` (5 new tests — V3 top-level array write shape for
+Search/Discovery services, round-trip through `IiifSerializer`, hand-written-JSON dispatch with
+unprefixed `type`, and a regression lock confirming `AuthService2` still writes its pre-existing
+`@id`-prefixed shape for the plain 2.x/inline-service path). Full suite: **175 tests, all passing**,
+0 build warnings/errors introduced.
+
+### Milestone 10: DONE — Content State 1.0 object + base64url encode/decode
+
+Added the object that finding 2 said was entirely missing: `Nodes/Contents/ContentState/`:
+
+- `ContentState.cs` — the W3C-Annotation-shaped root object (`id?`, `type: "Annotation"`,
+  `motivation: "contentState"`, `target`), built on `TrackableObject<T>` directly (not `BaseItem`,
+  matching `Activity`/`ActivityObject`'s precedent for shapes that don't fit either the `@`-prefixed
+  or unprefixed `BaseItem` conventions). `Target` reuses `ObjectArrayJsonConverter` so a single
+  target serializes bare and multiple targets serialize as an array, per spec.
+- `ContentStateTarget.cs` + `ContentStateTargetJsonConverter.cs` — models the 3 target shapes the
+  spec allows (bare URI string; typed resource reference `{id,type}`; full SpecificResource wrapping
+  a `source` and/or `selector`), with the converter picking the minimal correct shape on write based
+  on which fields (`ResourceType`, `Selector`, `PartOfId`) are set, and dispatching on read by
+  inspecting whether the token is a string, a plain object, or a `"type":"SpecificResource"` object.
+- `ContentStateFragmentSelector.cs` — the Media Fragments region selector (`xywh=...`), the only
+  selector shape modeled (matches this SDK's existing region-selection precedent elsewhere).
+- `ContentStateCodec.cs` — `Encode`/`Decode` for the base64url "content state string" used in the
+  `iiif-content` query parameter: UTF-8 JSON → standard base64 → strip padding → `+`/`/` → `-`/`_`
+  (and the reverse for decode).
+
+Deliberately left untouched: the existing `ContentStateService` class (`Properties/Services/`) —
+finding 2 noted its `{"type":"ContentStateService","profile"}` shape doesn't correspond to
+anything in the real spec (Content State 1.0 has no "service" concept at all), but it's an inert,
+already-tested extension point rather than something actively wrong, so removing it wasn't part of
+this milestone's scope (no spec-shaped replacement exists to migrate callers to).
+
+Tests: `ContentStateTests.cs` (7 new tests — all 3 target write shapes, full serialize/parse
+round-trip incl. selector + partOf, multi-target array round-trip, base64url codec round-trip, and
+a blank-input error case). Full suite: **182 tests, all passing**, 0 build warnings/errors introduced.
+
+### Milestone 11: DONE — Auth 2.0 split into 4 real service types + response shapes
+
+Replaced the old flat `AuthService2` (deleted) with `Properties/Services/Auth2/`:
+
+- `AuthProbeService2`, `AuthAccessService2`, `AuthAccessTokenService2`, `AuthLogoutService2` — each
+  with its own actual required/optional fields per spec, instead of one class with every field
+  optional. `AuthProbeService2`/`AuthAccessTokenService2`/`AuthLogoutService2` have no `profile`
+  field at all (satisfy `IBaseService.Profile` via an explicit interface implementation returning
+  `string.Empty`, which Newtonsoft's reflection-based serializer never picks up as a real member —
+  confirmed no stray `"profile": ""` appears in output). `AuthAccessService2.Id` is nullable
+  (required for `active`/`kiosk`, must be *absent* for `external`) — required loosening
+  `UnprefixedBaseItem<T>`'s `id` constructor parameter from `string` to `string?` (the `Id` property
+  itself was already null-tolerant at runtime; only the compile-time constraint changed, and
+  `NullValueHandling.Ignore` already omits a null `Id` from output for free). `AuthProbeService2`'s
+  and `AuthAccessService2`'s nested service arrays reuse the inherited `Service`/`AddService`
+  machinery directly, with `[JsonIgnore]`d convenience accessors (`AccessServices`/
+  `AccessTokenService`/`LogoutService`) layered on top.
+- `Responses/AuthProbeResult2`, `AuthAccessToken2`, `AuthAccessTokenError2`, plus a small
+  `AuthResourceReference` (`{id,type}`) used by `AuthProbeResult2`'s `substitute`/`location` — these
+  are HTTP/`postMessage` response payloads, not embedded services, so they're plain
+  `TrackableObject<T>` (not `IBaseService`) and live in their own `Responses/` folder.
+- `LanguageMapJsonConverter` (`Shared/`) — new. Auth 2.0's `label`/`heading`/`note`/`confirmLabel`/
+  `errorHeading`/`errorNote` fields are all real language maps per spec, but this SDK's existing
+  `BaseNode.Label` only becomes a `{"none": [...]}` language map when routed through
+  `IiifSerializer`'s hand-built V3 writer — embedded services never go through that path (they
+  serialize via their own `[JsonProperty]`/plain `JsonConvert`), so without a dedicated converter
+  Auth 2.0's label fields would've written as bare strings. Reads leniently (map, bare array, or
+  bare string) and writes `{"none": [...]}`, matching this SDK's established (if spec-simplified —
+  single "none" bucket, not real BCP47 tags) language-map convention.
+
+Cross-cutting fixes needed to make the above work:
+- `WriteV3Service` (`IiifSerializer.cs`): removed the `Rename(token, "@context", "context")` call
+  found while implementing this milestone — a **second** real bug in the code Milestone 9 had just
+  touched. `@context` is a JSON-LD keyword that stays prefixed in Presentation 3.0 (only `id`/`type`
+  drop the `@`); renaming it to a nonexistent `context` key would have silently corrupted every
+  service written into the top-level `Manifest.Services` array that carries its own `@context`
+  (Auth 2.0's four types all do).
+- `IiifSerializer.ReadV3Service`: simplified to a pass-through — the previous blind
+  `id→@id`/`context→@context`/`type→@type` rename (a holdover from when every leaf service class was
+  `BaseItem`-shaped) would have broken constructor binding for the Search/AutoComplete/Discovery
+  classes Milestone 9 already moved to unprefixed shape. Detection/normalization now lives entirely
+  in `ServiceJsonConverter`.
+- `ServiceJsonConverter`'s Auth 1.0-vs-2.0 profile-based fallback branch was simplified to just Auth
+  1.0: real Auth 2.0 JSON always carries an explicit `type` (unlike this SDK's Auth 1.0 classes,
+  which by design never set one — Auth 1.0 typing is profile-driven per spec), so with every Auth
+  2.0 constructor now populating a real `type`, the switch-based primary dispatch always succeeds
+  and the fallback path is never reached for Auth 2.0 in practice.
+- `ServiceJsonConverter`'s recursion-guard contract resolver (`LeafContractResolver`) previously
+  suppressed `ServiceJsonConverter` for **any** type that inherited it via the
+  interface-attribute-inheritance quirk noted in the existing code comment — correct for preventing
+  a leaf type from recursing into itself, but wrong once a leaf type nests *other* polymorphic
+  services (`AuthProbeService2.Service` holds `AuthAccessService2`; `AuthAccessService2.Service`
+  holds `AuthAccessTokenService2`/`AuthLogoutService2`): the nested `IReadOnlyCollection<IBaseService>`
+  element type needs the converter to stay *active* to dispatch to the right concrete type. Fixed by
+  only suppressing when `objectType` is a concrete class, not when it's the `IBaseService` interface
+  itself — caught by a real `JsonSerializationException` ("cannot instantiate interface") when
+  running the full suite, not by reasoning alone.
+- Existing callers migrated off the deleted `AuthService2`: `DemoCatalog.cs`, `CookbookCatalog.cs`
+  (both now build a real Probe→Access→AccessToken+Logout chain), and the `ServiceRoundTripTests.cs`/
+  `Milestone9ServiceFixTests.cs` tests that referenced it by name.
+
+Tests: `Auth2ServiceTests.cs` (8 new — no-profile-field checks, error heading/note round trips,
+logout label requirement, all 3 response types incl. substitute/location) plus rewrites of the
+Auth2-related cases in `ServiceRoundTripTests.cs` and `Milestone9ServiceFixTests.cs`. Full suite:
+**191 tests, all passing**, 0 build warnings/errors introduced.
+
+**Known follow-up, not fixed this pass**: language maps everywhere in this SDK collapse every value
+into a single `"none"` bucket rather than real BCP47 language tags (`"en"`, etc.) — a pre-existing,
+deliberate simplification (see `IiifSerializer.WriteLanguageMap`) that `LanguageMapJsonConverter`
+intentionally matches for consistency rather than fixing in isolation for just Auth 2.0.
+
+### Milestone 12: DONE — Discovery 1.0 paging + Activity completeness
+
+Split the previously-conflated collection/page model in `Properties/Services/DiscoveryService.cs`
+and `Properties/Services/Discovery/`:
+
+- `DiscoveryService` now models only the top-level "OrderedCollection": `First`/`Last`
+  (`DiscoveryResourceReference`, a plain `{id,type}` pointer — `Last` is spec-required),
+  `TotalItems`, `SeeAlso` (`DiscoveryDataset`), `PartOf`, `Rights`. Its previous `OrderedItems` and
+  fabricated `Profile` field were removed — per spec the collection only *points at* pages via
+  first/last, it never embeds their activities directly, and Discovery 1.0 has no profile concept
+  (same explicit-interface-implementation trick as Milestone 11's profile-less Auth 2.0 services).
+- `DiscoveryCollectionPage` (new) — the actual "OrderedCollectionPage": `PartOf`/`Next`/`Prev`
+  (`DiscoveryResourceReference`), `StartIndex`, `OrderedItems` (the real activity list, moved here
+  from `DiscoveryService`). Plain `TrackableObject<T>`, not `IBaseService` — a page is a standalone
+  fetchable resource, never embedded as a service.
+- `DiscoveryDataset`/`DiscoveryAgent` (new, shared) — the spec's `seeAlso` (`Dataset`: id/type/
+  format/label/profile) and `provider`/`actor` (`Agent`-shaped: id/type/label) reference shapes,
+  used by both `DiscoveryService`/`ActivityObject` (seeAlso) and `ActivityObject`/`Activity`
+  (provider/actor).
+- `Activity` gained `Id`, `StartTime`, `Summary`, `Actor` (`DiscoveryAgent`), and `Target`
+  (`DiscoveryResourceReference`) — `Target` specifically makes "Move" activities representable
+  (spec: `object` carries the *source* location, `target` the *destination*; previously only
+  `object` existed, so a Move's new location had nowhere to go).
+- `ActivityObject` gained `Canonical`, `SeeAlso`, `Provider`.
+
+Existing callers (`CookbookCatalog.cs`, `ServiceRoundTripTests.cs`, `Milestone9ServiceFixTests.cs`)
+migrated from the old `new DiscoveryService(context, id, profile)` to
+`new DiscoveryService(context, id, lastPageReference)`.
+
+Tests: `DiscoveryServiceTests.cs` (5 new — collection has no orderedItems and writes first/last/
+totalItems/rights, page round-trips paging fields + activities, a full Move-activity round trip
+(object=source, target=destination), Activity id/startTime/summary/actor round trip, ActivityObject
+canonical/seeAlso/provider round trip). Full suite: **196 tests, all passing**, 0 build
+warnings/errors introduced.
+
+### Milestone 13: DONE — Search 2.0 response shapes (AnnotationPage hits, TermPage)
+
+Finding 5 noted the search-result and autocomplete-result *response bodies* (as opposed to the
+already-modeled `SearchService`/`AutoCompleteService` descriptors) were entirely unmodeled. Added
+`Properties/Services/Search/`:
+
+- `SearchResponse` — the search "AnnotationPage": `Items` reuses the core
+  `Nodes.Contents.Annotation.Annotation` type directly (search-result annotations have the same
+  `{id,type,motivation,body,target}` shape as painting annotations), plus `Annotations` (nested
+  match-context page), `PartOf`/`Next`/`Prev`/`StartIndex` paging, `Ignored`.
+- `SearchHitAnnotationPage`/`SearchHitAnnotation`/`SearchHitTarget`/`SearchTextQuoteSelector` — the
+  `annotations` field's nested "contextualizing" match entries, each pointing back at its
+  search-result Annotation via a `SpecificResource` + one or more W3C `TextQuoteSelector`s
+  (`prefix`/`exact`/`suffix`). Deliberately a *separate* small type tree from the core `Annotation`
+  rather than extending it — `Annotation.Target` is a plain `string` everywhere else in this SDK
+  (Canvas painting, etc.) and making it polymorphic to also accept a `SpecificResource` object would
+  be a much larger, riskier cross-cutting change for a shape that's specific to search hit-highlighting.
+- `SearchAnnotationCollectionRef`/`SearchResourceReference` — the embedded `partOf` "AnnotationCollection"
+  (id/first/last/total) and the plain `{id,type}` pointers `next`/`prev` use.
+- `TermPageResponse`/`SearchTerm` — the autocomplete "TermPage": `SearchTerm.Value` is the only
+  required field (a bare `{"value":"..."}` is valid); `Type`/`Total`/`Label`/`Language`/`Service`
+  (reusing the existing polymorphic `IBaseService` handling) are all optional per spec.
+
+**Known follow-up, not fixed this pass**: `Annotation.Body` (`IBaseResource`) has no
+polymorphic-dispatch `JsonConverter` for plain `JsonConvert`/`TrackableObject.Parse` round trips —
+it only resolves correctly through `IiifSerializer`'s hand-built V3 Canvas reader, which knows the
+concrete resource type from context. This is a pre-existing gap (not introduced by this milestone)
+that surfaced because `SearchResponse` is a standalone response object with no `IiifSerializer`
+integration of its own; `SearchResponseTests.cs` works around it by not round-tripping `Items`
+through `Parse`, testing the new paging/hit-highlighting fields independently instead.
+
+Tests: `SearchResponseTests.cs` (3 new — required context/type/items write shape, full hit-highlighting
++ paging + ignored-params round trip, minimal-vs-extended Term round trip). Full suite: **199 tests,
+all passing**, 0 build warnings/errors introduced.
+
+### Milestone 14: DONE — Image API service completeness
+
+Finding 6's gaps in `Properties/Services/Service.cs` (the embedded Image API service descriptor,
+deliberately left untouched in Milestone 9 since — unlike every other service this pass fixed — it
+genuinely spans *two* spec versions in one class):
+
+- **`Type` now actually gets populated** (was `string.Empty` since the class's original writing,
+  the same bug Milestone 9 fixed for `AuthService2`). Defaults to `"ImageService3"` (steers new code
+  to the current spec, per the session's overall mandate), with `AsImageService2()`/`AsImageService3()`
+  fluent toggles — `Service` is unlike Auth2/Search/Discovery's classes, each of which maps to
+  exactly one spec version, so its `type` can't be inferred from context and must be an explicit choice.
+- **`Protocol`** (spec-required, fixed `"http://iiif.io/api/image"` in both 2.x and 3.0) — read-only
+  computed property, since a descriptor that isn't Image-API-protocol-compliant has no reason to
+  exist.
+- **`ExtraFormats`** (was entirely missing) — added with the same `ImageFormat` value-object pattern
+  already used for `PreferredFormats`.
+- **`Tile.Height`** (was missing; spec: optional, defaults to `Width` when omitted).
+- **`Service.ToInfoJson()`** (new) — the research noted "no type represents a freestanding info.json
+  document" (unprefixed `id`/`type`, vs. the `@id`/`@type` this class already correctly uses when
+  embedded inline in a Presentation resource for 2.x-era backwards compatibility — confirmed via the
+  live spec page that embedding *may* still use `@id`/`@type`, so the existing shape wasn't wrong,
+  just incomplete). Rather than a whole parallel class for an identical data model, added a
+  conversion method that unprefixes `id`/`type` while leaving `@context` alone (still a JSON-LD
+  keyword, same rule as Milestones 9/11's `@context`-handling fixes).
+
+Tests: `ImageServiceCompletenessTests.cs` (4 new — default-to-3.0 + protocol write, the 2.0 toggle,
+extraFormats/Tile.Height round trip, `ToInfoJson()`'s unprefixed-id/type-but-prefixed-context shape).
+Full suite: **203 tests, all passing**, 0 build warnings/errors introduced.
+
+### Milestone 15: DONE — fix Text Granularity enum values
+
+Verified the exact 6 Text Granularity Levels directly from the spec source
+(`github.com/IIIF/api/source/extension/text-granularity/index.md`, since the live iiif.io page
+404'd): `page`, `block`, `paragraph`, `line`, `word`, `glyph`. `extensions/IIIF.Manifest.Serializer.Net.TextGranularity/TextGranularity.cs`
+had `character` (not a term the spec defines at all) instead of `glyph`, and was missing `paragraph`
+entirely — real OCR/transcription documents using either term would throw in `Parse`. Renamed
+`Character` → `Glyph` and added `Paragraph`; no call sites referenced `.Character` anywhere in this
+repo, so no migration was needed beyond the enum itself. This is a straight correctness fix (not a
+version-legacy split — Text Granularity has only ever had one shape), so no `[Obsolete]` shim: `"character"`
+now throws in `Parse`, same as any other invalid value.
+
+Tests: `TextGranularityEnumTests.cs` (9 new — all 6 spec levels parse correctly, the removed
+`"character"` term now throws, `Paragraph`/`Glyph` are reachable as static instances). Full suite:
+**212 tests, all passing**, 0 build warnings/errors introduced.
+
+### Milestone 16: DONE — navPlace GeometryCollection.geometries
+
+`extensions/IIIF.Manifest.Serializer.Net.NavPlace/Geometry.cs` had no way to represent RFC 7946
+§3.1.8's "GeometryCollection" case — an array of complete nested `Geometry` objects under
+`geometries`, which (per spec) is mutually exclusive with the `coordinates` member every other
+geometry type uses. Added a `Geometries` property (`IReadOnlyCollection<Geometry>`) plus
+`SetGeometries`/`AddGeometry`/`RemoveGeometry`; empty by default so non-collection geometry types
+(`Point`/`LineString`/etc.) never write a stray `"geometries": []`.
+
+Tests: `NavPlaceGeometryCollectionTests.cs` (3 new — collection writes `geometries` not
+`coordinates`, nested geometries round-trip including a nested Polygon's own coordinate structure,
+and a plain Point confirms it never writes a `geometries` field). Full suite: **215 tests, all
+passing**, 0 build warnings/errors introduced.
+
+### Milestone 17: DONE — model Georeference Annotation wrapper
+
+Verified the exact Annotation shape from the spec source
+(`github.com/IIIF/api/source/extension/georef/index.md`, §§3.2-3.4 + full example). Added to
+`extensions/IIIF.Manifest.Serializer.Net.Georeference/`:
+
+- `GeoreferenceAnnotation` (new) — the actual top-level construct: fixed `type: "Annotation"` /
+  `motivation: "georeferencing"`, a `Target`, and a `Body` (reuses the navPlace extension's
+  `NavPlace` FeatureCollection type directly, since both are the same shape and the Georeference
+  project already references NavPlace for exactly this reason).
+- `GeoreferenceTarget` + `GeoreferenceTargetJsonConverter` (new) — the 3 target shapes the spec
+  allows (§3.3): a bare Canvas/Image-Service URI, a full resource object (`id`/`type`/`height`/
+  `width`), or a SpecificResource wrapping a `GeoreferenceSvgSelector` for targeting a specific
+  region — same polymorphic-converter pattern as Milestone 10's `ContentStateTarget`.
+- `GeoreferenceSvgSelector` (new) — the W3C SvgSelector (`type`/`value`) the spec prefers over
+  other selector shapes for Georeference Annotations (§3.3.2).
+- **Cross-cutting fix**: `TransformationExtensions`'s generic constraint was narrowed to
+  `BaseNode<TNode>` — meaning `SetTransformation`/`Transformation` (which the spec places on the
+  Annotation body FeatureCollection, §3.6) could never actually be called on `NavPlace`, since
+  `NavPlace` is a `BaseItem`, not a `BaseNode`. This was finding 9's literal complaint ("transformation
+  is just an additional-property settable directly on any BaseNode, with no annotation wrapper at
+  all") — confirmed by attempting to call it on a `NavPlace` instance and finding it wouldn't
+  compile. Widened the constraint to `TrackableObject<TNode>` (the only base every settable type,
+  including `NavPlace`, actually shares), which required no other changes since
+  `TrackableObject<T>` already implements `IAdditionalPropertiesSupport<T>` unconditionally.
+
+**Known follow-up, not fixed this pass**: the reused `NavPlace`/`Feature` types still default to
+`BaseItem`'s `@id`/`@type`/Presentation-2.x-context shape rather than the unprefixed `id`/`type`
+the spec's own Georeference Annotation body example shows — a pre-existing NavPlace-package-wide
+convention question (its default context, id/type prefixing), not something specific to modeling
+the Annotation wrapper this milestone was scoped to.
+
+Tests: `GeoreferenceAnnotationTests.cs` (5 new — required context/type/motivation write shape, full
+resource-target + transformation round trip, SpecificResource+SvgSelector write shape and round
+trip, and a direct regression test locking in that `Transformation` is now callable on the
+FeatureCollection body itself). Full suite: **220 tests, all passing**, 0 build warnings/errors
+introduced.
+
+### Milestone 18: DONE — remove dead AuthService.cs (Auth 0.x)
+
+Deleted `Properties/Services/AuthService.cs` (Auth API 0.x, `@context: /auth/0/`) — confirmed
+unreachable: not referenced by `ServiceJsonConverter`'s type-dispatch switch or its profile-based
+fallback (only `AuthService1`/`AuthService2` are), not referenced by any test or example, and
+predates the "there was never a Presentation 1.0" correction from §1 (same class of pre-session
+leftover as the `Related.cs` dead code noted in §8, and consistent with Milestone 11 deleting the
+old flat `AuthService2` for the same reason — genuinely unreachable code, not a legacy shape
+needing preservation). Grep confirmed zero remaining references before deletion; full suite still
+**220 tests, all passing** with no changes needed elsewhere.
+
+Left as-is (informational only, not a defect): `ServiceJsonConverter`'s `AuthCookieService1`/
+`AuthTokenService1`/`AuthLogoutService1` `@type` switch cases don't correspond to any `@type` value
+Auth 1.0 actually defines (its typing is profile-driven per spec) — harmless "documentation-shaped
+fiction" per finding 10, since the profile-based fallback immediately below is what actually
+resolves Auth 1.0 services in practice, and removing the dead cases would change nothing observable.
+
+### Milestone 19: DONE — final verification sweep + guide update
+
+Final checks across the whole solution (all 6 projects: core library, 3 extension packages,
+examples/Cookbook, tests):
+
+- `dotnet build` (full solution, clean): **0 warnings, 0 errors**.
+- `dotnet test`: **220 tests, all passing**.
+- Coverage (coverlet + ReportGenerator, `coverage-report/SummaryGithub.md`): overall line coverage
+  **72.3%** (2726/3766 lines), branch coverage 69.5% — up from the 63.5% baseline recorded at the
+  end of Milestone 8, despite this pass adding a large volume of new, mostly-well-tested code
+  (Content State, the 4 Auth 2.0 types + 3 responses, Discovery paging, Search responses, Image
+  service completeness, Text Granularity, navPlace GeometryCollection, the Georeference wrapper).
+  Lowest-covered new areas are mostly `[JsonConstructor]`-only classes' rarely-hit branches
+  (`SearchAnnotationCollectionRef`, `AuthLogoutService2`) rather than untested surface area.
+
+## Status: all 19 milestones (0-19) complete.
+
+Summary of what changed since §§0-8 (the Presentation API core versioning work): the
+`github.com/IIIF/awesome-iiif` comparison in §10 found the *surrounding* standards (Auth, Search,
+Discovery, Content State, Image, plus the navPlace/Georeference/Text Granularity extensions) were
+materially incomplete or, in a few cases, actively wrong (missing `type` on write, a fabricated
+enum value, a conflated collection/page model). Milestones 9-18 closed each of those gaps with the
+same discipline as the core work: 3.0-native-first modeling, `[JsonIgnore]`d computed views where a
+type spans conventions, tests landing with every change, and — critically — several of the
+"cross-cutting bugs" found in Milestone 9 turned out to have siblings only surfaced by later
+milestones exercising the same code paths differently (the `@context` mis-rename found while fixing
+Milestone 9's own `@type` bug; the `ServiceJsonConverter` recursion-guard gap found only once Auth
+2.0 introduced genuinely nested polymorphic services in Milestone 11). No regressions were
+introduced in any of the 9 milestones — every existing test continued passing throughout, and each
+milestone's own new tests are additive.

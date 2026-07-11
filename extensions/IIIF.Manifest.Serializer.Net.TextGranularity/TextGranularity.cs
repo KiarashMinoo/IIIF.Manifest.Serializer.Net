@@ -21,30 +21,34 @@ namespace IIIF.Manifests.Serializer.Extensions
         }
 
         /// <summary>
-        /// Character-level text granularity for individual character positioning.
+        /// A page in a paginated document.
         /// </summary>
-        public static readonly TextGranularity Character = new TextGranularity("character");
+        public static readonly TextGranularity Page = new TextGranularity("page");
 
         /// <summary>
-        /// Word-level text granularity for word-based operations.
-        /// </summary>
-        public static readonly TextGranularity Word = new TextGranularity("word");
-
-        /// <summary>
-        /// Line-level text granularity for line-based text display.
-        /// </summary>
-        public static readonly TextGranularity Line = new TextGranularity("line");
-
-        /// <summary>
-        /// Block-level text granularity for paragraph or region text.
+        /// An arbitrary region of text.
         /// </summary>
         public static readonly TextGranularity Block = new TextGranularity("block");
 
         /// <summary>
-        /// Page-level text granularity for full page text content.
+        /// A paragraph.
         /// </summary>
-        public static readonly TextGranularity Page = new TextGranularity("page");
+        public static readonly TextGranularity Paragraph = new TextGranularity("paragraph");
 
+        /// <summary>
+        /// A topographic line.
+        /// </summary>
+        public static readonly TextGranularity Line = new TextGranularity("line");
+
+        /// <summary>
+        /// A single word.
+        /// </summary>
+        public static readonly TextGranularity Word = new TextGranularity("word");
+
+        /// <summary>
+        /// A single glyph or symbol.
+        /// </summary>
+        public static readonly TextGranularity Glyph = new TextGranularity("glyph");
 
         /// <summary>
         /// Parse a string value to a TextGranularity instance.
@@ -53,11 +57,12 @@ namespace IIIF.Manifests.Serializer.Extensions
         {
             return value?.ToLowerInvariant() switch
             {
-                "character" => Character,
-                "word" => Word,
-                "line" => Line,
-                "block" => Block,
                 "page" => Page,
+                "block" => Block,
+                "paragraph" => Paragraph,
+                "line" => Line,
+                "word" => Word,
+                "glyph" => Glyph,
                 _ => throw new ArgumentException($"Unknown text granularity: {value}", nameof(value))
             };
         }

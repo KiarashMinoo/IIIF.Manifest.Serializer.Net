@@ -14,6 +14,8 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.Services;
+using IIIF.Manifests.Serializer.Properties.Services.Auth2;
+using IIIF.Manifests.Serializer.Properties.Services.Discovery;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using Newtonsoft.Json;
@@ -300,8 +302,13 @@ public static class CookbookCatalog
         var manifest = CreateSimpleImageManifest();
         manifest.AddService(new SearchService("http://iiif.io/api/search/2/context.json", "https://example.org/search", "http://iiif.io/api/search/0/search").AddService(new AutoCompleteService("http://iiif.io/api/search/2/context.json", "https://example.org/search/autocomplete", "http://iiif.io/api/search/0/autocomplete")));
         manifest.AddService(new ContentStateService("http://iiif.io/api/content-state/1/context.json", "https://example.org/content-state", "http://iiif.io/api/content-state/v1/state"));
-        manifest.AddService(new AuthService2("https://example.org/auth/login", "http://iiif.io/api/auth/2/login").SetLabel("Login").SetHeading("Sign in").SetNote("Restricted content").SetConfirmLabel("Continue"));
-        manifest.AddService(new DiscoveryService("http://iiif.io/api/discovery/1/context.json", "https://example.org/discovery", "http://iiif.io/api/discovery/1/search"));
+        var accessTokenService = new AuthAccessTokenService2("https://example.org/auth/token");
+        var accessService = new AuthAccessService2("https://example.org/auth/login", "active", accessTokenService)
+            .SetLabel("Login").SetHeading("Sign in").SetNote("Restricted content").SetConfirmLabel("Continue")
+            .SetLogoutService(new AuthLogoutService2("https://example.org/auth/logout", "Logout"));
+        manifest.AddService(new AuthProbeService2("https://example.org/auth/probe", accessService));
+        manifest.AddService(new DiscoveryService("http://iiif.io/api/discovery/1/context.json", "https://example.org/discovery",
+            new DiscoveryResourceReference("https://example.org/discovery/page-0", "OrderedCollectionPage")));
         return manifest;
     }
 

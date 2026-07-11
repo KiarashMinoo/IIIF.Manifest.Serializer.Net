@@ -3,30 +3,30 @@
 
 |||
 |:---|:---|
-| Generated on: | 7/10/2026 - 11:36:36 PM |
-| Coverage date: | 7/10/2026 - 11:36:35 PM |
+| Generated on: | 7/11/2026 - 11:53:23 AM |
+| Coverage date: | 7/11/2026 - 11:52:22 AM |
 | Parser: | Cobertura |
 | Assemblies: | 4 |
-| Classes: | 126 |
-| Files: | 125 |
-| **Line coverage:** | 63.5% (1823 of 2869) |
-| Covered lines: | 1823 |
-| Uncovered lines: | 1046 |
-| Coverable lines: | 2869 |
-| Total lines: | 7226 |
-| **Branch coverage:** | 66.9% (592 of 884) |
-| Covered branches: | 592 |
-| Total branches: | 884 |
+| Classes: | 156 |
+| Files: | 155 |
+| **Line coverage:** | 72.3% (2726 of 3766) |
+| Covered lines: | 2726 |
+| Uncovered lines: | 1040 |
+| Coverable lines: | 3766 |
+| Total lines: | 9705 |
+| **Branch coverage:** | 69.5% (784 of 1128) |
+| Covered branches: | 784 |
+| Total branches: | 1128 |
 | **Method coverage:** | [Feature is only available for sponsors](https://reportgenerator.io/pro) |
 
 </details>
 
 ## Coverage
-<details><summary>IIIF.Manifest.Serializer.Net - 64.1%</summary>
+<details><summary>IIIF.Manifest.Serializer.Net - 71.5%</summary>
 
 |**Name**|**Line**|**Branch**|
 |:---|---:|---:|
-|**IIIF.Manifest.Serializer.Net**|**64.1%**|**68%**|
+|**IIIF.Manifest.Serializer.Net**|**71.5%**|**68.5%**|
 |IIIF.Manifests.Serializer.Attributes.AuthAPIAttribute|100%||
 |IIIF.Manifests.Serializer.Attributes.ContentStateAPIAttribute|100%||
 |IIIF.Manifests.Serializer.Attributes.DiscoveryAPIAttribute|100%||
@@ -55,6 +55,11 @@
 |IIIF.Manifests.Serializer.Nodes.Contents.Annotation.AnnotationPage|100%||
 |IIIF.Manifests.Serializer.Nodes.Contents.Audio.Audio|100%||
 |IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource.AudioResource|100%||
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentState|69.2%|50%|
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateCodec|75%|58.3%|
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateFragmentS<br/>elector|100%|50%|
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateTarget|100%||
+|IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateTargetJso<br/>nConverter|90%|72.5%|
 |IIIF.Manifests.Serializer.Nodes.Contents.Embedded.EmbeddedContent|0%||
 |IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource.EmbeddedContentR<br/>esource|100%||
 |IIIF.Manifests.Serializer.Nodes.Contents.Image.Image|100%||
@@ -97,25 +102,44 @@
 |IIIF.Manifests.Serializer.Properties.ResourceType|15.6%||
 |IIIF.Manifests.Serializer.Properties.Rights|9.5%||
 |IIIF.Manifests.Serializer.Properties.SeeAlso|100%||
-|IIIF.Manifests.Serializer.Properties.Services.Activity|0%||
-|IIIF.Manifests.Serializer.Properties.Services.ActivityObject|0%||
-|IIIF.Manifests.Serializer.Properties.Services.AuthService|0%||
+|IIIF.Manifests.Serializer.Properties.Services.Activity|100%||
+|IIIF.Manifests.Serializer.Properties.Services.ActivityObject|100%|100%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.AuthAccessService2|100%|100%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.AuthAccessTokenService2|90%|100%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.AuthLogoutService2|90%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.AuthProbeService2|87.5%|100%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses.AuthAccessTok<br/>en2|100%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses.AuthAccessTok<br/>enError2|100%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses.AuthProbeResu<br/>lt2|100%|80%|
+|IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses.AuthResourceR<br/>eference|100%||
 |IIIF.Manifests.Serializer.Properties.Services.AuthService1|40.4%||
-|IIIF.Manifests.Serializer.Properties.Services.AuthService2|88.2%||
 |IIIF.Manifests.Serializer.Properties.Services.AutoCompleteService|100%||
 |IIIF.Manifests.Serializer.Properties.Services.ContentStateService|100%||
-|IIIF.Manifests.Serializer.Properties.Services.DiscoveryService|55%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Discovery.DiscoveryAgent|100%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Discovery.DiscoveryCollection<br/>Page|91.3%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Discovery.DiscoveryDataset|100%|75%|
+|IIIF.Manifests.Serializer.Properties.Services.Discovery.DiscoveryResourceRe<br/>ference|100%||
+|IIIF.Manifests.Serializer.Properties.Services.DiscoveryService|97.5%|100%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchAnnotationCollec<br/>tionRef|62.9%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchHitAnnotation|100%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchHitAnnotationPag<br/>e|69.2%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchHitTarget|100%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchResourceReferenc<br/>e|100%||
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchResponse|90.7%|75%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchTerm|69.6%|75%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.SearchTextQuoteSelecto<br/>r|100%|50%|
+|IIIF.Manifests.Serializer.Properties.Services.Search.TermPageResponse|100%|75%|
 |IIIF.Manifests.Serializer.Properties.Services.SearchService|80%|100%|
-|IIIF.Manifests.Serializer.Properties.Services.Service|65.3%|70%|
+|IIIF.Manifests.Serializer.Properties.Services.Service|71.6%|68.7%|
 |IIIF.Manifests.Serializer.Properties.Size|100%||
 |IIIF.Manifests.Serializer.Properties.StartCanvas|100%||
 |IIIF.Manifests.Serializer.Properties.Thumbnail|100%||
-|IIIF.Manifests.Serializer.Properties.Tile|75%|100%|
+|IIIF.Manifests.Serializer.Properties.Tile|81.8%|100%|
 |IIIF.Manifests.Serializer.Properties.TimeMode|0%||
 |IIIF.Manifests.Serializer.Properties.ViewingDirection|60%||
 |IIIF.Manifests.Serializer.Properties.ViewingHint|37.5%||
 |IIIF.Manifests.Serializer.Properties.Within|28.5%||
-|IIIF.Manifests.Serializer.Shared.BaseItem`1|45.4%|75%|
+|IIIF.Manifests.Serializer.Shared.BaseItem`1|52.7%|75%|
 |IIIF.Manifests.Serializer.Shared.BaseNode`1|59.4%|91.3%|
 |IIIF.Manifests.Serializer.Shared.Content.BaseContent`1|37.5%|50%|
 |IIIF.Manifests.Serializer.Shared.Content.BaseContent`2|100%||
@@ -125,54 +149,60 @@
 |IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJArray`1|0%||
 |IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJObject`1|0%||
 |IIIF.Manifests.Serializer.Shared.FormattableItem`1|100%||
+|IIIF.Manifests.Serializer.Shared.LanguageMapJsonConverter|76.6%|40%|
 |IIIF.Manifests.Serializer.Shared.ObjectArrayJsonConverter|85.2%|86.3%|
-|IIIF.Manifests.Serializer.Shared.ServiceJsonConverter|58.5%|63.5%|
+|IIIF.Manifests.Serializer.Shared.ServiceJsonConverter|60.1%|68.5%|
 |IIIF.Manifests.Serializer.Shared.Trackable.ElementDescriptor|66.6%||
 |IIIF.Manifests.Serializer.Shared.Trackable.ElementDescriptor`1|85.7%|100%|
 |IIIF.Manifests.Serializer.Shared.Trackable.IAdditionalPropertiesSupport`1|50%||
-|IIIF.Manifests.Serializer.Shared.Trackable.TrackableObject|40%|0%|
+|IIIF.Manifests.Serializer.Shared.Trackable.TrackableObject|85%|50%|
 |IIIF.Manifests.Serializer.Shared.Trackable.TrackableObject`1|68.2%|66.3%|
 |IIIF.Manifests.Serializer.Shared.Trackable.TrackableObjectPropertyChangedEv<br/>entArgs|30%||
 |IIIF.Manifests.Serializer.Shared.Trackable.TrackableObjectPropertyChangingE<br/>ventArgs|100%||
+|IIIF.Manifests.Serializer.Shared.UnprefixedBaseItem`1|52.7%|75%|
 |IIIF.Manifests.Serializer.Shared.ValuableItem.ValuableItem`1|100%|58.3%|
 |IIIF.Manifests.Serializer.Shared.ValuableItem.ValuableItemJsonConverter`1|80%|60%|
 
 </details>
-<details><summary>IIIF.Manifest.Serializer.Net.Georeference - 62.5%</summary>
+<details><summary>IIIF.Manifest.Serializer.Net.Georeference - 88.4%</summary>
 
 |**Name**|**Line**|**Branch**|
 |:---|---:|---:|
-|**IIIF.Manifest.Serializer.Net.Georeference**|**62.5%**|****|
+|**IIIF.Manifest.Serializer.Net.Georeference**|**88.4%**|**72.7%**|
+|IIIF.Manifests.Serializer.Extensions.GeoreferenceAnnotation|100%|50%|
+|IIIF.Manifests.Serializer.Extensions.GeoreferenceSvgSelector|100%|50%|
+|IIIF.Manifests.Serializer.Extensions.GeoreferenceTarget|100%||
+|IIIF.Manifests.Serializer.Extensions.GeoreferenceTargetJsonConverter|86%|77.7%|
 |IIIF.Manifests.Serializer.Extensions.ResourceCoords.ResourceCoordExtensions|100%||
 |IIIF.Manifests.Serializer.Extensions.Transformations.PolynomialTransformati<br/>on|0%||
 |IIIF.Manifests.Serializer.Extensions.Transformations.PolynomialTransformati<br/>onOption|0%||
 |IIIF.Manifests.Serializer.Extensions.Transformations.ThinPlateSplineTransfo<br/>rmation|100%||
 |IIIF.Manifests.Serializer.Extensions.Transformations.Transformation|100%||
 |IIIF.Manifests.Serializer.Extensions.Transformations.TransformationExtensio<br/>ns|100%||
-|IIIF.Manifests.Serializer.Extensions.Transformations.TransformationType|66.6%||
+|IIIF.Manifests.Serializer.Extensions.Transformations.TransformationType|100%||
 
 </details>
-<details><summary>IIIF.Manifest.Serializer.Net.NavPlace - 58%</summary>
+<details><summary>IIIF.Manifest.Serializer.Net.NavPlace - 72.5%</summary>
 
 |**Name**|**Line**|**Branch**|
 |:---|---:|---:|
-|**IIIF.Manifest.Serializer.Net.NavPlace**|**58%**|**60.7%**|
-|IIIF.Manifests.Serializer.Extensions.CoordinateItem|38.8%|50%|
-|IIIF.Manifests.Serializer.Extensions.CoordinateItemJsonConverter|67.3%|55%|
+|**IIIF.Manifest.Serializer.Net.NavPlace**|**72.5%**|**86.6%**|
+|IIIF.Manifests.Serializer.Extensions.CoordinateItem|63.8%|100%|
+|IIIF.Manifests.Serializer.Extensions.CoordinateItemJsonConverter|86.5%|80%|
 |IIIF.Manifests.Serializer.Extensions.Feature|100%||
 |IIIF.Manifests.Serializer.Extensions.FeatureProperties|42.8%|100%|
-|IIIF.Manifests.Serializer.Extensions.Geometry|60%|100%|
-|IIIF.Manifests.Serializer.Extensions.GeometryType|40%||
-|IIIF.Manifests.Serializer.Extensions.NavPlace|75%|50%|
+|IIIF.Manifests.Serializer.Extensions.Geometry|64.7%|100%|
+|IIIF.Manifests.Serializer.Extensions.GeometryType|70%||
+|IIIF.Manifests.Serializer.Extensions.NavPlace|75%|100%|
 |IIIF.Manifests.Serializer.Extensions.NavPlaceExtensions|100%||
 
 </details>
-<details><summary>IIIF.Manifest.Serializer.Net.TextGranularity - 42.8%</summary>
+<details><summary>IIIF.Manifest.Serializer.Net.TextGranularity - 75.6%</summary>
 
 |**Name**|**Line**|**Branch**|
 |:---|---:|---:|
-|**IIIF.Manifest.Serializer.Net.TextGranularity**|**42.8%**|**18.7%**|
-|IIIF.Manifests.Serializer.Extensions.TextGranularity|28.5%|0%|
+|**IIIF.Manifest.Serializer.Net.TextGranularity**|**75.6%**|**88.8%**|
+|IIIF.Manifests.Serializer.Extensions.TextGranularity|70%|92.8%|
 |IIIF.Manifests.Serializer.Extensions.TextGranularityExtensions|100%|75%|
 
 </details>

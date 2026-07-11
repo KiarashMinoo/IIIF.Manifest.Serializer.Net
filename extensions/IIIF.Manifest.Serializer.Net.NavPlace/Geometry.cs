@@ -14,6 +14,7 @@ public class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geomet
 {
     public const string TypeJName = "type";
     public const string CoordinatesJName = "coordinates";
+    public const string GeometriesJName = "geometries";
 
     [JsonProperty(TypeJName)]
     public GeometryType Type
@@ -26,6 +27,19 @@ public class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geomet
     public IReadOnlyCollection<CoordinateItem> Coordinates
     {
         get => GetElementValue(x => x.Coordinates) ?? [];
+        private set => SetElementValue(value);
+    }
+
+    /// <summary>
+    /// Only meaningful when <see cref="Type"/> is <see cref="GeometryType.GeometryCollection"/> -
+    /// per RFC 7946 §3.1.8, a GeometryCollection has no "coordinates" member of its own; it wraps
+    /// other complete Geometry objects (which may themselves be further GeometryCollections)
+    /// instead.
+    /// </summary>
+    [JsonProperty(GeometriesJName)]
+    public IReadOnlyCollection<Geometry> Geometries
+    {
+        get => GetElementValue(x => x.Geometries) ?? [];
         private set => SetElementValue(value);
     }
 
@@ -52,6 +66,24 @@ public class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geomet
     public Geometry RemoveAddCoordinate(CoordinateItem coordinate)
     {
         Coordinates = Coordinates.Without(coordinate);
+        return this;
+    }
+
+    public Geometry SetGeometries(IReadOnlyCollection<Geometry> geometries)
+    {
+        Geometries = geometries;
+        return this;
+    }
+
+    public Geometry AddGeometry(Geometry geometry)
+    {
+        Geometries = Geometries.With(geometry);
+        return this;
+    }
+
+    public Geometry RemoveGeometry(Geometry geometry)
+    {
+        Geometries = Geometries.Without(geometry);
         return this;
     }
 }
