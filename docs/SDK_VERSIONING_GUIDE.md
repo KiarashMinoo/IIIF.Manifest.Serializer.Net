@@ -897,10 +897,11 @@ declaring a section "done" from reasoning alone.
 
 Scope: implement every real recipe in `github.com/IIIF/cookbook-recipes` (73 folders; 2 -
 `0231-transcript-meta-recipe` and `0466-link-for-loading-manifest` - are prose-only with no
-manifest JSON, leaving 71 real recipes) as a faithful C# builder in
-`examples/IIIF.Manifest.Serializer.Net.Cookbook/CookbookCatalog.cs`. `iiif.io/demos/` was checked
-twice (once on request) and confirmed to be an external-links showcase page with no manifest
-content of its own - not a source for examples.
+manifest JSON, leaving 71 real recipes) as a faithful C# builder, originally all in one file,
+`examples/IIIF.Manifest.Serializer.Net.Cookbook/CookbookCatalog.cs` (later split into thematic
+recipe-set files - see Round 4 below). `iiif.io/demos/` was checked twice (once on request) and
+confirmed to be an external-links showcase page with no manifest content of its own - not a source
+for examples.
 
 **Groups A-H (Milestones 1-8): new SDK modeling required by at least one recipe**, found by
 fetching every recipe's real JSON directly (not just its prose) and diffing against the SDK's
@@ -1000,4 +1001,60 @@ several catalog entries' actual `IiifSerializer` output against the real recipe 
 above - a reminder that a passing round-trip test proves internal consistency, not fidelity to an
 external reference document.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete.
+## Round 4: structural refactor - file-size reduction, Facade/Strategy/Registry patterns
+
+Scope: two files had grown past ~1400 lines over the course of Round 3 (`IiifSerializer.cs` from
+the V3 read/write logic, `CookbookCatalog.cs` from the 71-recipe catalog). Both were mechanically
+split with **zero behavior change** - every existing test passed before and after each split, no
+logic was altered, only relocated.
+
+- **`src/IIIF.Manifest.Serializer.Net/IiifSerializer.cs`** (1461 → 126 lines): now holds only the
+  public `Serialize`/`Deserialize` overloads and 2.x/3.0 version dispatch - a thin **Facade** over
+  the internal per-type V3 read/write logic, which moved into 13 sibling `partial class` files, one
+  per IIIF resource-type responsibility: `IiifSerializer.Manifest.cs`, `.Collection.cs`,
+  `.AnnotationCollection.cs`, `.Canvas.cs`, `.Range.cs`, `.Annotation.cs` (the largest remaining
+  file at 366 lines, by design - the most tightly-coupled recursive body-dispatch logic),
+  `.NodeExtras.cs` (rights/requiredStatement/partOf/summary/metadata/thumbnail/rendering/homepage/
+  seeAlso/behavior, generic across Manifest/Collection/Canvas/Range), `.Metadata.cs`,
+  `.ImageLikeResources.cs` (thumbnail/logo), `.LinkResources.cs` (rendering/homepage/seeAlso),
+  `.Provider.cs` (Manifest/Collection-only per spec), `.Service.cs`, `.Helpers.cs` (language-map/
+  label/description shared parsing). All still `internal`/`private static`; nothing in the public
+  API surface moved.
+- **`examples/IIIF.Manifest.Serializer.Net.Cookbook/CookbookCatalog.cs`** (1745 → 44 lines):
+  redesigned around **Strategy + Registry** rather than split as one flat file, since a demo
+  catalog is a natural fit for real polymorphism (unlike `IiifSerializer`, deliberately left a
+  plain Facade - see the reasoning in this round's own retrospective below). New layout:
+  - `IRecipeSet` (Strategy interface): `IEnumerable<ExampleDefinition> GetRecipes()`.
+  - Nine `internal sealed class ...Recipes : IRecipeSet` files, one per thematic slice of the 78
+    catalog entries (140-245 lines each): `FoundationRecipes` (0001-0011), `CanvasAndStructureRecipes`
+    (0013-0026), `CollectionAndChoiceRecipes` (0027-0033), `MediaVariationRecipes` (0035-0045),
+    `LinkingAndOperaRecipes` (0046-0103), `DescriptivePropertiesRecipes` (0117-0229),
+    `ProviderAndTaggingRecipes` (0230-0283), `AnnotationCollectionRecipes` (0299-0346),
+    `AdvancedCompositionRecipes` (0377-0599).
+  - `RecipeBuilders.cs`: the shared construction helpers every recipe set calls into (`Id`,
+    `CanvasId`, `NewManifest`/`NewCanvas` overloads, `PaintingImage`, `WithSupplementaryPage`, plus
+    the `Base`/`ImageService3`/Gottingen-fixture constants). A handful of narrower helpers used by
+    only one or two recipes within a single group (`NewVolumeManifest`, `AddUclaPlaybillCanvases`,
+    `NewNewspaperIssue`) stayed private inside their owning recipe-set file instead, rather than
+    being pulled into the shared class - they aren't shared beyond that group.
+  - `CookbookCatalog.cs` itself is now a thin **Registry**: a fixed `IReadOnlyList<IRecipeSet>` of
+    the nine strategies, aggregated via `RecipeSets.SelectMany(set => set.GetRecipes()).ToList()`.
+  - The public `ExampleDefinition` record and `CookbookCatalog.GetAll(): IReadOnlyList<ExampleDefinition>`
+    signature are unchanged - `ExampleCatalogTests.cs` needed no modification.
+
+**Why `IiifSerializer` got a Facade split but not a Strategy rewrite**: it's security-critical,
+heavily-tested production code (329 dependent tests) built around one closed set of IIIF resource
+types the SDK itself defines - there's no varying "algorithm" to select between at runtime, so
+introducing `IV3NodeWriter<T>`/`IV3NodeReader<T>`-style polymorphism there would be an abstraction
+with no behavioral payoff, violating the "don't add abstractions beyond what the task requires"
+principle. `CookbookCatalog.cs`, by contrast, is example/demo code where "which group of recipes to
+build" genuinely is a set of interchangeable strategies, and a Registry aggregating them reads more
+naturally than one giant switch or a single flat list.
+
+Verification after each split: full solution build (`dotnet build` on the affected project) - 0
+warnings, 0 errors both times; full test suite (`dotnet test`) - all 329 tests passing both times,
+including the automatic per-catalog-entry round-trip test for all 78 `CookbookCatalog` entries from
+Round 3's Milestone 10, confirming the Strategy/Registry rewrite preserved every recipe's output
+byte-for-byte.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor.

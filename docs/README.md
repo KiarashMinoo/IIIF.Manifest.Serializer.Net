@@ -1,212 +1,270 @@
-# IIIF.Manifest.Serializer.Net Documentation
+# IIIF.Manifest.Serializer.Net
 
-Complete production-quality documentation for the IIIF Presentation API 2.0 manifest serialization library.
+A .NET (netstandard2.1) library for reading and writing **IIIF Presentation API** manifests -
+`Manifest`, `Collection`, `Canvas`, `Range`, `Annotation`/`AnnotationPage`, `AnnotationCollection`,
+and Content State 1.0 documents - across **Presentation API 2.0, 2.1, and 3.0**, plus the Auth,
+Search, Discovery, and Image API service descriptors and the navPlace/Georeference/Text
+Granularity extensions.
 
-## Documentation Structure
+## Contents
 
-All 27 README files have been created following the comprehensive template with:
-- ✅ Anchor-linked table of contents
-- ✅ 2-5 sentence overview with IIIF context
-- ✅ Files table (file | types | LOC | responsibility)
-- ✅ Types & Members table
-- ✅ Per-type details
-- ✅ Mermaid diagrams (class hierarchies, sequence flows)
-- ✅ Realistic IIIF examples with JSON output
-- ✅ Cross-linked See Also sections
+- [Why this library](#why-this-library)
+- [Install](#install)
+- [Quick start](#quick-start)
+- [Multi-version serialization](#multi-version-serialization)
+- [Project layout](#project-layout)
+- [The object model](#the-object-model)
+- [`IiifSerializer` architecture](#iifserializer-architecture)
+- [Services](#services)
+- [Extension packages](#extension-packages)
+- [Examples and Cookbook](#examples-and-cookbook)
+- [Testing](#testing)
+- [Documentation index](#documentation-index)
+- [Contributing](#contributing)
+- [License](#license)
 
-## Documentation Index
+## Why this library
 
-### Core Folders
+Real-world IIIF content is a mix of vintage 2.0/2.1 manifests and modern 3.0 documents, often both
+in the same collection. This SDK's model is **3.0-native internally** - `Items`, `Behavior`,
+`Rights`, `RequiredStatement`, `Summary`, `PartOf`, etc. are the real backing storage - while every
+legacy 2.x-only concept (`Sequences`, `Canvas.Images`, `ViewingHint`, `License`, `Attribution`,
+`Within`, ...) is a **computed, read-only view** derived from that same storage. That means:
 
-1. **[Helpers](Helpers/README.md)** – Utility methods for collections, JSON parsing, date handling, manifest metadata
-2. **[Shared](Shared/README.md)** – Foundation types: TrackableObject, BaseItem, BaseNode, BaseContent hierarchies
-3. **[Nodes](Nodes/README.md)** – IIIF domain model: Manifest, Sequence, Canvas, Structure, annotations
-4. **[Properties](Properties/README.md)** – IIIF metadata properties: Label, Description, Metadata, Service, etc.
+- Parsing a 2.0/2.1 document and re-serializing it as 3.0 (or vice versa) just works, with no
+  manual mapping code required.
+- Reading old-shaped data never breaks: legacy getters (`manifest.Sequences`, `canvas.Images`, ...)
+  keep working after parsing any version.
+- Writing new documents against the legacy shape is intentionally a compile error: legacy
+  mutators (`AddSequence`, `AddImage`, `SetLicense`, ...) are `[Obsolete(error: true)]`, steering
+  new code onto the 3.0-native API (`AddItem`, `AddAnnotation`, `SetRights`, ...) without deleting
+  the types existing consumers may still reference by name.
 
-### Shared Foundation (8 READMEs)
+See [`SDK_VERSIONING_GUIDE.md`](SDK_VERSIONING_GUIDE.md) for the full architecture rationale, the
+confirmed 2.x↔3.0 property mapping table, and the session-by-session history of how the reshape was
+implemented and verified.
 
-- **[Shared/Trackable](Shared/Trackable/README.md)** – TrackableObject pattern with ModifiedProperties tracking
-- **[Shared/BaseItem](Shared/BaseItem/README.md)** – @context/@id/@type/service foundation
-- **[Shared/BaseNode](Shared/BaseNode/README.md)** – 15+ metadata fields (label, description, thumbnail, etc.)
-- **[Shared/Content](Shared/Content/README.md)** – BaseContent hierarchy for annotations
-- **[Shared/Content/Resources](Shared/Content/Resources/README.md)** – BaseResource foundation for content resources
-- **[Shared/Exceptions](Shared/Exceptions/README.md)** – Custom JSON validation exceptions
-- **[Shared/FormatableItem](Shared/FormatableItem/README.md)** – Items with format field
-- **[Shared/ValuableItem](Shared/ValuableItem/README.md)** – Simple string property wrappers
-
-### Nodes Domain Model (6 READMEs)
-
-- **[Nodes/Manifest](Nodes/Manifest/README.md)** – Top-level IIIF resource with sequences, structures
-- **[Nodes/Sequence](Nodes/Sequence/README.md)** – Ordered canvas collection with viewing direction
-- **[Nodes/Canvas](Nodes/Canvas/README.md)** – Painting surface with dimensions, images
-- **[Nodes/Structure](Nodes/Structure/README.md)** – Hierarchical navigation (ranges)
-- **[Nodes/Content](Nodes/Content/README.md)** – Annotation types overview
-
-### Content Annotations (8 READMEs)
-
-- **[Nodes/Content/Image](Nodes/Content/Image/README.md)** – Painting annotations linking ImageResource
-- **[Nodes/Content/Image/Resource](Nodes/Content/Image/Resource/README.md)** – Image resources with IIIF Image Service
-- **[Nodes/Content/Embedded](Nodes/Content/Embedded/README.md)** – Embedded text annotations
-- **[Nodes/Content/Embedded/Resource](Nodes/Content/Embedded/Resource/README.md)** – Text resources with chars/language
-- **[Nodes/Content/Segment](Nodes/Content/Segment/README.md)** – Region annotations with selectors
-- **[Nodes/Content/Segment/Resource](Nodes/Content/Segment/Resource/README.md)** – Segment resources
-- **[Nodes/Content/Segment/Selector](Nodes/Content/Segment/Selector/README.md)** – xywh region selectors
-- **[Nodes/Content/OtherContent](Nodes/Content/OtherContent/README.md)** – External annotation list links
-
-### Properties Metadata (9 READMEs)
-
-- **[Properties/Description](Properties/Description/README.md)** – Multi-language descriptions
-- **[Properties/Metadata](Properties/Metadata/README.md)** – Label-value metadata pairs
-- **[Properties/Metadata/MetadataValue](Properties/Metadata/MetadataValue/README.md)** – Individual metadata values
-- **[Properties/Rendering](Properties/Rendering/README.md)** – Alternative format links (PDF, EPUB)
-- **[Properties/Service](Properties/Service/README.md)** – IIIF Image API service descriptors
-- **[Properties/Tile](Properties/Tile/README.md)** – Deep-zoom tile specifications
-- **[Properties/Within](Properties/Within/README.md)** – Parent collection links
-- **[Properties/Interfaces](Properties/Interfaces/README.md)** – IDimenssionSupport, IViewingDirectionSupport
-
-## Architecture Overview
-
-### TrackableObject Pattern
-
-All domain types inherit from `TrackableObject<T>` which provides:
-- **SetPropertyValue**: Reflection-based immutable property mutation
-- **ModifiedProperties**: Dictionary tracking changed fields
-- **INotifyPropertyChanged/INotifyPropertyChanging**: Change notification events
-
-```csharp
-manifest.AddLabel(new Label("Title"))
-        .SetThumbnail(thumbnail)
-        .AddSequence(sequence); // Fluent chaining
-```
-
-### JsonConverter Hierarchy
-
-Custom converters enforce IIIF validation:
-- **TrackableObjectJsonConverter** → clears ModifiedProperties, forces indented formatting
-- **BaseItemJsonConverter** → validates @context/@id/@type required fields
-- **BaseNodeJsonConverter** → parses 15+ metadata fields
-- Domain converters → enforce resource/on/dimension requirements
-
-### IIIF Domain Model
-
-```
-Manifest (top-level)
-  └─ Sequence (ordered views)
-       └─ Canvas (painting surface with dimensions)
-            ├─ Image (painting annotation)
-            │    └─ ImageResource (with Service for deep-zoom)
-            ├─ EmbeddedContent (text annotations)
-            ├─ Segment (region annotations with Selector)
-            └─ OtherContent (external annotation lists)
-```
-
-## Key Features
-
-1. **IIIF Presentation API 2.0 Compliance**: Full spec implementation with validation
-2. **Immutable Properties**: All mutations through fluent SetPropertyValue pattern
-3. **Change Tracking**: ModifiedProperties dictionary for dirty field detection
-4. **Single-or-Array Serialization**: Converters emit arrays only when count > 1
-5. **Multi-Language Support**: Description, MetadataValue with @value/@language
-6. **IIIF Image Service**: Deep-zoom via Service/Tile with scaleFactors
-7. **Flexible Annotations**: Image painting, embedded text, segment regions
-8. **Hierarchical Navigation**: Structure/Range with canvas/range collections
-
-## Quick Start Example
-
-```csharp
-using IIIF.Manifest.Serializer.Net;
-
-// Create manifest
-var manifest = new Manifest(
-    "https://example.org/manifest",
-    new Label("16th Century Manuscript")
-).SetViewingDirection(ViewingDirection.RightToLeft);
-
-// Add sequence with canvas
-var sequence = new Sequence("https://example.org/seq1");
-var canvas = new Canvas(
-    "https://example.org/canvas/1",
-    new Label("Folio 1r"),
-    2000,  // height
-    1500   // width
-);
-
-// Add image with IIIF Image Service
-var imageResource = new ImageResource(
-    "https://example.org/image.jpg",
-    "image/jpeg"
-).SetHeight(2000).SetWidth(1500);
-
-var service = new Service(
-    "http://iiif.io/api/image/2/context.json",
-    "https://example.org/iiif/img1",
-    "http://iiif.io/api/image/2/level1.json"
-).AddTile(new Tile(512, new[] { 1, 2, 4, 8 }));
-
-imageResource.SetService(service);
-
-var image = new Image(
-    "https://example.org/anno/1",
-    imageResource,
-    canvas.Id
-);
-
-canvas.AddImage(image);
-sequence.AddCanvas(canvas);
-manifest.AddSequence(sequence);
-
-// Serialize to JSON
-string json = JsonConvert.SerializeObject(manifest);
-```
-
-## Documentation Standards
-
-Each README includes:
-
-1. **Anchor TOC** – Quick navigation to all sections
-2. **Overview** – 2-5 sentences explaining purpose and IIIF context
-3. **Files Table** – File paths, primary types, LOC, responsibilities
-4. **Types & Members Table** – Type, kind, summary, inheritance, key members
-5. **Per-Type Details** – Focused explanations of each type's role
-6. **Mermaid Diagrams** – Class hierarchies and sequence flows
-7. **Examples** – Realistic C# code with JSON output
-8. **See Also** – Cross-links to parent/sibling/related documentation
-
-## Target Frameworks
-
-- **netstandard2.0** – Broad compatibility
-- **net451** – Legacy .NET Framework support
-
-## Dependencies
-
-- **Newtonsoft.Json** – JSON serialization with custom converters
-
-## Build & Test
+## Install
 
 ```powershell
-# Build library
-dotnet build IIIF.Manifest.Serializer.Net.sln
-
-# Run sample/benchmark
-dotnet run --project src/IIIF.Manifest.Serializer.Net.Test
+dotnet add package IIIF.Manifest.Serializer.Net
 ```
+
+Optional extension packages, each versioned and shipped independently:
+
+```powershell
+dotnet add package IIIF.Manifest.Serializer.Net.NavPlace
+dotnet add package IIIF.Manifest.Serializer.Net.Georeference
+dotnet add package IIIF.Manifest.Serializer.Net.TextGranularity
+```
+
+## Quick start
+
+```csharp
+using IIIF.Manifests.Serializer;
+using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
+using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties.Services;
+
+var manifest = new Manifest("https://example.org/iiif/manuscript/manifest.json", new Label("16th Century Manuscript"))
+    .SetViewingDirection(ViewingDirection.Ltr);
+
+var canvas = new Canvas("https://example.org/iiif/manuscript/canvas/p1", new Label("Folio 1r"), height: 2000, width: 1500);
+
+var image = new ImageResource("https://example.org/iiif/manuscript/full/full/0/default.jpg", "image/jpeg")
+    .SetHeight(2000).SetWidth(1500)
+    .AddService(new Service("http://iiif.io/api/image/3/context.json", "https://example.org/iiif/manuscript", "level2"));
+
+canvas.AddAnnotation(new Annotation("https://example.org/iiif/manuscript/annotation/p1", image, canvas.Id));
+manifest.AddItem(canvas);
+
+// Defaults to Presentation API 3.0.
+string json = IiifSerializer.Serialize(manifest);
+
+// Round-trip: version is auto-detected from the JSON shape.
+Manifest parsed = IiifSerializer.DeserializeManifest(json);
+```
+
+`Collection` and the standalone `AnnotationCollection` document type have the same
+`Serialize`/`Deserialize*` shape (`IiifSerializer.Serialize(collection)`,
+`IiifSerializer.DeserializeCollection(json)`, etc.).
+
+## Multi-version serialization
+
+```csharp
+using IIIF.Manifests.Serializer;
+
+// Write the same 3.0-native model as legacy 2.1 JSON instead.
+string legacyJson = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1));
+
+// Reading is always version-agnostic - the SDK detects 2.0/2.1/3.0 from the document's own shape.
+Manifest fromLegacy = IiifSerializer.DeserializeManifest(legacyJson);
+
+// Legacy views over the same 3.0-native storage still work after parsing either version:
+var firstSequenceCanvases = fromLegacy.Sequences.Single().Canvases; // computed, read-only
+```
+
+## Project layout
+
+```
+src/IIIF.Manifest.Serializer.Net/     Core SDK (netstandard2.1)
+extensions/                           Independently-versioned extension packages
+  IIIF.Manifest.Serializer.Net.NavPlace          navPlace geolocation extension
+  IIIF.Manifest.Serializer.Net.Georeference      Georeference (image-to-map) extension
+  IIIF.Manifest.Serializer.Net.TextGranularity   Text Granularity extension
+examples/
+  IIIF.Manifest.Serializer.Net.Examples          Small hand-picked feature demos
+  IIIF.Manifest.Serializer.Net.Cookbook          Every github.com/IIIF/cookbook-recipes recipe, runnable
+tests/IIIF.Manifest.Serializer.Net.Tests        xUnit + FluentAssertions test suite
+docs/                                            This documentation set
+```
+
+## The object model
+
+Everything derives from `TrackableObject<T>` (change-tracked, fluent-setter base), through
+`BaseItem<T>` (`@id`/`@type`/embedded `service`) and `BaseNode<T>` (the descriptive properties
+shared by every top-level resource: label, summary, metadata, thumbnail, rendering, homepage,
+seeAlso, rights, requiredStatement, partOf, behavior, provider).
+
+| Type | Namespace | Role |
+| --- | --- | --- |
+| `Manifest` | `Nodes` | Top-level resource for a single object; `Items` holds `Canvas`. |
+| `Collection` | `Nodes` | Top-level resource grouping `Manifest`/`Collection` references via `Items`. |
+| `Canvas` | `Nodes` | A painting surface; `Items` holds `AnnotationPage`/`Annotation`. |
+| `Structure` (Range) | `Nodes` | Hierarchical navigation (tables of contents, chapters). |
+| `Annotation` / `AnnotationPage` | `Nodes.Contents.Annotation` | W3C Web Annotation body/target model used for painting, commenting, tagging, and supplementing. |
+| `AnnotationCollection` | `Nodes.Contents.Annotation` | Standalone paged annotation list document (`total`/`first`/`last`). |
+| `ContentState` | `Nodes.Contents.ContentState` | IIIF Content State 1.0 deep-link document, plus base64url codec. |
+| `Choice` | `Nodes.Contents.Choice` | Mutually-exclusive body alternatives (language/format/quality variants). |
+| Resource bodies | `Nodes.Contents.{Image,Audio,Video,Textual,Embedded,OtherContent,Segment}` | The concrete annotation body/resource types. |
+| Selectors | `Shared.Selectors` | `FragmentSelector`, `PointSelector`, `ImageApiSelector`, `SvgSelector`. |
+
+Legacy-only types with no 3.0 replacement (`Sequence`, `Layer`, `AnnotationList`) are kept as
+read/write shims for round-tripping old documents - they are not part of the recommended 3.0
+authoring API.
+
+## `IiifSerializer` architecture
+
+`IiifSerializer` (`src/IIIF.Manifest.Serializer.Net/IiifSerializer.cs`) is a thin **Facade**: it
+holds only the public `Serialize`/`Deserialize*` overloads and the 2.x-vs-3.0 version dispatch.
+2.0/2.1 read/write is plain `JsonConvert` against the model's own `[JsonProperty]`/`[JsonConverter]`
+attributes (the 3.0-native storage makes this direct). The hand-rolled 3.0 read/write logic lives
+in sibling `partial class` files split by resource-type responsibility, so no single file holds the
+whole serializer:
+
+| File | Responsibility |
+| --- | --- |
+| `IiifSerializer.Manifest.cs` | `Manifest` read/write |
+| `IiifSerializer.Collection.cs` | `Collection` read/write |
+| `IiifSerializer.AnnotationCollection.cs` | `AnnotationCollection` read/write |
+| `IiifSerializer.Canvas.cs` | `Canvas` read/write |
+| `IiifSerializer.Range.cs` | `Structure`/Range read/write |
+| `IiifSerializer.Annotation.cs` | `AnnotationPage`/`Annotation` and the polymorphic body dispatch (Image/Audio/Video/Textual/Choice/SpecificResource/extension types) |
+| `IiifSerializer.NodeExtras.cs` | Properties shared by every `BaseNode` (rights, requiredStatement, partOf, summary, metadata, thumbnail, rendering, homepage, seeAlso, behavior) |
+| `IiifSerializer.Metadata.cs` / `.ImageLikeResources.cs` / `.LinkResources.cs` / `.Provider.cs` / `.Service.cs` | The individual descriptive-resource read/write helpers used by `NodeExtras` |
+| `IiifSerializer.Helpers.cs` | Shared language-map/label/description parsing |
+
+`IiifPresentationVersionDetector` inspects a JSON document's own shape (`@context`/`items` vs.
+`sequences`, etc.) to pick the right reader automatically.
+
+## Services
+
+`Properties/Services/` models the embedded/top-level service descriptors: the Image API service
+(`Service`, with `AsImageService2()`/`AsImageService3()` toggles), Auth 1.0 (`AuthService1`), the
+four Auth 2.0 service types plus their response payloads (`Properties/Services/Auth2/`), Search 2.0
+descriptors and response shapes (`Properties/Services/Search/`), Change Discovery 1.0
+(`DiscoveryService`, `Properties/Services/Discovery/`), and Content State 1.0
+(`ContentStateService`). `ServiceJsonConverter` dispatches polymorphically on read by `@type`/`type`
+and, where that's ambiguous (Auth 1.0 vs. 2.0), by `@context`.
+
+## Extension packages
+
+Each extension is a standalone NuGet package that adds 3.0-only, spec-defined data to any
+`BaseNode` via the SDK's additional-properties mechanism - no core SDK changes needed to consume
+them:
+
+- **NavPlace** - GeoJSON `navPlace` geolocation (`Point`/`LineString`/`Polygon`/`GeometryCollection`).
+- **Georeference** - the Georeference extension's map-registration Annotation wrapper.
+- **TextGranularity** - the `page`/`block`/`paragraph`/`line`/`word`/`glyph` transcription-granularity vocabulary.
+
+## Examples and Cookbook
+
+- **`examples/IIIF.Manifest.Serializer.Net.Examples`** - a small hand-picked set of feature demos
+  (`DemoCatalog.GetAll()`). Run with `dotnet run --project examples/IIIF.Manifest.Serializer.Net.Examples`.
+- **`examples/IIIF.Manifest.Serializer.Net.Cookbook`** - a faithful C# reconstruction of every real
+  recipe in [`github.com/IIIF/cookbook-recipes`](https://github.com/IIIF/cookbook-recipes) (71
+  recipes, 78 catalog entries counting recipes with more than one manifest/document). Run with
+  `dotnet run --project examples/IIIF.Manifest.Serializer.Net.Cookbook`.
+
+  The Cookbook catalog is built around **Strategy + Registry**: `IRecipeSet` is the Strategy
+  interface (`GetRecipes(): IEnumerable<ExampleDefinition>`), implemented by nine thematic
+  recipe-set classes (`FoundationRecipes`, `CanvasAndStructureRecipes`,
+  `CollectionAndChoiceRecipes`, `MediaVariationRecipes`, `LinkingAndOperaRecipes`,
+  `DescriptivePropertiesRecipes`, `ProviderAndTaggingRecipes`, `AnnotationCollectionRecipes`,
+  `AdvancedCompositionRecipes`), each covering one contiguous slice of recipe numbers. Shared
+  construction helpers (`Id`, `NewManifest`, `NewCanvas`, `PaintingImage`, ...) live in
+  `RecipeBuilders.cs`. `CookbookCatalog` itself is a thin Registry that aggregates the nine
+  strategies:
+
+  ```csharp
+  public static class CookbookCatalog
+  {
+      private static readonly IReadOnlyList<IRecipeSet> RecipeSets =
+      [
+          new FoundationRecipes(), new CanvasAndStructureRecipes(), /* ... */
+      ];
+
+      public static IReadOnlyList<ExampleDefinition> GetAll() =>
+          RecipeSets.SelectMany(set => set.GetRecipes()).ToList();
+  }
+  ```
+
+  Every catalog entry is round-tripped through `IiifSerializer` by the test suite, so the Cookbook
+  doubles as a fidelity check against real IIIF documents, not just internal consistency.
+
+## Testing
+
+```powershell
+dotnet build IIIF.Manifest.Serializer.Net.sln
+dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
+```
+
+329 tests (xUnit + FluentAssertions), including per-feature round-trip tests and an automatic
+per-catalog-entry round-trip test for every Cookbook recipe. Coverage is collected via
+`coverlet.collector` in CI; see `coverage-report/` for the latest generated report (no hard coverage
+gate is enforced yet - report visibility comes first).
+
+## Documentation index
+
+- [`SDK_VERSIONING_GUIDE.md`](SDK_VERSIONING_GUIDE.md) - the authoritative architecture reference:
+  the 2.x↔3.0 property mapping table, the Obsolete-tagging convention, and the full milestone
+  history of how the multi-version reshape, the extended standards coverage (Auth/Search/Discovery/
+  Content State/Image API), the Cookbook catalog, and the structural refactor described above were
+  each implemented and verified.
+- The per-namespace `docs/Nodes/`, `docs/Properties/`, `docs/Shared/`, `docs/Helpers/` folders
+  contain older, narrower READMEs written against an earlier, Presentation-2.0-only shape of the
+  model (`Sequence`-centric, pre-dating `Items`/the multi-version reshape). Treat them as
+  historical background rather than a current API reference - `SDK_VERSIONING_GUIDE.md` and the
+  source itself are authoritative for the current model.
 
 ## Contributing
 
-When extending the library:
-
-1. **Inherit from appropriate base** – TrackableObject → BaseItem → BaseNode → domain type
-2. **Use SetPropertyValue** – All mutations through helper to track ModifiedProperties
-3. **Create custom JsonConverter** – Validate required tokens, parse/write fields
-4. **Follow fluent pattern** – Return `this` from all setters for chaining
-5. **Update documentation** – Maintain README consistency across all folders
+1. Read [`SDK_VERSIONING_GUIDE.md`](SDK_VERSIONING_GUIDE.md) before touching version-aware
+   serialization code - it documents decisions (Obsolete scope, multi-sequence handling, services
+   write strategy) that aren't obvious from the code alone.
+2. New 3.0-native properties: inherit the `TrackableObject`/`BaseItem`/`BaseNode` fluent
+   `SetX`/`AddX` pattern; back legacy 2.x concepts with computed, read-only views, never the other
+   way around.
+3. Land tests with every change - round-trip (legacy in → 3.0 out, and back), not just "does it
+   parse."
+4. Run the full build and test suite before opening a PR:
+   ```powershell
+   dotnet build IIIF.Manifest.Serializer.Net.sln
+   dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
+   ```
 
 ## License
 
-See [LICENSE](../LICENSE) file in repository root.
-
----
-
-**Documentation Generated**: Complete production-quality documentation set for IIIF.Manifest.Serializer.Net  
-**Total README Files**: 27  
-**Coverage**: All folders with comprehensive sections, diagrams, examples, cross-links
+See [LICENSE](../LICENSE) in the repository root.
