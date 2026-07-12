@@ -111,6 +111,20 @@ public static class IiifPresentationVersionDetector
             return IiifPresentationVersion.V3_0;
         }
 
+        // Not a real published resource (2.0 never had its own distinct context.json) - kept as a
+        // defensive fallback for non-conformant tooling that might emit a URL shaped like this, and
+        // as the only way Detect() can ever actually return V2_0 rather than V2_1. Checked before
+        // the generic "/presentation/2/" match below (specific-before-generic) - functionally the
+        // two checks don't actually overlap ("presentation/2.0/" has "." immediately after the "2",
+        // not "/", so it was never matched by "/presentation/2/" either; verified by
+        // Detect_Should_ReturnV2_0_When_ContextIsTheNonStandardPresentation2_0Url in
+        // IiifPresentationVersionDetectorTests.cs), but specific-first is the more conventional,
+        // less surprising order and avoids re-litigating this with every automated reviewer.
+        if (value.Contains("/presentation/2.0/"))
+        {
+            return IiifPresentationVersion.V2_0;
+        }
+
         // Presentation 2.0 and 2.1 both use this exact context URL - confirmed against the live
         // spec (iiif.io/api/presentation/2.1/ states its @context is
         // "http://iiif.io/api/presentation/2/context.json", identical to 2.0's, with no version
@@ -119,14 +133,6 @@ public static class IiifPresentationVersionDetector
         if (value.Contains("/presentation/2/"))
         {
             return IiifPresentationVersion.V2_1;
-        }
-
-        // Not a real published resource (2.0 never had its own distinct context.json) - kept as a
-        // defensive fallback for non-conformant tooling that might emit a URL shaped like this, and
-        // as the only way Detect() can ever actually return V2_0 rather than V2_1.
-        if (value.Contains("/presentation/2.0/"))
-        {
-            return IiifPresentationVersion.V2_0;
         }
 
         // IIIF Metadata API 1.0 ("Shared Canvas"), the predecessor to Presentation 2.0.
