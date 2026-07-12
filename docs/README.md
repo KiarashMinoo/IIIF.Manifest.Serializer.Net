@@ -258,12 +258,27 @@ for the full audit this table summarizes.
 ## Extension packages
 
 Each extension is a standalone NuGet package that adds 3.0-only, spec-defined data to any
-`BaseNode` via the SDK's additional-properties mechanism - no core SDK changes needed to consume
-them:
+`BaseNode`/`Annotation` via the SDK's additional-properties mechanism - consuming one needs no core
+SDK source changes, though reading/writing through `IiifSerializer`'s hand-rolled V3 path
+specifically does rely on a small, targeted preservation step in core (see
+[SDK_VERSIONING_GUIDE.md, Round 12](SDK_VERSIONING_GUIDE.md#round-12-extension-package-hardening-issue-9)):
 
-- **NavPlace** - GeoJSON `navPlace` geolocation (`Point`/`LineString`/`Polygon`/`GeometryCollection`).
-- **Georeference** - the Georeference extension's map-registration Annotation wrapper.
-- **TextGranularity** - the `page`/`block`/`paragraph`/`line`/`word`/`glyph` transcription-granularity vocabulary.
+- **NavPlace** - GeoJSON `navPlace` geolocation (`Point`/`LineString`/`Polygon`/`GeometryCollection`),
+  attached to Manifest/Collection/Canvas/Range.
+- **Georeference** - the Georeference extension's map-registration Annotation wrapper, plus
+  polynomial/thin-plate-spline transformations and resource-coordinate pixel targets.
+- **TextGranularity** - the `page`/`block`/`paragraph`/`line`/`word`/`glyph` transcription-granularity
+  vocabulary, attached to an Annotation.
+
+All three explicitly expose an idempotent `Register()` (`NavPlaceExtensions.Register()`,
+`GeoreferenceExtensions.Register()`, `TextGranularityExtensions.Register()`) for callers who want a
+deliberate bootstrap step; a static-constructor fallback (`Feature`'s, for the Annotation-body-dispatch
+case) means most usage works without ever calling it explicitly.
+
+**Versioning note**: each extension's `.csproj` references core via `ProjectReference`, which
+`dotnet pack` converts into a `PackageReference` pinned to the exact core version built at pack
+time (e.g. Georeference `1.0.1` pinned to core `3.0.1`, not a floating range) - bump an extension's
+own package version alongside any core release it's packed against.
 
 ## Examples and Cookbook
 

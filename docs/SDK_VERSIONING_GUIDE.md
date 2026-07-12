@@ -1403,4 +1403,86 @@ invalid-length and garbled-content decode), `SearchResponseTests.cs` (1), `Disco
 (4: 3 additional activity types + 1 malformed-JSON), `Auth2ServiceTests.cs` (1). Full suite: **472
 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, and round 11 auxiliary API surface audit with the Image API info.json read gap fixed.
+## Round 12: extension package hardening (issue #9)
+
+Scope (issue #9, "SDK Phase 5"): make navPlace/Georeference/TextGranularity reliable, testable, and
+safe - review model coverage, improve registration behavior (the issue specifically asks to "avoid
+static-constructor-only surprises" and suggests explicit `Register()` APIs), ensure payloads
+round-trip through core serializers, ensure unknown extension data is preserved, and update docs.
+
+Audited all three extensions plus the shared registration architecture in parallel. Findings:
+
+**Registration was already largely solved.** All three packages already expose an explicit,
+idempotent `Register()` (`NavPlaceExtensions.Register()`, `GeoreferenceExtensions.Register()`,
+`TextGranularityExtensions.Register()`), added in an earlier round - contrary to the issue's
+premise that this still needed building. A static-constructor fallback remains only for `Feature`'s
+`ResourceTypeRegistry` self-registration (the Feature-as-Annotation-body dispatch case), explicitly
+documented in `Feature`'s own XML comment as a fallback, not the primary path. Added
+`Register_Should_BeIdempotent_ForAllThreeExtensions` since nothing previously called `Register()`
+anywhere in tests/examples.
+
+**Two real bugs found and fixed**:
+
+1. `IiifSerializer.Serialize(Manifest)`/`DeserializeManifest` - the SDK's primary, documented,
+   default-3.0 entry point - **silently dropped every extension property** (`navPlace` on
+   Manifest/Collection/Canvas/Range, `textGranularity` on Annotation). The hand-rolled V3
+   writer/reader builds its `JObject` field-by-field rather than going through Newtonsoft's
+   automatic property serialization, so it never reached the `[JsonExtensionData]` bridge that
+   makes extension data survive a plain `JsonConvert.SerializeObject` call. This directly violated
+   the issue's own "Extension data round-trips through IiifSerializer" acceptance criterion - every
+   existing extension test round-tripped via bare `JsonConvert`/`TrackableObject.Parse`, never via
+   `IiifSerializer` itself, so the gap had gone unnoticed. Fixed generically: added
+   `WriteV3AdditionalProperties`/`ReadV3AdditionalProperty` helpers (`IiifSerializer.Helpers.cs`) -
+   write sweeps every `IsAdditional`-flagged `ElementDescriptor` (safe by construction: only
+   extension code ever sets that flag, so no core-modeled property can collide), while read is
+   deliberately *not* a generic "any unrecognized key" sweep (that would risk miscategorizing a
+   not-yet-hand-rolled core V3 property, e.g. `Manifest.ViewingDirection` is never read on the V3
+   path today - a separate, pre-existing gap, left alone since it's out of this issue's scope) -
+   instead it's targeted to the two literal keys the shipped extensions actually use
+   (`"navPlace"` in `WriteV3NodeExtras`/`ReadV3NodeExtras`, `"textGranularity"` in
+   `WriteV3Annotation`/`ReadV3Annotation`). Core cannot reference the extension assemblies (the
+   dependency points the other way), so these two literal strings are necessarily hardcoded in
+   core rather than referenced from `NavPlace.NavPlaceJName`/`TextGranularity.TextGranularityJName`.
+   Georeference's `Transformation`/`ResourceCoords` attach to `NavPlace`/`FeatureProperties`
+   themselves (not directly to a `BaseNode`), so they're unaffected by this gap and already
+   round-tripped correctly - confirmed, not assumed, by tracing `TransformationExtensions`' actual
+   constraint (`TrackableObject<TNode>`, not `BaseNode<TNode>`).
+2. `TextGranularityExtensions` was constrained to `IBaseResource`, so `SetTextGranularity`/
+   `TextGranularity` **could not be called on a real `Nodes.Contents.Annotation.Annotation` at
+   all** (a compile error) - only on a standalone `BaseResource` tagged `ResourceType.Annotation`,
+   a shape that never actually occurs on an Annotation embedded in a real Manifest/Canvas tree. The
+   issue's own example (`"type": "Annotation", ..., "textGranularity": "word"`) shows the property
+   directly on a real Annotation. Fixed by adding a second `extension(Annotation annotation)` block
+   in `TextGranularityExtensions.cs` targeting the real type directly (no `ResourceType` check
+   needed, since the C# type itself already guarantees "this is an Annotation") - the
+   `IBaseResource`-constrained overload is kept for backward compatibility with existing callers of
+   that shape.
+
+**A third, adjacent bug fixed** (directly in scope - issue #9 explicitly asks to review
+"polynomial ... transformations if supported", and this session is a hardening pass, not the
+test-generation-only pass under which this bug was originally found and deliberately left unfixed -
+see the Milestone/Round history in `PolynomialTransformationTests.cs`): `PolynomialTransformationOption.Order`
+had no `[JsonProperty]` and no way to set it via any public API (bare `private set`, no constructor
+parameter, no fluent setter), so it could never be given a non-zero value. Fixed by adding
+`[JsonProperty("order")]` and a fluent `SetOrder(long)`, matching this codebase's established
+pattern for every other settable property.
+
+**Documentation fixed**: `docs/Extensions/TextGranularity/README.md` claimed the package "needs no
+core SDK changes to work," which - after this round's fix - is now only true for *adding* the
+package, not for round-tripping through `IiifSerializer`'s hand-rolled V3 path specifically;
+corrected to describe both. Added a "Versioning note" to `docs/README.md`'s "Extension packages"
+section documenting that each extension's `ProjectReference` to core becomes a version-pinned (not
+floating-range) `PackageReference` once packed - previously undocumented anywhere, relative to the
+issue's "remain compatible with core package versioning" acceptance criterion.
+
+Tests: 11 new/changed. `ExtensionAttributeTests.cs`: `NavPlace_Should_RoundTripThroughIiifSerializer_
+OnManifest`, `..._OnCanvas`, `NavPlace_Should_PreserveUnknownGeoJsonProperties_ThroughIiifSerializer`,
+`TextGranularity_Should_RoundTripThroughIiifSerializer_OnAnnotationInsideManifest` (a `[Theory]`
+covering all 6 granularity values, closing the "only Word was tested on the attachment path" gap),
+`Register_Should_BeIdempotent_ForAllThreeExtensions`. `PolynomialTransformationTests.cs`:
+`Options_Order_Should_RoundTripThroughJsonConvert` and `Options_SetOrder_Should_
+BeSettableThroughFluentApi` replace the old `_KnownBug`-suffixed test now that the bug is fixed.
+Full suite: **483 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
+introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, and round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed.

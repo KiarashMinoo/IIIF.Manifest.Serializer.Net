@@ -5,7 +5,10 @@ using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Extensions.ResourceCoords;
 using IIIF.Manifests.Serializer.Extensions.Transformations;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
+using IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
+using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
@@ -76,6 +79,133 @@ public class ExtensionAttributeTests
         var act = () => resource.SetTextGranularity(TextGranularity.Word);
 
         act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void NavPlace_Should_RoundTripThroughIiifSerializer_OnManifest()
+    {
+        // Regression guard: IiifSerializer.Serialize/DeserializeManifest use a hand-rolled V3
+        // reader/writer that builds its JObject field-by-field rather than going through
+        // Newtonsoft's automatic property serialization - it never reached the JsonExtensionData
+        // bridge extension properties rely on, so navPlace was silently dropped by the SDK's
+        // primary, documented entry point even though it worked via plain JsonConvert (see
+        // SDK_VERSIONING_GUIDE.md Round 12).
+        var manifest = new Manifest("https://example.org/manifest", new Label("Map"));
+        manifest.SetNavPlace(new NavPlace("https://example.org/navplace")
+            .AddFeature(new Feature("https://example.org/feature/1")
+                .SetGeometry(new Geometry(GeometryType.Point).AddCoordinate(new CoordinateItem(-73.9857, 40.7484)))
+                .SetProperties(new FeatureProperties().AddLabel(new Label("New York")))));
+
+        var json = IiifSerializer.Serialize(manifest);
+        var obj = JObject.Parse(json);
+
+        obj["navPlace"]!["type"]!.ToString().Should().Be("FeatureCollection");
+        obj["navPlace"]!["features"]![0]!["geometry"]!["type"]!.ToString().Should().Be("Point");
+
+        var deserialized = IiifSerializer.DeserializeManifest(json);
+        deserialized.NavPlace.Should().NotBeNull();
+        var feature = deserialized.NavPlace!.Features.Single();
+        feature.Geometry!.Coordinates.Single().Longitude.Should().Be(-73.9857);
+        feature.Properties!.Label.Single().Value.Should().Be("New York");
+    }
+
+    [Fact]
+    public void NavPlace_Should_RoundTripThroughIiifSerializer_OnCanvas()
+    {
+        var canvas = new Canvas("https://example.org/canvas/1", new Label("p1"), 100, 100);
+        canvas.SetNavPlace(new NavPlace("https://example.org/navplace")
+            .AddFeature(new Feature("https://example.org/feature/1")
+                .SetGeometry(new Geometry(GeometryType.Point).AddCoordinate(new CoordinateItem(10.0, 20.0)))));
+        var manifest = new Manifest("https://example.org/manifest", new Label("Test")).AddItem(canvas);
+
+        var json = IiifSerializer.Serialize(manifest);
+        var obj = JObject.Parse(json);
+        obj["items"]![0]!["navPlace"]!["features"]![0]!["geometry"]!["type"]!.ToString().Should().Be("Point");
+
+        var deserialized = IiifSerializer.DeserializeManifest(json);
+        var roundTrippedCanvas = (Canvas)deserialized.Items.Single();
+        roundTrippedCanvas.NavPlace!.Features.Single().Geometry!.Coordinates.Single().Longitude.Should().Be(10.0);
+    }
+
+    [Fact]
+    public void NavPlace_Should_PreserveUnknownGeoJsonProperties_ThroughIiifSerializer()
+    {
+        // The navPlace object itself is a plain TrackableObject (its own [JsonExtensionData]
+        // bridge applies once IiifSerializer hands the whole "navPlace" JToken through), so an
+        // unmodeled GeoJSON key nested inside it must survive a full IiifSerializer round-trip.
+        const string json = """
+                            {
+                              "@context": "http://iiif.io/api/presentation/3/context.json",
+                              "id": "https://example.org/manifest",
+                              "type": "Manifest",
+                              "label": { "none": ["Map"] },
+                              "navPlace": {
+                                "id": "https://example.org/navplace",
+                                "type": "FeatureCollection",
+                                "features": [
+                                  {
+                                    "id": "https://example.org/feature/1",
+                                    "type": "Feature",
+                                    "geometry": { "type": "Point", "coordinates": [10.0, 20.0] },
+                                    "bbox": [10.0, 20.0, 10.0, 20.0]
+                                  }
+                                ]
+                              },
+                              "items": []
+                            }
+                            """;
+
+        var manifest = IiifSerializer.DeserializeManifest(json);
+        var roundTripped = JObject.Parse(IiifSerializer.Serialize(manifest));
+
+        roundTripped["navPlace"]!["features"]![0]!["bbox"]!.Values<double>().Should().BeEquivalentTo([10.0, 20.0, 10.0, 20.0]);
+    }
+
+    [Theory]
+    [InlineData("page")]
+    [InlineData("block")]
+    [InlineData("paragraph")]
+    [InlineData("line")]
+    [InlineData("word")]
+    [InlineData("glyph")]
+    public void TextGranularity_Should_RoundTripThroughIiifSerializer_OnAnnotationInsideManifest(string value)
+    {
+        // Same regression class as navPlace above: WriteV3Annotation/ReadV3Annotation build their
+        // JObject by hand and never touched the extension-data bridge, so textGranularity was
+        // silently dropped by IiifSerializer even though the bare-resource JsonConvert path
+        // (TextGranularity_Should_RoundTripOnAnAnnotationResource, above) already worked.
+        var resource = new TextualBody("Example");
+        var annotation = new Annotation("https://example.org/anno/1", resource, "https://example.org/canvas/1#xywh=10,10,100,30")
+            .SetMotivation("supplementing");
+        annotation.SetTextGranularity(TextGranularity.Parse(value));
+        var canvas = new Canvas("https://example.org/canvas/1", new Label("p1"), 100, 100).AddAnnotation(annotation);
+        var manifest = new Manifest("https://example.org/manifest", new Label("Test")).AddItem(canvas);
+
+        var json = IiifSerializer.Serialize(manifest);
+        var obj = JObject.Parse(json);
+        obj["items"]![0]!["items"]![0]!["items"]![0]!["textGranularity"]!.ToString().Should().Be(value);
+
+        var deserialized = IiifSerializer.DeserializeManifest(json);
+        var roundTrippedAnnotation = ((Canvas)deserialized.Items.Single()).Items
+            .OfType<AnnotationPage>().Single().Items.OfType<Annotation>().Single();
+
+        roundTrippedAnnotation.TextGranularity!.Value.Should().Be(value);
+    }
+
+    [Fact]
+    public void Register_Should_BeIdempotent_ForAllThreeExtensions()
+    {
+        var act = () =>
+        {
+            NavPlaceExtensions.Register();
+            NavPlaceExtensions.Register();
+            GeoreferenceExtensions.Register();
+            GeoreferenceExtensions.Register();
+            TextGranularityExtensions.Register();
+            TextGranularityExtensions.Register();
+        };
+
+        act.Should().NotThrow();
     }
 
     [Theory]

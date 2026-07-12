@@ -71,6 +71,8 @@ public static partial class IiifSerializer
 
         if (annotation.TimeMode is not null) obj["timeMode"] = annotation.TimeMode.Value;
 
+        WriteV3AdditionalProperties(annotation, obj);
+
         return obj;
     }
 
@@ -179,6 +181,12 @@ public static partial class IiifSerializer
         if ((string?)obj["stylesheet"] is { } stylesheet) annotation.SetStylesheet(stylesheet);
 
         if ((string?)obj["timeMode"] is { } timeMode) annotation.SetTimeMode(new TimeMode(timeMode));
+
+        // textGranularity (extensions/IIIF.Manifest.Serializer.Net.TextGranularity) - see
+        // WriteV3AdditionalProperties/ReadV3AdditionalProperty's doc comments in
+        // IiifSerializer.Helpers.cs for why the key is hardcoded here rather than referenced from
+        // the extension assembly.
+        ReadV3AdditionalProperty(obj, annotation, "textGranularity");
 
         return annotation;
     }

@@ -15,9 +15,19 @@ This folder is the entire `IIIF.Manifest.Serializer.Net.TextGranularity` NuGet p
 subfolders) — it implements the IIIF **Text Granularity** extension, a small controlled vocabulary
 describing the level of text segmentation available in OCR or other transcribed text content
 (`page`/`block`/`paragraph`/`line`/`word`/`glyph`). `TextGranularityExtensions` fluently attaches a
-`TextGranularity` value to an Annotation via the core SDK's additional-properties mechanism, so this
-package needs no core SDK changes to work. It ships and versions independently of the core
+`TextGranularity` value to a real `Annotation` (or, for compatibility, an `IBaseResource` tagged
+`ResourceType.Annotation`) via the core SDK's additional-properties mechanism, so *adding this
+package itself* needs no core SDK changes. It ships and versions independently of the core
 `IIIF.Manifest.Serializer.Net` library and of the navPlace/Georeference extensions.
+
+Reading/writing the value through plain `JsonConvert`/`TrackableObject.Serialize()` needs no core
+awareness of this package at all - that's the `[JsonExtensionData]` bridge working generically. The
+one place core *does* know the literal `"textGranularity"` key name is `IiifSerializer`'s hand-rolled
+V3 Annotation writer/reader (`WriteV3Annotation`/`ReadV3Annotation`), which builds/reads its JSON
+object field-by-field and therefore needs an explicit, narrowly-scoped preservation step to avoid
+silently dropping it - see [SDK_VERSIONING_GUIDE.md, Round 12](../../SDK_VERSIONING_GUIDE.md#round-12-extension-package-hardening-issue-9)
+for why this is a targeted fix rather than a fully generic "preserve any unknown property"
+mechanism.
 
 The 6 vocabulary values (`page`, `block`, `paragraph`, `line`, `word`, `glyph`) were corrected in a
 past milestone from a wrong set (`character` instead of `glyph`, and missing `paragraph` entirely) —
@@ -31,7 +41,7 @@ past milestone from a wrong set (`character` instead of `glyph`, and missing `pa
 | File | Primary type(s) | LOC (approx) | Responsibility |
 | --- | --- | --- | --- |
 | `TextGranularity.cs` | `TextGranularity` | 86 | Enum-like vocabulary of the 6 spec-defined text granularity levels, plus `Parse`/`TryParse`. |
-| `TextGranularityExtensions.cs` | `TextGranularityExtensions` | 26 | Fluent `SetTextGranularity`/`TextGranularity` extension members attaching a `TextGranularity` value to an Annotation-typed resource. |
+| `TextGranularityExtensions.cs` | `TextGranularityExtensions` | ~45 | Fluent `SetTextGranularity`/`TextGranularity` extension members - one overload for a real `Nodes.Contents.Annotation.Annotation` (the primary, spec-real attach point), one for any `IBaseResource` tagged `ResourceType.Annotation` (kept for compatibility with the standalone-resource shape). |
 
 [↑ Back to top](#contents)
 
