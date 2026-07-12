@@ -3,6 +3,7 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource;
 using IIIF.Manifests.Serializer.Properties.Services.Search;
 using IIIF.Manifests.Serializer.Shared.Trackable;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
@@ -87,5 +88,13 @@ public class SearchResponseTests
         extended.Total.Should().Be(3);
         extended.Label.Single().Value.Should().Be("biro");
         deserialized.Ignored.Should().ContainSingle("user");
+    }
+
+    [Fact]
+    public void SearchResponse_Parse_Should_Throw_When_JsonIsMalformed()
+    {
+        var act = () => TrackableObject.Parse<SearchResponse>("{ this is not valid json");
+
+        act.Should().Throw<JsonException>();
     }
 }

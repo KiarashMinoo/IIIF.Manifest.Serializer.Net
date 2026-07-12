@@ -2,6 +2,7 @@ using System.Linq;
 using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 using IIIF.Manifests.Serializer.Shared.Trackable;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
@@ -123,5 +124,13 @@ public class Auth2ServiceTests
         deserialized.Profile.Should().Be("missingAspect");
         deserialized.MessageId.Should().Be("ae3415");
         deserialized.Heading.Single().Value.Should().Be("Unauthorized");
+    }
+
+    [Fact]
+    public void AuthProbeService2_Parse_Should_Throw_When_JsonIsMalformed()
+    {
+        var act = () => TrackableObject.Parse<AuthProbeService2>("{ this is not valid json");
+
+        act.Should().Throw<JsonException>();
     }
 }

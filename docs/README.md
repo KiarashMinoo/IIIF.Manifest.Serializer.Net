@@ -239,6 +239,22 @@ descriptors and response shapes (`Properties/Services/Search/`), Change Discover
 (`ContentStateService`). `ServiceJsonConverter` dispatches polymorphically on read by `@type`/`type`
 and, where that's ambiguous (Auth 1.0 vs. 2.0), by `@context`.
 
+### Auxiliary API coverage table
+
+Per-family status for the non-core Presentation API surface (Image, Auth, Search, Discovery,
+Content State) - what's modeled, whether both standalone and embedded forms work, and any
+explicitly out-of-scope areas. See
+[`SDK_VERSIONING_GUIDE.md`, Round 11](SDK_VERSIONING_GUIDE.md#round-11-auxiliary-api-surface-audit-issue-8)
+for the full audit this table summarizes.
+
+| Family | Descriptor(s) | Standalone payload | Embedded on a resource | Notes / out-of-scope |
+| --- | --- | --- | --- | --- |
+| **Image API** | `Service` (`profile`, `protocol`, `width`/`height`, `tiles`, `sizes`, `preferredFormats`, `extraFormats`, `extraQualities`, `extraFeatures`, 3.0-only `maxWidth`/`maxHeight`/`maxArea`/`rights`) | `ToInfoJson()`/`FromInfoJson()` read+write a standalone `info.json` (unprefixed `id`/`type`) | Yes - `service` on any content resource (`ImageResource`, etc.) and on Manifest/Canvas | A Presentation-3-shaped document embedding an `ImageService2` (not `ImageService3`) is a documented, spec-allowed mixed-version scenario - see `ServiceRoundTripTests.ImageService_Should_RoundTripWhenEmbeddedOnAnImageResource_ThroughIiifSerializer`. |
+| **Auth** | Auth 1.0 `AuthService1`; Auth 2.0 `AuthProbeService2`/`AuthAccessService2`/`AuthAccessTokenService2`/`AuthLogoutService2` plus response payloads (`AuthProbeResult2`, `AuthAccessToken2`, `AuthAccessTokenError2`) | Response payloads only (Auth has no standalone "info.json"-equivalent document per spec) | Yes - embedded on Manifest; the full probe→access→token/logout chain round-trips as nested inline services | Auth 1.0 and 2.0 are mutually exclusive per document (a resource picks one flow), both supported for read/write. |
+| **Content Search** | `SearchService`/`AutoCompleteService` descriptors; `SearchResponse` (hit-highlighting `AnnotationPage` with paging), `TermPageResponse` (autocomplete) | Response payloads are standalone documents fetched from the service's `id` URL - not embedded | Yes - `SearchService` (with a nested `AutoCompleteService`) embeds on Manifest/Collection | **Search 1.0 legacy response compatibility is explicitly out of scope**: it predates and is structurally superseded by Search 2.0, and this SDK's `Profile` property already accepts a Search-1.0-shaped profile URI as a plain string extension point without needing a dedicated legacy response type. |
+| **Change Discovery** | `DiscoveryService` (`OrderedCollection`), `DiscoveryCollectionPage` (`OrderedCollectionPage`), `Activity`/`ActivityObject`/`DiscoveryAgent`/`DiscoveryDataset` | Yes - a `DiscoveryCollectionPage`/`DiscoveryService` document is fetched standalone from its `id` | Yes - `DiscoveryService` embeds on Manifest/Collection as a `service` entry | `Activity.Type` is a plain string, not a closed enum - every spec activity type (`Create`/`Update`/`Delete`/`Move`/`Add`/`Remove`) round-trips identically, not just the ones with dedicated fixtures. |
+| **Content State** | `ContentState` (annotation-shaped deep link), `ContentStateTarget` (whole-resource or Media-Fragment-suffixed region target), `ContentStatePointSelector` | `ContentStateCodec.Encode`/`Decode` - the `iiif-content` base64url string is the standalone form by definition | `ContentStateService` embeds on Manifest/Collection to advertise where content-state links are accepted | **No region/`FragmentSelector` object exists by design**, not omission - Content State 1.0 has no selector form for `xywh` region targeting; it's expressed as a `#xywh=...` Media Fragment suffix directly on the target `id` string (confirmed against spec; see `SDK_VERSIONING_GUIDE.md` Milestone 21). |
+
 ## Extension packages
 
 Each extension is a standalone NuGet package that adds 3.0-only, spec-defined data to any

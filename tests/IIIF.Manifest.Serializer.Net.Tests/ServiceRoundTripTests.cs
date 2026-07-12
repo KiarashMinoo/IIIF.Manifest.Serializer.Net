@@ -1,5 +1,6 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Properties.Services.Discovery;
@@ -34,6 +35,39 @@ public class ServiceRoundTripTests
         roundTripped.Profile.Should().Be("http://iiif.io/api/image/2/level2.json");
         roundTripped.Height.Should().Be(1000);
         roundTripped.Width.Should().Be(800);
+    }
+
+    [Fact]
+    public void ImageService_Should_RoundTripWhenEmbeddedOnAnImageResource_ThroughIiifSerializer()
+    {
+        // Issue #8's "embedded service descriptors on image resources" + "mixed Presentation 3 +
+        // Image 2 service scenarios where allowed": a 3.0-shaped Manifest/Canvas/Annotation whose
+        // ImageResource body carries a legacy Image API 2.x service descriptor - a documented,
+        // spec-allowed combination distinct from attaching a Service to the Manifest itself.
+        var imageService = new Service("http://iiif.io/api/image/2/context.json", "https://example.org/image-service", "http://iiif.io/api/image/2/level2.json")
+            .AsImageService2()
+            .SetHeight(1000).SetWidth(800);
+        var resource = new ImageResource("https://example.org/image.jpg", "image/jpeg")
+            .SetHeight(1000).SetWidth(800)
+            .AddService(imageService);
+        var canvas = new Canvas("https://example.org/canvas/1", new Label("p1"), 1000, 800)
+            .AddAnnotation(new Nodes.Contents.Annotation.Annotation("https://example.org/annotation/1", resource, "https://example.org/canvas/1"));
+        var manifest = new Manifest("https://example.org/manifest", new Label("Test")).AddItem(canvas);
+
+        var json = IiifSerializer.Serialize(manifest);
+        var obj = JObject.Parse(json);
+        var serviceObj = obj["items"]![0]!["items"]![0]!["items"]![0]!["body"]!["service"]![0]!;
+
+        serviceObj["type"]!.ToString().Should().Be("ImageService2");
+        serviceObj["profile"]!.ToString().Should().Be("http://iiif.io/api/image/2/level2.json");
+
+        var deserialized = IiifSerializer.DeserializeManifest(json);
+        var roundTrippedCanvas = (Canvas)deserialized.Items.Single();
+        var roundTrippedResource = (ImageResource)roundTrippedCanvas.Items.OfType<Nodes.Contents.Annotation.AnnotationPage>()
+            .SelectMany(x => x.Items).OfType<Nodes.Contents.Annotation.Annotation>().Single().Body;
+        var roundTrippedService = roundTrippedResource.Service.OfType<Service>().Single();
+        roundTrippedService.Type.Should().Be("ImageService2");
+        roundTrippedService.Profile.Should().Be("http://iiif.io/api/image/2/level2.json");
     }
 
     [Fact]
@@ -183,6 +217,27 @@ public class ServiceRoundTripTests
         services[0]!["type"]!.ToString().Should().Be("AuthAccessTokenService2");
         services[0]!["@id"].Should().BeNull();
         services[0]!["@type"].Should().BeNull();
+    }
+
+    [Fact]
+    public void UnrecognizedServiceType_Should_BeSilentlyDropped_NotThrow()
+    {
+        // ServiceJsonConverter.DetectAndDeserializeService's final fallback catches JsonException
+        // and returns null for a genuinely unrecognized service shape (no matching @type/type, no
+        // matching profile keyword, and not even parseable as the generic Image service) - a
+        // malformed/unknown embedded service must never fault the whole document's deserialization.
+        const string json = """
+                            {
+                              "@id": "https://example.org/manifest",
+                              "@type": "sc:Manifest",
+                              "label": "Test",
+                              "service": [{ "id": "https://example.org/unknown", "type": "SomeUnknownService9000", "extra": { "nested": true } }]
+                            }
+                            """;
+
+        var act = () => JsonConvert.DeserializeObject<Manifest>(json);
+
+        act.Should().NotThrow();
     }
 
     [Fact]
