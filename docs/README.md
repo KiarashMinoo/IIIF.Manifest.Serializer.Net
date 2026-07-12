@@ -16,6 +16,7 @@ Granularity extensions.
 - [Project layout](#project-layout)
 - [The object model](#the-object-model)
 - [`IiifSerializer` architecture](#iifserializer-architecture)
+- [Validation](#validation)
 - [Services](#services)
 - [Extension packages](#extension-packages)
 - [Examples and Cookbook](#examples-and-cookbook)
@@ -229,6 +230,43 @@ whole serializer:
 `IiifPresentationVersionDetector` inspects a JSON document's own shape (`@context`/`items` vs.
 `sequences`, etc.) to pick the right reader automatically.
 
+## Validation
+
+Parsing (`IiifSerializer.Deserialize*`) stays deliberately tolerant - an invalid-but-readable
+document still deserializes, exactly as before. `IIIF.Manifests.Serializer.Validation` is a
+**separate, opt-in** layer nothing calls implicitly:
+
+```csharp
+using IIIF.Manifests.Serializer.Validation;
+
+var manifest = IiifSerializer.DeserializeManifest(json); // never throws for a merely-invalid (but parseable) document
+var result = IiifValidator.ValidateManifest(manifest, new IiifValidationOptions(IiifPresentationVersion.V3_0));
+
+if (!result.IsValid)
+{
+    foreach (var error in result.Errors.Where(x => x.Severity == IiifValidationSeverity.Error))
+        Console.WriteLine($"{error.RuleId} at {error.Path}: {error.Message}");
+}
+```
+
+- **`IiifValidator.ValidateManifest`/`ValidateCollection`** validate an already-constructed model
+  object; **`ValidateJson`** parses first (via `IiifSerializer.DeserializeManifest`) and reports a
+  parse failure as a single `Error`-severity finding rather than throwing.
+- **`IiifValidationResult.IsValid`** is `true` whenever no `Error`-severity finding exists -
+  `Warning`/`Info` findings never make a document "invalid" on their own.
+- **Version-aware**: `IiifValidationOptions.Version` makes some rules target-version-specific - e.g.
+  flagging 3.0-only properties (`placeholderCanvas`, `start`, top-level `services`) that would be
+  silently omitted if the same manifest were written as `V2_0`/`V2_1` (the same set documented in
+  this README's "Downgrade limitations" table above).
+- **`Strict`**: enables additional pedantic checks (e.g. a well-formed-URI check on `rights`) that
+  are useful when authoring new documents but too noisy to run by default against tolerantly-
+  imported real-world data.
+- Current rule coverage: required `label` (Manifest/Collection), `Canvas` requiring height+width
+  and/or duration, `behavior` values checked against the Presentation API 3.0 §5.4.3 table of which
+  values are valid on which resource type, `requiredStatement` completeness, and the version-aware
+  downgrade-lossiness warnings above. This is a foundational rule set, not an exhaustive spec
+  validator - extend `IiifValidator` with additional rules as real gaps are found.
+
 ## Services
 
 `Properties/Services/` models the embedded/top-level service descriptors: the Image API service
@@ -354,6 +392,9 @@ latest generated report (no hard coverage gate is enforced yet - report visibili
   organization, `awesome-iiif`, and the official validators - including validator CI feasibility
   and ecosystem-visibility findings (e.g. no other .NET Presentation-manifest library is currently
   listed in `awesome-iiif`).
+- [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) - the pre-tag release checklist: tests,
+  packaging/smoke-test, license, docs, public API compatibility approach, and official validator
+  CI-feasibility findings.
 - Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own generated
   API reference under `docs/` (types, members, attributes, Mermaid diagrams, package dependencies),
   mirroring the source tree 1:1 (`src/IIIF.Manifest.Serializer.Net/Nodes/Contents/Annotation` →
@@ -461,19 +502,19 @@ than have it overwritten by source-derived generation.
   test projects, packs all 4 packages (core + 3 extensions), and pushes every `.nupkg` to nuget.org
   with `--skip-duplicate`. All workflows pin the .NET SDK via `global-json-file: global.json` -
   never hardcode a different SDK version in a workflow.
-- **Package smoke test** - run this locally before tagging a release to catch packaging problems
-  CI's `--no-build` steps wouldn't surface:
+- **Package smoke test** (`scripts/smoke-test-packages.ps1`, issue #13): packs all 4 packages,
+  installs them into a throwaway clean console app via `--source` (never a `ProjectReference`),
+  and confirms a Manifest with a navPlace extension actually builds/serializes/round-trips through
+  the *published artifact* - catching packaging problems CI's `--no-build` steps wouldn't surface
+  (e.g. a missing content file, a dependency that doesn't resolve outside the solution's own
+  restore graph). Runs automatically in `publish-nuget.yml`'s `pack` job before packages are
+  uploaded; run it locally too before tagging a release:
   ```powershell
-  dotnet restore IIIF.Manifest.Serializer.Net.slnx
-  dotnet build IIIF.Manifest.Serializer.Net.slnx --configuration Release --no-restore -p:GeneratePackageOnBuild=false
-  dotnet test IIIF.Manifest.Serializer.Net.slnx --configuration Release --no-build
-  dotnet pack src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj --configuration Release --no-build
-  dotnet pack extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj --configuration Release --no-build
-  dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj --configuration Release --no-build
-  dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj --configuration Release --no-build
+  ./scripts/smoke-test-packages.ps1
   ```
-  Confirm every `.nupkg` contains its `README.md` and a correct `<license>`/`<projectUrl>`/
-  `<repository>` before pushing a tag.
+- **Release checklist**: see [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) for the full pre-tag
+  checklist (tests, packaging, license, docs, public API compatibility approach, and the official
+  IIIF validators' CI feasibility assessment).
 
 ## License
 

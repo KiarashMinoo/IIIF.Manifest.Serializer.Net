@@ -70,6 +70,10 @@ jobs:
           dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj $pack_args
           dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj $pack_args
 
+      - name: Smoke test packages (issue #13)
+        shell: pwsh
+        run: ./scripts/smoke-test-packages.ps1 -SkipPack
+
       - name: Upload NuGet packages
         uses: actions/upload-artifact@v4
         with:
