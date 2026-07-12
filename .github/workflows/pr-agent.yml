@@ -13,8 +13,13 @@ permissions:
   pull-requests: write
   issues: write
 
+concurrency:
+  group: pr-agent-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pr-agent:
+    if: github.event.pull_request.draft == false
     uses: KiarashMinoo/.github/.github/workflows/reusable-pr-agent.yml@main
 
     secrets:

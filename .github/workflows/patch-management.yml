@@ -3,22 +3,32 @@ name: Patch Management - Dependency Vulnerability and Update Audit
 on:
   push:
     branches:
+      - main
       - develop
+      - 'release/**'
     paths:
       - 'Directory.Build.props'
+      - 'Directory.Packages.props'
+      - '**/Directory.Build.props'
+      - '**/Directory.Packages.props'
       - '**/*.csproj'
       - '**/*.sln'
       - 'global.json'
   pull_request:
     branches:
+      - main
       - develop
+      - 'release/**'
     paths:
       - 'Directory.Build.props'
+      - 'Directory.Packages.props'
+      - '**/Directory.Build.props'
+      - '**/Directory.Packages.props'
       - '**/*.csproj'
       - '**/*.sln'
       - 'global.json'
   schedule:
-    - cron: '0 8 * * 4'
+    - cron: '0 8 * * 2'
   workflow_dispatch:
     inputs:
       fail-on-vulnerable:
@@ -43,13 +53,16 @@ permissions:
   issues: write
   security-events: write
 
+concurrency:
+  group: patch-management-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   patch-management:
     uses: KiarashMinoo/.github/.github/workflows/reusable-patch-management.yml@main
     with:
       dotnet-versions: |
         8.0.x
-        9.0.x
         10.0.x
       solution-path: 'IIIF.Manifest.Serializer.Net.sln'
       fail-on-vulnerable: ${{ github.event_name != 'workflow_dispatch' || inputs.fail-on-vulnerable }}

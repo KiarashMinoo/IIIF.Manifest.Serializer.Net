@@ -36,8 +36,46 @@ permissions:
   issues: write
   security-events: write
 
+concurrency:
+  group: dast-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  preflight:
+    name: Validate Inputs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate required inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          target_url='${{ inputs.target-url }}'
+          scan_type='${{ inputs.scan-type }}'
+          openapi_url='${{ inputs.openapi-url }}'
+
+          if [ -z "$target_url" ]; then
+            echo "target-url is required."
+            exit 1
+          fi
+
+          if [[ ! "$target_url" =~ ^https?:// ]]; then
+            echo "target-url must start with http:// or https://"
+            exit 1
+          fi
+
+          if [ "$scan_type" = "api" ] && [ -z "$openapi_url" ]; then
+            echo "openapi-url is required when scan-type is api."
+            exit 1
+          fi
+
+          if [ -n "$openapi_url" ] && [[ ! "$openapi_url" =~ ^https?:// ]]; then
+            echo "openapi-url must start with http:// or https://"
+            exit 1
+          fi
+
   dast:
+    needs: preflight
     uses: KiarashMinoo/.github/.github/workflows/reusable-dast.yml@main
     with:
       target-url: ${{ inputs.target-url }}

@@ -3,25 +3,20 @@ name: SAST - Static Analysis Security Testing
 on:
   push:
     branches:
+      - main
       - develop
+      - 'release/**'
   pull_request:
     branches:
+      - main
       - develop
+      - 'release/**'
   schedule:
-    - cron: '0 0 * * *'
-    - cron: '0 12 * * *'
+    - cron: '0 4 * * 1'
   workflow_dispatch:
     inputs:
       enable-codeql:
         description: Run CodeQL analysis
-        type: boolean
-        default: true
-      enable-semgrep:
-        description: Run Semgrep SAST
-        type: boolean
-        default: true
-      enable-gitleaks:
-        description: Run Gitleaks secret scanning
         type: boolean
         default: true
       fail-on-findings:
@@ -34,6 +29,10 @@ permissions:
   security-events: write
   actions: read
 
+concurrency:
+  group: sast-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sast:
     uses: KiarashMinoo/.github/.github/workflows/reusable-sast.yml@main
@@ -41,15 +40,10 @@ jobs:
       languages: '["csharp"]'
       dotnet-versions: |
         8.0.x
-        9.0.x
         10.0.x
       solution-path: 'IIIF.Manifest.Serializer.Net.sln'
       enable-codeql: ${{ github.event_name != 'workflow_dispatch' || inputs.enable-codeql }}
-      enable-semgrep: ${{ github.event_name != 'workflow_dispatch' || inputs.enable-semgrep }}
-      enable-gitleaks: ${{ github.event_name != 'workflow_dispatch' || inputs.enable-gitleaks }}
-      semgrep-config: 'p/csharp'
       codeql-queries: 'security-extended,security-and-quality'
       fail-on-findings: ${{ github.event_name == 'workflow_dispatch' && inputs.fail-on-findings }}
     secrets:
       gh-token: ${{ secrets.GH_TOKEN }}
-      semgrep-app-token: ${{ secrets.SEMGREP_APP_TOKEN }}

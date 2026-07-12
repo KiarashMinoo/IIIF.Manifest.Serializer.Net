@@ -1,5 +1,11 @@
 # IIIF.Manifest.Serializer.Net
 
+[![CI](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/ci.yml/badge.svg)](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/ci.yml)
+[![SAST](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/sast.yml/badge.svg)](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/sast.yml)
+[![Patch Management](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/patch-management.yml/badge.svg)](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/patch-management.yml)
+[![NuGet](https://img.shields.io/nuget/v/IIIF.Manifest.Serializer.Net?logo=nuget)](https://www.nuget.org/packages/IIIF.Manifest.Serializer.Net)
+[![License: Apache-2.0](https://img.shields.io/github/license/KiarashMinoo/IIIF.Manifest.Serializer.Net)](LICENSE)
+
 Version-aware .NET models and serializers for IIIF Presentation API resources, with support for legacy 2.x JSON and modern Presentation API 3.0 output.
 
 The core package targets `netstandard2.1`, uses `Newtonsoft.Json`, and exposes a fluent object model for building, reading, converting, and serializing IIIF manifests, collections, canvases, annotation pages, annotations, content resources, image services, and related IIIF service payloads.
