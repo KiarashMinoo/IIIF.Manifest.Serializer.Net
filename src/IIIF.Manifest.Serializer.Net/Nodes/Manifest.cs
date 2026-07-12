@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </summary>
 [PresentationAPI("2.0", Notes = "Core resource in Presentation API 2.x. In 3.0, structure changed significantly.")]
 [System.Text.Json.Serialization.JsonConverter(typeof(ManifestSystemTextJsonConverter))]
-public class Manifest : BaseNode<Manifest>, IViewingDirectionSupport<Manifest>
+public partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupport<Manifest>
 {
     public const string NavDateJName = "navDate";
     public const string SequencesJName = "sequences";

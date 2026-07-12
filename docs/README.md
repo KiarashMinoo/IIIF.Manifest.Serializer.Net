@@ -395,6 +395,10 @@ latest generated report (no hard coverage gate is enforced yet - report visibili
 - [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md) - the pre-tag release checklist: tests,
   packaging/smoke-test, license, docs, public API compatibility approach, and official validator
   CI-feasibility findings.
+- [`CHANGE_TRACKING.md`](CHANGE_TRACKING.md) - the EF Core-style object-graph change tracker: the
+  pull-based design and why, the change-tracking lifecycle, how parent/child propagation and
+  collection changes are represented, changed-only manifest/delta output for time-scale storage,
+  and this feature's documented limitations.
 - Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own generated
   API reference under `docs/` (types, members, attributes, Mermaid diagrams, package dependencies),
   mirroring the source tree 1:1 (`src/IIIF.Manifest.Serializer.Net/Nodes/Contents/Annotation` →

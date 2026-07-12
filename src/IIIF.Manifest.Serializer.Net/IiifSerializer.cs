@@ -34,12 +34,27 @@ public static partial class IiifSerializer
         };
     }
 
+    /// <summary>
+    ///     Serializes only <paramref name="manifest" />'s pending changes (issue #23) - equivalent
+    ///     to <c>Serialize(manifest.GetChangedManifest(), options)</c>, provided as a named entry
+    ///     point so callers reaching for a "changed-only" API don't need to know about
+    ///     <c>Manifest.GetChangedManifest()</c> separately. Full <see cref="Serialize(Manifest)" />
+    ///     is entirely unaffected by this method's existence - it always serializes the complete
+    ///     object graph regardless of tracked changes.
+    /// </summary>
+    public static string SerializeChangedOnly(Manifest manifest, IiifSerializerOptions? options = null)
+    {
+        if (manifest is null) throw new ArgumentNullException(nameof(manifest));
+
+        return Serialize(manifest.GetChangedManifest(), options);
+    }
+
     public static Manifest DeserializeManifest(string json)
     {
         if (string.IsNullOrWhiteSpace(json)) throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json));
 
         var version = IiifPresentationVersionDetector.Detect(json);
-        return version switch
+        var manifest = version switch
         {
             IiifPresentationVersion.V3_0 => ReadV3Manifest(JObject.Parse(json)),
             IiifPresentationVersion.V2_0 or IiifPresentationVersion.V2_1 => JsonConvert.DeserializeObject<Manifest>(json, TrackableObject.JsonSerializerSettings)
@@ -47,6 +62,12 @@ public static partial class IiifSerializer
             IiifPresentationVersion.Unknown => throw new JsonSerializationException("Could not detect IIIF Presentation API version."),
             _ => throw new NotSupportedException($"Detected IIIF version '{version}', but this SDK does not import it as a Manifest. Supported versions: 2.0, 2.1, 3.0.")
         };
+
+        // Change tracking (issue #23): a document freshly loaded from storage has no "pending
+        // edits" yet - establish this as the clean baseline before handing it back, per
+        // docs/CHANGE_TRACKING.md's "deserialization starts clean by default" decision.
+        manifest.ClearChanges();
+        return manifest;
     }
 
     public static string Serialize(Collection collection)
@@ -73,7 +94,7 @@ public static partial class IiifSerializer
         if (string.IsNullOrWhiteSpace(json)) throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json));
 
         var version = IiifPresentationVersionDetector.Detect(json);
-        return version switch
+        var collection = version switch
         {
             IiifPresentationVersion.V3_0 => ReadV3Collection(JObject.Parse(json)),
             IiifPresentationVersion.V2_0 or IiifPresentationVersion.V2_1 => JsonConvert.DeserializeObject<Collection>(json, TrackableObject.JsonSerializerSettings)
@@ -81,6 +102,9 @@ public static partial class IiifSerializer
             IiifPresentationVersion.Unknown => throw new JsonSerializationException("Could not detect IIIF Presentation API version."),
             _ => throw new NotSupportedException($"Detected IIIF version '{version}', but this SDK does not import it as a Collection. Supported versions: 2.0, 2.1, 3.0.")
         };
+
+        collection.ClearChanges(); // see DeserializeManifest's comment - same "clean by default" decision.
+        return collection;
     }
 
     public static string Serialize(AnnotationCollection annotationCollection)
@@ -105,6 +129,8 @@ public static partial class IiifSerializer
     {
         if (string.IsNullOrWhiteSpace(json)) throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json));
 
-        return ReadV3AnnotationCollection(JObject.Parse(json));
+        var annotationCollection = ReadV3AnnotationCollection(JObject.Parse(json));
+        annotationCollection.ClearChanges(); // see DeserializeManifest's comment - same "clean by default" decision.
+        return annotationCollection;
     }
 }

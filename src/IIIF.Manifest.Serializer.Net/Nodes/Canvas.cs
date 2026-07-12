@@ -143,6 +143,25 @@ public class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
         return this;
     }
 
+    /// <summary>
+    ///     Sets the Canvas's height after construction (e.g. correcting a value, or re-digitizing
+    ///     at a different resolution) - previously only settable via the constructor.
+    /// </summary>
+    public Canvas SetHeight(int height)
+    {
+        Height = height;
+        return this;
+    }
+
+    /// <summary>
+    ///     Sets the Canvas's width after construction - see <see cref="SetHeight" />.
+    /// </summary>
+    public Canvas SetWidth(int width)
+    {
+        Width = width;
+        return this;
+    }
+
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with an ImageResource body and use AddAnnotation instead.")]
     public Canvas AddImage(Image image)

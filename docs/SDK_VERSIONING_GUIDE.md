@@ -1702,4 +1702,100 @@ unit tests + 8 architecture tests, all passing**, 0 build warnings/errors introd
 smoke test itself is a script, not a unit test (per its own nature - it packs artifacts and runs a
 separate throwaway console app), verified by direct execution rather than only code review.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage, and round 16 validation layer plus release-hardening (package smoke test, release checklist).
+## Round 17: EF Core-style object-graph change tracking and changed-only manifest output (issue #23)
+
+Scope (issue #23): give the entire SDK object graph EF Core-style change tracking - property-level
+change notification, collection mutation tracking, parent-to-child change propagation,
+`ClearChanges()`/`AcceptChanges()`, and changed-only manifest/delta-envelope output for time-scale/
+delta persistence scenarios - all without taking an EF Core dependency.
+
+**Design decision - pull-based, not the issue's suggested push/`AttachParent` design**: rather than
+an explicit `IIiifObjectGraphTrackable.Parent`/`AttachParent`/`DetachParent` wiring scheme (which
+needs correct subscribe/unsubscribe bookkeeping at every single mutation call site across the whole
+SDK to avoid silently missing changes), `HasChanges`/`GetChanges()`/`ClearChanges()` walk the object
+graph fresh on every call, reusing the Original/Modified value pair every property already
+maintains via the existing `ElementDescriptors` mechanism on `TrackableObject<T>`. This correctly
+detects a child mutated through a reference held outside its parent (e.g.
+`manifest.AddItem(canvas); manifest.ClearChanges(); canvas.SetHeight(2000);` still makes
+`manifest.HasChanges` true) with zero changes needed to any existing `Add*`/`Set*` method. Full
+rationale in the new `docs/CHANGE_TRACKING.md`.
+
+**New `IIIF.Manifests.Serializer.ChangeTracking` namespace**: `IIiifChangeTrackable`
+(`HasChanges`/`GetChanges()`/`ClearChanges()`/`AcceptChanges()` - deliberately not extending
+`INotifyPropertyChanging`/`INotifyPropertyChanged`, since `TrackableObject<T>` already implements
+those separately from earlier work), `IiifChangeEntry` (`Path`/`Kind`/`PropertyName`/
+`OriginalValue`/`CurrentValue`/`ChangedAtUtc`), `IiifChangeKind` (`Added`/`Modified`/`Removed`/
+`CollectionItemAdded`/`CollectionItemRemoved`/`CollectionCleared`/`ChildChanged` - only `Modified`/
+`CollectionItemAdded`/`CollectionItemRemoved` are actually synthesized by this implementation; the
+rest exist for shape-parity with the issue's own suggestion and future extension, documented as an
+explicit gap rather than left unexplained), and `IiifChangeSet` (`RootId`/`RootType`/
+`CreatedAtUtc`/`Changes`/`ChangedManifest` - a plain constructor-based class, not `required init`
+properties, since netstandard2.1 needs `RequiredMemberAttribute`/`CompilerFeatureRequiredAttribute`
+polyfills this repo doesn't carry yet, beyond just the existing `IsExternalInit` one).
+
+**Core implementation** (`Shared/Trackable/TrackableObject.ChangeTracking.cs`, a new partial-class
+file on the existing shared base - this alone gives every derived type in the SDK, roughly 180
+model types, change tracking for free): a structural-vs-value split for collection-valued
+properties (anything whose element type implements the existing `IBaseItem` marker - `Items`,
+`Structures`, etc. - is diffed by reference for `CollectionItemAdded`/`CollectionItemRemoved`;
+everything else, e.g. `Label`/`Metadata`, is reported as one wholesale `Modified` entry), recursive
+parent/child path-prefixing (a changed `Canvas` at `Items[0]` surfaces as `Items[0].Height` on the
+owning `Manifest`, no synthetic wrapper entry), and cycle protection via a reference-equality
+`HashSet<object>` threaded through every recursive call (a custom `ReferenceEqualityComparer`, since
+`System.Collections.Generic.ReferenceEqualityComparer` isn't available on netstandard2.1). Cross-
+closed-generic-type dispatch (`TrackableObject<Canvas>` and `TrackableObject<Manifest>` are distinct
+runtime types despite sharing a template, so a `private` method on one can't be called from the
+other during recursion) solved via an internal `IChangeTrackingCoreAccess` interface with explicit
+implementations forwarding to the real private `*Core` methods.
+
+**Two related bugs found and fixed, both via actually running the tests this round's own examples
+implied, not assumed correct from the initial design** - both are instances of the same root cause:
+`ElementDescriptor`'s Original/Modified pair treats a property's *first-ever* assignment as
+"establishing the baseline" (correct for constructor-time properties), which under-reports a
+property that was never touched *before* an explicit `ClearChanges()` call, then set for the first
+time *after* it (e.g. `Items` on a fresh `Manifest`, or an optional property like `Rights` never set
+in the constructor). Fixed generically with two new fields on `TrackableObject<T>`:
+`_collectionBaselines` (snapshots collection contents at clear time, used as the diffing baseline
+for `CollectionItemAdded`/`CollectionItemRemoved` instead of `ElementDescriptor.OriginalValue`) and
+`_keysAtLastClear` (snapshots which `ElementDescriptors` keys existed at clear time; any key set for
+the first time afterward is reported `Modified` with `OriginalValue = null`, even though its own
+`ElementDescriptor.IsModified` says otherwise).
+
+**Changed-only output** (`Nodes/Manifest.ChangeTracking.cs`, `Manifest`-only so far - the only
+document type the issue's own examples exercise): `GetChangedManifest()` reconstructs a best-effort,
+valid partial `Manifest` (`id` always kept; `rights`/`requiredStatement`/`summary` if changed; only
+`Items` canvases that are new or internally changed) - explicitly never represents removals, since a
+valid IIIF Manifest has no "this used to be here" concept. `GetChangeSet()` wraps the complete
+`GetChanges()` list (including removals) alongside the same `ChangedManifest`, resolving that gap.
+`IiifSerializer.SerializeChangedOnly(manifest, options)` is a named convenience equivalent to
+`Serialize(manifest.GetChangedManifest(), options)`.
+
+**Deserialization starts clean by design**: `IiifSerializer.DeserializeManifest`/
+`DeserializeCollection`/`DeserializeAnnotationCollection`, and the shared
+`TrackableObject.Parse<T>`/`TryParse<T>` (covering `SearchResponse`/`ContentState`/
+`DiscoveryCollectionPage` and other document types built directly on the shared base), each call
+`ClearChanges()` on the freshly-deserialized result before returning it - a document just loaded
+from storage has no pending edits yet.
+
+**Also added** (needed to satisfy this issue's own canonical worked examples, which reference
+`canvas.SetHeight(2000)`): genuine public `Canvas.SetHeight(int)`/`SetWidth(int)` fluent setters -
+`Canvas` previously only exposed `private set` on `Height`/`Width` (plus an unrelated, already-
+documented buggy `SetHeight(this T, JToken)` extension-method helper from an earlier round, which
+takes a `JToken` and doesn't apply here).
+
+New documentation: [`docs/CHANGE_TRACKING.md`](CHANGE_TRACKING.md) covers the lifecycle, the
+pull-based design rationale, parent/child propagation, the structural-vs-value collection split,
+changed-only output for delta/time-scale storage (with the removals caveat spelled out), and this
+feature's limitations/non-goals - linked from `docs/README.md`'s Documentation index.
+
+Tests: 20 new (`ChangeTrackingTests.cs`) covering property changes, `PropertyChanging`/
+`PropertyChanged` event firing, equivalent-value no-ops, collection add/remove, child-to-parent
+bubbling (through a collection and through a direct scalar change), `ClearChanges`/`AcceptChanges`
+recursion, deserialize-starts-clean, cycle-safety with a doubly-referenced child, extension-object
+(navPlace) bubbling, all three `GetChangedManifest()` scenarios (top-level property, changed child
+canvas, newly-added canvas), `GetChangeSet()` capturing a removal `GetChangedManifest()` can't
+represent, `SerializeChangedOnly` parity with the manual two-step equivalent, and full-serialize
+being unaffected by tracking state. Full suite: **535 unit tests + 8 architecture tests, all
+passing**, 0 build warnings/errors introduced, zero regressions to the pre-existing 515+8.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage, round 16 validation layer plus release-hardening (package smoke test, release checklist), and round 17 EF Core-style object-graph change tracking plus changed-only manifest/delta output.
