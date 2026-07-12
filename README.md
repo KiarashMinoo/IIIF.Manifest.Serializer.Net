@@ -6,9 +6,9 @@ The core package targets `netstandard2.1`, uses `Newtonsoft.Json`, and exposes a
 
 ## Status
 
-- Core package version: `3.0.0` from `Directory.Build.props`.
+- Core package version: `3.0.1` from `Directory.Build.props`.
 - Core target framework: `netstandard2.1`.
-- Extension target frameworks: `netstandard2.1;net8.0`.
+- Extension target framework: `netstandard2.1`.
 - Test project target framework: `net8.0`.
 - Checked-in coverage summary: about 72% line coverage.
 - Test suite: 336 tests (xUnit + FluentAssertions), all passing.

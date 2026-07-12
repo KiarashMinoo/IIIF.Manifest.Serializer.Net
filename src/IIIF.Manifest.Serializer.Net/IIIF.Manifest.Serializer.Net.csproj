@@ -1,17 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <RootNamespace>IIIF.Manifests.Serializer</RootNamespace>
     <TargetFramework>netstandard2.1</TargetFramework>
     <LangVersion>latestmajor</LangVersion>
     <Nullable>enable</Nullable>
+    <PackageId>IIIF.Manifest.Serializer.Net</PackageId>
+    <Title>IIIF Manifest Serializer .NET</Title>
+    <PackageTags>iiif;manifest;presentation-api;serializer;json;newtonsoft-json</PackageTags>
+    <Authors>Kiarash Minoo, IIIF Manifest Serializer</Authors>
+    <RepositoryUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</RepositoryUrl>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="System.Text.Json" Version="8.0.5" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Shared\Trackable\TrackableObject.Getters.cs">
       <DependentUpon>TrackableObject.cs</DependentUpon>
@@ -23,5 +25,4 @@
       <DependentUpon>TrackableObject.cs</DependentUpon>
     </Compile>
   </ItemGroup>
-
 </Project>

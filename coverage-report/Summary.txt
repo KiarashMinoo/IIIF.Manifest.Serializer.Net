@@ -1,25 +1,25 @@
 Summary
-  Generated on: 7/12/2026 - 12:02:30 PM
-  Coverage date: 7/12/2026 - 11:58:49 AM
+  Generated on: 7/12/2026 - 12:36:46 PM
+  Coverage date: 7/12/2026 - 12:36:45 PM
   Parser: Cobertura
   Assemblies: 4
   Classes: 174
   Files: 185
-  Line coverage: 78%
-  Covered lines: 3884
-  Uncovered lines: 1093
+  Line coverage: 82.4%
+  Covered lines: 4106
+  Uncovered lines: 871
   Coverable lines: 4977
   Total lines: 12312
-  Branch coverage: 74.7% (1230 of 1646)
-  Covered branches: 1230
+  Branch coverage: 77.1% (1270 of 1646)
+  Covered branches: 1270
   Total branches: 1646
-  Method coverage: 75.1% (1205 of 1603)
-  Full method coverage: 71.7% (1150 of 1603)
-  Covered methods: 1205
-  Fully covered methods: 1150
+  Method coverage: 80.4% (1290 of 1603)
+  Full method coverage: 77% (1235 of 1603)
+  Covered methods: 1290
+  Fully covered methods: 1235
   Total methods: 1603
 
-IIIF.Manifest.Serializer.Net                                                              77.8%
+IIIF.Manifest.Serializer.Net                                                              82.5%
   IIIF.Manifests.Serializer.Attributes.AuthAPIAttribute                                    100%
   IIIF.Manifests.Serializer.Attributes.ContentStateAPIAttribute                            100%
   IIIF.Manifests.Serializer.Attributes.DiscoveryAPIAttribute                               100%
@@ -32,10 +32,10 @@ IIIF.Manifest.Serializer.Net                                                    
   IIIF.Manifests.Serializer.Attributes.TextGranularityExtensionAttribute                   100%
   IIIF.Manifests.Serializer.Helpers.AdditionalPropertiesHelper                             100%
   IIIF.Manifests.Serializer.Helpers.CollectionHelper                                      53.6%
-  IIIF.Manifests.Serializer.Helpers.DatetimeHelper                                           0%
-  IIIF.Manifests.Serializer.Helpers.JsonCollectionPropertyHelper                             0%
+  IIIF.Manifests.Serializer.Helpers.DatetimeHelper                                         100%
+  IIIF.Manifests.Serializer.Helpers.JsonCollectionPropertyHelper                           100%
   IIIF.Manifests.Serializer.Helpers.JsonHelper                                             100%
-  IIIF.Manifests.Serializer.Helpers.ManifestHelper                                           0%
+  IIIF.Manifests.Serializer.Helpers.ManifestHelper                                         100%
   IIIF.Manifests.Serializer.IIIFJsonContractResolver                                       100%
   IIIF.Manifests.Serializer.IiifPresentationVersionDetector                               84.6%
   IIIF.Manifests.Serializer.IiifSerializer                                                95.9%
@@ -58,18 +58,18 @@ IIIF.Manifest.Serializer.Net                                                    
   IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStatePointSelector          100%
   IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateTarget                 100%
   IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentStateTargetJsonConverter   89.1%
-  IIIF.Manifests.Serializer.Nodes.Contents.Embedded.EmbeddedContent                          0%
+  IIIF.Manifests.Serializer.Nodes.Contents.Embedded.EmbeddedContent                        100%
   IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource.EmbeddedContentResource       100%
   IIIF.Manifests.Serializer.Nodes.Contents.Image.Image                                     100%
   IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource.ImageResource                    100%
   IIIF.Manifests.Serializer.Nodes.Contents.OtherContent.OtherContent                       100%
   IIIF.Manifests.Serializer.Nodes.Contents.Segment.Resource.SegmentResource                100%
-  IIIF.Manifests.Serializer.Nodes.Contents.Segment.Segment                                   0%
-  IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector.Selector                         0%
+  IIIF.Manifests.Serializer.Nodes.Contents.Segment.Segment                                 100%
+  IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector.Selector                       100%
   IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource.TextualBody                    100%
   IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource.VideoResource                    100%
   IIIF.Manifests.Serializer.Nodes.Contents.Video.Video                                     100%
-  IIIF.Manifests.Serializer.Nodes.Layer                                                      0%
+  IIIF.Manifests.Serializer.Nodes.Layer                                                    100%
   IIIF.Manifests.Serializer.Nodes.Manifest                                                82.4%
   IIIF.Manifests.Serializer.Nodes.RangeReference                                           100%
   IIIF.Manifests.Serializer.Nodes.Sequence                                                85.7%
@@ -77,23 +77,23 @@ IIIF.Manifest.Serializer.Net                                                    
   IIIF.Manifests.Serializer.Properties.AccompanyingCanvas                                  100%
   IIIF.Manifests.Serializer.Properties.Attribution                                         100%
   IIIF.Manifests.Serializer.Properties.Behavior                                           36.8%
-  IIIF.Manifests.Serializer.Properties.Context                                               0%
+  IIIF.Manifests.Serializer.Properties.Context                                             100%
   IIIF.Manifests.Serializer.Properties.Description                                         100%
   IIIF.Manifests.Serializer.Properties.Homepage                                            100%
-  IIIF.Manifests.Serializer.Properties.ImageFeature                                          0%
+  IIIF.Manifests.Serializer.Properties.ImageFeature                                       38.8%
   IIIF.Manifests.Serializer.Properties.ImageFormat                                        27.2%
-  IIIF.Manifests.Serializer.Properties.ImageQuality                                          0%
-  IIIF.Manifests.Serializer.Properties.Interfaces.IDimenssionSupportHelper                   0%
-  IIIF.Manifests.Serializer.Properties.Interfaces.IViewingDirectionSupportHelper             0%
+  IIIF.Manifests.Serializer.Properties.ImageQuality                                        100%
+  IIIF.Manifests.Serializer.Properties.Interfaces.IDimenssionSupportHelper                 100%
+  IIIF.Manifests.Serializer.Properties.Interfaces.IViewingDirectionSupportHelper           100%
   IIIF.Manifests.Serializer.Properties.Label                                              69.2%
-  IIIF.Manifests.Serializer.Properties.Language                                              0%
+  IIIF.Manifests.Serializer.Properties.Language                                           31.5%
   IIIF.Manifests.Serializer.Properties.License                                             100%
   IIIF.Manifests.Serializer.Properties.Logo                                                100%
-  IIIF.Manifests.Serializer.Properties.MetadataProperty.Metadata                          84.2%
-  IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue.MetadataValue       88.8%
-  IIIF.Manifests.Serializer.Properties.Motivation                                            0%
+  IIIF.Manifests.Serializer.Properties.MetadataProperty.Metadata                          92.1%
+  IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue.MetadataValue        100%
+  IIIF.Manifests.Serializer.Properties.Motivation                                         41.1%
   IIIF.Manifests.Serializer.Properties.PartOf                                              100%
-  IIIF.Manifests.Serializer.Properties.Profile                                               0%
+  IIIF.Manifests.Serializer.Properties.Profile                                            38.4%
   IIIF.Manifests.Serializer.Properties.Provider                                            100%
   IIIF.Manifests.Serializer.Properties.Rendering                                          83.3%
   IIIF.Manifests.Serializer.Properties.RequiredStatement                                   100%
@@ -129,7 +129,7 @@ IIIF.Manifest.Serializer.Net                                                    
   IIIF.Manifests.Serializer.Properties.Services.Search.TermPageResponse                    100%
   IIIF.Manifests.Serializer.Properties.Services.SearchService                               80%
   IIIF.Manifests.Serializer.Properties.Services.Service                                   59.4%
-  IIIF.Manifests.Serializer.Properties.Size                                                  0%
+  IIIF.Manifests.Serializer.Properties.Size                                                100%
   IIIF.Manifests.Serializer.Properties.StartCanvas                                         100%
   IIIF.Manifests.Serializer.Properties.Thumbnail                                           100%
   IIIF.Manifests.Serializer.Properties.Tile                                               81.8%
@@ -147,9 +147,9 @@ IIIF.Manifest.Serializer.Net                                                    
   IIIF.Manifests.Serializer.Shared.Content.Resources.IBaseResource                         100%
   IIIF.Manifests.Serializer.Shared.Content.Resources.ResourceTypeRegistry                  100%
   IIIF.Manifests.Serializer.Shared.Content.Resources.SpecificResource                     92.8%
-  IIIF.Manifests.Serializer.Shared.Exceptions.JsonNodeRequiredException<T>                   0%
-  IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJArray<T>                      0%
-  IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJObject<T>                     0%
+  IIIF.Manifests.Serializer.Shared.Exceptions.JsonNodeRequiredException<T>                 100%
+  IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJArray<T>                    100%
+  IIIF.Manifests.Serializer.Shared.Exceptions.JsonObjectMustBeJObject<T>                   100%
   IIIF.Manifests.Serializer.Shared.FormattableItem<T>                                      100%
   IIIF.Manifests.Serializer.Shared.LanguageMapJsonConverter                               76.6%
   IIIF.Manifests.Serializer.Shared.ObjectArrayJsonConverter                               85.2%
@@ -174,14 +174,14 @@ IIIF.Manifest.Serializer.Net                                                    
   IIIF.Manifests.Serializer.SystemTextJson.ContentStateSystemTextJsonConverter             100%
   IIIF.Manifests.Serializer.SystemTextJson.ManifestSystemTextJsonConverter                 100%
 
-IIIF.Manifest.Serializer.Net.Georeference                                                 87.5%
+IIIF.Manifest.Serializer.Net.Georeference                                                 91.4%
   IIIF.Manifests.Serializer.Extensions.GeoreferenceAnnotation                              100%
   IIIF.Manifests.Serializer.Extensions.GeoreferenceSvgSelector                             100%
   IIIF.Manifests.Serializer.Extensions.GeoreferenceTarget                                  100%
   IIIF.Manifests.Serializer.Extensions.GeoreferenceTargetJsonConverter                    84.2%
   IIIF.Manifests.Serializer.Extensions.ResourceCoords.ResourceCoordExtensions              100%
-  IIIF.Manifests.Serializer.Extensions.Transformations.PolynomialTransformation              0%
-  IIIF.Manifests.Serializer.Extensions.Transformations.PolynomialTransformationOption        0%
+  IIIF.Manifests.Serializer.Extensions.Transformations.PolynomialTransformation            100%
+  IIIF.Manifests.Serializer.Extensions.Transformations.PolynomialTransformationOption       50%
   IIIF.Manifests.Serializer.Extensions.Transformations.ThinPlateSplineTransformation       100%
   IIIF.Manifests.Serializer.Extensions.Transformations.Transformation                      100%
   IIIF.Manifests.Serializer.Extensions.Transformations.TransformationExtensions            100%
