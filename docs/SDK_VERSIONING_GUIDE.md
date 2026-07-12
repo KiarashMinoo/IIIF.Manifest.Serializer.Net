@@ -1530,4 +1530,61 @@ Tests: 1 new `[Theory]` (3 cases) - `ContentState_sharing_recipes_should_round_t
 ContentStateCodec` in `ExampleCatalogTests.cs`. Full suite: **486 unit tests + 8 architecture
 tests, all passing**, 0 build warnings/errors introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, and round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix.
+## Round 14: demo scenarios (issue #11)
+
+Scope (issue #11, "SDK Phase 6B"): represent official IIIF demo patterns as local SDK
+demo/example scenarios. `iiif.io/demos/` was already confirmed (per `CLAUDE.md`'s mandate, checked
+in an earlier round) to be an external-links showcase page with no manifest content of its own -
+consistent with that finding, issue #11's own example scenarios are explicitly "inspired by"
+patterns (e.g. "Wellcome-style search integration"), not scraped content, so this round extended
+`DemoCatalog` with locally-authored, deterministic fixtures rather than importing anything external.
+
+Audited the existing 6 demos against issue #11's explicit category list (search/autocomplete
+overlays, overlaid search results, deep zoom, paged books/newspapers, complex multi-canvas objects,
+3D/audio/video/PDF references, collections/cross-navigation, education/storytelling annotations,
+guided tours, map/navPlace, reunification) and found real gaps: no demo modeled actual overlaid
+search results (only the service descriptors), no demo had non-image canvas content (audio/video/
+PDF/3D), no demo represented a guided-tour Range structure, and the one demo labeled
+"reunification" didn't actually preserve any cross-institution provenance data. Added 4 new demos
+(`CreateOverlaidSearchResults`, `CreateStorytellingAnnotationExample`, `CreateGuidedTourExample`,
+`CreateMixedMediaObjectExample`) and fixed the reunification demo in place
+(`CreateReunificationExample`, formerly `CreateCollectionExample`) to embed two full nested
+`Manifest` objects, each with its own `Provider`/`Homepage`/`SeeAlso` preserving a distinct source
+institution - the actual pattern Biblissima-style reunification demonstrates.
+
+**One real, more significant bug found while building the reunification/search demos and fixed**:
+`IiifSerializer`'s hand-rolled V3 writer/reader never read or wrote the embedded/inline `service`
+property (`BaseItem.Service`) on Manifest, Collection, Canvas, or Range/Structure themselves - only
+on annotation-body content resources (`WriteV3Resource`) and Manifest's separate, 3.0-only
+top-level `services` array (`WriteV3Manifest`). This silently dropped any service embedded directly
+on one of these 4 top-level resource types when using `IiifSerializer.Serialize`/
+`DeserializeManifest` - the SDK's primary, documented entry point - even though this is a
+documented, explicitly-tested pattern via plain `JsonConvert`
+(`ServiceRoundTripTests.SearchAndAutoCompleteService_Should_RoundTripThroughInlineServiceProperty`,
+added in an earlier round). Same root cause and same fix shape as Round 12's extension-data gap,
+but for core, spec-real service embedding rather than extension data. Fixed generically in
+`WriteV3NodeExtras`/`ReadV3NodeExtras` (shared across all 4 `BaseNode`-derived types) using the
+existing `WriteV3Service`/`ReadV3Service` helpers (context-preserving, matching the top-level
+`Services` array's convention - not `WriteV3EmbeddedResourceService`, which deliberately strips
+`@context` for the different case of a service embedded on a content-resource body).
+
+Also fixed, while auditing the deep-zoom demo for accuracy: its Image API service declared a 2.x
+`@context` but never called `.AsImageService2()`, so it actually wrote as `ImageService3` - an
+internal inconsistency, not a core bug (the demo just hadn't been checked for self-consistency
+before).
+
+Created `docs/DEMO_COVERAGE.md` - the same kind of coverage matrix `COOKBOOK_COVERAGE.md` provides
+for recipes, mapping each of the 10 demo scenarios to the real-world pattern it represents, plus a
+table of issue #11 categories intentionally not given a separate demo (with reasons - e.g. no
+native 3D IIIF body type exists as of Presentation 3.0, so 3D is represented via a `rendering` link
+to an external viewer, the spec-correct mechanism for a format with no dedicated body type).
+
+Tests: 9 new. `DemoCatalogTests.cs` (new file, 8 dedicated JSON-shape/builder tests - one per
+demo pattern issue #11's "Tests" section names by category: search service, overlaid search
+results, image service, annotation targeting, Range/TOC, mixed-media canvases, collection/
+reference links, navPlace). `ServiceRoundTripTests.InlineService_Should_RoundTripThroughIiifSerializer_
+OnManifestCollectionCanvasAndRange` (1) locks in the embedded-service fix across all 4 resource
+types. Full suite: **498 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
+introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, and round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed.

@@ -45,6 +45,14 @@ public static partial class IiifSerializer
         var seeAlso = node.SeeAlso.Select(WriteV3SeeAlso).ToList();
         if (seeAlso.Count > 0) obj["seeAlso"] = new JArray(seeAlso);
 
+        // Embedded/inline services directly on this resource (BaseItem.Service) - distinct from
+        // Manifest's top-level, 3.0-only centralized Services array (written separately in
+        // WriteV3Manifest). Context-preserving (WriteV3Service, not WriteV3EmbeddedResourceService)
+        // since an inline service on a real top-level resource legitimately declares its own
+        // @context, unlike a service embedded on a content-resource body.
+        var services = node.Service.Select(WriteV3Service).ToList();
+        if (services.Count > 0) obj["service"] = new JArray(services);
+
         WriteV3AdditionalProperties(node, obj);
     }
 
@@ -72,6 +80,10 @@ public static partial class IiifSerializer
         foreach (var homepageObj in obj["homepage"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) node.AddHomepage(ReadV3Homepage(homepageObj));
 
         foreach (var seeAlsoObj in obj["seeAlso"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) node.AddSeeAlso(ReadV3SeeAlso(seeAlsoObj));
+
+        foreach (var serviceObj in obj["service"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
+            if (ReadV3Service(serviceObj) is { } service)
+                node.AddService(service);
 
         // navPlace (extensions/IIIF.Manifest.Serializer.Net.NavPlace) - core can't reference the
         // extension assembly, so the JSON key name is necessarily hardcoded here; see

@@ -140,6 +140,47 @@ public class ServiceRoundTripTests
     }
 
     [Fact]
+    public void InlineService_Should_RoundTripThroughIiifSerializer_OnManifestCollectionCanvasAndRange()
+    {
+        // Regression guard (found while building a demo scenario for issue #11): IiifSerializer's
+        // hand-rolled V3 writer/reader only ever handled the embedded "service" property on
+        // annotation-body content resources (WriteV3Resource) and Manifest's separate, 3.0-only
+        // top-level "services" array (WriteV3Manifest) - it never read or wrote BaseItem.Service
+        // (the embedded/inline service) on Manifest/Collection/Canvas/Range themselves, silently
+        // dropping it even though this exact scenario is a documented, tested pattern via plain
+        // JsonConvert (SearchAndAutoCompleteService_Should_RoundTripThroughInlineServiceProperty,
+        // above). Fixed in WriteV3NodeExtras/ReadV3NodeExtras.
+        var manifest = new Manifest("https://example.org/manifest", new Label("Test"));
+        manifest.AddService(new AuthService1("https://example.org/auth/login", "http://iiif.io/api/auth/1/login").SetLabel("Login"));
+
+        var collection = new Collection("https://example.org/collection", new Label("Test"));
+        collection.AddService(new AuthService1("https://example.org/collection-auth/login", "http://iiif.io/api/auth/1/login"));
+
+        var canvas = new Canvas("https://example.org/canvas/1", new Label("p1"), 100, 100);
+        canvas.AddService(new AuthService1("https://example.org/canvas-auth/login", "http://iiif.io/api/auth/1/login"));
+
+        var range = new Structure("https://example.org/range/1", new Label("Chapter 1"));
+        range.AddService(new AuthService1("https://example.org/range-auth/login", "http://iiif.io/api/auth/1/login"));
+        range.AddCanvasReference(canvas.Id);
+        manifest.AddItem(canvas);
+        manifest.AddStructure(range);
+
+        var manifestJson = JObject.Parse(IiifSerializer.Serialize(manifest));
+        manifestJson["service"]![0]!["id"]!.ToString().Should().Be("https://example.org/auth/login");
+        manifestJson["structures"]![0]!["service"]![0]!["id"]!.ToString().Should().Be("https://example.org/range-auth/login");
+        manifestJson["items"]![0]!["service"]![0]!["id"]!.ToString().Should().Be("https://example.org/canvas-auth/login");
+
+        var collectionJson = JObject.Parse(IiifSerializer.Serialize(collection));
+        collectionJson["service"]![0]!["id"]!.ToString().Should().Be("https://example.org/collection-auth/login");
+
+        var deserializedManifest = IiifSerializer.DeserializeManifest(manifestJson.ToString());
+        deserializedManifest.Service.OfType<AuthService1>().Should().ContainSingle(x => x.Id == "https://example.org/auth/login");
+        var deserializedCanvas = (Canvas)deserializedManifest.Items.Single();
+        deserializedCanvas.Service.OfType<AuthService1>().Should().ContainSingle(x => x.Id == "https://example.org/canvas-auth/login");
+        deserializedManifest.Structures.Single().Service.OfType<AuthService1>().Should().ContainSingle(x => x.Id == "https://example.org/range-auth/login");
+    }
+
+    [Fact]
     public void DiscoveryService_Should_RoundTripThroughInlineServiceProperty()
     {
         var manifest = new Manifest("https://example.org/manifest", new Label("Test"));
