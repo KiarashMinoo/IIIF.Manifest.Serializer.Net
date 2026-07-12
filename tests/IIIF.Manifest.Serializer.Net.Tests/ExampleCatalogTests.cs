@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
-using FluentAssertions;
+using AwesomeAssertions;
 using IIIF.Manifests.Serializer.Examples;
 using IIIF.Manifests.Serializer.Net.Cookbook;
 using IIIF.Manifests.Serializer.Nodes;

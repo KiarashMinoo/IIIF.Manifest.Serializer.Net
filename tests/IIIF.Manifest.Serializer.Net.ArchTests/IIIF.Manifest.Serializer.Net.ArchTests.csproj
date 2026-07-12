@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>IIIF.Manifests.Serializer.ArchTests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <OutputType>Library</OutputType>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <!-- MIT-licensed, free/OSS architecture-testing library -->
+    <PackageReference Include="NetArchTest.Rules" Version="1.3.2" />
+    <!-- AwesomeAssertions, not FluentAssertions: FluentAssertions 8+ relicensed to a paid
+         commercial model; AwesomeAssertions is the Apache-2.0 drop-in fork by its original author. -->
+    <PackageReference Include="AwesomeAssertions" Version="9.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
+    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj" />
+    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
+    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj" />
+  </ItemGroup>
+
+</Project>

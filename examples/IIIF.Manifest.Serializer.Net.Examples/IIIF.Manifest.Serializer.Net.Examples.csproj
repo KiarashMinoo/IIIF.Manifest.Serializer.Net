@@ -6,6 +6,7 @@
     <RootNamespace>IIIF.Manifests.Serializer.Examples</RootNamespace>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,3 +21,4 @@
   </ItemGroup>
 
 </Project>
+

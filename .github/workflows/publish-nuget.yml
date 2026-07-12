@@ -22,6 +22,7 @@ permissions:
 
 jobs:
   publish:
+    if: startsWith(github.ref, 'refs/heads/release/')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -38,33 +39,34 @@ jobs:
         run: dotnet restore IIIF.Manifest.Serializer.Net.sln
 
       - name: Build
-        run: dotnet build IIIF.Manifest.Serializer.Net.sln --configuration Release --no-restore
+        run: dotnet build IIIF.Manifest.Serializer.Net.sln --configuration Release --no-restore -p:GeneratePackageOnBuild=false
 
-      - name: Pack main package
+      - name: Test
+        run: dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj --configuration Release --no-build
+
+      - name: Pack packages
         run: |
+          pack_args="--configuration Release --no-build --output ./artifacts/packages"
           if [ "${{ inputs.channel }}" = "prerelease" ] && [ -n "${{ inputs.version-suffix }}" ]; then
-            dotnet pack src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
-          else
-            dotnet pack src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj --configuration Release --no-build
+            pack_args="$pack_args -p:VersionSuffix=${{ inputs.version-suffix }}"
           fi
 
-      - name: Pack extension packages
-        run: |
-          if [ "${{ inputs.channel }}" = "prerelease" ] && [ -n "${{ inputs.version-suffix }}" ]; then
-            dotnet pack extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
-            dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
-            dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj --configuration Release --no-build -p:VersionSuffix=${{ inputs.version-suffix }}
-          else
-            dotnet pack extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj --configuration Release --no-build
-            dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj --configuration Release --no-build
-            dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj --configuration Release --no-build
-          fi
+          dotnet pack src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj $pack_args
+          dotnet pack extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj $pack_args
+          dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj $pack_args
+          dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj $pack_args
+
+      - name: Upload NuGet packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: ./artifacts/packages/*.nupkg
 
       - name: Push packages to NuGet
         run: |
-          dotnet nuget push src/IIIF.Manifest.Serializer.Net/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
-          dotnet nuget push extensions/IIIF.Manifest.Serializer.Net.NavPlace/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
-          dotnet nuget push extensions/IIIF.Manifest.Serializer.Net.Georeference/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
-          dotnet nuget push extensions/IIIF.Manifest.Serializer.Net.TextGranularity/bin/Release/*.nupkg --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          for package in ./artifacts/packages/*.nupkg; do
+            dotnet nuget push "$package" --api-key "$NUGET_API_KEY" --source https://api.nuget.org/v3/index.json --skip-duplicate
+          done
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
