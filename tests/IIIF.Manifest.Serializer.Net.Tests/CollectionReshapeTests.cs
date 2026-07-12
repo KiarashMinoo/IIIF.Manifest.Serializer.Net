@@ -109,6 +109,16 @@ public class CollectionReshapeTests
     }
 
     [Fact]
+    public void IiifSerializer_Should_ThrowNotSupported_When_VersionIsV4_0Rc()
+    {
+        var collection = new Collection("https://example.org/collection", new Label("Test"));
+
+        var act = () => IiifSerializer.Serialize(collection, new IiifSerializerOptions(IiifPresentationVersion.V4_0_Rc));
+
+        act.Should().Throw<NotSupportedException>().WithMessage("*V4_0_Rc*");
+    }
+
+    [Fact]
     public void IiifSerializer_Should_ReadV3Collection()
     {
         const string json = """

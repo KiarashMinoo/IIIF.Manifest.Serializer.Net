@@ -50,7 +50,8 @@ public static partial class IiifSerializer
             IiifPresentationVersion.V3_0 => ReadV3Manifest(JObject.Parse(json)),
             IiifPresentationVersion.V2_0 or IiifPresentationVersion.V2_1 => JsonConvert.DeserializeObject<Manifest>(json, TrackableObject.JsonSerializerSettings)
                 ?? throw new JsonSerializationException("Could not deserialize IIIF manifest."),
-            _ => throw new JsonSerializationException("Could not detect IIIF Presentation API version.")
+            IiifPresentationVersion.Unknown => throw new JsonSerializationException("Could not detect IIIF Presentation API version."),
+            _ => throw new NotSupportedException($"Detected IIIF version '{version}', but this SDK does not import it as a Manifest. Supported versions: 2.0, 2.1, 3.0.")
         };
     }
 
@@ -89,7 +90,8 @@ public static partial class IiifSerializer
             IiifPresentationVersion.V3_0 => ReadV3Collection(JObject.Parse(json)),
             IiifPresentationVersion.V2_0 or IiifPresentationVersion.V2_1 => JsonConvert.DeserializeObject<Collection>(json, TrackableObject.JsonSerializerSettings)
                 ?? throw new JsonSerializationException("Could not deserialize IIIF collection."),
-            _ => throw new JsonSerializationException("Could not detect IIIF Presentation API version.")
+            IiifPresentationVersion.Unknown => throw new JsonSerializationException("Could not detect IIIF Presentation API version."),
+            _ => throw new NotSupportedException($"Detected IIIF version '{version}', but this SDK does not import it as a Collection. Supported versions: 2.0, 2.1, 3.0.")
         };
     }
 

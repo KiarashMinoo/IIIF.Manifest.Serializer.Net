@@ -1105,4 +1105,65 @@ System.Text.Json-`Deserialize<Manifest>` round trip confirming the read-side bri
 auto-detects version correctly). Full suite: **336 tests, all passing**, 0 build warnings/errors
 introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor and round 5 System.Text.Json interop.
+## Round 6: harden version detection - Metadata API 1.0 and Presentation 4.0 RC tracking
+
+Scope (`github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net` issue #5, "SDK Phase 1"): the version
+detector and `IiifPresentationVersion` enum only recognized 2.0/2.1/3.0 - anything else (a Metadata
+API 1.0 "Shared Canvas" document, a draft Presentation 4.0 document, or a genuinely ambiguous/
+invalid payload) fell into an undifferentiated `Unknown`, and there was no enum value to even
+represent "detected, but not a version this SDK writes."
+
+Researched directly against the live spec pages (not assumed) before making any enum/detector
+change:
+
+- **Presentation 2.0 vs 2.1 share one `@context`.** Confirmed via `iiif.io/api/presentation/2.1/`
+  and a direct fetch of `iiif.io/api/presentation/{2.0,2.1}/context.json` (both 404 - only the
+  unversioned `iiif.io/api/presentation/2/context.json` exists, HTTP 200). There is no version
+  field or structural difference between a 2.0 and a 2.1 document either. This means `V2_0` was
+  never actually reachable by the existing detector in practice - kept as an explicit enum value
+  (for callers who want to *write* 2.0 specifically) and as a defensive fallback for a
+  non-conformant `.../presentation/2.0/context.json` some tooling might emit, but real-world 2.x
+  documents are - correctly and deliberately - always detected as `V2_1`.
+- **Metadata API 1.0** (`@context: http://www.shared-canvas.org/ns/context.json`, confirmed via
+  `iiif.io/api/metadata/1.0/`) is the "Shared Canvas" predecessor to Presentation 2.0 -
+  structurally near-identical (`sc:Manifest`, `sequences`/`canvases`, `@id`/`@type`), so it's only
+  reliably distinguished by this one context URL; without it, a Metadata 1.0 document is
+  indistinguishable from - and correctly falls back to - `V2_1`.
+- **Presentation 4.0** (`@context: http://iiif.io/api/presentation/4/context.json`, confirmed via
+  `iiif.io/api/presentation/4.0/`) is still `4.0.0-draft` as of this research, not a stable spec.
+
+Added `IiifPresentationVersion.Metadata_1_0` and `IiifPresentationVersion.V4_0_Rc` (inserted
+between `Unknown` and `V2_0`/after `V3_0` respectively - safe, since every existing reference to
+this enum in the codebase is by name, never by numeric/ordinal value, confirmed by grep before
+reordering). `IiifPresentationVersionDetector` now recognizes both via `@context` (checked before
+the existing 2.x/3.0 checks), and its `Detect(JToken)` overload gained an explicit doc comment
+spelling out the full priority order (context → legacy 2.x structural signals → 3.0 structural
+signals → `Unknown`) so a mixed/ambiguous document's outcome is documented, not just incidentally
+deterministic.
+
+`IiifSerializer.Serialize(Manifest/Collection, options)` already had an exhaustive `switch` with a
+`_ => throw new NotSupportedException(...)` default arm from earlier work - so once the two new
+enum values existed, requesting `Metadata_1_0` or `V4_0_Rc` as a *write* target immediately, correctly
+threw `NotSupportedException` with zero additional code change (verified with tests, not assumed).
+`DeserializeManifest`/`DeserializeCollection`'s default arm previously collapsed every non-2.x/3.0
+outcome into the same generic `JsonSerializationException("Could not detect...")`, which became
+misleading once the detector could genuinely detect (just not import) `Metadata_1_0`/`V4_0_Rc` - split
+into `Unknown => JsonSerializationException` (unchanged, still means "couldn't tell") vs.
+`_ => NotSupportedException($"Detected IIIF version '{version}', but this SDK does not import
+it...")` (new, means "detected fine, but there's no importer for it yet") - a real, user-facing
+improvement to error message accuracy, not just an internal detail.
+
+Deliberately out of scope (per the issue): full Metadata 1.0 import normalization, full 4.0
+conformance/writer support, and validation against external IIIF validators - this round is
+detection/classification and clear-failure-mode only.
+
+Tests: 16 new (`IiifPresentationVersionDetectorTests.cs` - Metadata 1.0 context, Presentation 4.0
+context + context-array, the non-standard 2.0-only context defensive fallback, the real-world
+2.0-collapses-to-2.1 case explicitly documented as such, a mixed-signal ambiguous payload, and
+expanded non-object/invalid coverage: whitespace-only, `null`, `true`, a bare number, a bare
+string; `IiifSerializerTests.cs`/`CollectionReshapeTests.cs` - explicit V2_0 write path produces
+byte-identical output to V2_1, `NotSupportedException` for both new enum values on both `Serialize`
+overloads, and the corresponding `DeserializeManifest` case). Full suite: **409 tests, all
+passing**, 0 build warnings/errors introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, and round 6 version-detection hardening.
