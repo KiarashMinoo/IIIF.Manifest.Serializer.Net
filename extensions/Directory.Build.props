@@ -6,8 +6,5 @@
     <LangVersion>latestmajor</LangVersion>
     <Nullable>enable</Nullable>
     <Version>1.0.1</Version>
-    <Authors>Kiarash Minoo, IIIF Manifest Serializer</Authors>
-    <RepositoryUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</RepositoryUrl>
-    <PackageProjectUrl>https://iiif.io/api/extension/</PackageProjectUrl>
   </PropertyGroup>
 </Project>

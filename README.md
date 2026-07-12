@@ -4,7 +4,8 @@
 [![SAST](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/sast.yml/badge.svg)](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/sast.yml)
 [![Patch Management](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/patch-management.yml/badge.svg)](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/actions/workflows/patch-management.yml)
 [![NuGet](https://img.shields.io/nuget/v/IIIF.Manifest.Serializer.Net?logo=nuget)](https://www.nuget.org/packages/IIIF.Manifest.Serializer.Net)
-[![License: Apache-2.0](https://img.shields.io/github/license/KiarashMinoo/IIIF.Manifest.Serializer.Net)](LICENSE)
+
+[![License: MIT](https://img.shields.io/github/license/KiarashMinoo/IIIF.Manifest.Serializer.Net)](LICENSE)
 
 Version-aware .NET models and serializers for IIIF Presentation API resources, with support for legacy 2.x JSON and modern Presentation API 3.0 output.
 
@@ -16,8 +17,8 @@ The core package targets `netstandard2.1`, uses `Newtonsoft.Json`, and exposes a
 - Core target framework: `netstandard2.1`.
 - Extension target framework: `netstandard2.1`.
 - Test and example project target framework: `net10.0`.
-- Checked-in coverage summary: about 72% line coverage.
-- Test suite: 336 tests (xUnit + AwesomeAssertions), all passing.
+- Checked-in coverage summary: about 82% line coverage (core + extension packages only).
+- Test suite: 393 unit tests (xUnit + AwesomeAssertions) plus 8 architecture tests (NetArchTest.Rules), all passing.
 - Documentation: every source folder under `src/`/`extensions/` now has a generated, source-derived
   API-reference README under `docs/` (regenerated - see [Documentation](#documentation) below); it is
   current, not lagging.
@@ -65,7 +66,9 @@ The core package targets `netstandard2.1`, uses `Newtonsoft.Json`, and exposes a
 | `examples/IIIF.Manifest.Serializer.Net.Cookbook` | IIIF Cookbook recipe builders. |
 | `examples/IIIF.Manifest.Serializer.Net.Examples` | Smaller demo catalog. |
 | `tests/IIIF.Manifest.Serializer.Net.Tests` | xUnit coverage for serializers, compatibility views, services, extensions, and examples. |
+| `tests/IIIF.Manifest.Serializer.Net.ArchTests` | NetArchTest.Rules checks enforcing namespace layering (e.g. `Shared`/`Properties` must not depend on `Nodes`) and conventions (e.g. `Helpers` types must be static). |
 | `docs/SDK_VERSIONING_GUIDE.md` | Detailed implementation and design history for the multi-version model. |
+| `docs/SDK_FIRST_VERSION_IMPLEMENTATION_GUIDE.md` | Target architecture and staged implementation plan for the first stable SDK version. |
 
 ## Architecture
 
@@ -237,6 +240,7 @@ The repository uses the .NET SDK configured by `global.json`:
 dotnet restore IIIF.Manifest.Serializer.Net.slnx
 dotnet build IIIF.Manifest.Serializer.Net.slnx
 dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
+dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj
 ```
 
 Run the cookbook examples:
@@ -254,7 +258,9 @@ dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Ne
   --results-directory ./coverage-raw
 ```
 
-The checked-in coverage summary currently reports line coverage around 72%.
+The checked-in coverage summary currently reports line coverage around 82% (core and extension
+packages only - demo/test harness assemblies are excluded, see
+`tests/IIIF.Manifest.Serializer.Net.Tests/coverlet.runsettings`).
 
 ## Packaging
 
@@ -273,6 +279,10 @@ All four packages are consumed straight from [nuget.org](https://www.nuget.org) 
 
 Package versions are managed centrally with folder-scoped `Directory.Packages.props` files in
 `src/`, `extensions/`, `examples/`, and `tests/`.
+
+See [`docs/README.md#release-hygiene`](docs/README.md#release-hygiene) for how CI, SAST, patch
+management, and NuGet publishing fit together, and the exact commands to smoke-test a release
+locally before tagging.
 
 ## Documentation
 
