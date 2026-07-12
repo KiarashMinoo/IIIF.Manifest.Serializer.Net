@@ -177,6 +177,12 @@ Implement and test the following coverage areas:
 | Content State | Content-state annotation model and base64url `iiif-content` codec. |
 | Extensions | navPlace, Text Granularity, Georeference. |
 
+> **Verified against upstream, not just this plan**: see
+> [`IIIF_UPSTREAM_COVERAGE_MATRIX.md`](IIIF_UPSTREAM_COVERAGE_MATRIX.md) for a per-area status
+> check against the live IIIF standards, `awesome-iiif`, and the official validators (issue #12),
+> confirming each row above against its actual current implementation state rather than this
+> plan's original intent.
+
 ## 8. Cookbook and demos plan
 
 The cookbook and demos should be treated as executable conformance examples.

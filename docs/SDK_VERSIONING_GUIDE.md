@@ -1587,4 +1587,48 @@ OnManifestCollectionCanvasAndRange` (1) locks in the embedded-service fix across
 types. Full suite: **498 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
 introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, and round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed.
+## Round 15: upstream standards & ecosystem coverage matrix (issue #12)
+
+Scope (issue #12, "SDK Research" - explicitly research/planning only, no runtime changes):
+build an evidence-based coverage matrix comparing this SDK against the live IIIF standards, the
+`IIIF` GitHub organization, `awesome-iiif`, and the official validators, so future coverage
+decisions don't rely on memory or the current code shape alone.
+
+Researched via `gh api` (GitHub API) and direct `raw.githubusercontent.com` fetches - no scraping,
+no live dependency introduced into the SDK's own build/test/CI process:
+- **`awesome-iiif`'s actual structure**: its files are lowercase (`readme.md`/`implementations.md`/
+  `curation.md`/`reading-viewing.md`), not `README.md` - confirmed by listing the repo contents
+  directly rather than assuming the conventional filename. Categorized every relevant section
+  (Standards, Presentation/Image API Libraries, Validators, Manifest Tools, Image Servers,
+  Exhibition/Guided-Viewing Tools, Content Search, Authentication, plus several institutional/
+  deployment categories confirmed out of scope for a serializer library).
+- **No .NET/C# Presentation-manifest-building library is listed in `awesome-iiif` at all** - the
+  only .NET entry anywhere in the document is `TremendousIIIF`, a .NET Image API *server*, not a
+  manifest library. This SDK appears to fill a genuinely unlisted ecosystem gap - noted as a future
+  ecosystem-visibility opportunity (submitting a PR to `awesome-iiif`), not a code gap.
+- **Presentation API validator can be used for fully offline CI/release checks**: fetched its
+  `action.yml` and `README.md` directly - `validate-dir` operates on local files/directories only,
+  no network required, version auto-detected from `@context` or explicit. A concrete, positive
+  finding for a *future* release-hardening issue to act on (issue #12 itself explicitly excludes
+  "enabling validator CI directly").
+- **Image API validator cannot be used the same way**: fetched its README directly (note: the
+  actual content lives in the extensionless `README` file - `README.rst` is a stub) - it validates
+  a *live, running* Image API server's actual HTTP responses (tile/region/size requests), not a
+  static `info.json` file in isolation. Using it would require building a new mock Image API HTTP
+  server backed by this SDK's `Service` model purely to satisfy the validator - a distinct future
+  feature, not a simple CI wiring task, and explicitly noted as such rather than glossed over.
+- **Per-API-family status re-verified against live spec pages** (not re-derived from memory): every
+  row in the matrix cites the specific earlier round that verified it, cross-checked against the
+  official spec URL for that area. No area was found to be genuinely `Missing`; the SDK's actual
+  coverage matches what `CLAUDE.md`'s "Current state" section already claims, confirmed rather than
+  assumed.
+
+Created `docs/IIIF_UPSTREAM_COVERAGE_MATRIX.md` (the deliverable issue #12 asks for) and linked it
+from both `docs/README.md`'s Documentation index and `docs/SDK_FIRST_VERSION_IMPLEMENTATION_GUIDE.md`
+§7 (a pointer added alongside the existing coverage-matrix table there, not a rewrite of that
+hand-authored planning document).
+
+No code changes - this round is documentation/research only, per issue #12's own scope. No new
+tests; full suite unchanged at 499 unit tests + 8 architecture tests.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, and round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage.

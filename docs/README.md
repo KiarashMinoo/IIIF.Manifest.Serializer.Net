@@ -349,6 +349,11 @@ latest generated report (no hard coverage gate is enforced yet - report visibili
   coverage.
 - [`DEMO_COVERAGE.md`](DEMO_COVERAGE.md) - maps each `DemoCatalog` scenario to the real-world usage
   pattern it represents, and lists categories intentionally not given a separate demo, with reasons.
+- [`IIIF_UPSTREAM_COVERAGE_MATRIX.md`](IIIF_UPSTREAM_COVERAGE_MATRIX.md) - an evidence-based
+  comparison of this SDK's coverage against the live IIIF standards, the `IIIF` GitHub
+  organization, `awesome-iiif`, and the official validators - including validator CI feasibility
+  and ecosystem-visibility findings (e.g. no other .NET Presentation-manifest library is currently
+  listed in `awesome-iiif`).
 - Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own generated
   API reference under `docs/` (types, members, attributes, Mermaid diagrams, package dependencies),
   mirroring the source tree 1:1 (`src/IIIF.Manifest.Serializer.Net/Nodes/Contents/Annotation` →
