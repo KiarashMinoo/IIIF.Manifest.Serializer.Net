@@ -110,6 +110,21 @@ public class CollectionReshapeTests
     }
 
     [Fact]
+    public void IiifSerializer_Should_WriteTheSameLegacyShape_When_CollectionVersionIsV2_0()
+    {
+        // 2.0 and 2.1 are wire-format-identical for Collection too (mirrors the equivalent
+        // Manifest test in IiifSerializerTests.cs) - explicitly requesting V2_0 must succeed and
+        // match V2_1's output, not throw.
+        var collection = new Collection("https://example.org/collection", new Label("Test"));
+        collection.AddManifestReference("https://example.org/manifest/1");
+
+        var v2_0Json = IiifSerializer.Serialize(collection, new IiifSerializerOptions(IiifPresentationVersion.V2_0));
+        var v2_1Json = IiifSerializer.Serialize(collection, new IiifSerializerOptions(IiifPresentationVersion.V2_1));
+
+        v2_0Json.Should().Be(v2_1Json);
+    }
+
+    [Fact]
     public void IiifSerializer_Should_ThrowNotSupported_When_VersionIsV4_0Rc()
     {
         var collection = new Collection("https://example.org/collection", new Label("Test"));
@@ -117,6 +132,23 @@ public class CollectionReshapeTests
         var act = () => IiifSerializer.Serialize(collection, new IiifSerializerOptions(IiifPresentationVersion.V4_0_Rc));
 
         act.Should().Throw<NotSupportedException>().WithMessage("*V4_0_Rc*");
+    }
+
+    [Fact]
+    public void DeserializeCollection_Should_ThrowNotSupported_When_VersionIsDetectedButUnimportable()
+    {
+        const string json = """
+                            {
+                              "@context": "http://www.shared-canvas.org/ns/context.json",
+                              "@id": "https://example.org/collection",
+                              "@type": "sc:Collection",
+                              "manifests": []
+                            }
+                            """;
+
+        var act = () => IiifSerializer.DeserializeCollection(json);
+
+        act.Should().Throw<NotSupportedException>().WithMessage("*Metadata_1_0*");
     }
 
     [Fact]

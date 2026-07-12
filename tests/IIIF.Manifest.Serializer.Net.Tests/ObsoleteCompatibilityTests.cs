@@ -2,6 +2,7 @@ using System.Linq;
 using System.Reflection;
 using IIIF.Manifests.Serializer;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
 using Newtonsoft.Json.Linq;
 
@@ -50,6 +51,33 @@ public class ObsoleteCompatibilityTests
 
         v3["behavior"]!.Values<string>().Should().ContainSingle("paged");
         v3["viewingHint"].Should().BeNull();
+    }
+
+    [Fact]
+    public void SerializeV2_Should_MapBehaviorToViewingHint_When_ValueIsSharedBetweenBoth()
+    {
+        // Behavior is the only 3.0-native storage - no SetViewingHint call - so the legacy v2.1
+        // writer must derive viewingHint from behavior for values valid in both (issue #7's
+        // "behavior -> viewingHint where safe" downgrade rule).
+        var manifest = new Manifest("https://example.org/manifest", new Label("Test"))
+            .AddBehavior(Behavior.Paged);
+
+        var v2 = JObject.Parse(IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1)));
+
+        v2["viewingHint"]!.ToString().Should().Be("paged");
+    }
+
+    [Fact]
+    public void SerializeV2_Should_OmitViewingHint_When_BehaviorHasNo2xEquivalent()
+    {
+        // "auto-advance" exists only in Behavior, not ViewingHint - must be omitted on legacy
+        // write, never invented/guessed, per issue #7's "otherwise omit" downgrade rule.
+        var manifest = new Manifest("https://example.org/manifest", new Label("Test"))
+            .AddBehavior(Behavior.AutoAdvance);
+
+        var v2 = JObject.Parse(IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1)));
+
+        v2["viewingHint"].Should().BeNull();
     }
 
     [Fact]
