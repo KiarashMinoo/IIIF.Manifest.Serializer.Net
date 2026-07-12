@@ -30,7 +30,7 @@ permissions:
   actions: read
 
 concurrency:
-  group: sast-${{ github.ref }}
+  group: sast-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:

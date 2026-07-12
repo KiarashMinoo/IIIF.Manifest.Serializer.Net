@@ -54,7 +54,7 @@ permissions:
   security-events: write
 
 concurrency:
-  group: patch-management-${{ github.ref }}
+  group: patch-management-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -72,4 +72,3 @@ jobs:
     secrets:
       gh-token: ${{ secrets.GH_TOKEN }}
       nvd-api-key: ${{ secrets.NVD_API_KEY }}
-
