@@ -1057,4 +1057,52 @@ including the automatic per-catalog-entry round-trip test for all 78 `CookbookCa
 Round 3's Milestone 10, confirming the Strategy/Registry rewrite preserved every recipe's output
 byte-for-byte.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor.
+## Round 5: System.Text.Json interop for the 4 top-level document types
+
+Scope: the whole model only ever worked correctly through **Newtonsoft.Json** - every custom
+converter (`BaseNodeJsonConverter`, `ServiceJsonConverter`, `AnnotationTargetJsonConverter`,
+`ObjectArrayJsonConverter`, `SelectorJsonConverter`, `ChoiceJsonConverter`,
+`ContentStateTargetJsonConverter`, etc.) and `IiifSerializer`'s hand-rolled 3.0 writer are
+Newtonsoft-specific. A developer who serializes/deserializes a `Manifest` (or `Collection`/
+`AnnotationCollection`/`ContentState`) directly with **System.Text.Json** instead - explicitly, or
+implicitly via ASP.NET Core's default request/response (de)serialization - got whatever
+System.Text.Json's own reflection-based default produced against types that carry none of its
+attributes: silently wrong output, not an error.
+
+Considered and rejected: reimplementing every one of the ~15 custom Newtonsoft converters a second
+time for System.Text.Json, so any individual type could be serialized standalone with either
+library. Large surface area for no realistic benefit - nested types (`Canvas`, `Service`,
+selectors, ...) are never serialized standalone in practice, only ever reached inside one of the 4
+top-level documents' own JSON tree - and an ongoing burden of keeping two serializer backends in
+sync as the model evolves.
+
+**Decided**: a small **bridging** `System.Text.Json.Serialization.JsonConverter<T>` per top-level
+document type (`src/IIIF.Manifest.Serializer.Net/SystemTextJson/`:
+`ManifestSystemTextJsonConverter`, `CollectionSystemTextJsonConverter`,
+`AnnotationCollectionSystemTextJsonConverter`, `ContentStateSystemTextJsonConverter`). Each just
+parses the incoming `Utf8JsonReader`/writes to the `Utf8JsonWriter` via `JsonDocument`, and
+delegates the actual read/write work entirely to this SDK's existing logic - `IiifSerializer.
+Serialize`/`DeserializeManifest`/`DeserializeCollection`/`DeserializeAnnotationCollection` for the
+first three, and `TrackableObject.Parse<ContentState>`/`ContentState.Serialize()` for the fourth
+(Content State has no legacy shape, so it was never routed through `IiifSerializer`'s version
+dispatch to begin with). Each converter is applied directly on its type via
+`[System.Text.Json.Serialization.JsonConverter(typeof(...))]` - fully qualified at the attribute
+site rather than via a `using` directive, since every one of these files already has an unqualified
+`using Newtonsoft.Json;` and `JsonConverterAttribute` exists in both namespaces. This means
+`System.Text.Json.JsonSerializer.Serialize(manifest)`/`Deserialize<Manifest>(json)` (and ASP.NET
+Core defaulting to System.Text.Json) now produce/accept exactly the same JSON as calling
+`IiifSerializer` directly, with zero configuration required from the consumer - there is exactly
+one source of truth for how each document type reads and writes IIIF JSON, regardless of which
+library a consumer's application uses elsewhere.
+
+Required adding a `System.Text.Json` package reference to the core SDK project (previously
+Newtonsoft-only); no other project needed changes.
+
+Tests: `SystemTextJsonInteropTests.cs` (7 new - each of the 4 types' System.Text.Json output
+matches `IiifSerializer`'s/`Serialize()`'s Newtonsoft output byte-for-byte via `JToken` structural
+comparison, round-trip through System.Text.Json for all 4 types, plus a legacy-2.1-JSON-in →
+System.Text.Json-`Deserialize<Manifest>` round trip confirming the read-side bridge also
+auto-detects version correctly). Full suite: **336 tests, all passing**, 0 build warnings/errors
+introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor and round 5 System.Text.Json interop.

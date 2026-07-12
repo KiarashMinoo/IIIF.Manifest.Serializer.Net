@@ -12,6 +12,7 @@ Granularity extensions.
 - [Install](#install)
 - [Quick start](#quick-start)
 - [Multi-version serialization](#multi-version-serialization)
+- [Newtonsoft.Json and System.Text.Json interop](#newtonsoftjson-and-systemtextjson-interop)
 - [Project layout](#project-layout)
 - [The object model](#the-object-model)
 - [`IiifSerializer` architecture](#iifserializer-architecture)
@@ -105,6 +106,37 @@ Manifest fromLegacy = IiifSerializer.DeserializeManifest(legacyJson);
 // Legacy views over the same 3.0-native storage still work after parsing either version:
 var firstSequenceCanvases = fromLegacy.Sequences.Single().Canvases; // computed, read-only
 ```
+
+## Newtonsoft.Json and System.Text.Json interop
+
+This SDK is built on **Newtonsoft.Json** (custom `[JsonConverter]`s, `IiifSerializer`'s hand-rolled
+3.0 writer/reader), so calling `IiifSerializer.Serialize`/`Deserialize*` - or, for the 2.x shape,
+plain `JsonConvert.SerializeObject(manifest)` - always works correctly with no extra setup.
+
+`Manifest`, `Collection`, `AnnotationCollection`, and `ContentState` also each carry a
+`System.Text.Json` bridging converter, so a developer who serializes/deserializes with
+**System.Text.Json** instead - directly, or implicitly via ASP.NET Core's default request/response
+(de)serialization - gets the same correct result with no extra configuration:
+
+```csharp
+using System.Text.Json;
+
+// Defaults to IIIF Presentation API 3.0, same as IiifSerializer.Serialize(manifest).
+string json = JsonSerializer.Serialize(manifest);
+
+// Version is auto-detected from the JSON shape, same as IiifSerializer.DeserializeManifest.
+Manifest parsed = JsonSerializer.Deserialize<Manifest>(json)!;
+
+// Also works directly as an ASP.NET Core action result - no [JsonConverter] registration needed:
+// return Ok(manifest);
+```
+
+Each bridge converter (`src/IIIF.Manifest.Serializer.Net/SystemTextJson/`) delegates to this SDK's
+existing Newtonsoft-based logic rather than reimplementing it, so there is exactly one source of
+truth for how each document type reads and writes IIIF JSON regardless of which library a
+consumer's application happens to use elsewhere. Nested types (`Canvas`, `Service`, selectors, ...)
+have no System.Text.Json converter of their own - they're only ever reached inside one of the 4
+top-level documents' own JSON tree, which the bridge builds via the existing Newtonsoft logic.
 
 ## Project layout
 

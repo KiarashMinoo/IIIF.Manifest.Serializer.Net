@@ -14,6 +14,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 /// encode/decode the base64url "iiif-content" string this object represents.
 /// </summary>
 [ContentStateAPI("1.0")]
+[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.ContentStateSystemTextJsonConverter))]
 public class ContentState : TrackableObject<ContentState>
 {
     public const string IdJName = "id";

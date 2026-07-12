@@ -14,6 +14,7 @@ namespace IIIF.Manifests.Serializer.Nodes
     /// IIIF Collection resource - an ordered list of Manifests and/or Collections.
     /// </summary>
     [PresentationAPI("2.0", Notes = "Supported in 2.x and 3.0. Paging properties added in 2.0.")]
+    [System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.CollectionSystemTextJsonConverter))]
     public class Collection : BaseNode<Collection>, IViewingDirectionSupport<Collection>
     {
         public const string CollectionsJName = "collections";

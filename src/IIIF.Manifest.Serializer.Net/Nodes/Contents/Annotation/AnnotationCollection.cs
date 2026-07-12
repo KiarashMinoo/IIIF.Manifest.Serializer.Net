@@ -13,6 +13,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 /// that references it via each <see cref="AnnotationPage"/>'s <c>partOf</c>.
 /// </summary>
 [PresentationAPI("3.0", Notes = "W3C Web Annotation Protocol paging concept, distinct from the IIIF Collection resource.")]
+[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.AnnotationCollectionSystemTextJsonConverter))]
 public class AnnotationCollection : BaseNode<AnnotationCollection>
 {
     public const string TotalJName = "total";

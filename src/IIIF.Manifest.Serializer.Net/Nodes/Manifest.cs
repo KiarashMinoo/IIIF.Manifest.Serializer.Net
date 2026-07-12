@@ -16,6 +16,7 @@ namespace IIIF.Manifests.Serializer.Nodes
     /// IIIF Manifest resource - the top-level resource representing a single object.
     /// </summary>
     [PresentationAPI("2.0", Notes = "Core resource in Presentation API 2.x. In 3.0, structure changed significantly.")]
+    [System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.ManifestSystemTextJsonConverter))]
     public class Manifest : BaseNode<Manifest>, IViewingDirectionSupport<Manifest>
     {
         public const string NavDateJName = "navDate";
