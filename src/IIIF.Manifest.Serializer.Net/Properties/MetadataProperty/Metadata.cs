@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Trackable;
@@ -10,21 +9,6 @@ public class Metadata : TrackableObject<Metadata>
 {
     public const string LabelJName = "label";
     public const string ValueJName = "value";
-
-    [JsonProperty(LabelJName)]
-    public string Label
-    {
-        get => GetElementValue(x => x.Label)!;
-        private set => SetElementValue(value);
-    }
-
-    [JsonProperty(ValueJName)]
-    [JsonConverter(typeof(ObjectArrayJsonConverter))]
-    public IReadOnlyCollection<MetadataValue.MetadataValue> Value
-    {
-        get => GetElementValue(x => x.Value) ?? [];
-        private set => SetElementValue(value);
-    }
 
     [JsonConstructor]
     private Metadata(string label)
@@ -43,6 +27,21 @@ public class Metadata : TrackableObject<Metadata>
 
     public Metadata(string label, string value, string language) : this(label, new MetadataValue.MetadataValue(value, language))
     {
+    }
+
+    [JsonProperty(LabelJName)]
+    public string Label
+    {
+        get => GetElementValue(x => x.Label)!;
+        private set => SetElementValue(value);
+    }
+
+    [JsonProperty(ValueJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    public IReadOnlyCollection<MetadataValue.MetadataValue> Value
+    {
+        get => GetElementValue(x => x.Value) ?? [];
+        private set => SetElementValue(value);
     }
 
     public Metadata AddValue(MetadataValue.MetadataValue value)

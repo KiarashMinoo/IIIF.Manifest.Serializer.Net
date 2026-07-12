@@ -2,19 +2,13 @@ using System;
 using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
-using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
-using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
-using IIIF.Manifests.Serializer.Nodes.Contents.Image;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Contents.Segment;
 using IIIF.Manifests.Serializer.Nodes.Contents.Segment.Resource;
-using IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
-using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
-using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Examples;
 
@@ -22,15 +16,18 @@ public sealed record ExampleDefinition(string Title, Func<object> Build);
 
 public static class DemoCatalog
 {
-    public static IReadOnlyList<ExampleDefinition> GetAll() =>
-    [
-        new ExampleDefinition("Wellcome-style search and access manifest", CreateSearchManifest),
-        new ExampleDefinition("Nationalmuseum-style deep zoom manifest", CreateDeepZoomManifest),
-        new ExampleDefinition("Stanford-style paged book manifest", CreatePagedBookManifest),
-        new ExampleDefinition("Biblissima-style collection browsing", CreateCollectionExample),
-        new ExampleDefinition("Harvard-style canvas annotation example", CreateAnnotationExample),
-        new ExampleDefinition("Map-based place example", CreateMapExample)
-    ];
+    public static IReadOnlyList<ExampleDefinition> GetAll()
+    {
+        return
+        [
+            new ExampleDefinition("Wellcome-style search and access manifest", CreateSearchManifest),
+            new ExampleDefinition("Nationalmuseum-style deep zoom manifest", CreateDeepZoomManifest),
+            new ExampleDefinition("Stanford-style paged book manifest", CreatePagedBookManifest),
+            new ExampleDefinition("Biblissima-style collection browsing", CreateCollectionExample),
+            new ExampleDefinition("Harvard-style canvas annotation example", CreateAnnotationExample),
+            new ExampleDefinition("Map-based place example", CreateMapExample)
+        ];
+    }
 
     private static Manifest CreateSearchManifest()
     {
@@ -42,7 +39,8 @@ public static class DemoCatalog
             canvas.Id));
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://example.org/demo/search/sequence/normal");
-        manifest.AddService(new SearchService("http://iiif.io/api/search/2/context.json", "https://example.org/demo/search/service", "http://iiif.io/api/search/0/search").AddService(new AutoCompleteService("http://iiif.io/api/search/2/context.json", "https://example.org/demo/search/autocomplete", "http://iiif.io/api/search/0/autocomplete")));
+        manifest.AddService(new SearchService("http://iiif.io/api/search/2/context.json", "https://example.org/demo/search/service", "http://iiif.io/api/search/0/search").AddService(new AutoCompleteService("http://iiif.io/api/search/2/context.json",
+            "https://example.org/demo/search/autocomplete", "http://iiif.io/api/search/0/autocomplete")));
         manifest.AddService(new ContentStateService("http://iiif.io/api/content-state/1/context.json", "https://example.org/demo/content-state", "http://iiif.io/api/content-state/v1/state"));
         var accessTokenService = new AuthAccessTokenService2("https://example.org/demo/auth/token");
         var accessService = new AuthAccessService2("https://example.org/demo/auth/login", "active", accessTokenService)
@@ -61,7 +59,7 @@ public static class DemoCatalog
 
         var canvas = new Canvas("https://example.org/demo/deep-zoom/canvas/1", new Label("Image"), 4000, 3000);
         var imageResource = new ImageResource("https://example.org/demo/deep-zoom/image/full/full/0/default.jpg", "image/jpeg").SetHeight(4000).SetWidth(3000);
-        imageResource.AddService(new IIIF.Manifests.Serializer.Properties.Services.Service("http://iiif.io/api/image/2/context.json", "https://example.org/demo/image-service", "http://iiif.io/api/image/2/level2.json").SetHeight(4000).SetWidth(3000));
+        imageResource.AddService(new Service("http://iiif.io/api/image/2/context.json", "https://example.org/demo/image-service", "http://iiif.io/api/image/2/level2.json").SetHeight(4000).SetWidth(3000));
         canvas.AddAnnotation(new Annotation("https://example.org/demo/deep-zoom/annotation/1", imageResource, canvas.Id));
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://example.org/demo/deep-zoom/sequence/normal");
@@ -106,18 +104,10 @@ public static class DemoCatalog
     private static Manifest CreateMapExample()
     {
         var manifest = new Manifest("https://example.org/demo/map/manifest", new Label("Map Demo"));
-        manifest.SetNavPlace(new NavPlace("https://example.org/demo/map/navplace").AddFeature(new Feature("https://example.org/demo/map/feature/1").SetGeometry(new Geometry(GeometryType.Point).AddCoordinate(new CoordinateItem(-73.9857, 40.7484))).SetProperties(new FeatureProperties().AddLabel(new Label("New York")))));
+        manifest.SetNavPlace(new NavPlace("https://example.org/demo/map/navplace").AddFeature(new Feature("https://example.org/demo/map/feature/1").SetGeometry(new Geometry(GeometryType.Point).AddCoordinate(new CoordinateItem(-73.9857, 40.7484)))
+            .SetProperties(new FeatureProperties().AddLabel(new Label("New York")))));
         manifest.AddItem(new Canvas("https://example.org/demo/map/canvas/1", new Label("Map"), 1000, 1000));
         manifest.SetSequenceId("https://example.org/demo/map/sequence/normal");
         return manifest;
     }
 }
-
-
-
-
-
-
-
-
-

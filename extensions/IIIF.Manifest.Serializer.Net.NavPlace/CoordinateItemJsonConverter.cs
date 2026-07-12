@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
@@ -13,22 +10,16 @@ public class CoordinateItemJsonConverter : JsonConverter<CoordinateItem>
 
         List<double> items = new(3);
         if (reader.TokenType == JsonToken.StartArray)
-        {
             while (reader.Read())
             {
                 if (reader.TokenType == JsonToken.EndArray)
                     break;
 
                 if (reader.TokenType == JsonToken.StartArray)
-                {
                     existingValue.AddCoordinate(serializer.Deserialize<CoordinateItem>(reader)!);
-                }
                 else
-                {
                     items.Add(Convert.ToDouble(reader.Value));
-                }
             }
-        }
 
         existingValue = items.Count switch
         {
@@ -58,17 +49,11 @@ public class CoordinateItemJsonConverter : JsonConverter<CoordinateItem>
             writer.WriteValue(value.Longitude);
             writer.WriteValue(value.Latitude);
 
-            if (value.Altitude > 0)
-            {
-                writer.WriteValue(value.Altitude);
-            }
+            if (value.Altitude > 0) writer.WriteValue(value.Altitude);
         }
         else
         {
-            foreach (var coordinate in value.Coordinates)
-            {
-                serializer.Serialize(writer, coordinate);
-            }
+            foreach (var coordinate in value.Coordinates) serializer.Serialize(writer, coordinate);
         }
 
         writer.WriteEndArray();

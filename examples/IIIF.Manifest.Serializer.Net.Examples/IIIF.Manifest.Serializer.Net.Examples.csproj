@@ -1,19 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <RootNamespace>IIIF.Manifests.Serializer.Examples</RootNamespace>
-    <ImplicitUsings>disable</ImplicitUsings>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>IIIF.Manifests.Serializer.Examples</RootNamespace>
+        <ImplicitUsings>disable</ImplicitUsings>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj" />
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj"/>
+        <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj"/>
+        <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj"/>
+        <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj"/>
+    </ItemGroup>
 
 </Project>

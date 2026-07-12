@@ -6,7 +6,7 @@ public class PolynomialTransformationOption : TrackableObject<PolynomialTransfor
 {
     public long Order
     {
-        get => GetElementValue<long>(x => x.Order);
+        get => GetElementValue(x => x.Order);
         private set => SetElementValue(value);
     }
 }

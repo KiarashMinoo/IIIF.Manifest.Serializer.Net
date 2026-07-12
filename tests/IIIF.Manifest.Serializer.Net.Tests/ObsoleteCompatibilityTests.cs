@@ -1,8 +1,6 @@
 using System.Linq;
 using System.Reflection;
-using IIIF.Manifests.Serializer;
 using IIIF.Manifests.Serializer.Nodes;
-using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
 using Newtonsoft.Json.Linq;
 

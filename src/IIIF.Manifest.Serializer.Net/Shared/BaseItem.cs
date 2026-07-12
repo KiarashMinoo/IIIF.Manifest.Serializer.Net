@@ -19,38 +19,6 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseItem, IConte
     public const string TypeJName = "@type";
     public const string ServiceJName = "service";
 
-    [JsonProperty(IdJName)]
-    public string Id
-    {
-        get => GetElementValue(x => x.Id)!;
-        private set => SetElementValue(value);
-    }
-
-    string IContextSupport.Context => Context.ElementAt(0);
-
-    [JsonProperty(ContextJName)]
-    [JsonConverter(typeof(ObjectArrayJsonConverter))]
-    public IReadOnlyCollection<string> Context
-    {
-        get => GetElementValue(x => x.Context) ?? [DefaultContext];
-        private set => SetElementValue(value);
-    }
-
-    [JsonProperty(TypeJName)]
-    public string? Type
-    {
-        get => GetElementValue(x => x.Type);
-        private set => SetElementValue(value);
-    }
-
-    [JsonProperty(ServiceJName)]
-    [JsonConverter(typeof(ObjectArrayJsonConverter))]
-    public IReadOnlyCollection<IBaseService> Service
-    {
-        get => GetElementValue(x => x.Service) ?? [];
-        private set => SetElementValue(value);
-    }
-
     [JsonConstructor]
     protected internal BaseItem(string id)
     {
@@ -67,6 +35,38 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseItem, IConte
     {
         Context = [context];
     }
+
+    [JsonProperty(ContextJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    public IReadOnlyCollection<string> Context
+    {
+        get => GetElementValue(x => x.Context) ?? [DefaultContext];
+        private set => SetElementValue(value);
+    }
+
+    [JsonProperty(ServiceJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    public IReadOnlyCollection<IBaseService> Service
+    {
+        get => GetElementValue(x => x.Service) ?? [];
+        private set => SetElementValue(value);
+    }
+
+    [JsonProperty(IdJName)]
+    public string Id
+    {
+        get => GetElementValue(x => x.Id)!;
+        private set => SetElementValue(value);
+    }
+
+    [JsonProperty(TypeJName)]
+    public string? Type
+    {
+        get => GetElementValue(x => x.Type);
+        private set => SetElementValue(value);
+    }
+
+    string IContextSupport.Context => Context.ElementAt(0);
 
     internal TBaseItem SetType(string type)
     {

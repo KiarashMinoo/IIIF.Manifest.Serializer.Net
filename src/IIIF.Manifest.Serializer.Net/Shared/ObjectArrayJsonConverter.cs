@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared;
@@ -20,19 +19,13 @@ public class ObjectArrayJsonConverter : JsonConverter
         // An explicit JSON null means "no values" - an empty collection, not a single null
         // element. Without this, downstream code that maps/derives from the collection (e.g. a
         // computed legacy view) can throw a NullReferenceException on that phantom element.
-        if (reader.TokenType == JsonToken.Null)
-        {
-            return list;
-        }
+        if (reader.TokenType == JsonToken.Null) return list;
 
         if (reader.TokenType == JsonToken.StartArray)
         {
             while (reader.Read())
             {
-                if (reader.TokenType == JsonToken.EndArray)
-                {
-                    break;
-                }
+                if (reader.TokenType == JsonToken.EndArray) break;
 
                 var item = serializer.Deserialize(reader, elementType);
                 list.Add(item!);
@@ -62,10 +55,7 @@ public class ObjectArrayJsonConverter : JsonConverter
 
             var enumerator = ((IEnumerable)value).GetEnumerator();
             using var _ = enumerator as IDisposable;
-            while (enumerator.MoveNext())
-            {
-                arrayList.Add(enumerator.Current);
-            }
+            while (enumerator.MoveNext()) arrayList.Add(enumerator.Current);
 
             if (arrayList.Count == 0)
             {
@@ -81,10 +71,7 @@ public class ObjectArrayJsonConverter : JsonConverter
 
             writer.WriteStartArray();
 
-            foreach (var item in arrayList)
-            {
-                serializer.Serialize(writer, item);
-            }
+            foreach (var item in arrayList) serializer.Serialize(writer, item);
 
             writer.WriteEndArray();
         }

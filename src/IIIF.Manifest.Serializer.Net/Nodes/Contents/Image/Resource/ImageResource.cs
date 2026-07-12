@@ -4,44 +4,43 @@ using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource
+namespace IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
+
+public class ImageResource : BaseResource<ImageResource>, IDimensionSupport<ImageResource>
 {
-    public class ImageResource : BaseResource<ImageResource>, IDimensionSupport<ImageResource>
+    [JsonConstructor]
+    private ImageResource(string id, string format) : base(id, ResourceType.Image)
     {
-        [JsonProperty(Constants.HeightJName)]
-        public int? Height
-        {
-            get => GetElementValue(x => x.Height);
-            private set => SetElementValue(value);
-        }
+        SetFormat(format);
+    }
 
-        [JsonProperty(Constants.WidthJName)]
-        public int? Width
-        {
-            get => GetElementValue(x => x.Width);
-            private set => SetElementValue(value);
-        }
+    public ImageResource(string id, ImageFormat format) : this(id, format.Value)
+    {
+    }
 
-        [JsonConstructor]
-        private ImageResource(string id, string format) : base(id, ResourceType.Image)
-        {
-            SetFormat(format);
-        }
+    [JsonProperty(Constants.HeightJName)]
+    public int? Height
+    {
+        get => GetElementValue(x => x.Height);
+        private set => SetElementValue(value);
+    }
 
-        public ImageResource(string id, ImageFormat format) : this(id, format.Value)
-        {
-        }
+    [JsonProperty(Constants.WidthJName)]
+    public int? Width
+    {
+        get => GetElementValue(x => x.Width);
+        private set => SetElementValue(value);
+    }
 
-        public ImageResource SetHeight(int height)
-        {
-            Height = height;
-            return this;
-        }
+    public ImageResource SetHeight(int height)
+    {
+        Height = height;
+        return this;
+    }
 
-        public ImageResource SetWidth(int width)
-        {
-            Width = width;
-            return this;
-        }
+    public ImageResource SetWidth(int width)
+    {
+        Width = width;
+        return this;
     }
 }

@@ -1,17 +1,15 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
-using IIIF.Manifests.Serializer.Properties;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Round 2 (SDK_VERSIONING_GUIDE.md §10, Milestone 20): <c>BaseNode.Behavior</c> was missing the
-/// <c>[JsonIgnore]</c> that its siblings (Rights/RequiredStatement/PartOf) got in Milestone 8,
-/// so a plain <c>JsonConvert.SerializeObject</c> (the 2.x write path) leaked a spurious "behavior"
-/// key into V2.0/V2.1 JSON. Also newly wires "behavior" into IiifSerializer's V3 Canvas/Range
-/// writers, which previously dropped it entirely (a separate, narrower pre-existing gap).
+///     Round 2 (SDK_VERSIONING_GUIDE.md §10, Milestone 20): <c>BaseNode.Behavior</c> was missing the
+///     <c>[JsonIgnore]</c> that its siblings (Rights/RequiredStatement/PartOf) got in Milestone 8,
+///     so a plain <c>JsonConvert.SerializeObject</c> (the 2.x write path) leaked a spurious "behavior"
+///     key into V2.0/V2.1 JSON. Also newly wires "behavior" into IiifSerializer's V3 Canvas/Range
+///     writers, which previously dropped it entirely (a separate, narrower pre-existing gap).
 /// </summary>
 public class BehaviorLegacyLeakTests
 {

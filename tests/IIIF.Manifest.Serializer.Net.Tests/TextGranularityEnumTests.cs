@@ -3,9 +3,9 @@ using IIIF.Manifests.Serializer.Extensions;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 15 (SDK_VERSIONING_GUIDE.md §10, finding 7): the Text Granularity extension defined
-/// "character" (not a spec term) instead of "glyph", and was missing "paragraph" entirely - real
-/// documents using either term threw in <see cref="TextGranularity.Parse"/>.
+///     Milestone 15 (SDK_VERSIONING_GUIDE.md §10, finding 7): the Text Granularity extension defined
+///     "character" (not a spec term) instead of "glyph", and was missing "paragraph" entirely - real
+///     documents using either term threw in <see cref="TextGranularity.Parse" />.
 /// </summary>
 public class TextGranularityEnumTests
 {
@@ -28,7 +28,7 @@ public class TextGranularityEnumTests
     {
         var act = () => TextGranularity.Parse("character");
 
-        act.Should().Throw<System.ArgumentException>();
+        act.Should().Throw<ArgumentException>();
     }
 
     [Fact]

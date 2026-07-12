@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
@@ -18,13 +19,18 @@ public class TrackableObject
         ContractResolver = new IIIFJsonContractResolver()
     };
 
-    public string Serialize() => JsonConvert.SerializeObject(this, JsonSerializerSettings);
+    public string Serialize()
+    {
+        return JsonConvert.SerializeObject(this, JsonSerializerSettings);
+    }
 
     public static TTrackableObject Parse<TTrackableObject>(string json)
         where TTrackableObject : TrackableObject
-        => !TryParse<TTrackableObject>(json, out var trackableObject)
+    {
+        return !TryParse<TTrackableObject>(json, out var trackableObject)
             ? throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json))
             : trackableObject;
+    }
 
     public static bool TryParse<TTrackableObject>(string json, [MaybeNullWhen(false)] out TTrackableObject trackableObject)
         where TTrackableObject : TrackableObject
@@ -45,9 +51,22 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
 {
     [JsonIgnore] internal readonly Dictionary<string, ElementDescriptor> ElementDescriptors = [];
 
+    /// <summary>
+    ///     Bridges "additional" (extension) ElementDescriptors to Newtonsoft's JsonExtensionData
+    ///     mechanism, so properties set via <see cref="IAdditionalPropertiesSupport{TAdditionalPropertiesSupport}" />
+    ///     (e.g. the navPlace/Georeference/TextGranularity extension packages) actually survive a
+    ///     JSON round-trip instead of only existing in-memory. Newtonsoft calls the getter once per
+    ///     serialize/deserialize and both enumerates it (write) and calls Add on it (read); since this
+    ///     wrapper always proxies the same underlying ElementDescriptors, a fresh instance each call
+    ///     behaves identically to a cached one.
+    /// </summary>
+    [JsonExtensionData]
+    private IDictionary<string, object?> AdditionalPropertiesData => new AdditionalPropertiesDictionary(this);
+
+    public event PropertyChangedEventHandler? PropertyChanged;
+
     public event PropertyChangingEventHandler? PropertyChanging;
     public event TrackableObjectPropertyChangingEventHandler? TrackableObjectPropertyChanging;
-    public event PropertyChangedEventHandler? PropertyChanged;
     public event TrackableObjectPropertyChangedEventHandler? TrackableObjectPropertyChanged;
 
     protected virtual void OnPropertyChanging([CallerMemberName] string? propertyName = null, bool isList = false)
@@ -76,21 +95,15 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
 
     private string GetMemberName<TValue>(Expression<Func<TTrackableObject, TValue>> expression)
     {
-        if (expression is null)
-        {
-            throw new ArgumentNullException(nameof(expression));
-        }
+        if (expression is null) throw new ArgumentNullException(nameof(expression));
 
-        if (expression.Body is not MemberExpression memberNameSelectorExpression)
-        {
-            throw new ArgumentException("The member name expression must be a member access expression.", nameof(expression));
-        }
+        if (expression.Body is not MemberExpression memberNameSelectorExpression) throw new ArgumentException("The member name expression must be a member access expression.", nameof(expression));
 
         return memberNameSelectorExpression.Member.Name;
     }
 
     /// <summary>
-    /// Sets an element value using a factory function that transforms the existing value.
+    ///     Sets an element value using a factory function that transforms the existing value.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="target">The target trackable object.</param>
@@ -105,24 +118,14 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
         [CallerMemberName] string? memberName = null
     )
     {
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        if (target is null) throw new ArgumentNullException(nameof(target));
 
-        if (string.IsNullOrWhiteSpace(memberName))
-        {
-            throw new ArgumentException("Member name cannot be null or whitespace.", nameof(memberName));
-        }
+        if (string.IsNullOrWhiteSpace(memberName)) throw new ArgumentException("Member name cannot be null or whitespace.", nameof(memberName));
 
-        if (valueFactory is null)
-        {
-            throw new ArgumentNullException(nameof(valueFactory));
-        }
+        if (valueFactory is null) throw new ArgumentNullException(nameof(valueFactory));
 
         TValue currentValue = default!;
         if (target.ElementDescriptors.TryGetValue(memberName, out var elementDescriptor))
-        {
             // Safe cast with proper null handling
             try
             {
@@ -133,7 +136,6 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
                 // If cast fails, use default value
                 currentValue = default!;
             }
-        }
 
         var value = valueFactory(currentValue);
 
@@ -144,15 +146,9 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             if (elementDescriptor is not null)
             {
                 // Unsubscribe from event if it's a binding list
-                if (elementDescriptor.Value is IBindingList oldBindingList)
-                {
-                    oldBindingList.ListChanged -= BindingListOnListChanged;
-                }
+                if (elementDescriptor.Value is IBindingList oldBindingList) oldBindingList.ListChanged -= BindingListOnListChanged;
 
-                if (target.ElementDescriptors.Remove(memberName))
-                {
-                    target.OnPropertyChanged(memberName);
-                }
+                if (target.ElementDescriptors.Remove(memberName)) target.OnPropertyChanged(memberName);
             }
         }
         else
@@ -163,7 +159,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             // bridge for additional/extension properties, and must be stored as an atomic scalar so it
             // can be lazily converted to its real type on first typed access (see GetElementValue).
             var valueType = value.GetType();
-            var isEnumerable = value is IEnumerable and not string and not Newtonsoft.Json.Linq.JToken;
+            var isEnumerable = value is IEnumerable and not string and not JToken;
 
             if (isEnumerable)
             {
@@ -178,10 +174,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
                 var bindingListType = typeof(BindingList<>).MakeGenericType(elementType);
                 var bindingList = (IBindingList)Activator.CreateInstance(bindingListType)!;
 
-                foreach (var item in (IEnumerable)value)
-                {
-                    bindingList.Add(item);
-                }
+                foreach (var item in (IEnumerable)value) bindingList.Add(item);
 
                 // Cast IBindingList to TValue (which should be compatible with the BindingList<T> type)
                 value = (TValue)bindingList;
@@ -227,7 +220,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
     }
 
     /// <summary>
-    /// Gets an element value with modification and additional flags.
+    ///     Gets an element value with modification and additional flags.
     /// </summary>
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="target">The target trackable object.</param>
@@ -242,15 +235,9 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
         [CallerMemberName] string? memberName = null
     )
     {
-        if (target is null)
-        {
-            throw new ArgumentNullException(nameof(target));
-        }
+        if (target is null) throw new ArgumentNullException(nameof(target));
 
-        if (string.IsNullOrWhiteSpace(memberName))
-        {
-            throw new ArgumentException("Member name cannot be null or whitespace.", nameof(memberName));
-        }
+        if (string.IsNullOrWhiteSpace(memberName)) throw new ArgumentException("Member name cannot be null or whitespace.", nameof(memberName));
 
         if (target.ElementDescriptors.TryGetValue(memberName, out var elementDescriptor))
         {
@@ -258,10 +245,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             isAdditional = elementDescriptor.IsAdditional;
 
             // Safe cast with null handling
-            if (elementDescriptor.Value is TValue typedValue)
-            {
-                return typedValue;
-            }
+            if (elementDescriptor.Value is TValue typedValue) return typedValue;
 
             // Try to cast if possible, otherwise return default
             try
@@ -277,8 +261,8 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
                 // cache the result so this only happens once.
                 try
                 {
-                    var token = elementDescriptor.Value as Newtonsoft.Json.Linq.JToken
-                        ?? Newtonsoft.Json.Linq.JToken.FromObject(elementDescriptor.Value);
+                    var token = elementDescriptor.Value as JToken
+                                ?? JToken.FromObject(elementDescriptor.Value);
                     var converted = token.ToObject<TValue>();
                     target.ElementDescriptors[memberName] = new ElementDescriptor(converted!, elementDescriptor.IsAdditional);
                     return converted;
@@ -295,18 +279,6 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
         return default;
     }
 
-    /// <summary>
-    /// Bridges "additional" (extension) ElementDescriptors to Newtonsoft's JsonExtensionData
-    /// mechanism, so properties set via <see cref="IAdditionalPropertiesSupport{TAdditionalPropertiesSupport}"/>
-    /// (e.g. the navPlace/Georeference/TextGranularity extension packages) actually survive a
-    /// JSON round-trip instead of only existing in-memory. Newtonsoft calls the getter once per
-    /// serialize/deserialize and both enumerates it (write) and calls Add on it (read); since this
-    /// wrapper always proxies the same underlying ElementDescriptors, a fresh instance each call
-    /// behaves identically to a cached one.
-    /// </summary>
-    [JsonExtensionData]
-    private IDictionary<string, object?> AdditionalPropertiesData => new AdditionalPropertiesDictionary(this);
-
     private sealed class AdditionalPropertiesDictionary(TrackableObject<TTrackableObject> owner) : IDictionary<string, object?>
     {
         private IEnumerable<KeyValuePair<string, ElementDescriptor>> AdditionalEntries =>
@@ -318,11 +290,20 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             set => Add(key, value);
         }
 
-        public void Add(string key, object? value) => owner.SetElementValue(value, isAdditional: true, memberName: key);
+        public void Add(string key, object? value)
+        {
+            owner.SetElementValue(value, true, key);
+        }
 
-        public void Add(KeyValuePair<string, object?> item) => Add(item.Key, item.Value);
+        public void Add(KeyValuePair<string, object?> item)
+        {
+            Add(item.Key, item.Value);
+        }
 
-        public bool ContainsKey(string key) => AdditionalEntries.Any(kvp => kvp.Key == key);
+        public bool ContainsKey(string key)
+        {
+            return AdditionalEntries.Any(kvp => kvp.Key == key);
+        }
 
         public bool TryGetValue(string key, out object? value)
         {
@@ -336,23 +317,39 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
         public int Count => AdditionalEntries.Count();
         public bool IsReadOnly => false;
 
-        public bool Contains(KeyValuePair<string, object?> item) => ContainsKey(item.Key);
+        public bool Contains(KeyValuePair<string, object?> item)
+        {
+            return ContainsKey(item.Key);
+        }
 
         public void CopyTo(KeyValuePair<string, object?>[] array, int arrayIndex)
         {
-            foreach (var kvp in this)
-            {
-                array[arrayIndex++] = kvp;
-            }
+            foreach (var kvp in this) array[arrayIndex++] = kvp;
         }
 
-        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator() =>
-            AdditionalEntries.Select(kvp => new KeyValuePair<string, object?>(kvp.Key, kvp.Value.Value)).GetEnumerator();
+        public IEnumerator<KeyValuePair<string, object?>> GetEnumerator()
+        {
+            return AdditionalEntries.Select(kvp => new KeyValuePair<string, object?>(kvp.Key, kvp.Value.Value)).GetEnumerator();
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-        public bool Remove(string key) => throw new NotSupportedException("Additional properties cannot be removed through the extension-data view.");
-        public bool Remove(KeyValuePair<string, object?> item) => throw new NotSupportedException("Additional properties cannot be removed through the extension-data view.");
-        public void Clear() => throw new NotSupportedException("Additional properties cannot be cleared through the extension-data view.");
+        public bool Remove(string key)
+        {
+            throw new NotSupportedException("Additional properties cannot be removed through the extension-data view.");
+        }
+
+        public bool Remove(KeyValuePair<string, object?> item)
+        {
+            throw new NotSupportedException("Additional properties cannot be removed through the extension-data view.");
+        }
+
+        public void Clear()
+        {
+            throw new NotSupportedException("Additional properties cannot be cleared through the extension-data view.");
+        }
     }
 }

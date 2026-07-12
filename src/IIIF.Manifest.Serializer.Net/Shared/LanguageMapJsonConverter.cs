@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -8,13 +5,13 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Shared;
 
 /// <summary>
-/// Reads/writes an <see cref="IReadOnlyCollection{Label}"/> as a proper IIIF language map
-/// (<c>{"none": ["..."]}</c>) rather than the bare-string/array shape <see cref="ObjectArrayJsonConverter"/>
-/// produces for <c>BaseNode.Label</c> (that bare shape only becomes a real language map when passed
-/// through <c>IiifSerializer</c>'s hand-built V3 writer). Auth 2.0's label-shaped fields
-/// (label/heading/note/confirmLabel/errorHeading/errorNote) are embedded services, not top-level
-/// Manifest/Canvas/etc. containers, so they never go through that writer and need to be spec-correct
-/// on their own. Reads leniently: accepts a full language map, a bare array, or a bare string.
+///     Reads/writes an <see cref="IReadOnlyCollection{Label}" /> as a proper IIIF language map
+///     (<c>{"none": ["..."]}</c>) rather than the bare-string/array shape <see cref="ObjectArrayJsonConverter" />
+///     produces for <c>BaseNode.Label</c> (that bare shape only becomes a real language map when passed
+///     through <c>IiifSerializer</c>'s hand-built V3 writer). Auth 2.0's label-shaped fields
+///     (label/heading/note/confirmLabel/errorHeading/errorNote) are embedded services, not top-level
+///     Manifest/Canvas/etc. containers, so they never go through that writer and need to be spec-correct
+///     on their own. Reads leniently: accepts a full language map, a bare array, or a bare string.
 /// </summary>
 public class LanguageMapJsonConverter : JsonConverter<IReadOnlyCollection<Label>>
 {
@@ -30,10 +27,7 @@ public class LanguageMapJsonConverter : JsonConverter<IReadOnlyCollection<Label>
         writer.WriteStartObject();
         writer.WritePropertyName("none");
         writer.WriteStartArray();
-        foreach (var value1 in values)
-        {
-            writer.WriteValue(value1);
-        }
+        foreach (var value1 in values) writer.WriteValue(value1);
 
         writer.WriteEndArray();
         writer.WriteEndObject();

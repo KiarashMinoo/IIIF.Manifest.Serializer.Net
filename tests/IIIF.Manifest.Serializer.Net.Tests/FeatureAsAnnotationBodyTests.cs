@@ -9,13 +9,13 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group H: recipe 0139-geolocate-canvas-fragment embeds a bare GeoJSON
-/// <see cref="Feature"/> directly as a "tagging" Annotation body targeting a Canvas fragment -
-/// distinct from navPlace's usual Manifest/Canvas-level <c>navPlace</c> property. Required making
-/// <see cref="Feature"/> implement <see cref="Shared.Content.Resources.IBaseResource"/> and
-/// self-register with <see cref="Shared.Content.Resources.ResourceTypeRegistry"/> so core's
-/// Annotation-body dispatch (which cannot reference the navPlace extension assembly) still
-/// recognizes it.
+///     Cookbook Group H: recipe 0139-geolocate-canvas-fragment embeds a bare GeoJSON
+///     <see cref="Feature" /> directly as a "tagging" Annotation body targeting a Canvas fragment -
+///     distinct from navPlace's usual Manifest/Canvas-level <c>navPlace</c> property. Required making
+///     <see cref="Feature" /> implement <see cref="Shared.Content.Resources.IBaseResource" /> and
+///     self-register with <see cref="Shared.Content.Resources.ResourceTypeRegistry" /> so core's
+///     Annotation-body dispatch (which cannot reference the navPlace extension assembly) still
+///     recognizes it.
 /// </summary>
 public class FeatureAsAnnotationBodyTests
 {
@@ -25,7 +25,7 @@ public class FeatureAsAnnotationBodyTests
             .SetGeometry(new Geometry(GeometryType.Polygon)
                 .AddCoordinate(new CoordinateItem(-77.019853, 38.913101))
                 .AddCoordinate(new CoordinateItem(-77.110013, 38.843254)))
-            .SetProperties(new FeatureProperties().AddLabel(new Properties.Label("Targeted Map")));
+            .SetProperties(new FeatureProperties().AddLabel(new Label("Targeted Map")));
 
         var target = new AnnotationTarget("https://example.org/canvas.json")
             .SetSelector(FragmentSelector.ForRegion(920, 3600, 1510, 3000));

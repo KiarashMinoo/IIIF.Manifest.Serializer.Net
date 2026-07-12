@@ -10,10 +10,7 @@ public static class IViewingDirectionSupportHelper
     {
         var jViewingDirection = element.TryGetToken(Constants.ViewingDirectionJName);
         var viewingDirection = jViewingDirection?.ToObject<ViewingDirection>();
-        if (viewingDirection != null)
-        {
-            item.SetViewingDirection(viewingDirection);
-        }
+        if (viewingDirection != null) item.SetViewingDirection(viewingDirection);
 
         return item;
     }

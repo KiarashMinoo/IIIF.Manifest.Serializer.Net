@@ -1,13 +1,11 @@
 using IIIF.Manifests.Serializer.Shared;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.Interfaces
+namespace IIIF.Manifests.Serializer.Properties.Interfaces;
 
+public interface IDimensionSupport<out TItem>
+    where TItem : BaseItem<TItem>, IDimensionSupport<TItem>
 {
-    public interface IDimensionSupport<out TItem>
-        where TItem : BaseItem<TItem>, IDimensionSupport<TItem>
-    {
-        [JsonProperty(Constants.HeightJName)] int? Height { get; }
-        [JsonProperty(Constants.WidthJName)] int? Width { get; }
-    }
+    [JsonProperty(Constants.HeightJName)] int? Height { get; }
+    [JsonProperty(Constants.WidthJName)] int? Width { get; }
 }

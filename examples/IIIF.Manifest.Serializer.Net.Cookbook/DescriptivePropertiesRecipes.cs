@@ -1,39 +1,38 @@
 using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
-using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
-using IIIF.Manifests.Serializer.Nodes.Contents.Choice;
-using IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.Services;
-using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Shared.Selectors;
 using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0117-0229: descriptive properties beyond the basics - Manifest thumbnails, multi-value
-/// metadata, point/geo selectors, the navPlace extension, manifest-level start canvas, an external
-/// caption file, and a behavior-driven Range/Structure with per-Range thumbnails.
+///     Recipes 0117-0229: descriptive properties beyond the basics - Manifest thumbnails, multi-value
+///     metadata, point/geo selectors, the navPlace extension, manifest-level start canvas, an external
+///     caption file, and a behavior-driven Range/Structure with per-Range thumbnails.
 /// </summary>
 internal sealed class DescriptivePropertiesRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0117: Add a Thumbnail to a Manifest", Recipe0117),
-        new("Recipe 0118: Multiple Values in Metadata", Recipe0118),
-        new("Recipe 0135: Annotating a Point in a Canvas", Recipe0135),
-        new("Recipe 0139: Geolocate a Canvas Fragment", Recipe0139),
-        new("Recipe 0154: Simple navPlace Extension", Recipe0154),
-        new("Recipe 0202: Manifest Start Canvas", Recipe0202),
-        new("Recipe 0219: Using a Caption File", Recipe0219),
-        new("Recipe 0229: Table of Contents with Behavior", Recipe0229)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0117: Add a Thumbnail to a Manifest", Recipe0117),
+            new("Recipe 0118: Multiple Values in Metadata", Recipe0118),
+            new("Recipe 0135: Annotating a Point in a Canvas", Recipe0135),
+            new("Recipe 0139: Geolocate a Canvas Fragment", Recipe0139),
+            new("Recipe 0154: Simple navPlace Extension", Recipe0154),
+            new("Recipe 0202: Manifest Start Canvas", Recipe0202),
+            new("Recipe 0219: Using a Caption File", Recipe0219),
+            new("Recipe 0229: Table of Contents with Behavior", Recipe0229)
+        ];
+    }
 
     // ---- 0117-add-image-thumbnail -----------------------------------------------------------------
 
@@ -79,7 +78,7 @@ internal sealed class DescriptivePropertiesRecipes : IRecipeSet
         var canvas = NewCanvas("0135-annotating-point-in-canvas", "canvas.json", "Chesapeake and Ohio Canal Pamphlet", 7072, 5212, idIsFull: true);
         canvas.AddAnnotation(PaintingImage(canvas, "0135-annotating-point-in-canvas", "content.json",
             "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674/full/max/0/default.jpg", "image/jpeg", 7072, 5212,
-            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674", idIsFull: true));
+            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674", true));
 
         var target = new AnnotationTarget(canvas.Id).SetSelector(PointSelector.ForSpatialPoint(3385, 1464));
         var tag = new Annotation(Id("0135-annotating-point-in-canvas", "annotation/p0002-tag"),
@@ -99,7 +98,7 @@ internal sealed class DescriptivePropertiesRecipes : IRecipeSet
         var canvas = NewCanvas("0139-geolocate-canvas-fragment", "canvas.json", "Chesapeake and Ohio Canal Pamphlet", 7072, 5212, idIsFull: true);
         canvas.AddAnnotation(PaintingImage(canvas, "0139-geolocate-canvas-fragment", "content.json",
             "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674/full/max/0/default.jpg", "image/jpeg", 7072, 5212,
-            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674", idIsFull: true));
+            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674", true));
 
         var feature = new Feature(Id("0139-geolocate-canvas-fragment", "geo.json"))
             .SetGeometry(new Geometry(GeometryType.Polygon)
@@ -148,10 +147,7 @@ internal sealed class DescriptivePropertiesRecipes : IRecipeSet
             canvas.AddAnnotation(PaintingImage(canvas, "0202-start-canvas", $"p000{n}-image", imageId, "image/jpeg", height, width,
                 $"https://iiif.io/api/image/3.0/example/reference/59d09e6773341f28ea166e9f3c1e674f-gallica_ark_12148_bpt6k1526005v_{suffix}"));
             manifest.AddItem(canvas);
-            if (n == 2)
-            {
-                startCanvas = canvas;
-            }
+            if (n == 2) startCanvas = canvas;
         }
 
         manifest.SetStart(new AnnotationTarget(startCanvas!.Id, "Canvas"));

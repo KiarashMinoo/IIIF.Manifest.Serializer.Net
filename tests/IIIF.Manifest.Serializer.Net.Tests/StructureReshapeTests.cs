@@ -2,15 +2,14 @@ using System.Linq;
 using System.Reflection;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 4 (SDK_VERSIONING_GUIDE.md): Structure reshaped around 3.0-native Items
-/// (CanvasReference/RangeReference/nested Structure), with Canvases/Ranges/Members as
-/// computed legacy views.
+///     Milestone 4 (SDK_VERSIONING_GUIDE.md): Structure reshaped around 3.0-native Items
+///     (CanvasReference/RangeReference/nested Structure), with Canvases/Ranges/Members as
+///     computed legacy views.
 /// </summary>
 public class StructureReshapeTests
 {
@@ -62,7 +61,7 @@ public class StructureReshapeTests
         var structure = JsonConvert.DeserializeObject<Structure>(json)!;
 
         structure.Items.Should().HaveCount(3);
-        structure.Canvases.Should().BeEquivalentTo(["https://example.org/canvas/1", "https://example.org/canvas/2"]);
+        structure.Canvases.Should().BeEquivalentTo("https://example.org/canvas/1", "https://example.org/canvas/2");
         structure.Ranges.Should().ContainSingle(x => x == "https://example.org/range/2");
     }
 
@@ -144,7 +143,7 @@ public class StructureReshapeTests
         var method = typeof(Structure).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        var obsolete = method!.GetCustomAttribute<System.ObsoleteAttribute>();
+        var obsolete = method!.GetCustomAttribute<ObsoleteAttribute>();
         obsolete.Should().NotBeNull();
         obsolete!.IsError.Should().BeFalse("legacy mutators remain callable - deprecated with a warning, not a compile-time error");
     }
@@ -176,7 +175,7 @@ public class StructureReshapeTests
         var method = typeof(Structure).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        method!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        method!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 
     [Theory]
@@ -188,6 +187,6 @@ public class StructureReshapeTests
         var property = typeof(Structure).GetProperty(propertyName);
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        property!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 }

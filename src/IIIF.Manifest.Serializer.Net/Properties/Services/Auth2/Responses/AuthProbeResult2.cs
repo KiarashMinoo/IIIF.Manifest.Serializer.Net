@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
@@ -8,8 +7,8 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 
 /// <summary>
-/// The JSON body an <see cref="AuthProbeService2"/> HTTP response returns. The outer HTTP status
-/// code is always 200; <see cref="Status"/> carries the "real" access status the client acts on.
+///     The JSON body an <see cref="AuthProbeService2" /> HTTP response returns. The outer HTTP status
+///     code is always 200; <see cref="Status" /> carries the "real" access status the client acts on.
 /// </summary>
 [AuthAPI("2.0")]
 public class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
@@ -22,6 +21,13 @@ public class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
     public const string LocationJName = "location";
     public const string HeadingJName = "heading";
     public const string NoteJName = "note";
+
+    public AuthProbeResult2(int status)
+    {
+        Context = DefaultContext;
+        Type = "AuthProbeResult2";
+        Status = status;
+    }
 
     [JsonProperty(ContextJName)]
     public string Context
@@ -61,7 +67,7 @@ public class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
 
     [JsonProperty(HeadingJName)]
     [JsonConverter(typeof(LanguageMapJsonConverter))]
-    public IReadOnlyCollection<Properties.Label> Heading
+    public IReadOnlyCollection<Label> Heading
     {
         get => GetElementValue(x => x.Heading) ?? [];
         private set => SetElementValue(value);
@@ -69,17 +75,10 @@ public class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
 
     [JsonProperty(NoteJName)]
     [JsonConverter(typeof(LanguageMapJsonConverter))]
-    public IReadOnlyCollection<Properties.Label> Note
+    public IReadOnlyCollection<Label> Note
     {
         get => GetElementValue(x => x.Note) ?? [];
         private set => SetElementValue(value);
-    }
-
-    public AuthProbeResult2(int status)
-    {
-        Context = DefaultContext;
-        Type = "AuthProbeResult2";
-        Status = status;
     }
 
     public AuthProbeResult2 AddSubstitute(AuthResourceReference substitute)
@@ -94,6 +93,13 @@ public class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
         return this;
     }
 
-    public AuthProbeResult2 SetHeading(string heading) => SetElementValue(x => x.Heading, (IReadOnlyCollection<Properties.Label>)[new Properties.Label(heading)]);
-    public AuthProbeResult2 SetNote(string note) => SetElementValue(x => x.Note, (IReadOnlyCollection<Properties.Label>)[new Properties.Label(note)]);
+    public AuthProbeResult2 SetHeading(string heading)
+    {
+        return SetElementValue(x => x.Heading, (IReadOnlyCollection<Label>)[new Label(heading)]);
+    }
+
+    public AuthProbeResult2 SetNote(string note)
+    {
+        return SetElementValue(x => x.Note, (IReadOnlyCollection<Label>)[new Label(note)]);
+    }
 }

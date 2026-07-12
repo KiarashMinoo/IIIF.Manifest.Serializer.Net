@@ -6,11 +6,11 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Round 2 (SDK_VERSIONING_GUIDE.md §11, Milestone 23): navPlace's <see cref="NavPlace"/> and
-/// <see cref="Feature"/> previously inherited <c>BaseItem</c> (<c>@id</c>/<c>@type</c>), but
-/// navPlace postdates Presentation 3.0 (no 2.x form) and its own spec examples use unprefixed
-/// <c>id</c>/<c>type</c> throughout - matching the fix already applied to Search 2.0/Discovery
-/// 1.0/Auth 2.0 in Milestone 9.
+///     Round 2 (SDK_VERSIONING_GUIDE.md §11, Milestone 23): navPlace's <see cref="NavPlace" /> and
+///     <see cref="Feature" /> previously inherited <c>BaseItem</c> (<c>@id</c>/<c>@type</c>), but
+///     navPlace postdates Presentation 3.0 (no 2.x form) and its own spec examples use unprefixed
+///     <c>id</c>/<c>type</c> throughout - matching the fix already applied to Search 2.0/Discovery
+///     1.0/Auth 2.0 in Milestone 9.
 /// </summary>
 public class NavPlaceUnprefixedShapeTests
 {
@@ -46,7 +46,7 @@ public class NavPlaceUnprefixedShapeTests
         var navPlace = new NavPlace("https://example.org/feature-collection/1")
             .AddFeature(new Feature("https://example.org/feature/1")
                 .SetGeometry(new Geometry(GeometryType.Point).AddCoordinate(new CoordinateItem(-73.9857, 40.7484)))
-                .SetProperties(new FeatureProperties().AddLabel(new Properties.Label("New York"))));
+                .SetProperties(new FeatureProperties().AddLabel(new Label("New York"))));
 
         var deserialized = TrackableObject.Parse<NavPlace>(navPlace.Serialize());
 

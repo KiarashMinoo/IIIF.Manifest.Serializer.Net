@@ -1,4 +1,3 @@
-using System.Linq;
 using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -6,8 +5,8 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer;
 
 /// <summary>
-/// Low-level JSON helpers (language-map building/reading, required-property lookups, @-prefix
-/// renaming) shared across every other <c>IiifSerializer</c> partial file.
+///     Low-level JSON helpers (language-map building/reading, required-property lookups, @-prefix
+///     renaming) shared across every other <c>IiifSerializer</c> partial file.
 /// </summary>
 public static partial class IiifSerializer
 {
@@ -20,10 +19,7 @@ public static partial class IiifSerializer
     private static JToken BuildDescriptionLanguageMapToken(IEnumerable<Description> descriptions)
     {
         var map = new JObject();
-        foreach (var group in descriptions.GroupBy(x => x.Language ?? "none"))
-        {
-            map[group.Key] = new JArray(group.Select(x => x.Value));
-        }
+        foreach (var group in descriptions.GroupBy(x => x.Language ?? "none")) map[group.Key] = new JArray(group.Select(x => x.Value));
 
         return map;
     }
@@ -31,10 +27,7 @@ public static partial class IiifSerializer
     private static JToken BuildLabelLanguageMapToken(IEnumerable<Label> labels)
     {
         var map = new JObject();
-        foreach (var group in labels.GroupBy(x => x.Language ?? "none"))
-        {
-            map[group.Key] = new JArray(group.Select(x => x.Value));
-        }
+        foreach (var group in labels.GroupBy(x => x.Language ?? "none")) map[group.Key] = new JArray(group.Select(x => x.Value));
 
         return map;
     }
@@ -42,18 +35,13 @@ public static partial class IiifSerializer
     private static List<Description> ReadDescriptions(JToken? token)
     {
         if (token is JObject languageMap)
-        {
             return languageMap.Properties()
                 .SelectMany(prop => (prop.Value.Type == JTokenType.Array ? prop.Value.Values<string>() : [(string?)prop.Value])
                     .OfType<string>()
                     .Select(value => prop.Name == "none" ? new Description(value) : new Description(value).SetLanguage(prop.Name)))
                 .ToList();
-        }
 
-        if (token is JArray array)
-        {
-            return array.Values<string>().OfType<string>().Select(x => new Description(x)).ToList();
-        }
+        if (token is JArray array) return array.Values<string>().OfType<string>().Select(x => new Description(x)).ToList();
 
         var stringValue = (string?)token;
         return string.IsNullOrWhiteSpace(stringValue) ? [] : [new Description(stringValue)];
@@ -62,28 +50,20 @@ public static partial class IiifSerializer
     private static void WriteLanguageMap(JObject obj, string name, IEnumerable<string> values)
     {
         var array = new JArray(values.Where(x => !string.IsNullOrWhiteSpace(x)));
-        if (array.Count > 0)
-        {
-            obj[name] = new JObject { ["none"] = array };
-        }
+        if (array.Count > 0) obj[name] = new JObject { ["none"] = array };
     }
 
     private static IReadOnlyCollection<Label> ReadLabels(JToken? token)
     {
         if (token is JObject languageMap)
-        {
             return languageMap.Properties()
                 .SelectMany(prop => (prop.Value.Type == JTokenType.Array ? prop.Value.Values<string>() : [(string?)prop.Value])
                     .OfType<string>()
                     .Where(x => !string.IsNullOrWhiteSpace(x))
                     .Select(x => prop.Name == "none" ? new Label(x) : new Label(x, prop.Name)))
                 .ToList();
-        }
 
-        if (token is JArray array)
-        {
-            return array.Values<string>().OfType<string>().Select(x => new Label(x)).ToList();
-        }
+        if (token is JArray array) return array.Values<string>().OfType<string>().Select(x => new Label(x)).ToList();
 
         var value = (string?)token;
         return string.IsNullOrWhiteSpace(value) ? [] : [new Label(value)];

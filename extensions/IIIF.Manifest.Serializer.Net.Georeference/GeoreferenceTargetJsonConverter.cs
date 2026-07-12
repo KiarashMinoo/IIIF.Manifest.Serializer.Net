@@ -1,13 +1,12 @@
-using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
 /// <summary>
-/// Reads/writes the polymorphic Georeference Annotation target shape: a bare Canvas/Image Service
-/// URI, a full resource object (<c>{"id","type","height","width"}</c>), or a SpecificResource
-/// wrapping a <see cref="GeoreferenceSvgSelector"/> - see <see cref="GeoreferenceTarget"/>.
+///     Reads/writes the polymorphic Georeference Annotation target shape: a bare Canvas/Image Service
+///     URI, a full resource object (<c>{"id","type","height","width"}</c>), or a SpecificResource
+///     wrapping a <see cref="GeoreferenceSvgSelector" /> - see <see cref="GeoreferenceTarget" />.
 /// </summary>
 public class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
 {
@@ -77,29 +76,17 @@ public class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
     {
         var token = JToken.Load(reader);
 
-        if (token.Type == JTokenType.Null)
-        {
-            return null;
-        }
+        if (token.Type == JTokenType.Null) return null;
 
-        if (token.Type == JTokenType.String)
-        {
-            return new GeoreferenceTarget(token.ToString());
-        }
+        if (token.Type == JTokenType.String) return new GeoreferenceTarget(token.ToString());
 
         var obj = (JObject)token;
         if ((string?)obj["type"] == "SpecificResource")
         {
             var target = ReadResource(obj["source"]);
-            if ((string?)obj["id"] is { } specificResourceId)
-            {
-                target.SetSpecificResourceId(specificResourceId);
-            }
+            if ((string?)obj["id"] is { } specificResourceId) target.SetSpecificResourceId(specificResourceId);
 
-            if (obj["selector"] is { } selectorToken)
-            {
-                target.SetSelector(selectorToken.ToObject<GeoreferenceSvgSelector>(serializer)!);
-            }
+            if (obj["selector"] is { } selectorToken) target.SetSelector(selectorToken.ToObject<GeoreferenceSvgSelector>(serializer)!);
 
             return target;
         }
@@ -109,15 +96,9 @@ public class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
 
     private static GeoreferenceTarget ReadResource(JToken? token)
     {
-        if (token is null || token.Type == JTokenType.Null)
-        {
-            throw new JsonSerializationException("Georeference Annotation target is missing a resource reference.");
-        }
+        if (token is null || token.Type == JTokenType.Null) throw new JsonSerializationException("Georeference Annotation target is missing a resource reference.");
 
-        if (token.Type == JTokenType.String)
-        {
-            return new GeoreferenceTarget(token.ToString());
-        }
+        if (token.Type == JTokenType.String) return new GeoreferenceTarget(token.ToString());
 
         var obj = (JObject)token;
         var id = (string?)obj["id"] ?? throw new JsonSerializationException("Georeference Annotation target resource is missing an id.");
@@ -125,10 +106,7 @@ public class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
 
         var height = (int?)obj["height"];
         var width = (int?)obj["width"];
-        if (height is not null && width is not null)
-        {
-            target.SetSourceDimensions(height.Value, width.Value);
-        }
+        if (height is not null && width is not null) target.SetSourceDimensions(height.Value, width.Value);
 
         return target;
     }

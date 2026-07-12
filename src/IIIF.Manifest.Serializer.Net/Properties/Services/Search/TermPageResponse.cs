@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
@@ -8,8 +7,8 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 
 /// <summary>
-/// The JSON body a Content Search API 2.0 autocomplete request returns - a "TermPage" of
-/// <see cref="SearchTerm"/> suggestions.
+///     The JSON body a Content Search API 2.0 autocomplete request returns - a "TermPage" of
+///     <see cref="SearchTerm" /> suggestions.
 /// </summary>
 [SearchAPI("2.0")]
 public class TermPageResponse : TrackableObject<TermPageResponse>
@@ -20,6 +19,13 @@ public class TermPageResponse : TrackableObject<TermPageResponse>
     public const string TypeJName = "type";
     public const string ItemsJName = "items";
     public const string IgnoredJName = "ignored";
+
+    public TermPageResponse(string id)
+    {
+        Context = DefaultContext;
+        Type = "TermPage";
+        Id = id;
+    }
 
     [JsonProperty(ContextJName)]
     public string Context
@@ -56,13 +62,6 @@ public class TermPageResponse : TrackableObject<TermPageResponse>
     {
         get => GetElementValue(x => x.Ignored) ?? [];
         private set => SetElementValue(value);
-    }
-
-    public TermPageResponse(string id)
-    {
-        Context = DefaultContext;
-        Type = "TermPage";
-        Id = id;
     }
 
     public TermPageResponse AddItem(SearchTerm item)

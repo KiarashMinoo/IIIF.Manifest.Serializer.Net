@@ -3,22 +3,17 @@ using System.Reflection;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
-using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
-using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
-using IIIF.Manifests.Serializer.Nodes.Contents.OtherContent;
-using IIIF.Manifests.Serializer.Nodes.Contents.Video;
 using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 1 (SDK_VERSIONING_GUIDE.md): Canvas reshaped around 3.0-native Items
-/// (AnnotationPage/Annotation), with Images/Audios/Videos/OtherContents as computed
-/// legacy views and obsolete-error legacy mutators.
+///     Milestone 1 (SDK_VERSIONING_GUIDE.md): Canvas reshaped around 3.0-native Items
+///     (AnnotationPage/Annotation), with Images/Audios/Videos/OtherContents as computed
+///     legacy views and obsolete-error legacy mutators.
 /// </summary>
 public class CanvasReshapeTests
 {
@@ -189,7 +184,7 @@ public class CanvasReshapeTests
         var method = typeof(Canvas).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        var obsolete = method!.GetCustomAttribute<System.ObsoleteAttribute>();
+        var obsolete = method!.GetCustomAttribute<ObsoleteAttribute>();
         obsolete.Should().NotBeNull("legacy mutators must be tagged obsolete per the versioning guide");
         obsolete!.IsError.Should().BeFalse("legacy mutators remain callable - deprecated with a warning, not a compile-time error");
     }
@@ -217,7 +212,7 @@ public class CanvasReshapeTests
         var method = typeof(Canvas).GetMethod(nameof(Canvas.AddAnnotation), BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        method!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull("the 3.0-preferred write API must remain warning-free");
+        method!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull("the 3.0-preferred write API must remain warning-free");
     }
 
     [Fact]
@@ -226,7 +221,7 @@ public class CanvasReshapeTests
         var property = typeof(Canvas).GetProperty(nameof(Canvas.Images));
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<System.ObsoleteAttribute>().Should()
+        property!.GetCustomAttribute<ObsoleteAttribute>().Should()
             .BeNull("legacy getters must stay warning-free so reading a parsed legacy document produces no compiler noise");
     }
 

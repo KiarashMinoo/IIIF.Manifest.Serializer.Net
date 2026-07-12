@@ -1,4 +1,3 @@
-using System.Linq;
 using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Extensions.ResourceCoords;
 using IIIF.Manifests.Serializer.Extensions.Transformations;
@@ -8,17 +7,19 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 17 (SDK_VERSIONING_GUIDE.md §10, finding 9): the Georeference extension only modeled
-/// the property-level pieces (transformation/resourceCoords), with no wrapper for the actual
-/// construct the spec defines - a full W3C Annotation with motivation "georeferencing", a
-/// target (Canvas/Image Service, optionally a specific region via an SvgSelector), and a body
-/// (a GeoJSON FeatureCollection of Ground Control Points).
+///     Milestone 17 (SDK_VERSIONING_GUIDE.md §10, finding 9): the Georeference extension only modeled
+///     the property-level pieces (transformation/resourceCoords), with no wrapper for the actual
+///     construct the spec defines - a full W3C Annotation with motivation "georeferencing", a
+///     target (Canvas/Image Service, optionally a specific region via an SvgSelector), and a body
+///     (a GeoJSON FeatureCollection of Ground Control Points).
 /// </summary>
 public class GeoreferenceAnnotationTests
 {
-    private static Feature MakeGcp(double resourceX, double resourceY, double lon, double lat) =>
-        new Feature("").SetGeometry(new Geometry(GeometryType.Point).SetCoordinates([new CoordinateItem(lon, lat)]))
+    private static Feature MakeGcp(double resourceX, double resourceY, double lon, double lat)
+    {
+        return new Feature("").SetGeometry(new Geometry(GeometryType.Point).SetCoordinates([new CoordinateItem(lon, lat)]))
             .SetProperties(new FeatureProperties().SetResourceCoords([resourceX, resourceY]));
+    }
 
     [Fact]
     public void GeoreferenceAnnotation_Should_WriteRequiredContextTypeAndMotivation()

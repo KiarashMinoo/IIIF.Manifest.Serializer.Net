@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Service;
 using Newtonsoft.Json;
@@ -8,8 +6,8 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services;
 
 /// <summary>
-/// IIIF Authentication API 1.0 Service - provides authentication flow information.
-/// Used for login, clickthrough, kiosk, and external authentication patterns.
+///     IIIF Authentication API 1.0 Service - provides authentication flow information.
+///     Used for login, clickthrough, kiosk, and external authentication patterns.
 /// </summary>
 [AuthAPI("1.0", Notes = "Auth API 1.0 service for content access control.")]
 public class AuthService1 : BaseItem<AuthService1>, IBaseService
@@ -21,12 +19,16 @@ public class AuthService1 : BaseItem<AuthService1>, IBaseService
     public const string FailureHeaderJName = "failureHeader";
     public const string FailureDescriptionJName = "failureDescription";
 
-    [AuthAPI("1.0")]
-    [JsonProperty(IBaseService.ProfileJName)]
-    public string Profile
+    /// <summary>
+    ///     Creates a new Auth API 1.0 service.
+    /// </summary>
+    /// <param name="id">Service identifier (login/token/logout endpoint URL)</param>
+    /// <param name="profile">Auth profile (login/clickthrough/kiosk/external/token/logout)</param>
+    [JsonConstructor]
+    public AuthService1(string id, string profile)
+        : base(id, string.Empty, "http://iiif.io/api/auth/1/context.json")
     {
-        get => GetElementValue(x => x.Profile)!;
-        private set => SetElementValue(value);
+        Profile = profile;
     }
 
     [AuthAPI("1.0")]
@@ -77,20 +79,16 @@ public class AuthService1 : BaseItem<AuthService1>, IBaseService
         private set => SetElementValue(value);
     }
 
-    /// <summary>
-    /// Creates a new Auth API 1.0 service.
-    /// </summary>
-    /// <param name="id">Service identifier (login/token/logout endpoint URL)</param>
-    /// <param name="profile">Auth profile (login/clickthrough/kiosk/external/token/logout)</param>
-    [JsonConstructor]
-    public AuthService1(string id, string profile)
-        : base(id, string.Empty, "http://iiif.io/api/auth/1/context.json")
+    [AuthAPI("1.0")]
+    [JsonProperty(IBaseService.ProfileJName)]
+    public string Profile
     {
-        Profile = profile;
+        get => GetElementValue(x => x.Profile)!;
+        private set => SetElementValue(value);
     }
 
     /// <summary>
-    /// Sets the user-facing label for the authentication interaction.
+    ///     Sets the user-facing label for the authentication interaction.
     /// </summary>
     public AuthService1 SetLabel(string label)
     {
@@ -99,7 +97,7 @@ public class AuthService1 : BaseItem<AuthService1>, IBaseService
     }
 
     /// <summary>
-    /// Sets the header text for the authentication interaction window.
+    ///     Sets the header text for the authentication interaction window.
     /// </summary>
     public AuthService1 SetHeader(string header)
     {
@@ -108,7 +106,7 @@ public class AuthService1 : BaseItem<AuthService1>, IBaseService
     }
 
     /// <summary>
-    /// Sets the description text explaining the authentication requirement.
+    ///     Sets the description text explaining the authentication requirement.
     /// </summary>
     public AuthService1 SetDescription(string description)
     {
@@ -117,7 +115,7 @@ public class AuthService1 : BaseItem<AuthService1>, IBaseService
     }
 
     /// <summary>
-    /// Sets the label for the confirm button in clickthrough interactions.
+    ///     Sets the label for the confirm button in clickthrough interactions.
     /// </summary>
     public AuthService1 SetConfirmLabel(string confirmLabel)
     {
@@ -126,7 +124,7 @@ public class AuthService1 : BaseItem<AuthService1>, IBaseService
     }
 
     /// <summary>
-    /// Sets the header text shown when authentication fails.
+    ///     Sets the header text shown when authentication fails.
     /// </summary>
     public AuthService1 SetFailureHeader(string failureHeader)
     {
@@ -135,7 +133,7 @@ public class AuthService1 : BaseItem<AuthService1>, IBaseService
     }
 
     /// <summary>
-    /// Sets the description text shown when authentication fails.
+    ///     Sets the description text shown when authentication fails.
     /// </summary>
     public AuthService1 SetFailureDescription(string failureDescription)
     {

@@ -9,16 +9,16 @@ public class Rendering : FormattableItem<Rendering>
 {
     public const string LabelJName = "label";
 
+    [JsonConstructor]
+    public Rendering(string id, string label) : base(id)
+    {
+        SetElementValue(x => x.Label, label);
+    }
+
     [JsonProperty(LabelJName)]
     public string Label
     {
         get => GetElementValue(x => x.Label)!;
         private set => SetElementValue(value);
-    }
-
-    [JsonConstructor]
-    public Rendering(string id, string label) : base(id)
-    {
-        SetElementValue(x => x.Label, label);
     }
 }

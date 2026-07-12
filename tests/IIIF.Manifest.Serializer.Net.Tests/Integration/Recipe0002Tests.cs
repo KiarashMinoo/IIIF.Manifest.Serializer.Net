@@ -8,8 +8,8 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests.Integration;
 
 /// <summary>
-/// Tests for IIIF Cookbook Recipe 0002: Simplest Manifest - Single Audio File
-/// https://iiif.io/api/cookbook/recipe/0002-mvm-audio/
+///     Tests for IIIF Cookbook Recipe 0002: Simplest Manifest - Single Audio File
+///     https://iiif.io/api/cookbook/recipe/0002-mvm-audio/
 /// </summary>
 public class Recipe0002Tests
 {
@@ -18,30 +18,30 @@ public class Recipe0002Tests
     {
         // Arrange
         var audioResource = new AudioResource(
-                id: "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
-                format: "audio/mp4"
+                "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                "audio/mp4"
             )
             .SetDuration(1985.024);
 
         var canvas = new Canvas(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas",
-            label: new Label("Mahler, Symphony No. 3: CD 1"),
-            height: 1,
-            width: 1
-        )
-        .SetDuration(1985.024);
+                "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas",
+                new Label("Mahler, Symphony No. 3: CD 1"),
+                1,
+                1
+            )
+            .SetDuration(1985.024);
 
         var audio = new Audio(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas/page/annotation",
-            resource: audioResource,
-            on: canvas.Id
+            "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas/page/annotation",
+            audioResource,
+            canvas.Id
         );
 
         canvas.AddAnnotation(new Annotation(audio.Id, audio.Resource, audio.On));
 
         var manifest = new Manifest(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
-            label: new Label("Simplest Audio Example 1")
+            "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
+            new Label("Simplest Audio Example 1")
         );
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0");
@@ -99,30 +99,30 @@ public class Recipe0002Tests
     {
         // Arrange
         var audioResource = new AudioResource(
-                id: "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
-                format: "audio/mp4"
+                "https://fixtures.iiif.io/audio/indiana/mahler-symphony-3/CD1/medium/128Kbps.mp4",
+                "audio/mp4"
             )
             .SetDuration(1985.024);
 
         var canvas = new Canvas(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas",
-            label: new Label("Mahler, Symphony No. 3: CD 1"),
-            height: 1,
-            width: 1
-        )
-        .SetDuration(1985.024);
+                "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas",
+                new Label("Mahler, Symphony No. 3: CD 1"),
+                1,
+                1
+            )
+            .SetDuration(1985.024);
 
         var audio = new Audio(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas/page/annotation",
-            resource: audioResource,
-            on: canvas.Id
+            "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/canvas/page/annotation",
+            audioResource,
+            canvas.Id
         );
 
         canvas.AddAnnotation(new Annotation(audio.Id, audio.Resource, audio.On));
 
         var manifest = new Manifest(
-            id: "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
-            label: new Label("Simplest Audio Example 1")
+            "https://iiif.io/api/cookbook/recipe/0002-mvm-audio/manifest.json",
+            new Label("Simplest Audio Example 1")
         );
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0002-mvm-audio/sequence/s0");

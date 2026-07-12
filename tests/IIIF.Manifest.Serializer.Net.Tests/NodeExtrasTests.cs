@@ -1,5 +1,6 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using Newtonsoft.Json.Linq;
@@ -7,15 +8,15 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook M9 prep: <c>Summary</c>, <c>Metadata</c>, <c>Thumbnail</c>, <c>Rendering</c>,
-/// <c>Homepage</c>, <c>SeeAlso</c>, and <c>Provider</c> were discovered - while researching real
-/// cookbook recipe JSON (0006/0007/0008/0046/0047/0053/0117/0229/0232/0234/0068 among others) - to
-/// be completely unwired from <see cref="IiifSerializer"/>'s hand-rolled V3 reader/writer, so
-/// building a Manifest/Canvas/Collection/Range with these properties and round-tripping it through
-/// IiifSerializer silently dropped every one of them. <c>Summary</c> itself (3.0's replacement for
-/// 2.x <c>description</c>) didn't exist as a class member at all. Fixed generically for every
-/// BaseNode-derived type (Manifest/Collection/Canvas/Range); Provider is Manifest/Collection-only
-/// per spec.
+///     Cookbook M9 prep: <c>Summary</c>, <c>Metadata</c>, <c>Thumbnail</c>, <c>Rendering</c>,
+///     <c>Homepage</c>, <c>SeeAlso</c>, and <c>Provider</c> were discovered - while researching real
+///     cookbook recipe JSON (0006/0007/0008/0046/0047/0053/0117/0229/0232/0234/0068 among others) - to
+///     be completely unwired from <see cref="IiifSerializer" />'s hand-rolled V3 reader/writer, so
+///     building a Manifest/Canvas/Collection/Range with these properties and round-tripping it through
+///     IiifSerializer silently dropped every one of them. <c>Summary</c> itself (3.0's replacement for
+///     2.x <c>description</c>) didn't exist as a class member at all. Fixed generically for every
+///     BaseNode-derived type (Manifest/Collection/Canvas/Range); Provider is Manifest/Collection-only
+///     per spec.
 /// </summary>
 public class NodeExtrasTests
 {
@@ -169,7 +170,7 @@ public class NodeExtrasTests
         // Regression guard for the earlier "label:'Natural Light'" bare-string bug found while
         // implementing Group C - proactively verified here for a non-Choice, standalone Image too.
         var image = new ImageResource("https://example.org/image.jpg", "image/jpeg").SetLabel(new Label("Full Image"));
-        var annotation = new Nodes.Contents.Annotation.Annotation("https://example.org/annotation/1", image, "https://example.org/canvas/1");
+        var annotation = new Annotation("https://example.org/annotation/1", image, "https://example.org/canvas/1");
         var canvas = new Canvas("https://example.org/canvas/1", new Label("c1"), 100, 100).AddAnnotation(annotation);
         var manifest = new Manifest("https://example.org/manifest", new Label("Test")).AddItem(canvas);
 

@@ -1,4 +1,3 @@
-using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
@@ -14,26 +13,29 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0046-0103: the descriptive linking properties (rendering/homepage/seeAlso), the 2.1
-/// vs. 3.0 publishing duality, opera Manifests structured as one Canvas or many, a newspaper
-/// Collection with OCR supplementing annotations, multilingual captions, and a supplementary
-/// comment on an audio segment. Shares the UCLA playbill Canvas set (0046/0053) and the newspaper
-/// issue Manifest shape (0068) as private helpers, since each is only reused within this group.
+///     Recipes 0046-0103: the descriptive linking properties (rendering/homepage/seeAlso), the 2.1
+///     vs. 3.0 publishing duality, opera Manifests structured as one Canvas or many, a newspaper
+///     Collection with OCR supplementing annotations, multilingual captions, and a supplementary
+///     comment on an audio segment. Shares the UCLA playbill Canvas set (0046/0053) and the newspaper
+///     issue Manifest shape (0068) as private helpers, since each is only reused within this group.
 /// </summary>
 internal sealed class LinkingAndOperaRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0046: Rendering", Recipe0046),
-        new("Recipe 0047: Linking to Structured Metadata (Homepage)", Recipe0047),
-        new("Recipe 0053: Linking to Structured Metadata (SeeAlso)", Recipe0053),
-        new("Recipe 0057: Presentation API 2.1 vs 3.0", Recipe0057),
-        new("Recipe 0064: Book/Opera - One Canvas", Recipe0064),
-        new("Recipe 0065: Book/Opera - Multiple Canvases", Recipe0065),
-        new("Recipe 0068: Newspaper", Recipe0068),
-        new("Recipe 0074: Multiple Language Captions", Recipe0074),
-        new("Recipe 0103: Simple Annotation on Audio Segment", Recipe0103)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0046: Rendering", Recipe0046),
+            new("Recipe 0047: Linking to Structured Metadata (Homepage)", Recipe0047),
+            new("Recipe 0053: Linking to Structured Metadata (SeeAlso)", Recipe0053),
+            new("Recipe 0057: Presentation API 2.1 vs 3.0", Recipe0057),
+            new("Recipe 0064: Book/Opera - One Canvas", Recipe0064),
+            new("Recipe 0065: Book/Opera - Multiple Canvases", Recipe0065),
+            new("Recipe 0068: Newspaper", Recipe0068),
+            new("Recipe 0074: Multiple Language Captions", Recipe0074),
+            new("Recipe 0103: Simple Annotation on Audio Segment", Recipe0103)
+        ];
+    }
 
     // ---- 0046-rendering -------------------------------------------------------------------------
 
@@ -55,7 +57,7 @@ internal sealed class LinkingAndOperaRecipes : IRecipeSet
         var canvas = NewCanvas("0047-homepage", "1", "Front", 3000, 2315, labelLanguage: "none");
         canvas.AddAnnotation(PaintingImage(canvas, "0047-homepage", "canvas/1/page/1/annotation/1",
             "https://iiif.io/api/image/3.0/example/reference/28473c77da3deebe4375c3a50572d9d3-laocoon/full/!500,500/0/default.jpg", "image/jpeg", 3000, 2315,
-            "https://iiif.io/api/image/3.0/example/reference/28473c77da3deebe4375c3a50572d9d3-laocoon", idIsFull: true));
+            "https://iiif.io/api/image/3.0/example/reference/28473c77da3deebe4375c3a50572d9d3-laocoon", true));
         return manifest.AddItem(canvas);
     }
 
@@ -187,10 +189,10 @@ internal sealed class LinkingAndOperaRecipes : IRecipeSet
             canvas.AddRendering(new Rendering(Id("0068-newspaper", $"{file}-alto_p{n}.xml"), "ALTO XML").SetFormat("application/xml"));
             var imageId = $"https://iiif.io/api/image/3.0/example/reference/4ce82cef49fb16798f4c2440307c3d6f-{imageSuffixBase}{n}/full/max/0/default.jpg";
             canvas.AddAnnotation(PaintingImage(canvas, "0068-newspaper", $"annotation_page_painting/ap{n}/{file}-p{n}", imageId, "image/jpeg", null, null,
-                $"https://iiif.io/api/image/3.0/example/reference/4ce82cef49fb16798f4c2440307c3d6f-{imageSuffixBase}{n}", idIsFull: true));
+                $"https://iiif.io/api/image/3.0/example/reference/4ce82cef49fb16798f4c2440307c3d6f-{imageSuffixBase}{n}", true));
 
             var ocrPage = new AnnotationPage(Id("0068-newspaper", $"{file}-anno_p{n}.json"));
-            var ocrTarget = new AnnotationTarget(canvas.Id, "Canvas").SetPartOf(Id("0068-newspaper", file), "Manifest").SetSelector(FragmentSelector.ForRegion(0, 376, 399, 53));
+            var ocrTarget = new AnnotationTarget(canvas.Id, "Canvas").SetPartOf(Id("0068-newspaper", file)).SetSelector(FragmentSelector.ForRegion(0, 376, 399, 53));
             ocrPage.AddItem(new Annotation(Id("0068-newspaper", $"{file}-anno_p{n}.json-1"),
                 new TextualBody("I. 54. Jahrgang").SetLanguage("de").SetFormat("text/plain"), ocrTarget).SetMotivation("supplementing"));
             canvas.AddAnnotationPageReference(ocrPage);

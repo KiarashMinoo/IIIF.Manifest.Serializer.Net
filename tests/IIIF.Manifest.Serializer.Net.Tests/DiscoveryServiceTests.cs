@@ -7,10 +7,10 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 12 (SDK_VERSIONING_GUIDE.md §10, finding 4): Change Discovery API 1.0 previously
-/// conflated the top-level OrderedCollection with its pages (no first/last/totalItems/seeAlso/
-/// partOf/rights, and "orderedItems" lived directly on the service), and Activity/ActivityObject
-/// were missing several spec fields (id/startTime/summary/actor/target, canonical/seeAlso/provider).
+///     Milestone 12 (SDK_VERSIONING_GUIDE.md §10, finding 4): Change Discovery API 1.0 previously
+///     conflated the top-level OrderedCollection with its pages (no first/last/totalItems/seeAlso/
+///     partOf/rights, and "orderedItems" lived directly on the service), and Activity/ActivityObject
+///     were missing several spec fields (id/startTime/summary/actor/target, canonical/seeAlso/provider).
 /// </summary>
 public class DiscoveryServiceTests
 {

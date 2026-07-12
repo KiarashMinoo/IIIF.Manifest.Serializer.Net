@@ -4,23 +4,23 @@ using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
-using IIIF.Manifests.Serializer.Properties;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 2 (SDK_VERSIONING_GUIDE.md): Manifest reshaped around 3.0-native Items (Canvas),
-/// with Sequences as a computed single-sequence legacy view; Sequence itself stays a legacy-only
-/// shim (decision §6). Multi-sequence documents are preserved (first-wins + diagnostic), not
-/// silently truncated.
+///     Milestone 2 (SDK_VERSIONING_GUIDE.md): Manifest reshaped around 3.0-native Items (Canvas),
+///     with Sequences as a computed single-sequence legacy view; Sequence itself stays a legacy-only
+///     shim (decision §6). Multi-sequence documents are preserved (first-wins + diagnostic), not
+///     silently truncated.
 /// </summary>
 public class ManifestSequenceReshapeTests
 {
-    private static Canvas CreateCanvas(string id) =>
-        new Canvas(id, new Label("Page"), 1000, 800)
+    private static Canvas CreateCanvas(string id)
+    {
+        return new Canvas(id, new Label("Page"), 1000, 800)
             .AddAnnotation(new Annotation($"{id}/annotation", new ImageResource($"{id}/image.png", "image/png"), id));
+    }
 
     [Fact]
     public void AddItem_Should_PopulateItemsAsThePrimary3_0Storage()
@@ -195,7 +195,7 @@ public class ManifestSequenceReshapeTests
         var method = typeof(Manifest).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        var obsolete = method!.GetCustomAttribute<System.ObsoleteAttribute>();
+        var obsolete = method!.GetCustomAttribute<ObsoleteAttribute>();
         obsolete.Should().NotBeNull();
         obsolete!.IsError.Should().BeFalse("legacy mutators remain callable - deprecated with a warning, not a compile-time error");
     }
@@ -221,7 +221,7 @@ public class ManifestSequenceReshapeTests
         var property = typeof(Manifest).GetProperty(nameof(Manifest.Sequences));
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        property!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 
     [Fact]
@@ -230,6 +230,6 @@ public class ManifestSequenceReshapeTests
         var method = typeof(Manifest).GetMethod(nameof(Manifest.SetSequenceId), BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        method!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        method!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 }

@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
@@ -28,6 +26,34 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     public const string RelatedJName = "related";
     public const string ItemsJName = "items";
 
+    /// <summary>
+    ///     3.0-native replacement for <see cref="Description" />. Deliberately <see cref="JsonIgnoreAttribute" />d,
+    ///     same reasoning as <see cref="RequiredStatement" />: the hand-built V3 reader/writer in
+    ///     IiifSerializer already reads/writes it explicitly.
+    /// </summary>
+    public const string SummaryJName = "summary";
+
+    /// <summary>
+    ///     Values valid as both <see cref="Properties.Behavior" /> (3.0) and <see cref="Properties.ViewingHint" />
+    ///     (2.x) per spec - the safe subset <see cref="ViewingHint" /> falls back to when writing legacy 2.x JSON
+    ///     for a resource that only has <see cref="Behavior" /> set (e.g. constructed via <see cref="AddBehavior" />).
+    ///     Behavior-only values with no 2.x equivalent (<c>unordered</c>, <c>sequence</c>, <c>auto-advance</c>, ...)
+    ///     are intentionally omitted, not converted - see SDK_VERSIONING_GUIDE.md Round 10.
+    /// </summary>
+    private static readonly HashSet<string> SharedBehaviorViewingHintValues =
+    [
+        "paged", "continuous", "individuals", "facing-pages", "non-paged", "multi-part"
+    ];
+
+    [JsonConstructor]
+    protected internal BaseNode(string id) : base(id)
+    {
+    }
+
+    public BaseNode(string id, string type) : base(id, type)
+    {
+    }
+
     [JsonProperty(LabelJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Label> Label
@@ -37,8 +63,8 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// Legacy (2.x) view of <see cref="Summary"/> (the 3.0-native storage) - a straight rename,
-    /// unlike <see cref="Attribution"/>/<see cref="RequiredStatement"/> which also restructured.
+    ///     Legacy (2.x) view of <see cref="Summary" /> (the 3.0-native storage) - a straight rename,
+    ///     unlike <see cref="Attribution" />/<see cref="RequiredStatement" /> which also restructured.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "summary")]
     [JsonProperty(DescriptionJName)]
@@ -48,13 +74,6 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         get => Summary;
         private set => Summary = value;
     }
-
-    /// <summary>
-    /// 3.0-native replacement for <see cref="Description"/>. Deliberately <see cref="JsonIgnoreAttribute"/>d,
-    /// same reasoning as <see cref="RequiredStatement"/>: the hand-built V3 reader/writer in
-    /// IiifSerializer already reads/writes it explicitly.
-    /// </summary>
-    public const string SummaryJName = "summary";
 
     [PresentationAPI("3.0", Notes = "Replaces description from API 2.x. Straight rename, no structural change.")]
     [JsonIgnore]
@@ -74,10 +93,10 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// Legacy (2.x) view of the attribution text. Computed from <see cref="RequiredStatement"/>
-    /// (the 3.0-native storage) — a structural change, not just a rename: 2.x attribution has no
-    /// label, so the legacy view discards <see cref="RequiredStatement.Label"/> and reads back
-    /// only the value entries.
+    ///     Legacy (2.x) view of the attribution text. Computed from <see cref="RequiredStatement" />
+    ///     (the 3.0-native storage) — a structural change, not just a rename: 2.x attribution has no
+    ///     label, so the legacy view discards <see cref="RequiredStatement.Label" /> and reads back
+    ///     only the value entries.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "requiredStatement")]
     [JsonProperty(AttributionJName)]
@@ -91,11 +110,11 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// 3.0-native replacement for <see cref="Attribution"/>. No 2.x equivalent shape (2.x
-    /// attribution carries no label). Deliberately <see cref="JsonIgnoreAttribute"/>d, same
-    /// reasoning as <see cref="BaseNode{TBaseNode}.Items"/>: the hand-built V3 reader/writer in
-    /// IiifSerializer already reads/writes it explicitly, so generic reflection-based
-    /// serialization must never touch it too, or it leaks into legacy JSON via plain JsonConvert.
+    ///     3.0-native replacement for <see cref="Attribution" />. No 2.x equivalent shape (2.x
+    ///     attribution carries no label). Deliberately <see cref="JsonIgnoreAttribute" />d, same
+    ///     reasoning as <see cref="BaseNode{TBaseNode}.Items" />: the hand-built V3 reader/writer in
+    ///     IiifSerializer already reads/writes it explicitly, so generic reflection-based
+    ///     serialization must never touch it too, or it leaks into legacy JSON via plain JsonConvert.
     /// </summary>
     [PresentationAPI("3.0", Notes = "Replaces attribution from API 2.x.")]
     [JsonIgnore]
@@ -122,8 +141,8 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// Legacy (2.x) view of the rights statement. Computed from <see cref="Rights"/> (the
-    /// 3.0-native storage) — rename only, per the confirmed spec mapping.
+    ///     Legacy (2.x) view of the rights statement. Computed from <see cref="Rights" /> (the
+    ///     3.0-native storage) — rename only, per the confirmed spec mapping.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "rights")]
     [JsonProperty(LicenseJName)]
@@ -134,8 +153,8 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// 3.0-native replacement for <see cref="License"/>. Rename only (confirmed against spec).
-    /// Deliberately <see cref="JsonIgnoreAttribute"/>d - see <see cref="RequiredStatement"/>.
+    ///     3.0-native replacement for <see cref="License" />. Rename only (confirmed against spec).
+    ///     Deliberately <see cref="JsonIgnoreAttribute" />d - see <see cref="RequiredStatement" />.
     /// </summary>
     [PresentationAPI("3.0", Notes = "Replaces license from API 2.x.")]
     [JsonIgnore]
@@ -145,18 +164,6 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         private set => SetElementValue(value);
     }
 
-    /// <summary>
-    /// Values valid as both <see cref="Properties.Behavior"/> (3.0) and <see cref="Properties.ViewingHint"/>
-    /// (2.x) per spec - the safe subset <see cref="ViewingHint"/> falls back to when writing legacy 2.x JSON
-    /// for a resource that only has <see cref="Behavior"/> set (e.g. constructed via <see cref="AddBehavior"/>).
-    /// Behavior-only values with no 2.x equivalent (<c>unordered</c>, <c>sequence</c>, <c>auto-advance</c>, ...)
-    /// are intentionally omitted, not converted - see SDK_VERSIONING_GUIDE.md Round 10.
-    /// </summary>
-    private static readonly HashSet<string> SharedBehaviorViewingHintValues =
-    [
-        "paged", "continuous", "individuals", "facing-pages", "non-paged", "multi-part"
-    ];
-
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Replaced by behavior.")]
     [JsonProperty(ViewingHintJName)]
@@ -164,12 +171,6 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     {
         get => GetElementValue(x => x.ViewingHint) ?? ComputeViewingHintFromBehavior();
         private set => SetElementValue(value);
-    }
-
-    private ViewingHint? ComputeViewingHintFromBehavior()
-    {
-        var value = Behavior.Select(x => x.Value).FirstOrDefault(SharedBehaviorViewingHintValues.Contains);
-        return value is not null ? new ViewingHint(value) : null;
     }
 
     [PresentationAPI("2.0")]
@@ -182,9 +183,9 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// Legacy (2.x) view of parent references. Computed from <see cref="PartOf"/> (the
-    /// 3.0-native storage) — 2.x within has no type, so it defaults to "Manifest" when
-    /// converting a legacy value into <see cref="PartOf"/>.
+    ///     Legacy (2.x) view of parent references. Computed from <see cref="PartOf" /> (the
+    ///     3.0-native storage) — 2.x within has no type, so it defaults to "Manifest" when
+    ///     converting a legacy value into <see cref="PartOf" />.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "partOf")]
     [JsonProperty(WithinJName)]
@@ -192,17 +193,17 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     public IReadOnlyCollection<Within> Within
     {
         get => PartOf.Select(x => new Within(x.Id)).ToList();
-        private set => PartOf = (value ?? []).Select(x => new global::IIIF.Manifests.Serializer.Properties.PartOf(x.Id, "Manifest")).ToList();
+        private set => PartOf = (value ?? []).Select(x => new PartOf(x.Id, "Manifest")).ToList();
     }
 
     /// <summary>
-    /// 3.0-native replacement for <see cref="Within"/>. Restructured to an object array with
-    /// id/type (confirmed against spec). Deliberately <see cref="JsonIgnoreAttribute"/>d - see
-    /// <see cref="RequiredStatement"/>.
+    ///     3.0-native replacement for <see cref="Within" />. Restructured to an object array with
+    ///     id/type (confirmed against spec). Deliberately <see cref="JsonIgnoreAttribute" />d - see
+    ///     <see cref="RequiredStatement" />.
     /// </summary>
     [PresentationAPI("3.0", Notes = "Replaces within from API 2.x.")]
     [JsonIgnore]
-    public IReadOnlyCollection<global::IIIF.Manifests.Serializer.Properties.PartOf> PartOf
+    public IReadOnlyCollection<PartOf> PartOf
     {
         get => GetElementValue(x => x.PartOf) ?? [];
         private set => SetElementValue(value);
@@ -244,11 +245,11 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// 3.0-only; no 2.x equivalent shape (2.x uses <see cref="ViewingHint"/> instead). Deliberately
-    /// <see cref="JsonIgnoreAttribute"/>d - same reasoning as <see cref="RequiredStatement"/>:
-    /// <c>IiifSerializer</c> already reads/writes it explicitly via a shared V3 helper (covering
-    /// Manifest/Collection/Canvas/Range), so generic reflection-based serialization must never
-    /// touch it too, or it leaks into legacy V2.x JSON via plain JsonConvert.
+    ///     3.0-only; no 2.x equivalent shape (2.x uses <see cref="ViewingHint" /> instead). Deliberately
+    ///     <see cref="JsonIgnoreAttribute" />d - same reasoning as <see cref="RequiredStatement" />:
+    ///     <c>IiifSerializer</c> already reads/writes it explicitly via a shared V3 helper (covering
+    ///     Manifest/Collection/Canvas/Range), so generic reflection-based serialization must never
+    ///     touch it too, or it leaks into legacy V2.x JSON via plain JsonConvert.
     /// </summary>
     [PresentationAPI("3.0", Notes = "Replaces viewingHint from API 2.x. Some values also valid in 2.x as viewingHint.")]
     [JsonIgnore]
@@ -259,10 +260,10 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// Legacy (2.x) view of the related resource link. Computed from <see cref="Homepage"/>
-    /// (the 3.0-native storage) — confirmed via the 3.0 change log: "the related property was
-    /// renamed to homepage with more specific semantics". Setting this replaces the whole
-    /// Homepage collection with a single entry, matching related's historically singular shape.
+    ///     Legacy (2.x) view of the related resource link. Computed from <see cref="Homepage" />
+    ///     (the 3.0-native storage) — confirmed via the 3.0 change log: "the related property was
+    ///     renamed to homepage with more specific semantics". Setting this replaces the whole
+    ///     Homepage collection with a single entry, matching related's historically singular shape.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "homepage")]
     [JsonProperty(RelatedJName)]
@@ -273,11 +274,11 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     }
 
     /// <summary>
-    /// 3.0-native primary storage for this node's child items (Canvas/Range references on a Manifest,
-    /// AnnotationPage/Annotation on a Canvas, etc). Deliberately <see cref="JsonIgnoreAttribute"/>d: every
-    /// IIIF version has a different JSON shape for "child items", so no generic reflection-based serializer
-    /// should ever touch this property directly. Version-aware readers/writers (see IiifSerializer) read and
-    /// write it explicitly instead.
+    ///     3.0-native primary storage for this node's child items (Canvas/Range references on a Manifest,
+    ///     AnnotationPage/Annotation on a Canvas, etc). Deliberately <see cref="JsonIgnoreAttribute" />d: every
+    ///     IIIF version has a different JSON shape for "child items", so no generic reflection-based serializer
+    ///     should ever touch this property directly. Version-aware readers/writers (see IiifSerializer) read and
+    ///     write it explicitly instead.
     /// </summary>
     [JsonIgnore]
     public IReadOnlyCollection<IBaseItem> Items
@@ -286,13 +287,10 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         private set => SetElementValue(value);
     }
 
-    [JsonConstructor]
-    protected internal BaseNode(string id) : base(id)
+    private ViewingHint? ComputeViewingHintFromBehavior()
     {
-    }
-
-    public BaseNode(string id, string type) : base(id, type)
-    {
+        var value = Behavior.Select(x => x.Value).FirstOrDefault(SharedBehaviorViewingHintValues.Contains);
+        return value is not null ? new ViewingHint(value) : null;
     }
 
     public TBaseNode SetLabel(IReadOnlyCollection<Label> labels)
@@ -373,22 +371,60 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return (TBaseNode)this;
     }
 
-    public TBaseNode SetRequiredStatement(RequiredStatement requiredStatement) => SetElementValue(a => a.RequiredStatement, requiredStatement);
+    public TBaseNode SetRequiredStatement(RequiredStatement requiredStatement)
+    {
+        return SetElementValue(a => a.RequiredStatement, requiredStatement);
+    }
 
-    public TBaseNode AddSeeAlso(SeeAlso seeAlso) => SetElementValue(a => a.SeeAlso, (collection) => collection.With(seeAlso));
-    public TBaseNode RemoveSeeAlso(SeeAlso seeAlso) => SetElementValue(a => a.SeeAlso, (collection) => collection.Without(seeAlso));
+    public TBaseNode AddSeeAlso(SeeAlso seeAlso)
+    {
+        return SetElementValue(a => a.SeeAlso, collection => collection.With(seeAlso));
+    }
 
-    public TBaseNode AddRendering(Rendering rendering) => SetElementValue(a => a.Rendering, (collection) => collection.With(rendering));
-    public TBaseNode RemoveRendering(Rendering rendering) => SetElementValue(a => a.Rendering, (collection) => collection.Without(rendering));
+    public TBaseNode RemoveSeeAlso(SeeAlso seeAlso)
+    {
+        return SetElementValue(a => a.SeeAlso, collection => collection.Without(seeAlso));
+    }
 
-    public TBaseNode AddHomepage(Homepage homepage) => SetElementValue(a => a.Homepage, (collection) => collection.With(homepage));
-    public TBaseNode RemoveHomepage(Homepage homepage) => SetElementValue(a => a.Homepage, (collection) => collection.Without(homepage));
+    public TBaseNode AddRendering(Rendering rendering)
+    {
+        return SetElementValue(a => a.Rendering, collection => collection.With(rendering));
+    }
 
-    public TBaseNode AddProvider(Provider provider) => SetElementValue(a => a.Provider, (collection) => collection.With(provider));
-    public TBaseNode RemoveProvider(Provider provider) => SetElementValue(a => a.Provider, (collection) => collection.Without(provider));
+    public TBaseNode RemoveRendering(Rendering rendering)
+    {
+        return SetElementValue(a => a.Rendering, collection => collection.Without(rendering));
+    }
 
-    public TBaseNode AddBehavior(Behavior behavior) => SetElementValue(a => a.Behavior, (collection) => collection.With(behavior));
-    public TBaseNode RemoveBehavior(Behavior behavior) => SetElementValue(a => a.Behavior, (collection) => collection.Without(behavior));
+    public TBaseNode AddHomepage(Homepage homepage)
+    {
+        return SetElementValue(a => a.Homepage, collection => collection.With(homepage));
+    }
+
+    public TBaseNode RemoveHomepage(Homepage homepage)
+    {
+        return SetElementValue(a => a.Homepage, collection => collection.Without(homepage));
+    }
+
+    public TBaseNode AddProvider(Provider provider)
+    {
+        return SetElementValue(a => a.Provider, collection => collection.With(provider));
+    }
+
+    public TBaseNode RemoveProvider(Provider provider)
+    {
+        return SetElementValue(a => a.Provider, collection => collection.Without(provider));
+    }
+
+    public TBaseNode AddBehavior(Behavior behavior)
+    {
+        return SetElementValue(a => a.Behavior, collection => collection.With(behavior));
+    }
+
+    public TBaseNode RemoveBehavior(Behavior behavior)
+    {
+        return SetElementValue(a => a.Behavior, collection => collection.Without(behavior));
+    }
 
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "partOf")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddPartOf instead.")]
@@ -406,21 +442,32 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return (TBaseNode)this;
     }
 
-    public TBaseNode AddPartOf(global::IIIF.Manifests.Serializer.Properties.PartOf partOf)
+    public TBaseNode AddPartOf(PartOf partOf)
     {
         PartOf = PartOf.With(partOf);
         return (TBaseNode)this;
     }
 
-    public TBaseNode RemovePartOf(global::IIIF.Manifests.Serializer.Properties.PartOf partOf)
+    public TBaseNode RemovePartOf(PartOf partOf)
     {
         PartOf = PartOf.Without(partOf);
         return (TBaseNode)this;
     }
 
-    public TBaseNode SetAccompanyingCanvas(AccompanyingCanvas accompanyingCanvas) => SetElementValue(a => a.AccompanyingCanvas, accompanyingCanvas);
-    public TBaseNode SetLogo(Logo logo) => SetElementValue(a => a.Logo, logo);
-    public TBaseNode SetThumbnail(Thumbnail thumbnail) => SetElementValue(a => a.Thumbnail, thumbnail);
+    public TBaseNode SetAccompanyingCanvas(AccompanyingCanvas accompanyingCanvas)
+    {
+        return SetElementValue(a => a.AccompanyingCanvas, accompanyingCanvas);
+    }
+
+    public TBaseNode SetLogo(Logo logo)
+    {
+        return SetElementValue(a => a.Logo, logo);
+    }
+
+    public TBaseNode SetThumbnail(Thumbnail thumbnail)
+    {
+        return SetElementValue(a => a.Thumbnail, thumbnail);
+    }
 
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "rights")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use SetRights instead.")]
@@ -430,11 +477,17 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return (TBaseNode)this;
     }
 
-    public TBaseNode SetRights(Rights rights) => SetElementValue(a => a.Rights, rights);
+    public TBaseNode SetRights(Rights rights)
+    {
+        return SetElementValue(a => a.Rights, rights);
+    }
 
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Replaced by behavior.")]
-    public TBaseNode SetViewingHint(ViewingHint viewingHint) => SetElementValue(a => a.ViewingHint, viewingHint);
+    public TBaseNode SetViewingHint(ViewingHint viewingHint)
+    {
+        return SetElementValue(a => a.ViewingHint, viewingHint);
+    }
 
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "homepage")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddHomepage instead.")]
@@ -470,6 +523,3 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return (TBaseNode)this;
     }
 }
-
-
-

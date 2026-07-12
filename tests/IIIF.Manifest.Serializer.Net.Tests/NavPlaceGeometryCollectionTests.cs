@@ -6,10 +6,10 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 16 (SDK_VERSIONING_GUIDE.md §10, finding 8): navPlace's <see cref="Geometry"/> had no
-/// way to represent a GeoJSON "GeometryCollection" (RFC 7946 §3.1.8) - an array of nested Geometry
-/// objects under "geometries", distinct from (and mutually exclusive with) the "coordinates" member
-/// every other geometry type uses.
+///     Milestone 16 (SDK_VERSIONING_GUIDE.md §10, finding 8): navPlace's <see cref="Geometry" /> had no
+///     way to represent a GeoJSON "GeometryCollection" (RFC 7946 §3.1.8) - an array of nested Geometry
+///     objects under "geometries", distinct from (and mutually exclusive with) the "coordinates" member
+///     every other geometry type uses.
 /// </summary>
 public class NavPlaceGeometryCollectionTests
 {

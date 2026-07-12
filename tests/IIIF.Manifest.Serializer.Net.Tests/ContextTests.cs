@@ -1,8 +1,8 @@
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// <see cref="Context"/>'s 11 static named instances (one per IIIF/W3C context URL this SDK
-/// recognizes) had zero test coverage.
+///     <see cref="Context" />'s 11 static named instances (one per IIIF/W3C context URL this SDK
+///     recognizes) had zero test coverage.
 /// </summary>
 public class ContextTests
 {

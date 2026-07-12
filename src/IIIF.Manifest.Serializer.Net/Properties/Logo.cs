@@ -8,6 +8,11 @@ namespace IIIF.Manifests.Serializer.Properties;
 [PresentationAPI("2.0")]
 public class Logo : FormattableItem<Logo>, IDimensionSupport<Logo>
 {
+    [JsonConstructor]
+    public Logo(string id) : base(id, "dctypes:Image")
+    {
+    }
+
     [JsonProperty(Constants.HeightJName)]
     public int? Height
     {
@@ -20,11 +25,6 @@ public class Logo : FormattableItem<Logo>, IDimensionSupport<Logo>
     {
         get => GetElementValue(x => x.Width);
         private set => SetElementValue(value);
-    }
-
-    [JsonConstructor]
-    public Logo(string id) : base(id, "dctypes:Image")
-    {
     }
 
     public Logo SetHeight(int height)

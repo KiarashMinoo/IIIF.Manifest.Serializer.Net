@@ -8,10 +8,10 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group D: Presentation API 3.0 §4.5's <c>timeMode</c> Annotation property
-/// (trim/scale/loop), reconciling a temporal-media body's duration against its target's. No
-/// cookbook recipe exercises this directly (confirmed by searching every recipe's JSON), but it's
-/// a genuine 3.0 spec property, not extension-territory, so it belongs in the SDK regardless.
+///     Cookbook Group D: Presentation API 3.0 §4.5's <c>timeMode</c> Annotation property
+///     (trim/scale/loop), reconciling a temporal-media body's duration against its target's. No
+///     cookbook recipe exercises this directly (confirmed by searching every recipe's JSON), but it's
+///     a genuine 3.0 spec property, not extension-territory, so it belongs in the SDK regardless.
 /// </summary>
 public class AnnotationTimeModeTests
 {

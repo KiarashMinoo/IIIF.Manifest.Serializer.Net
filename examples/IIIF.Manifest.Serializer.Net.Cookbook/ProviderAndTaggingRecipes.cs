@@ -1,11 +1,11 @@
 using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
+using IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.Services;
-using IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Shared.Selectors;
 using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
@@ -13,26 +13,29 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0230-0283: NavDate on a Collection, Canvas thumbnails for A/V and image content, the
-/// Provider descriptive property, navPlace on individual Canvases, tagging an external Dataset
-/// resource, a non-rectangular SVG selector, annotating a whole Canvas, embedded vs. referenced
-/// AnnotationPages, and a missing-image placeholder pattern.
+///     Recipes 0230-0283: NavDate on a Collection, Canvas thumbnails for A/V and image content, the
+///     Provider descriptive property, navPlace on individual Canvases, tagging an external Dataset
+///     resource, a non-rectangular SVG selector, annotating a whole Canvas, embedded vs. referenced
+///     AnnotationPages, and a missing-image placeholder pattern.
 /// </summary>
 internal sealed class ProviderAndTaggingRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0230: NavDate on Collection and Manifest", Recipe0230),
-        new("Recipe 0232: Thumbnail on a Canvas (Video)", Recipe0232Av),
-        new("Recipe 0232: Thumbnail on a Canvas (Image)", Recipe0232Image),
-        new("Recipe 0234: Provider", Recipe0234),
-        new("Recipe 0240: navPlace on Canvases", Recipe0240),
-        new("Recipe 0258: Tagging an External Resource", Recipe0258),
-        new("Recipe 0261: Non-Rectangular Commenting", Recipe0261),
-        new("Recipe 0266: Annotating the Whole Canvas", Recipe0266),
-        new("Recipe 0269: Embedded or Referenced Annotations", Recipe0269),
-        new("Recipe 0283: Missing Image", Recipe0283)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0230: NavDate on Collection and Manifest", Recipe0230),
+            new("Recipe 0232: Thumbnail on a Canvas (Video)", Recipe0232Av),
+            new("Recipe 0232: Thumbnail on a Canvas (Image)", Recipe0232Image),
+            new("Recipe 0234: Provider", Recipe0234),
+            new("Recipe 0240: navPlace on Canvases", Recipe0240),
+            new("Recipe 0258: Tagging an External Resource", Recipe0258),
+            new("Recipe 0261: Non-Rectangular Commenting", Recipe0261),
+            new("Recipe 0266: Annotating the Whole Canvas", Recipe0266),
+            new("Recipe 0269: Embedded or Referenced Annotations", Recipe0269),
+            new("Recipe 0283: Missing Image", Recipe0283)
+        ];
+    }
 
     // ---- 0230-navdate (Collection) ----------------------------------------------------------------
 
@@ -48,7 +51,7 @@ internal sealed class ProviderAndTaggingRecipes : IRecipeSet
         var c1986 = new Canvas(Id("0230-navdate", "navdate_map_2-manifest.json/canvas/p1"), new Label("1986 Map, recto and verso, with a date of publication"), 1765, 1286);
         c1986.AddAnnotation(PaintingImage(c1986, "0230-navdate", "navdate_map_2-manifest.json/annotation/p0001-image",
             "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-87691274-1986/full/max/0/default.jpg", "image/jpeg", 1765, 1286,
-            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-87691274-1986", idIsFull: true));
+            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-87691274-1986", true));
         m1986.AddItem(c1986);
 
         var m1987 = new Manifest(Id("0230-navdate", "navdate_map_1-manifest.json"), new Label("1987 Chesapeake and Ohio Canal, Washington, D.C., Maryland, West Virginia, official map and guide"))
@@ -56,7 +59,7 @@ internal sealed class ProviderAndTaggingRecipes : IRecipeSet
         var c1987 = new Canvas(Id("0230-navdate", "navdate_map_1-manifest.json/canvas/p1"), new Label("1987 Map, recto and verso, with a date of publication"), 7072, 5212);
         c1987.AddAnnotation(PaintingImage(c1987, "0230-navdate", "navdate_map_1-manifest.json/annotation/p0001-image",
             "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674/full/max/0/default.jpg", "image/jpeg", 7072, 5212,
-            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674", idIsFull: true));
+            "https://iiif.io/api/image/3.0/example/reference/43153e2ec7531f14dd1c9b2fc401678a-88695674", true));
         m1987.AddItem(c1987);
 
         collection.AddItem(m1986);
@@ -189,7 +192,7 @@ internal sealed class ProviderAndTaggingRecipes : IRecipeSet
     {
         var manifest = NewManifest("0266-full-canvas-annotation", "Picture of Göttingen taken during the 2019 IIIF Conference");
         var canvas = NewCanvas("0266-full-canvas-annotation", "canvas-1", null, 3024, 4032, "canvas-1");
-        canvas.AddAnnotation(PaintingImage(canvas, "0266-full-canvas-annotation", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, idIsFull: true));
+        canvas.AddAnnotation(PaintingImage(canvas, "0266-full-canvas-annotation", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, true));
 
         var comment = new Annotation(Id("0266-full-canvas-annotation", "canvas-1/annopage-2/anno-1"),
             new TextualBody("Göttinger Marktplatz mit Gänseliesel Brunnen").SetLanguage("de").SetFormat("text/plain"), canvas.Id).SetMotivation("commenting");
@@ -204,7 +207,7 @@ internal sealed class ProviderAndTaggingRecipes : IRecipeSet
     {
         var manifest = NewManifest("0269-embedded-or-referenced-annotations", "Picture of Göttingen taken during the 2019 IIIF Conference");
         var canvas = NewCanvas("0269-embedded-or-referenced-annotations", "canvas-1", null, 3024, 4032, "canvas-1");
-        canvas.AddAnnotation(PaintingImage(canvas, "0269-embedded-or-referenced-annotations", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, idIsFull: true));
+        canvas.AddAnnotation(PaintingImage(canvas, "0269-embedded-or-referenced-annotations", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, true));
 
         // Referenced (external) form: only a stub {id,type} on the canvas, unlike 0266's embedded form.
         canvas.AddAnnotationPageReference(new AnnotationPage(Id("0269-embedded-or-referenced-annotations", "annotationpage.json")));

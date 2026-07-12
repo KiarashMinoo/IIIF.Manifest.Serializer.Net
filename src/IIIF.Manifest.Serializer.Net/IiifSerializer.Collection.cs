@@ -1,4 +1,3 @@
-using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
@@ -21,16 +20,10 @@ public static partial class IiifSerializer
 
         WriteV3Behavior(collection, obj);
 
-        if (collection.ViewingDirection is not null)
-        {
-            obj["viewingDirection"] = collection.ViewingDirection.Value;
-        }
+        if (collection.ViewingDirection is not null) obj["viewingDirection"] = collection.ViewingDirection.Value;
 
         var items = collection.Items.Select(WriteV3CollectionItem).ToList();
-        if (items.Count > 0)
-        {
-            obj["items"] = new JArray(items);
-        }
+        if (items.Count > 0) obj["items"] = new JArray(items);
 
         WriteV3NodeExtras(collection, obj);
         WriteV3Provider(collection, obj);
@@ -58,10 +51,7 @@ public static partial class IiifSerializer
             _ => []
         };
 
-        if (label.Count > 0)
-        {
-            itemObj["label"] = BuildLabelLanguageMapToken(label);
-        }
+        if (label.Count > 0) itemObj["label"] = BuildLabelLanguageMapToken(label);
 
         return itemObj;
     }
@@ -73,7 +63,6 @@ public static partial class IiifSerializer
         ReadV3Behavior(obj, collection);
 
         foreach (var itemObj in obj["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
-        {
             switch ((string?)itemObj["type"])
             {
                 case "Collection":
@@ -81,14 +70,10 @@ public static partial class IiifSerializer
                     break;
                 case "Manifest":
                     var manifestStub = new Manifest(ReadRequiredString(itemObj, "id"));
-                    foreach (var label in ReadLabels(itemObj["label"]))
-                    {
-                        manifestStub.AddLabel(label);
-                    }
+                    foreach (var label in ReadLabels(itemObj["label"])) manifestStub.AddLabel(label);
                     collection.AddItem(manifestStub);
                     break;
             }
-        }
 
         ReadV3NodeExtras(obj, collection);
         ReadV3Provider(obj, collection);

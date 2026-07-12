@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Trackable;
@@ -7,9 +6,9 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
 
 /// <summary>
-/// A Change Discovery API 1.0 "Dataset" reference - used by the <c>seeAlso</c> field on both the
-/// top-level OrderedCollection and an <see cref="ActivityObject"/>, pointing to supplementary
-/// machine-readable data about the resource (e.g. an OAI-PMH endpoint or a JSON-LD description).
+///     A Change Discovery API 1.0 "Dataset" reference - used by the <c>seeAlso</c> field on both the
+///     top-level OrderedCollection and an <see cref="ActivityObject" />, pointing to supplementary
+///     machine-readable data about the resource (e.g. an OAI-PMH endpoint or a JSON-LD description).
 /// </summary>
 [DiscoveryAPI("1.0")]
 public class DiscoveryDataset : TrackableObject<DiscoveryDataset>
@@ -19,6 +18,13 @@ public class DiscoveryDataset : TrackableObject<DiscoveryDataset>
     public const string FormatJName = "format";
     public const string LabelJName = "label";
     public const string ProfileJName = "profile";
+
+    [JsonConstructor]
+    public DiscoveryDataset(string id)
+    {
+        Id = id;
+        Type = "Dataset";
+    }
 
     [JsonProperty(IdJName)]
     public string Id
@@ -56,20 +62,16 @@ public class DiscoveryDataset : TrackableObject<DiscoveryDataset>
         private set => SetElementValue(value);
     }
 
-    [JsonConstructor]
-    public DiscoveryDataset(string id)
-    {
-        Id = id;
-        Type = "Dataset";
-    }
-
     public DiscoveryDataset SetFormat(string format)
     {
         Format = format;
         return this;
     }
 
-    public DiscoveryDataset SetLabel(string label) => SetElementValue(x => x.Label, (IReadOnlyCollection<Label>)[new Label(label)]);
+    public DiscoveryDataset SetLabel(string label)
+    {
+        return SetElementValue(x => x.Label, (IReadOnlyCollection<Label>)[new Label(label)]);
+    }
 
     public DiscoveryDataset SetProfile(string profile)
     {

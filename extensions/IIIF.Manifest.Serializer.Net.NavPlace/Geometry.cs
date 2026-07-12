@@ -1,20 +1,27 @@
-﻿using System.Collections.Generic;
-using IIIF.Manifests.Serializer.Helpers;
+﻿using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
 /// <summary>
-/// A GeoJSON Geometry object supporting all geometry types:
-/// Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection.
-/// Per RFC 7946, coordinates structure varies by type.
+///     A GeoJSON Geometry object supporting all geometry types:
+///     Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection.
+///     Per RFC 7946, coordinates structure varies by type.
 /// </summary>
 public class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geometry>
 {
     public const string TypeJName = "type";
     public const string CoordinatesJName = "coordinates";
     public const string GeometriesJName = "geometries";
+
+    /// <summary>
+    ///     Create a Geometry with specified type (for deserialization or GeometryCollection).
+    /// </summary>
+    public Geometry(GeometryType type)
+    {
+        Type = type;
+    }
 
     [JsonProperty(TypeJName)]
     public GeometryType Type
@@ -23,18 +30,11 @@ public class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geomet
         private set => SetElementValue(value);
     }
 
-    [JsonProperty(CoordinatesJName)]
-    public IReadOnlyCollection<CoordinateItem> Coordinates
-    {
-        get => GetElementValue(x => x.Coordinates) ?? [];
-        private set => SetElementValue(value);
-    }
-
     /// <summary>
-    /// Only meaningful when <see cref="Type"/> is <see cref="GeometryType.GeometryCollection"/> -
-    /// per RFC 7946 §3.1.8, a GeometryCollection has no "coordinates" member of its own; it wraps
-    /// other complete Geometry objects (which may themselves be further GeometryCollections)
-    /// instead.
+    ///     Only meaningful when <see cref="Type" /> is <see cref="GeometryType.GeometryCollection" /> -
+    ///     per RFC 7946 §3.1.8, a GeometryCollection has no "coordinates" member of its own; it wraps
+    ///     other complete Geometry objects (which may themselves be further GeometryCollections)
+    ///     instead.
     /// </summary>
     [JsonProperty(GeometriesJName)]
     public IReadOnlyCollection<Geometry> Geometries
@@ -43,12 +43,11 @@ public class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geomet
         private set => SetElementValue(value);
     }
 
-    /// <summary>
-    /// Create a Geometry with specified type (for deserialization or GeometryCollection).
-    /// </summary>
-    public Geometry(GeometryType type)
+    [JsonProperty(CoordinatesJName)]
+    public IReadOnlyCollection<CoordinateItem> Coordinates
     {
-        Type = type;
+        get => GetElementValue(x => x.Coordinates) ?? [];
+        private set => SetElementValue(value);
     }
 
     public Geometry SetCoordinates(IReadOnlyCollection<CoordinateItem> coordinates)

@@ -8,12 +8,12 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 9 (SDK_VERSIONING_GUIDE.md §10): cross-cutting service bugs found while comparing the
-/// SDK against https://github.com/IIIF/awesome-iiif - the top-level Manifest.Services (3.0-only)
-/// array previously dropped "type" entirely instead of unprefixing it, and mis-renamed "@context" to
-/// a nonexistent "context" key. Search/AutoComplete/Discovery services (which postdate the
-/// Presentation 3.0 "no @ prefix" convention and never had a prefixed form) now model id/type via
-/// UnprefixedBaseItem instead of inheriting BaseItem's @id/@type.
+///     Milestone 9 (SDK_VERSIONING_GUIDE.md §10): cross-cutting service bugs found while comparing the
+///     SDK against https://github.com/IIIF/awesome-iiif - the top-level Manifest.Services (3.0-only)
+///     array previously dropped "type" entirely instead of unprefixing it, and mis-renamed "@context" to
+///     a nonexistent "context" key. Search/AutoComplete/Discovery services (which postdate the
+///     Presentation 3.0 "no @ prefix" convention and never had a prefixed form) now model id/type via
+///     UnprefixedBaseItem instead of inheriting BaseItem's @id/@type.
 /// </summary>
 public class Milestone9ServiceFixTests
 {

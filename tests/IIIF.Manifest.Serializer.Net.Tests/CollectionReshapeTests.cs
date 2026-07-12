@@ -2,15 +2,14 @@ using System.Linq;
 using System.Reflection;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 3 (SDK_VERSIONING_GUIDE.md): Collection reshaped around 3.0-native Items
-/// (heterogeneous Manifest/Collection references), with Collections/Manifests/Members as
-/// computed legacy views. IiifSerializer gains full Collection read/write support.
+///     Milestone 3 (SDK_VERSIONING_GUIDE.md): Collection reshaped around 3.0-native Items
+///     (heterogeneous Manifest/Collection references), with Collections/Manifests/Members as
+///     computed legacy views. IiifSerializer gains full Collection read/write support.
 /// </summary>
 public class CollectionReshapeTests
 {
@@ -57,7 +56,7 @@ public class CollectionReshapeTests
         var collection = JsonConvert.DeserializeObject<Collection>(json)!;
 
         collection.Items.Should().HaveCount(3);
-        collection.Manifests.Should().BeEquivalentTo(["https://example.org/manifest/1", "https://example.org/manifest/2"]);
+        collection.Manifests.Should().BeEquivalentTo("https://example.org/manifest/1", "https://example.org/manifest/2");
         collection.Collections.Should().ContainSingle(x => x.Id == "https://example.org/collection/sub");
     }
 
@@ -206,7 +205,7 @@ public class CollectionReshapeTests
         collection.First.Should().Be("https://example.org/collection?page=1");
         collection.Last.Should().Be("https://example.org/collection?page=2");
 
-        typeof(Collection).GetMethod(nameof(Collection.SetTotal))!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        typeof(Collection).GetMethod(nameof(Collection.SetTotal))!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 
     [Theory]
@@ -221,7 +220,7 @@ public class CollectionReshapeTests
         var method = typeof(Collection).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        var obsolete = method!.GetCustomAttribute<System.ObsoleteAttribute>();
+        var obsolete = method!.GetCustomAttribute<ObsoleteAttribute>();
         obsolete.Should().NotBeNull();
         obsolete!.IsError.Should().BeFalse("legacy mutators remain callable - deprecated with a warning, not a compile-time error");
     }
@@ -254,7 +253,7 @@ public class CollectionReshapeTests
         var property = typeof(Collection).GetProperty(propertyName);
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        property!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 
     [Fact]
@@ -263,6 +262,6 @@ public class CollectionReshapeTests
         var method = typeof(Collection).GetMethod(nameof(Collection.AddManifestReference), BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        method!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        method!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 }

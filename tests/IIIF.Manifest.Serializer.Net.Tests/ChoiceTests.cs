@@ -12,12 +12,12 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group C: the Web Annotation Model's "Choice" body type (<c>type:"Choice"</c>,
-/// <c>items:[...]</c>) - verified against recipes 0033-choice (image alternatives with per-item
-/// labels), 0346-multilingual-annotation-body (TextualBody alternatives), and 0434-choice-av
-/// (Sound alternatives). Group C also required adding <c>label</c> support to
-/// <see cref="BaseResource{TBaseResource}"/> itself, since content resources used as Choice items
-/// carry their own label per spec (e.g. "Natural Light" vs "X-Ray").
+///     Cookbook Group C: the Web Annotation Model's "Choice" body type (<c>type:"Choice"</c>,
+///     <c>items:[...]</c>) - verified against recipes 0033-choice (image alternatives with per-item
+///     labels), 0346-multilingual-annotation-body (TextualBody alternatives), and 0434-choice-av
+///     (Sound alternatives). Group C also required adding <c>label</c> support to
+///     <see cref="BaseResource{TBaseResource}" /> itself, since content resources used as Choice items
+///     carry their own label per spec (e.g. "Natural Light" vs "X-Ray").
 /// </summary>
 public class ChoiceTests
 {

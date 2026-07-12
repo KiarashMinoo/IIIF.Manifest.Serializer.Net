@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using IIIF.Manifests.Serializer.Shared.Selectors;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,9 +5,9 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 
 /// <summary>
-/// Reads/writes the polymorphic <see cref="AnnotationTarget"/> shape: a bare URI string, a typed
-/// resource reference (optionally with a single <c>partOf</c>), or a full SpecificResource wrapping
-/// a <see cref="ISelector"/> and/or a <c>styleClass</c> (recipe 0045-css).
+///     Reads/writes the polymorphic <see cref="AnnotationTarget" /> shape: a bare URI string, a typed
+///     resource reference (optionally with a single <c>partOf</c>), or a full SpecificResource wrapping
+///     a <see cref="ISelector" /> and/or a <c>styleClass</c> (recipe 0045-css).
 /// </summary>
 public class AnnotationTargetJsonConverter : JsonConverter<AnnotationTarget>
 {
@@ -93,34 +91,19 @@ public class AnnotationTargetJsonConverter : JsonConverter<AnnotationTarget>
     {
         var token = JToken.Load(reader);
 
-        if (token.Type == JTokenType.Null)
-        {
-            return null;
-        }
+        if (token.Type == JTokenType.Null) return null;
 
-        if (token.Type == JTokenType.String)
-        {
-            return new AnnotationTarget(token.ToString());
-        }
+        if (token.Type == JTokenType.String) return new AnnotationTarget(token.ToString());
 
         var obj = (JObject)token;
         if ((string?)obj["type"] == "SpecificResource")
         {
             var target = ReadResourceReference(obj["source"]);
-            if ((string?)obj["id"] is { } specificResourceId)
-            {
-                target.SetSpecificResourceId(specificResourceId);
-            }
+            if ((string?)obj["id"] is { } specificResourceId) target.SetSpecificResourceId(specificResourceId);
 
-            if ((string?)obj["styleClass"] is { } styleClass)
-            {
-                target.SetStyleClass(styleClass);
-            }
+            if ((string?)obj["styleClass"] is { } styleClass) target.SetStyleClass(styleClass);
 
-            if (obj["selector"] is { } selectorToken)
-            {
-                target.SetSelector(selectorToken.ToObject<ISelector>(serializer)!);
-            }
+            if (obj["selector"] is { } selectorToken) target.SetSelector(selectorToken.ToObject<ISelector>(serializer)!);
 
             return target;
         }
@@ -130,24 +113,15 @@ public class AnnotationTargetJsonConverter : JsonConverter<AnnotationTarget>
 
     private static AnnotationTarget ReadResourceReference(JToken? token)
     {
-        if (token is null || token.Type == JTokenType.Null)
-        {
-            throw new JsonSerializationException("Annotation target is missing a resource reference.");
-        }
+        if (token is null || token.Type == JTokenType.Null) throw new JsonSerializationException("Annotation target is missing a resource reference.");
 
-        if (token.Type == JTokenType.String)
-        {
-            return new AnnotationTarget(token.ToString());
-        }
+        if (token.Type == JTokenType.String) return new AnnotationTarget(token.ToString());
 
         var obj = (JObject)token;
         var id = (string?)obj["id"] ?? throw new JsonSerializationException("Annotation target resource is missing an id.");
         var target = new AnnotationTarget(id, (string?)obj["type"]);
 
-        if (obj["partOf"]?.FirstOrDefault() is { } partOf)
-        {
-            target.SetPartOf((string?)partOf["id"] ?? string.Empty, (string?)partOf["type"] ?? "Manifest");
-        }
+        if (obj["partOf"]?.FirstOrDefault() is { } partOf) target.SetPartOf((string?)partOf["id"] ?? string.Empty, (string?)partOf["type"] ?? "Manifest");
 
         return target;
     }

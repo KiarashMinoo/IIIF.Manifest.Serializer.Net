@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
@@ -10,10 +8,10 @@ using AnnotationNode = IIIF.Manifests.Serializer.Nodes.Contents.Annotation.Annot
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 
 /// <summary>
-/// The JSON body a Content Search API 2.0 search request returns - an "AnnotationPage" of matching
-/// <see cref="Nodes.Contents.Annotation.Annotation"/> results (reusing the core Presentation 3.0
-/// Annotation type, since search-result annotations have the same shape as painting annotations),
-/// plus optional match-context highlighting, paging, and ignored-parameter reporting.
+///     The JSON body a Content Search API 2.0 search request returns - an "AnnotationPage" of matching
+///     <see cref="Nodes.Contents.Annotation.Annotation" /> results (reusing the core Presentation 3.0
+///     Annotation type, since search-result annotations have the same shape as painting annotations),
+///     plus optional match-context highlighting, paging, and ignored-parameter reporting.
 /// </summary>
 [SearchAPI("2.0")]
 public class SearchResponse : TrackableObject<SearchResponse>
@@ -29,6 +27,13 @@ public class SearchResponse : TrackableObject<SearchResponse>
     public const string PrevJName = "prev";
     public const string StartIndexJName = "startIndex";
     public const string IgnoredJName = "ignored";
+
+    public SearchResponse(string id)
+    {
+        Context = DefaultContext;
+        Type = "AnnotationPage";
+        Id = id;
+    }
 
     [JsonProperty(ContextJName)]
     public string Context
@@ -100,13 +105,6 @@ public class SearchResponse : TrackableObject<SearchResponse>
     {
         get => GetElementValue(x => x.Ignored) ?? [];
         private set => SetElementValue(value);
-    }
-
-    public SearchResponse(string id)
-    {
-        Context = DefaultContext;
-        Type = "AnnotationPage";
-        Id = id;
     }
 
     public SearchResponse AddItem(AnnotationNode item)

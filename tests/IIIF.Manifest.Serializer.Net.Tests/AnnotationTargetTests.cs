@@ -11,12 +11,12 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group A: generalizes Annotation.Target (and Manifest.Start, which shares the exact
-/// same shape) to a SpecificResource wrapping a source + selector (FragmentSelector/PointSelector/
-/// ImageApiSelector/SvgSelector), matching real cookbook recipes 0015/0040/0068/0135/0261/0299/
-/// 0306/0309/0326/0540/0599 (verified directly against github.com/IIIF/cookbook-recipes JSON, not
-/// just the recipe prose). Implicit string conversion keeps every pre-existing bare-URI call site
-/// compiling unchanged.
+///     Cookbook Group A: generalizes Annotation.Target (and Manifest.Start, which shares the exact
+///     same shape) to a SpecificResource wrapping a source + selector (FragmentSelector/PointSelector/
+///     ImageApiSelector/SvgSelector), matching real cookbook recipes 0015/0040/0068/0135/0261/0299/
+///     0306/0309/0326/0540/0599 (verified directly against github.com/IIIF/cookbook-recipes JSON, not
+///     just the recipe prose). Implicit string conversion keeps every pre-existing bare-URI call site
+///     compiling unchanged.
 /// </summary>
 public class AnnotationTargetTests
 {

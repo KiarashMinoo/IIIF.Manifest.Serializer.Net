@@ -3,15 +3,16 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Embedded;
 using IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Segment;
 using IIIF.Manifests.Serializer.Nodes.Contents.Segment.Resource;
+using IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// <see cref="EmbeddedContent"/>, <see cref="Segment"/>,
-/// <see cref="IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector.Selector"/>, and
-/// <see cref="Layer"/> are all legacy Presentation API 2.x-only concepts with no 3.0 replacement -
-/// none of them had any test coverage at all.
+///     <see cref="EmbeddedContent" />, <see cref="Segment" />,
+///     <see cref="IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector.Selector" />, and
+///     <see cref="Layer" /> are all legacy Presentation API 2.x-only concepts with no 3.0 replacement -
+///     none of them had any test coverage at all.
 /// </summary>
 public class LegacyContentTypesTests
 {
@@ -60,7 +61,7 @@ public class LegacyContentTypesTests
     {
         var resource = new SegmentResource("https://example.org/resource/1", ResourceType.Image);
         var segment = new Segment("https://example.org/annotation/1", resource, "https://example.org/canvas/1");
-        var selector = new IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector.Selector("https://example.org/selector/1", "oa:FragmentSelector")
+        var selector = new Selector("https://example.org/selector/1", "oa:FragmentSelector")
             .SetRegion(10, 20, 300, 400);
 
         segment.SetSelector(selector);
@@ -71,7 +72,7 @@ public class LegacyContentTypesTests
     [Fact]
     public void Selector_SetRegion_Should_AcceptAnExplicitIntArrayToo()
     {
-        var selector = new IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector.Selector("https://example.org/selector/1", "oa:FragmentSelector")
+        var selector = new Selector("https://example.org/selector/1", "oa:FragmentSelector")
             .SetRegion([0, 0, 100, 100]);
 
         selector.Region.Should().Equal(0, 0, 100, 100);

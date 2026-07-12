@@ -1,20 +1,17 @@
-using System.Linq;
 using System.Reflection;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
-using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 8 consistency sweep (SDK_VERSIONING_GUIDE.md §4): License/Attribution/Within/Related
-/// were flagged as needing the same legacy-view-plus-obsolete-mutator pattern as Milestones 1-5,
-/// but had not actually been reshaped. Rights/RequiredStatement/PartOf are the new 3.0-native
-/// properties; License/Attribution/Within/Related become computed legacy views over them, and
-/// Related is confirmed (via the 3.0 change log) to map onto the existing Homepage property.
+///     Milestone 8 consistency sweep (SDK_VERSIONING_GUIDE.md §4): License/Attribution/Within/Related
+///     were flagged as needing the same legacy-view-plus-obsolete-mutator pattern as Milestones 1-5,
+///     but had not actually been reshaped. Rights/RequiredStatement/PartOf are the new 3.0-native
+///     properties; License/Attribution/Within/Related become computed legacy views over them, and
+///     Related is confirmed (via the 3.0 change log) to map onto the existing Homepage property.
 /// </summary>
 public class BaseNodeReshapeTests
 {
@@ -201,7 +198,7 @@ public class BaseNodeReshapeTests
         var method = typeof(BaseNode<Manifest>).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        var obsolete = method!.GetCustomAttribute<System.ObsoleteAttribute>();
+        var obsolete = method!.GetCustomAttribute<ObsoleteAttribute>();
         obsolete.Should().NotBeNull();
         obsolete!.IsError.Should().BeFalse("legacy mutators remain callable - deprecated with a warning, not a compile-time error");
     }
@@ -242,7 +239,7 @@ public class BaseNodeReshapeTests
         var method = typeof(BaseNode<Manifest>).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
-        method!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        method!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 
     [Theory]
@@ -256,6 +253,6 @@ public class BaseNodeReshapeTests
         var property = typeof(BaseNode<Manifest>).GetProperty(propertyName);
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<System.ObsoleteAttribute>().Should().BeNull();
+        property!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
     }
 }

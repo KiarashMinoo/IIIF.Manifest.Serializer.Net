@@ -1,5 +1,3 @@
-using System;
-using IIIF.Manifests.Serializer;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,11 +5,11 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
 
 /// <summary>
-/// Dispatches a polymorphic <see cref="ISelector"/> to the correct concrete type by inspecting
-/// <c>type</c>. Same recursion-guard need as <c>ServiceJsonConverter</c>/<c>BaseResourceJsonConverter</c>:
-/// <see cref="ISelector"/> carries this converter so element-typed properties resolve it, but every
-/// implementer inherits it too, so reading/writing a concrete leaf type must skip this converter
-/// for the leaf type itself.
+///     Dispatches a polymorphic <see cref="ISelector" /> to the correct concrete type by inspecting
+///     <c>type</c>. Same recursion-guard need as <c>ServiceJsonConverter</c>/<c>BaseResourceJsonConverter</c>:
+///     <see cref="ISelector" /> carries this converter so element-typed properties resolve it, but every
+///     implementer inherits it too, so reading/writing a concrete leaf type must skip this converter
+///     for the leaf type itself.
 /// </summary>
 public class SelectorJsonConverter : JsonConverter<ISelector>
 {
@@ -24,21 +22,9 @@ public class SelectorJsonConverter : JsonConverter<ISelector>
         ContractResolver = new LeafContractResolver()
     });
 
-    private sealed class LeafContractResolver : IIIFJsonContractResolver
-    {
-        protected override JsonConverter? ResolveContractConverter(Type objectType)
-        {
-            var converter = base.ResolveContractConverter(objectType);
-            return converter is SelectorJsonConverter && objectType != typeof(ISelector) ? null : converter;
-        }
-    }
-
     public override ISelector? ReadJson(JsonReader reader, Type objectType, ISelector? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
-        if (reader.TokenType == JsonToken.Null)
-        {
-            return null;
-        }
+        if (reader.TokenType == JsonToken.Null) return null;
 
         var obj = JObject.Load(reader);
         return (string?)obj["type"] switch
@@ -60,5 +46,14 @@ public class SelectorJsonConverter : JsonConverter<ISelector>
         }
 
         LeafSerializer.Serialize(writer, value);
+    }
+
+    private sealed class LeafContractResolver : IIIFJsonContractResolver
+    {
+        protected override JsonConverter? ResolveContractConverter(Type objectType)
+        {
+            var converter = base.ResolveContractConverter(objectType);
+            return converter is SelectorJsonConverter && objectType != typeof(ISelector) ? null : converter;
+        }
     }
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
@@ -8,10 +7,10 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
 
 /// <summary>
-/// A Change Discovery API 1.0 "OrderedCollectionPage" - a single page of <see cref="Activity"/>
-/// entries. Distinct from the top-level <see cref="DiscoveryService"/> (which models the
-/// "OrderedCollection" and only ever *points at* pages via <c>first</c>/<c>last</c>, never embeds
-/// their <c>orderedItems</c> directly) - the two were previously conflated into one class.
+///     A Change Discovery API 1.0 "OrderedCollectionPage" - a single page of <see cref="Activity" />
+///     entries. Distinct from the top-level <see cref="DiscoveryService" /> (which models the
+///     "OrderedCollection" and only ever *points at* pages via <c>first</c>/<c>last</c>, never embeds
+///     their <c>orderedItems</c> directly) - the two were previously conflated into one class.
 /// </summary>
 [DiscoveryAPI("1.0")]
 public class DiscoveryCollectionPage : TrackableObject<DiscoveryCollectionPage>
@@ -25,6 +24,13 @@ public class DiscoveryCollectionPage : TrackableObject<DiscoveryCollectionPage>
     public const string PrevJName = "prev";
     public const string StartIndexJName = "startIndex";
     public const string OrderedItemsJName = "orderedItems";
+
+    public DiscoveryCollectionPage(string id, IReadOnlyCollection<Activity> orderedItems)
+    {
+        Type = "OrderedCollectionPage";
+        Id = id;
+        OrderedItems = orderedItems;
+    }
 
     [JsonProperty(ContextJName)]
     public string? Context
@@ -81,13 +87,6 @@ public class DiscoveryCollectionPage : TrackableObject<DiscoveryCollectionPage>
     {
         get => GetElementValue(x => x.OrderedItems) ?? [];
         private set => SetElementValue(value);
-    }
-
-    public DiscoveryCollectionPage(string id, IReadOnlyCollection<Activity> orderedItems)
-    {
-        Type = "OrderedCollectionPage";
-        Id = id;
-        OrderedItems = orderedItems;
     }
 
     public DiscoveryCollectionPage SetContext(string context)

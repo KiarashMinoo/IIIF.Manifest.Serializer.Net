@@ -6,17 +6,23 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 
 /// <summary>
-/// An <see cref="Annotation"/>'s target - the resource (and optionally a specific part of it) the
-/// annotation applies to. Serializes as one of the shapes the W3C Annotation Model allows (chosen
-/// automatically by <see cref="AnnotationTargetJsonConverter"/>): a bare URI string, a typed
-/// resource reference (optionally with a single <see cref="PartOfId"/>), or a full SpecificResource
-/// wrapping a <see cref="Selector"/>. Implicitly convertible from <c>string</c> so every existing
-/// bare-URI call site keeps compiling unchanged.
+///     An <see cref="Annotation" />'s target - the resource (and optionally a specific part of it) the
+///     annotation applies to. Serializes as one of the shapes the W3C Annotation Model allows (chosen
+///     automatically by <see cref="AnnotationTargetJsonConverter" />): a bare URI string, a typed
+///     resource reference (optionally with a single <see cref="PartOfId" />), or a full SpecificResource
+///     wrapping a <see cref="Selector" />. Implicitly convertible from <c>string</c> so every existing
+///     bare-URI call site keeps compiling unchanged.
 /// </summary>
 [PresentationAPI("3.0")]
 [JsonConverter(typeof(AnnotationTargetJsonConverter))]
 public class AnnotationTarget : TrackableObject<AnnotationTarget>
 {
+    public AnnotationTarget(string sourceId, string? sourceType = null)
+    {
+        SourceId = sourceId;
+        SourceType = sourceType;
+    }
+
     public string SourceId
     {
         get => GetElementValue(x => x.SourceId)!;
@@ -42,7 +48,7 @@ public class AnnotationTarget : TrackableObject<AnnotationTarget>
     }
 
     /// <summary>
-    /// The SpecificResource wrapper's own id - only meaningful when <see cref="Selector"/> is set.
+    ///     The SpecificResource wrapper's own id - only meaningful when <see cref="Selector" /> is set.
     /// </summary>
     public string? SpecificResourceId
     {
@@ -57,8 +63,8 @@ public class AnnotationTarget : TrackableObject<AnnotationTarget>
     }
 
     /// <summary>
-    /// Unofficial community convention (see cookbook recipe 0045-css) for associating a CSS class
-    /// with the SpecificResource wrapper.
+    ///     Unofficial community convention (see cookbook recipe 0045-css) for associating a CSS class
+    ///     with the SpecificResource wrapper.
     /// </summary>
     public string? StyleClass
     {
@@ -66,13 +72,10 @@ public class AnnotationTarget : TrackableObject<AnnotationTarget>
         private set => SetElementValue(value);
     }
 
-    public AnnotationTarget(string sourceId, string? sourceType = null)
+    public static implicit operator AnnotationTarget(string uri)
     {
-        SourceId = sourceId;
-        SourceType = sourceType;
+        return new AnnotationTarget(uri);
     }
-
-    public static implicit operator AnnotationTarget(string uri) => new(uri);
 
     public AnnotationTarget SetSelector(ISelector selector)
     {
@@ -99,5 +102,8 @@ public class AnnotationTarget : TrackableObject<AnnotationTarget>
         return this;
     }
 
-    public override string ToString() => SourceId;
+    public override string ToString()
+    {
+        return SourceId;
+    }
 }

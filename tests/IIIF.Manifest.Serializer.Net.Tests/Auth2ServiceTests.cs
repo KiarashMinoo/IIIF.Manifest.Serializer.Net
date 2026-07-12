@@ -7,11 +7,11 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 11 (SDK_VERSIONING_GUIDE.md §10, finding 3): Auth 2.0 was one flat class standing in
-/// for 4 distinct service types plus 3 unmodeled response shapes. These tests exercise the 4 real
-/// service types directly (not just through the inline-service round trip already covered in
-/// ServiceRoundTripTests.cs) and the 3 new response objects (AuthProbeResult2/AuthAccessToken2/
-/// AuthAccessTokenError2), which are HTTP/postMessage payloads, not embedded services.
+///     Milestone 11 (SDK_VERSIONING_GUIDE.md §10, finding 3): Auth 2.0 was one flat class standing in
+///     for 4 distinct service types plus 3 unmodeled response shapes. These tests exercise the 4 real
+///     service types directly (not just through the inline-service round trip already covered in
+///     ServiceRoundTripTests.cs) and the 3 new response objects (AuthProbeResult2/AuthAccessToken2/
+///     AuthAccessTokenError2), which are HTTP/postMessage payloads, not embedded services.
 /// </summary>
 public class Auth2ServiceTests
 {
@@ -31,7 +31,7 @@ public class Auth2ServiceTests
     public void AuthProbeService2_Should_RoundTripErrorHeadingAndNote()
     {
         var probe = new AuthProbeService2("https://example.org/auth/probe",
-            AuthAccessService2.ForExternalProfile(new AuthAccessTokenService2("https://example.org/auth/token")))
+                AuthAccessService2.ForExternalProfile(new AuthAccessTokenService2("https://example.org/auth/token")))
             .SetErrorHeading("Access Denied")
             .SetErrorNote("You do not have permission.");
 

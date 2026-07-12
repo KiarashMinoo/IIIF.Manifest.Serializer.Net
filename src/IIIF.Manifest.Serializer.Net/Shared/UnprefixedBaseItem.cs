@@ -6,9 +6,10 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Shared;
 
 /// <summary>
-/// Base type for services defined by specs that postdate the Presentation 3.0 "no @ prefix" convention
-/// (Auth 2.0, Content Search 2.0, Change Discovery 1.0, Content State 1.0) - unlike <see cref="BaseItem{TBaseItem}"/>,
-/// whose @id/@type prefixing matches Presentation 2.x/3.0 resources that exist in both conventions.
+///     Base type for services defined by specs that postdate the Presentation 3.0 "no @ prefix" convention
+///     (Auth 2.0, Content Search 2.0, Change Discovery 1.0, Content State 1.0) - unlike <see cref="BaseItem{TBaseItem}" />
+///     ,
+///     whose @id/@type prefixing matches Presentation 2.x/3.0 resources that exist in both conventions.
 /// </summary>
 public class UnprefixedBaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseItem, IContextSupport
     where TBaseItem : UnprefixedBaseItem<TBaseItem>
@@ -18,38 +19,6 @@ public class UnprefixedBaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseIt
     public const string IdJName = "id";
     public const string TypeJName = "type";
     public const string ServiceJName = "service";
-
-    [JsonProperty(IdJName)]
-    public string Id
-    {
-        get => GetElementValue(x => x.Id)!;
-        private set => SetElementValue(value);
-    }
-
-    string IContextSupport.Context => Context.ElementAt(0);
-
-    [JsonProperty(ContextJName)]
-    [JsonConverter(typeof(ObjectArrayJsonConverter))]
-    public IReadOnlyCollection<string> Context
-    {
-        get => GetElementValue(x => x.Context) ?? [DefaultContext];
-        private set => SetElementValue(value);
-    }
-
-    [JsonProperty(TypeJName)]
-    public string? Type
-    {
-        get => GetElementValue(x => x.Type);
-        private set => SetElementValue(value);
-    }
-
-    [JsonProperty(ServiceJName)]
-    [JsonConverter(typeof(ObjectArrayJsonConverter))]
-    public IReadOnlyCollection<IBaseService> Service
-    {
-        get => GetElementValue(x => x.Service) ?? [];
-        private set => SetElementValue(value);
-    }
 
     [JsonConstructor]
     protected internal UnprefixedBaseItem(string? id)
@@ -70,6 +39,38 @@ public class UnprefixedBaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseIt
     {
         Context = [context];
     }
+
+    [JsonProperty(ContextJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    public IReadOnlyCollection<string> Context
+    {
+        get => GetElementValue(x => x.Context) ?? [DefaultContext];
+        private set => SetElementValue(value);
+    }
+
+    [JsonProperty(ServiceJName)]
+    [JsonConverter(typeof(ObjectArrayJsonConverter))]
+    public IReadOnlyCollection<IBaseService> Service
+    {
+        get => GetElementValue(x => x.Service) ?? [];
+        private set => SetElementValue(value);
+    }
+
+    [JsonProperty(IdJName)]
+    public string Id
+    {
+        get => GetElementValue(x => x.Id)!;
+        private set => SetElementValue(value);
+    }
+
+    [JsonProperty(TypeJName)]
+    public string? Type
+    {
+        get => GetElementValue(x => x.Type);
+        private set => SetElementValue(value);
+    }
+
+    string IContextSupport.Context => Context.ElementAt(0);
 
     internal TBaseItem SetType(string type)
     {

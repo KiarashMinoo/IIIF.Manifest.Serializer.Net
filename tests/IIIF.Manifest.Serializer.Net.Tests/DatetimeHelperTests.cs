@@ -1,12 +1,11 @@
-using System;
 using IIIF.Manifests.Serializer.Helpers;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// <see cref="DatetimeHelper.ParseISO8601String"/> is the lenient ISO-8601 parser used for legacy
-/// 2.x navDate values (which appear in a wide range of accuracies, from a bare year down to a
-/// full timestamp with offset) - it had zero direct test coverage.
+///     <see cref="DatetimeHelper.ParseISO8601String" /> is the lenient ISO-8601 parser used for legacy
+///     2.x navDate values (which appear in a wide range of accuracies, from a bare year down to a
+///     full timestamp with offset) - it had zero direct test coverage.
 /// </summary>
 public class DatetimeHelperTests
 {

@@ -1,42 +1,42 @@
 using IIIF.Manifests.Serializer.Nodes;
-using IIIF.Manifests.Serializer.Properties;
-using System.Collections.Generic;
-using System.Linq;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty;
 using IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue;
 
-namespace IIIF.Manifests.Serializer.Helpers
+namespace IIIF.Manifests.Serializer.Helpers;
+
+public static class ManifestHelper
 {
-    public static class ManifestHelper
+    public static Manifest SetMetadata(this Manifest manifest, string label, string value, string? language = null)
     {
-        public static Manifest SetMetadata(this Manifest manifest, string label, string value, string? language = null)
+        var metadata = manifest.Metadata.FirstOrDefault(a => a.Label == label);
+        if (metadata != null)
         {
-            var metadata = manifest.Metadata.FirstOrDefault(a => a.Label == label);
-            if (metadata != null)
+            if (language != null)
             {
-                if (language != null)
-                {
-                    var metadataValue = metadata.Value.FirstOrDefault(a => a.Language == language);
-                    if (metadataValue != null)
-                        metadataValue.SetValue(value);
-                    else
-                        metadata.AddValue(value, language);
-                }
+                var metadataValue = metadata.Value.FirstOrDefault(a => a.Language == language);
+                if (metadataValue != null)
+                    metadataValue.SetValue(value);
                 else
-                    metadata.ResetValue(value);
+                    metadata.AddValue(value, language);
             }
             else
             {
-                if (language != null)
-                    manifest.AddMetadata(new Metadata(label, value, language));
-                else
-                    manifest.AddMetadata(new Metadata(label, value));
+                metadata.ResetValue(value);
             }
-
-            return manifest;
+        }
+        else
+        {
+            if (language != null)
+                manifest.AddMetadata(new Metadata(label, value, language));
+            else
+                manifest.AddMetadata(new Metadata(label, value));
         }
 
-        public static IReadOnlyCollection<MetadataValue>? GetMetadata(this Manifest manifest, string label)
-            => manifest.Metadata.FirstOrDefault(metadata => metadata.Label == label)?.Value;
+        return manifest;
+    }
+
+    public static IReadOnlyCollection<MetadataValue>? GetMetadata(this Manifest manifest, string label)
+    {
+        return manifest.Metadata.FirstOrDefault(metadata => metadata.Label == label)?.Value;
     }
 }

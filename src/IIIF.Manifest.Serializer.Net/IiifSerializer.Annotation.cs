@@ -1,4 +1,3 @@
-using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
@@ -19,9 +18,9 @@ using AnnotationNode = IIIF.Manifests.Serializer.Nodes.Contents.Annotation.Annot
 namespace IIIF.Manifests.Serializer;
 
 /// <summary>
-/// Write/read logic for AnnotationPage, Annotation, and the polymorphic Annotation-body resource
-/// dispatch (Image/Sound/Video/TextualBody/Choice/SpecificResource/extension types via
-/// <see cref="ResourceTypeRegistry"/>).
+///     Write/read logic for AnnotationPage, Annotation, and the polymorphic Annotation-body resource
+///     dispatch (Image/Sound/Video/TextualBody/Choice/SpecificResource/extension types via
+///     <see cref="ResourceTypeRegistry" />).
 /// </summary>
 public static partial class IiifSerializer
 {
@@ -36,20 +35,11 @@ public static partial class IiifSerializer
         var obj = hasItems ? WriteV3AnnotationPage(page) : new JObject { ["id"] = page.Id, ["type"] = "AnnotationPage" };
 
         var partOf = page.PartOf.Select(x => new JObject { ["id"] = x.Id, ["type"] = x.Type }).ToList();
-        if (partOf.Count > 0)
-        {
-            obj["partOf"] = new JArray(partOf);
-        }
+        if (partOf.Count > 0) obj["partOf"] = new JArray(partOf);
 
-        if (page.Next is not null)
-        {
-            obj["next"] = page.Next;
-        }
+        if (page.Next is not null) obj["next"] = page.Next;
 
-        if (page.Prev is not null)
-        {
-            obj["prev"] = page.Prev;
-        }
+        if (page.Prev is not null) obj["prev"] = page.Prev;
 
         return obj;
     }
@@ -77,15 +67,9 @@ public static partial class IiifSerializer
             ["target"] = JToken.FromObject(annotation.Targets.Count == 1 ? annotation.Target : annotation.Targets, JsonSerializer.Create(TrackableObject.JsonSerializerSettings))
         };
 
-        if (annotation.Stylesheet is not null)
-        {
-            obj["stylesheet"] = annotation.Stylesheet;
-        }
+        if (annotation.Stylesheet is not null) obj["stylesheet"] = annotation.Stylesheet;
 
-        if (annotation.TimeMode is not null)
-        {
-            obj["timeMode"] = annotation.TimeMode.Value;
-        }
+        if (annotation.TimeMode is not null) obj["timeMode"] = annotation.TimeMode.Value;
 
         return obj;
     }
@@ -98,27 +82,17 @@ public static partial class IiifSerializer
             // embedded ImageResource, which is still BaseItem-shaped/@-prefixed internally) -
             // JObject.FromObject below only ever normalizes the outermost resource.
             var specificObj = new JObject { ["type"] = "SpecificResource" };
-            if (specificResource.Id is not null)
-            {
-                specificObj["id"] = specificResource.Id;
-            }
+            if (specificResource.Id is not null) specificObj["id"] = specificResource.Id;
 
             specificObj["source"] = WriteV3Resource(specificResource.Source);
-            if (specificResource.StyleClass is not null)
-            {
-                specificObj["styleClass"] = specificResource.StyleClass;
-            }
+            if (specificResource.StyleClass is not null) specificObj["styleClass"] = specificResource.StyleClass;
 
-            if (specificResource.Selector is not null)
-            {
-                specificObj["selector"] = JToken.FromObject(specificResource.Selector, JsonSerializer.Create(TrackableObject.JsonSerializerSettings));
-            }
+            if (specificResource.Selector is not null) specificObj["selector"] = JToken.FromObject(specificResource.Selector, JsonSerializer.Create(TrackableObject.JsonSerializerSettings));
 
             return specificObj;
         }
 
         if (resource is Choice choice)
-        {
             // Same reasoning as SpecificResource above: recurse per item so a BaseItem-shaped
             // alternative (e.g. an embedded ImageResource) gets its @id/@type stripped too.
             return new JObject
@@ -126,7 +100,6 @@ public static partial class IiifSerializer
                 ["type"] = "Choice",
                 ["items"] = new JArray(choice.Items.Select(WriteV3Resource))
             };
-        }
 
         var token = JObject.FromObject(resource, JsonSerializer.Create(TrackableObject.JsonSerializerSettings));
         Rename(token, "@id", "id");
@@ -159,10 +132,7 @@ public static partial class IiifSerializer
         // clean id/type objects (seen in nearly every recipe with an IIIF Image service).
         token.Remove("service");
         var resourceServices = resource.Service.Select(WriteV3EmbeddedResourceService).ToList();
-        if (resourceServices.Count > 0)
-        {
-            token["service"] = new JArray(resourceServices);
-        }
+        if (resourceServices.Count > 0) token["service"] = new JArray(resourceServices);
 
         return token;
     }
@@ -172,27 +142,14 @@ public static partial class IiifSerializer
         var page = new AnnotationPage(ReadRequiredString(annotationsRef, "id"));
 
         foreach (var itemObj in annotationsRef["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
-        {
             if (ReadV3Annotation(canvas, itemObj) is { } annotation)
-            {
                 page.AddItem(annotation);
-            }
-        }
 
-        foreach (var partOfObj in annotationsRef["partOf"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
-        {
-            page.AddPartOf(new PartOf(ReadRequiredString(partOfObj, "id"), (string?)partOfObj["type"] ?? "AnnotationCollection"));
-        }
+        foreach (var partOfObj in annotationsRef["partOf"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) page.AddPartOf(new PartOf(ReadRequiredString(partOfObj, "id"), (string?)partOfObj["type"] ?? "AnnotationCollection"));
 
-        if ((string?)annotationsRef["next"] is { } next)
-        {
-            page.SetNext(next);
-        }
+        if ((string?)annotationsRef["next"] is { } next) page.SetNext(next);
 
-        if ((string?)annotationsRef["prev"] is { } prev)
-        {
-            page.SetPrev(prev);
-        }
+        if ((string?)annotationsRef["prev"] is { } prev) page.SetPrev(prev);
 
         return page;
     }
@@ -201,19 +158,13 @@ public static partial class IiifSerializer
     {
         var bodyToken = obj["body"];
         var bodyObjects = bodyToken is JArray bodyArray ? bodyArray.OfType<JObject>().ToList() : bodyToken is JObject singleBody ? [singleBody] : [];
-        if (bodyObjects.Count == 0)
-        {
-            return null;
-        }
+        if (bodyObjects.Count == 0) return null;
 
         var annotationId = ReadRequiredString(obj, "id");
         var motivation = (string?)obj["motivation"] ?? "painting";
 
         var resources = bodyObjects.Select(b => ReadV3AnnotationResource(b, canvas)).Where(r => r is not null).Select(r => r!).ToList();
-        if (resources.Count == 0)
-        {
-            return null;
-        }
+        if (resources.Count == 0) return null;
 
         var targetToken = obj["target"];
         var targets = targetToken is JArray targetArray
@@ -221,25 +172,13 @@ public static partial class IiifSerializer
             : [targetToken?.ToObject<AnnotationTarget>() ?? new AnnotationTarget(canvas.Id)];
 
         var annotation = new AnnotationNode(annotationId, resources[0], targets[0]).SetMotivation(motivation);
-        foreach (var extraBody in resources.Skip(1))
-        {
-            annotation.AddBody(extraBody);
-        }
+        foreach (var extraBody in resources.Skip(1)) annotation.AddBody(extraBody);
 
-        foreach (var extraTarget in targets.Skip(1))
-        {
-            annotation.AddTarget(extraTarget);
-        }
+        foreach (var extraTarget in targets.Skip(1)) annotation.AddTarget(extraTarget);
 
-        if ((string?)obj["stylesheet"] is { } stylesheet)
-        {
-            annotation.SetStylesheet(stylesheet);
-        }
+        if ((string?)obj["stylesheet"] is { } stylesheet) annotation.SetStylesheet(stylesheet);
 
-        if ((string?)obj["timeMode"] is { } timeMode)
-        {
-            annotation.SetTimeMode(new TimeMode(timeMode));
-        }
+        if ((string?)obj["timeMode"] is { } timeMode) annotation.SetTimeMode(new TimeMode(timeMode));
 
         return annotation;
     }
@@ -248,39 +187,21 @@ public static partial class IiifSerializer
     {
         if ((string?)body["type"] == "SpecificResource")
         {
-            if (body["source"] is not JObject sourceObj || ReadV3AnnotationResource(sourceObj, canvas) is not { } source)
-            {
-                return null;
-            }
+            if (body["source"] is not JObject sourceObj || ReadV3AnnotationResource(sourceObj, canvas) is not { } source) return null;
 
             var specificResource = new SpecificResource(source);
-            if ((string?)body["id"] is { } specificId)
-            {
-                specificResource.SetId(specificId);
-            }
+            if ((string?)body["id"] is { } specificId) specificResource.SetId(specificId);
 
-            if ((string?)body["styleClass"] is { } styleClass)
-            {
-                specificResource.SetStyleClass(styleClass);
-            }
+            if ((string?)body["styleClass"] is { } styleClass) specificResource.SetStyleClass(styleClass);
 
-            if (body["selector"] is { } selectorToken)
-            {
-                specificResource.SetSelector(selectorToken.ToObject<ISelector>()!);
-            }
+            if (body["selector"] is { } selectorToken) specificResource.SetSelector(selectorToken.ToObject<ISelector>()!);
 
             return specificResource;
         }
 
-        if ((string?)body["type"] == "TextualBody")
-        {
-            return BuildTextualBody(body);
-        }
+        if ((string?)body["type"] == "TextualBody") return BuildTextualBody(body);
 
-        if ((string?)body["type"] == "Choice")
-        {
-            return BuildChoice(body, canvas);
-        }
+        if ((string?)body["type"] == "Choice") return BuildChoice(body, canvas);
 
         var format = (string?)body["format"] ?? string.Empty;
         var bodyId = (string?)body["id"] ?? string.Empty;
@@ -300,20 +221,17 @@ public static partial class IiifSerializer
                 : new AudioResource(bodyId, format)).SetLabel(labels).AddServices(services),
             "Video" => BuildVideoResource(bodyId, format, body).SetLabel(labels).AddServices(services),
             var type when type is not null => ResourceTypeRegistry.TryCreate(type, body)
-                // A SpecificResource's source (or a sibling body) can be a bare, non-embeddable
-                // reference to another resource (e.g. a Canvas/Manifest - cookbook recipe
-                // 0022-linking-with-a-hotspot links to a whole Canvas, not an image/text body).
-                ?? new BaseResource(bodyId, type),
+                                              // A SpecificResource's source (or a sibling body) can be a bare, non-embeddable
+                                              // reference to another resource (e.g. a Canvas/Manifest - cookbook recipe
+                                              // 0022-linking-with-a-hotspot links to a whole Canvas, not an image/text body).
+                                              ?? new BaseResource(bodyId, type),
             _ => null
         };
     }
 
     private static TResource AddServices<TResource>(this TResource resource, IEnumerable<IBaseService> services) where TResource : BaseItem<TResource>
     {
-        foreach (var service in services)
-        {
-            resource.AddService(service);
-        }
+        foreach (var service in services) resource.AddService(service);
 
         return resource;
     }
@@ -328,15 +246,9 @@ public static partial class IiifSerializer
     private static TextualBody BuildTextualBody(JObject body)
     {
         var textualBody = new TextualBody((string?)body["value"] ?? string.Empty);
-        if ((string?)body["format"] is { } bodyFormat)
-        {
-            textualBody.SetFormat(bodyFormat);
-        }
+        if ((string?)body["format"] is { } bodyFormat) textualBody.SetFormat(bodyFormat);
 
-        if ((string?)body["language"] is { } bodyLanguage)
-        {
-            textualBody.SetLanguage(bodyLanguage);
-        }
+        if ((string?)body["language"] is { } bodyLanguage) textualBody.SetLanguage(bodyLanguage);
 
         return textualBody;
     }
@@ -344,18 +256,9 @@ public static partial class IiifSerializer
     private static VideoResource BuildVideoResource(string bodyId, string format, JObject body)
     {
         var videoResource = new VideoResource(bodyId, format);
-        if ((int?)body["height"] is { } videoHeight)
-        {
-            videoResource.SetHeight(videoHeight);
-        }
-        if ((int?)body["width"] is { } videoWidth)
-        {
-            videoResource.SetWidth(videoWidth);
-        }
-        if ((double?)body["duration"] is { } videoDuration)
-        {
-            videoResource.SetDuration(videoDuration);
-        }
+        if ((int?)body["height"] is { } videoHeight) videoResource.SetHeight(videoHeight);
+        if ((int?)body["width"] is { } videoWidth) videoResource.SetWidth(videoWidth);
+        if ((double?)body["duration"] is { } videoDuration) videoResource.SetDuration(videoDuration);
         return videoResource;
     }
 

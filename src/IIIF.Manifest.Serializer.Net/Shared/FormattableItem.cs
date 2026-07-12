@@ -7,13 +7,6 @@ public class FormattableItem<TFormattableItem> : BaseItem<TFormattableItem>
 {
     public const string FormatJName = "format";
 
-    [JsonProperty(FormatJName)]
-    public string? Format
-    {
-        get => GetElementValue(x => x.Format);
-        private set => SetElementValue(value);
-    }
-
     [JsonConstructor]
     protected internal FormattableItem(string id) : base(id)
     {
@@ -21,6 +14,13 @@ public class FormattableItem<TFormattableItem> : BaseItem<TFormattableItem>
 
     public FormattableItem(string id, string type) : base(id, type)
     {
+    }
+
+    [JsonProperty(FormatJName)]
+    public string? Format
+    {
+        get => GetElementValue(x => x.Format);
+        private set => SetElementValue(value);
     }
 
     public TFormattableItem SetFormat(string format)

@@ -1,32 +1,31 @@
 ﻿using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties
+namespace IIIF.Manifests.Serializer.Properties;
+
+public class Size : TrackableObject<Size>
 {
-    public class Size : TrackableObject<Size>
+    public const string WidthJName = "width";
+    public const string HeightJName = "height";
+
+    [JsonConstructor]
+    public Size(int width, int height)
     {
-        public const string WidthJName = "width";
-        public const string HeightJName = "height";
+        Width = width;
+        Height = height;
+    }
 
-        [JsonProperty(WidthJName)]
-        public int Width
-        {
-            get => GetElementValue(x => x.Width);
-            private set => SetElementValue(value);
-        }
+    [JsonProperty(WidthJName)]
+    public int Width
+    {
+        get => GetElementValue(x => x.Width);
+        private set => SetElementValue(value);
+    }
 
-        [JsonProperty(HeightJName)]
-        public int Height
-        {
-            get => GetElementValue(x => x.Height);
-            private set => SetElementValue(value);
-        }
-
-        [JsonConstructor]
-        public Size(int width, int height)
-        {
-            Width = width;
-            Height = height;
-        }
+    [JsonProperty(HeightJName)]
+    public int Height
+    {
+        get => GetElementValue(x => x.Height);
+        private set => SetElementValue(value);
     }
 }

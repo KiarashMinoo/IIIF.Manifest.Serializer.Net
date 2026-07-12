@@ -28,10 +28,7 @@ public class IIIFJsonContractResolver : DefaultContractResolver
                     {
                         var enumerator = enumerable.GetEnumerator();
                         using var _ = enumerator as IDisposable;
-                        if (!enumerator.MoveNext())
-                        {
-                            return false;
-                        }
+                        if (!enumerator.MoveNext()) return false;
                     }
 
                     break;

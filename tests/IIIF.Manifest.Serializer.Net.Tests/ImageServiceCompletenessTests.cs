@@ -1,14 +1,13 @@
-using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Services;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 14 (SDK_VERSIONING_GUIDE.md §10, finding 6): the Image API service descriptor was
-/// missing the spec-required "protocol" field, never populated "type" at all, was missing
-/// "extraFormats" and Tile.Height, and had no way to produce a standalone info.json document
-/// (distinct JSON shape - unprefixed id/type - from the embedded-service form).
+///     Milestone 14 (SDK_VERSIONING_GUIDE.md §10, finding 6): the Image API service descriptor was
+///     missing the spec-required "protocol" field, never populated "type" at all, was missing
+///     "extraFormats" and Tile.Height, and had no way to produce a standalone info.json document
+///     (distinct JSON shape - unprefixed id/type - from the embedded-service form).
 /// </summary>
 public class ImageServiceCompletenessTests
 {

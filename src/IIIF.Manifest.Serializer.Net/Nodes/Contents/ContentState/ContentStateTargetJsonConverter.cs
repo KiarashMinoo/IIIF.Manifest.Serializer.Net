@@ -1,14 +1,16 @@
-using System;
-using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 
 /// <summary>
-/// Reads/writes the polymorphic Content State 1.0 target shape: a bare URI string, a typed
-/// resource reference (<c>{"id","type"}</c>), or a full SpecificResource (<c>{"type":
-/// "SpecificResource","source","selector"}</c>) - see <see cref="ContentStateTarget"/>.
+///     Reads/writes the polymorphic Content State 1.0 target shape: a bare URI string, a typed
+///     resource reference (<c>{"id","type"}</c>), or a full SpecificResource (
+///     <c>
+///         {"type":
+///         "SpecificResource","source","selector"}
+///     </c>
+///     ) - see <see cref="ContentStateTarget" />.
 /// </summary>
 public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
 {
@@ -40,6 +42,7 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
             writer.WritePropertyName("selector");
             serializer.Serialize(writer, value.PointSelector);
         }
+
         writer.WriteEndObject();
     }
 
@@ -80,24 +83,15 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
     {
         var token = JToken.Load(reader);
 
-        if (token.Type == JTokenType.Null)
-        {
-            return null;
-        }
+        if (token.Type == JTokenType.Null) return null;
 
-        if (token.Type == JTokenType.String)
-        {
-            return new ContentStateTarget(token.ToString());
-        }
+        if (token.Type == JTokenType.String) return new ContentStateTarget(token.ToString());
 
         var obj = (JObject)token;
         if ((string?)obj["type"] == "SpecificResource")
         {
             var target = ReadResourceReference(obj["source"]);
-            if (obj["selector"] is { } selectorToken)
-            {
-                target.SetPointSelector(selectorToken.ToObject<ContentStatePointSelector>(serializer)!);
-            }
+            if (obj["selector"] is { } selectorToken) target.SetPointSelector(selectorToken.ToObject<ContentStatePointSelector>(serializer)!);
 
             return target;
         }
@@ -107,24 +101,15 @@ public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
 
     private static ContentStateTarget ReadResourceReference(JToken? token)
     {
-        if (token is null || token.Type == JTokenType.Null)
-        {
-            throw new JsonSerializationException("Content State target is missing a resource reference.");
-        }
+        if (token is null || token.Type == JTokenType.Null) throw new JsonSerializationException("Content State target is missing a resource reference.");
 
-        if (token.Type == JTokenType.String)
-        {
-            return new ContentStateTarget(token.ToString());
-        }
+        if (token.Type == JTokenType.String) return new ContentStateTarget(token.ToString());
 
         var obj = (JObject)token;
         var id = (string?)obj["id"] ?? throw new JsonSerializationException("Content State target resource is missing an id.");
         var target = new ContentStateTarget(id, (string?)obj["type"]);
 
-        if (obj["partOf"]?.FirstOrDefault() is { } partOf)
-        {
-            target.SetPartOf((string?)partOf["id"] ?? string.Empty, (string?)partOf["type"] ?? "Manifest");
-        }
+        if (obj["partOf"]?.FirstOrDefault() is { } partOf) target.SetPartOf((string?)partOf["id"] ?? string.Empty, (string?)partOf["type"] ?? "Manifest");
 
         return target;
     }

@@ -1,5 +1,3 @@
-using System.Linq;
-using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
@@ -18,27 +16,30 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0377-0599: multi-body annotations (image detail plus text), a Choice of
-/// audio/video formats, reusing another Manifest's Canvas verbatim, standalone Content State
-/// documents (a canvas region, opening multiple canvases, drag-and-drop), a multimedia Canvas
-/// combining image/video/text at different times and regions, timeline-sequenced resources with
-/// a repeat behavior, and visible text painted directly onto an image.
+///     Recipes 0377-0599: multi-body annotations (image detail plus text), a Choice of
+///     audio/video formats, reusing another Manifest's Canvas verbatim, standalone Content State
+///     documents (a canvas region, opening multiple canvases, drag-and-drop), a multimedia Canvas
+///     combining image/video/text at different times and regions, timeline-sequenced resources with
+///     a repeat behavior, and visible text painted directly onto an image.
 /// </summary>
 internal sealed class AdvancedCompositionRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0377: Image in Annotation (Multiple Bodies)", Recipe0377),
-        new("Recipe 0434: Choice of Audio/Video Formats", Recipe0434),
-        new("Recipe 0464: Reusing Another Manifest's Canvas", Recipe0464),
-        new("Recipe 0485: Content State - Canvas Region", Recipe0485),
-        new("Recipe 0489: Multimedia Canvas", Recipe0489),
-        new("Recipe 0540: Content State - Opening Multiple Canvases", Recipe0540),
-        new("Recipe 0540: Content State Document", Recipe0540ContentState),
-        new("Recipe 0560: Resources on a Timeline", Recipe0560),
-        new("Recipe 0561: Visible Text Painted on an Image", Recipe0561),
-        new("Recipe 0599: Content State - Drag and Drop", Recipe0599)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0377: Image in Annotation (Multiple Bodies)", Recipe0377),
+            new("Recipe 0434: Choice of Audio/Video Formats", Recipe0434),
+            new("Recipe 0464: Reusing Another Manifest's Canvas", Recipe0464),
+            new("Recipe 0485: Content State - Canvas Region", Recipe0485),
+            new("Recipe 0489: Multimedia Canvas", Recipe0489),
+            new("Recipe 0540: Content State - Opening Multiple Canvases", Recipe0540),
+            new("Recipe 0540: Content State Document", Recipe0540ContentState),
+            new("Recipe 0560: Resources on a Timeline", Recipe0560),
+            new("Recipe 0561: Visible Text Painted on an Image", Recipe0561),
+            new("Recipe 0599: Content State - Drag and Drop", Recipe0599)
+        ];
+    }
 
     // ---- 0377-image-in-annotation -----------------------------------------------------------------
 
@@ -46,7 +47,7 @@ internal sealed class AdvancedCompositionRecipes : IRecipeSet
     {
         var manifest = NewManifest("0377-image-in-annotation", "Picture of Göttingen taken during the 2019 IIIF Conference");
         var canvas = NewCanvas("0377-image-in-annotation", "canvas-1", null, 3024, 4032, "canvas-1");
-        canvas.AddAnnotation(PaintingImage(canvas, "0377-image-in-annotation", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, idIsFull: true));
+        canvas.AddAnnotation(PaintingImage(canvas, "0377-image-in-annotation", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, true));
 
         var fountainDetail = new ImageResource("https://iiif.io/api/image/3.0/example/reference/918ecd18c2592080851777620de9bcb5-fountain/full/300,/0/default.jpg", "image/jpeg");
         var text = new TextualBody("Night picture of the Gänseliesel fountain in Göttingen taken during the 2019 IIIF Conference").SetLanguage("en");
@@ -99,7 +100,7 @@ internal sealed class AdvancedCompositionRecipes : IRecipeSet
     private static ContentState Recipe0485()
     {
         var target = new ContentStateTarget(Id("0009-book-1", "canvas/p2") + "#xywh=1528,3024,344,408", "Canvas")
-            .SetPartOf(Id("0009-book-1", "manifest.json"), "Manifest");
+            .SetPartOf(Id("0009-book-1", "manifest.json"));
         return new ContentState(target).SetId(Id("0485-contentstate-canvas-region", "annotation.json"));
     }
 
@@ -155,9 +156,9 @@ internal sealed class AdvancedCompositionRecipes : IRecipeSet
     private static ContentState Recipe0540ContentState()
     {
         var target1 = new ContentStateTarget(Id("0540-link-for-opening-multiple-canvases", "canvas/2"), "Canvas")
-            .SetPartOf(Id("0540-link-for-opening-multiple-canvases", "manifest-2.json"), "Manifest");
+            .SetPartOf(Id("0540-link-for-opening-multiple-canvases", "manifest-2.json"));
         var target2 = new ContentStateTarget(Id("0540-link-for-opening-multiple-canvases", "canvas/p2"), "Canvas")
-            .SetPartOf(Id("0540-link-for-opening-multiple-canvases", "manifest.json"), "Manifest");
+            .SetPartOf(Id("0540-link-for-opening-multiple-canvases", "manifest.json"));
         return new ContentState(target1, target2);
     }
 
@@ -166,7 +167,7 @@ internal sealed class AdvancedCompositionRecipes : IRecipeSet
     private static Manifest Recipe0560()
     {
         var manifest = NewManifest("0560-resources-on-a-timeline", "Rendering Resources Sequentially on a Timeline").AddBehavior(new Behavior("repeat"));
-        var canvas = NewCanvas("0560-resources-on-a-timeline", "1", null, 2572, 3764, idOverride: "canvas1").SetDuration(4.0);
+        var canvas = NewCanvas("0560-resources-on-a-timeline", "1", null, 2572, 3764, "canvas1").SetDuration(4.0);
 
         canvas.AddAnnotation(new Annotation(Id("0560-resources-on-a-timeline", "canvas1/annotation/p1a1-image"),
             new ImageResource("https://iiif.io/api/image/3.0/example/reference/329817fc8a251a01c393f517d8a17d87-Northeaster_by_Winslow_Homer_1895/full/max/0/default.jpg", "image/jpeg")

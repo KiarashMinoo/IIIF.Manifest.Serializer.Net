@@ -3,18 +3,16 @@ using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Properties.Services.Discovery;
-using IIIF.Manifests.Serializer.Shared.Service;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 5 (SDK_VERSIONING_GUIDE.md): explicit round-trip regression tests per service type,
-/// locking in the interface-level-converter / constructor-context-collision / missing-setter
-/// fixes made prior to this milestone, plus the new top-level Manifest.Services (3.0-only,
-/// centralized services array — no 2.x equivalent, always inlined on write per §5). Auth 2.0 cases
-/// updated in Milestone 9 (§10) to use the 4 real service types instead of the old flat AuthService2.
+///     Milestone 5 (SDK_VERSIONING_GUIDE.md): explicit round-trip regression tests per service type,
+///     locking in the interface-level-converter / constructor-context-collision / missing-setter
+///     fixes made prior to this milestone, plus the new top-level Manifest.Services (3.0-only,
+///     centralized services array — no 2.x equivalent, always inlined on write per §5). Auth 2.0 cases
+///     updated in Milestone 9 (§10) to use the 4 real service types instead of the old flat AuthService2.
 /// </summary>
 public class ServiceRoundTripTests
 {

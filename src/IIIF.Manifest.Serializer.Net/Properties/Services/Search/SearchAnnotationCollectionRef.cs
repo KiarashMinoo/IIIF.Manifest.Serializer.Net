@@ -5,8 +5,8 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 
 /// <summary>
-/// The embedded "AnnotationCollection" a <see cref="SearchResponse"/>'s <c>partOf</c> field carries
-/// - a compact pointer to the full result set's first/last page and total count.
+///     The embedded "AnnotationCollection" a <see cref="SearchResponse" />'s <c>partOf</c> field carries
+///     - a compact pointer to the full result set's first/last page and total count.
 /// </summary>
 [SearchAPI("2.0")]
 public class SearchAnnotationCollectionRef : TrackableObject<SearchAnnotationCollectionRef>
@@ -16,6 +16,13 @@ public class SearchAnnotationCollectionRef : TrackableObject<SearchAnnotationCol
     public const string FirstJName = "first";
     public const string LastJName = "last";
     public const string TotalJName = "total";
+
+    [JsonConstructor]
+    public SearchAnnotationCollectionRef(string id)
+    {
+        Id = id;
+        Type = "AnnotationCollection";
+    }
 
     [JsonProperty(IdJName)]
     public string Id
@@ -50,13 +57,6 @@ public class SearchAnnotationCollectionRef : TrackableObject<SearchAnnotationCol
     {
         get => GetElementValue(x => x.Total);
         private set => SetElementValue(value);
-    }
-
-    [JsonConstructor]
-    public SearchAnnotationCollectionRef(string id)
-    {
-        Id = id;
-        Type = "AnnotationCollection";
     }
 
     public SearchAnnotationCollectionRef SetFirst(SearchResourceReference first)

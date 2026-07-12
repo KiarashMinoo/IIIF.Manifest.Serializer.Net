@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable;
@@ -17,7 +16,10 @@ public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
     TAdditionalPropertiesSupport SetElementValue<TValue>(
         TValue? value,
         [CallerMemberName] string? memberName = null
-    ) => SetElementValue<TValue>(_ => value, memberName);
+    )
+    {
+        return SetElementValue<TValue>(_ => value, memberName);
+    }
 
     TAdditionalPropertiesSupport SetElementValue<TValue>(
         Expression<Func<TAdditionalPropertiesSupport, TValue>> expression,
@@ -27,7 +29,10 @@ public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
     TAdditionalPropertiesSupport SetElementValue<TValue>(
         Expression<Func<TAdditionalPropertiesSupport, TValue>> expression,
         TValue? value
-    ) => SetElementValue(expression, _ => value);
+    )
+    {
+        return SetElementValue(expression, _ => value);
+    }
 
     //Getters
 
@@ -43,9 +48,15 @@ public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
 
     TValue? GetElementValue<TValue>(
         [CallerMemberName] string? memberName = null
-    ) => GetElementValue<TValue>(out _, memberName);
+    )
+    {
+        return GetElementValue<TValue>(out _, memberName);
+    }
 
     TValue? GetElementValue<TValue>(
         Expression<Func<TAdditionalPropertiesSupport, TValue>> expression
-    ) => GetElementValue(expression, out _);
+    )
+    {
+        return GetElementValue(expression, out _);
+    }
 }

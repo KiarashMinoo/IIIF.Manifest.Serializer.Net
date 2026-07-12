@@ -1,15 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <PackageId>IIIF.Manifest.Serializer.Net.Georeference</PackageId>
-    <Title>IIIF Manifest Serializer .NET Georeference Extension</Title>
-    <Description>Georeference extension models and serializers for map control points, selectors, and transformations in IIIF Presentation API manifests.</Description>
-    <PackageTags>iiif;manifest;presentation-api;georeference;maps;gcp;geospatial</PackageTags>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
-    <ProjectReference Include="..\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <PackageId>IIIF.Manifest.Serializer.Net.Georeference</PackageId>
+        <Title>IIIF Manifest Serializer .NET Georeference Extension</Title>
+        <Description>Georeference extension models and serializers for map control points, selectors, and transformations in IIIF Presentation API manifests.</Description>
+        <PackageTags>iiif;manifest;presentation-api;georeference;maps;gcp;geospatial</PackageTags>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj"/>
+        <ProjectReference Include="..\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj"/>
+    </ItemGroup>
 </Project>

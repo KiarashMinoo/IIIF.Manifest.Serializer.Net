@@ -1,22 +1,21 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// SDK Phase 2 (issue #6): consolidated legacy-import normalization coverage. Most of the
-/// individual mappings this issue asks for (description→summary, attribution→requiredStatement,
-/// license→rights, within→partOf, related→homepage, sequences→items, images→AnnotationPage/
-/// Annotation) were already implemented and tested per-property in earlier rounds
-/// (BaseNodeReshapeTests.cs, ManifestSequenceReshapeTests.cs, CanvasReshapeTests.cs,
-/// BehaviorLegacyLeakTests.cs) - this file adds the gaps that audit turned up: a direct
-/// description→summary legacy-JSON-in test (the other four all had one, this one didn't), the
-/// issue's own literal acceptance examples end-to-end, explicit round-trip tests in both
-/// directions, unknown-property preservation, tolerant parsing of partial/minimal documents, and
-/// the viewingHint→behavior write-time mapping.
+///     SDK Phase 2 (issue #6): consolidated legacy-import normalization coverage. Most of the
+///     individual mappings this issue asks for (description→summary, attribution→requiredStatement,
+///     license→rights, within→partOf, related→homepage, sequences→items, images→AnnotationPage/
+///     Annotation) were already implemented and tested per-property in earlier rounds
+///     (BaseNodeReshapeTests.cs, ManifestSequenceReshapeTests.cs, CanvasReshapeTests.cs,
+///     BehaviorLegacyLeakTests.cs) - this file adds the gaps that audit turned up: a direct
+///     description→summary legacy-JSON-in test (the other four all had one, this one didn't), the
+///     issue's own literal acceptance examples end-to-end, explicit round-trip tests in both
+///     directions, unknown-property preservation, tolerant parsing of partial/minimal documents, and
+///     the viewingHint→behavior write-time mapping.
 /// </summary>
 public class LegacyImportNormalizationTests
 {
@@ -109,24 +108,24 @@ public class LegacyImportNormalizationTests
     public void LegacyManifest_Should_RoundTripToV3_WithoutManualMigration()
     {
         const string legacyJson = """
-                                 {
-                                   "@context": "http://iiif.io/api/presentation/2/context.json",
-                                   "@id": "https://example.org/iiif/book/manifest",
-                                   "@type": "sc:Manifest",
-                                   "label": "Book",
-                                   "description": "A legacy description",
-                                   "attribution": "Provided by Example Library",
-                                   "license": "http://creativecommons.org/licenses/by/4.0/",
-                                   "within": { "@id": "https://example.org/collection" },
-                                   "related": "https://example.org/object-page",
-                                   "sequences": [{
-                                     "@type": "sc:Sequence",
-                                     "canvases": [
-                                       { "@id": "https://example.org/canvas/1", "@type": "sc:Canvas", "label": "Page 1", "height": 1000, "width": 800 }
-                                     ]
-                                   }]
-                                 }
-                                 """;
+                                  {
+                                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                                    "@id": "https://example.org/iiif/book/manifest",
+                                    "@type": "sc:Manifest",
+                                    "label": "Book",
+                                    "description": "A legacy description",
+                                    "attribution": "Provided by Example Library",
+                                    "license": "http://creativecommons.org/licenses/by/4.0/",
+                                    "within": { "@id": "https://example.org/collection" },
+                                    "related": "https://example.org/object-page",
+                                    "sequences": [{
+                                      "@type": "sc:Sequence",
+                                      "canvases": [
+                                        { "@id": "https://example.org/canvas/1", "@type": "sc:Canvas", "label": "Page 1", "height": 1000, "width": 800 }
+                                      ]
+                                    }]
+                                  }
+                                  """;
 
         var manifest = IiifSerializer.DeserializeManifest(legacyJson);
         var v3Json = IiifSerializer.Serialize(manifest);
@@ -153,21 +152,21 @@ public class LegacyImportNormalizationTests
     public void LegacyManifest_Should_RoundTripBackToV2_WithoutManualMigration()
     {
         const string legacyJson = """
-                                 {
-                                   "@context": "http://iiif.io/api/presentation/2/context.json",
-                                   "@id": "https://example.org/iiif/book/manifest",
-                                   "@type": "sc:Manifest",
-                                   "label": "Book",
-                                   "attribution": "Provided by Example Library",
-                                   "license": "http://creativecommons.org/licenses/by/4.0/",
-                                   "sequences": [{
-                                     "@type": "sc:Sequence",
-                                     "canvases": [
-                                       { "@id": "https://example.org/canvas/1", "@type": "sc:Canvas", "label": "Page 1", "height": 1000, "width": 800 }
-                                     ]
-                                   }]
-                                 }
-                                 """;
+                                  {
+                                    "@context": "http://iiif.io/api/presentation/2/context.json",
+                                    "@id": "https://example.org/iiif/book/manifest",
+                                    "@type": "sc:Manifest",
+                                    "label": "Book",
+                                    "attribution": "Provided by Example Library",
+                                    "license": "http://creativecommons.org/licenses/by/4.0/",
+                                    "sequences": [{
+                                      "@type": "sc:Sequence",
+                                      "canvases": [
+                                        { "@id": "https://example.org/canvas/1", "@type": "sc:Canvas", "label": "Page 1", "height": 1000, "width": 800 }
+                                      ]
+                                    }]
+                                  }
+                                  """;
 
         var manifest = IiifSerializer.DeserializeManifest(legacyJson);
         var v2Json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1));

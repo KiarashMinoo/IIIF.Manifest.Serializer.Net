@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Services.Discovery;
@@ -9,7 +8,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services;
 
 /// <summary>
-/// Represents the object of an Activity Streams activity.
+///     Represents the object of an Activity Streams activity.
 /// </summary>
 [DiscoveryAPI("1.0")]
 public class ActivityObject : TrackableObject<ActivityObject>
@@ -19,6 +18,13 @@ public class ActivityObject : TrackableObject<ActivityObject>
     public const string CanonicalJName = "canonical";
     public const string SeeAlsoJName = "seeAlso";
     public const string ProviderJName = "provider";
+
+    [JsonConstructor]
+    public ActivityObject(string id, string type)
+    {
+        Id = id;
+        Type = type;
+    }
 
     [JsonProperty(IdJName)]
     public string Id
@@ -58,13 +64,6 @@ public class ActivityObject : TrackableObject<ActivityObject>
     {
         get => GetElementValue(x => x.Provider) ?? [];
         private set => SetElementValue(value);
-    }
-
-    [JsonConstructor]
-    public ActivityObject(string id, string type)
-    {
-        Id = id;
-        Type = type;
     }
 
     public ActivityObject SetCanonical(string canonical)

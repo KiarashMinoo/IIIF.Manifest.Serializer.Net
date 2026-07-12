@@ -1,5 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Shared;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Service;
 

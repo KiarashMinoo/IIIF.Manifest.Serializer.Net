@@ -8,14 +8,14 @@ using Xunit;
 namespace IIIF.Manifests.Serializer.ArchTests;
 
 /// <summary>
-/// Guards the solution's known-good assembly reference graph: the core SDK never depends on any
-/// extension, and the 3 extension packages only depend on each other in the one direction they
-/// actually need (Georeference reuses navPlace's <c>NavPlace</c>/<c>Feature</c> FeatureCollection
-/// shape for its Annotation body, so Georeference -&gt; NavPlace is expected and allowed; nothing
-/// else cross-references). A `dotnet build` would already refuse a genuine circular
-/// <c>ProjectReference</c>, so this is a regression guard against a *new*, one-directional but
-/// architecturally-wrong reference being added later (e.g. TextGranularity accidentally depending
-/// on NavPlace), not a check that could ever catch a true build-breaking cycle.
+///     Guards the solution's known-good assembly reference graph: the core SDK never depends on any
+///     extension, and the 3 extension packages only depend on each other in the one direction they
+///     actually need (Georeference reuses navPlace's <c>NavPlace</c>/<c>Feature</c> FeatureCollection
+///     shape for its Annotation body, so Georeference -&gt; NavPlace is expected and allowed; nothing
+///     else cross-references). A `dotnet build` would already refuse a genuine circular
+///     <c>ProjectReference</c>, so this is a regression guard against a *new*, one-directional but
+///     architecturally-wrong reference being added later (e.g. TextGranularity accidentally depending
+///     on NavPlace), not a check that could ever catch a true build-breaking cycle.
 /// </summary>
 public class AssemblyDependencyTests
 {
@@ -60,6 +60,8 @@ public class AssemblyDependencyTests
         referenced.Should().NotContain(n => n.StartsWith("IIIF.Manifest.Serializer.Net.TextGranularity"));
     }
 
-    private static string[] ReferencedNames(Assembly assembly) =>
-        assembly.GetReferencedAssemblies().Select(a => a.Name ?? string.Empty).ToArray();
+    private static string[] ReferencedNames(Assembly assembly)
+    {
+        return assembly.GetReferencedAssemblies().Select(a => a.Name ?? string.Empty).ToArray();
+    }
 }

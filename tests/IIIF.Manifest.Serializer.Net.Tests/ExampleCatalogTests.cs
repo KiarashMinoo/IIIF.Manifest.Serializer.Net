@@ -1,21 +1,20 @@
 using System.Collections.Generic;
 using System.Linq;
-using AwesomeAssertions;
 using IIIF.Manifests.Serializer.Examples;
 using IIIF.Manifests.Serializer.Net.Cookbook;
 using IIIF.Manifests.Serializer.Nodes;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ExampleDefinition = IIIF.Manifests.Serializer.Net.Cookbook.ExampleDefinition;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 7 (SDK_VERSIONING_GUIDE.md): every Manifest/Collection example is round-tripped
-/// through the version-aware IiifSerializer (both directions, both versions) rather than plain
-/// JsonConvert - this is the strongest regression suite in the repo given how much of the model
-/// the ~20 cookbook/demo recipes exercise. Layer/AnnotationList examples have no 3.0 concept and
-/// therefore no IiifSerializer support by design (see SDK_VERSIONING_GUIDE.md §4/§6); those still
-/// fall back to a plain-JSON validity check.
+///     Milestone 7 (SDK_VERSIONING_GUIDE.md): every Manifest/Collection example is round-tripped
+///     through the version-aware IiifSerializer (both directions, both versions) rather than plain
+///     JsonConvert - this is the strongest regression suite in the repo given how much of the model
+///     the ~20 cookbook/demo recipes exercise. Layer/AnnotationList examples have no 3.0 concept and
+///     therefore no IiifSerializer support by design (see SDK_VERSIONING_GUIDE.md §4/§6); those still
+///     fall back to a plain-JSON validity check.
 /// </summary>
 public class ExampleCatalogTests
 {
@@ -24,14 +23,14 @@ public class ExampleCatalogTests
 
     [Theory]
     [MemberData(nameof(CookbookExamples))]
-    public void Cookbook_examples_should_round_trip_through_IiifSerializer(IIIF.Manifests.Serializer.Net.Cookbook.ExampleDefinition example)
+    public void Cookbook_examples_should_round_trip_through_IiifSerializer(ExampleDefinition example)
     {
         AssertRoundTrips(example.Title, example.Build());
     }
 
     [Theory]
     [MemberData(nameof(DemoExamples))]
-    public void Demo_examples_should_round_trip_through_IiifSerializer(IIIF.Manifests.Serializer.Examples.ExampleDefinition example)
+    public void Demo_examples_should_round_trip_through_IiifSerializer(Examples.ExampleDefinition example)
     {
         AssertRoundTrips(example.Title, example.Build());
     }
@@ -60,11 +59,11 @@ public class ExampleCatalogTests
         var v2Json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1));
         JToken.Parse(v2Json).Should().NotBeNull();
 
-        var v3Json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V3_0));
+        var v3Json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions());
         JToken.Parse(v3Json).Should().NotBeNull();
 
         var fromV2 = IiifSerializer.DeserializeManifest(v2Json);
-        IiifSerializer.Serialize(fromV2, new IiifSerializerOptions(IiifPresentationVersion.V3_0)).Should().NotBeNullOrWhiteSpace();
+        IiifSerializer.Serialize(fromV2, new IiifSerializerOptions()).Should().NotBeNullOrWhiteSpace();
 
         var fromV3 = IiifSerializer.DeserializeManifest(v3Json);
         IiifSerializer.Serialize(fromV3, new IiifSerializerOptions(IiifPresentationVersion.V2_1)).Should().NotBeNullOrWhiteSpace();
@@ -75,11 +74,11 @@ public class ExampleCatalogTests
         var v2Json = IiifSerializer.Serialize(collection, new IiifSerializerOptions(IiifPresentationVersion.V2_1));
         JToken.Parse(v2Json).Should().NotBeNull();
 
-        var v3Json = IiifSerializer.Serialize(collection, new IiifSerializerOptions(IiifPresentationVersion.V3_0));
+        var v3Json = IiifSerializer.Serialize(collection, new IiifSerializerOptions());
         JToken.Parse(v3Json).Should().NotBeNull();
 
         var fromV2 = IiifSerializer.DeserializeCollection(v2Json);
-        IiifSerializer.Serialize(fromV2, new IiifSerializerOptions(IiifPresentationVersion.V3_0)).Should().NotBeNullOrWhiteSpace();
+        IiifSerializer.Serialize(fromV2, new IiifSerializerOptions()).Should().NotBeNullOrWhiteSpace();
 
         var fromV3 = IiifSerializer.DeserializeCollection(v3Json);
         IiifSerializer.Serialize(fromV3, new IiifSerializerOptions(IiifPresentationVersion.V2_1)).Should().NotBeNullOrWhiteSpace();

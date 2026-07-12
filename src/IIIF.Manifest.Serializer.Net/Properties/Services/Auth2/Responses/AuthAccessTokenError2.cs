@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Trackable;
@@ -7,10 +6,10 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 
 /// <summary>
-/// The error <c>postMessage</c> response an <see cref="AuthAccessTokenService2"/> sends back to
-/// the client when it cannot issue an access token. <see cref="Profile"/> is one of the 6 error
-/// codes the spec defines (invalidRequest/invalidOrigin/missingAspect/invalidAspect/expiredAspect/
-/// unavailable) - modeled as a plain string rather than an enum since it is spec-open-ended text.
+///     The error <c>postMessage</c> response an <see cref="AuthAccessTokenService2" /> sends back to
+///     the client when it cannot issue an access token. <see cref="Profile" /> is one of the 6 error
+///     codes the spec defines (invalidRequest/invalidOrigin/missingAspect/invalidAspect/expiredAspect/
+///     unavailable) - modeled as a plain string rather than an enum since it is spec-open-ended text.
 /// </summary>
 [AuthAPI("2.0")]
 public class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError2>
@@ -29,6 +28,15 @@ public class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError2>
     public const string InvalidAspect = "invalidAspect";
     public const string ExpiredAspect = "expiredAspect";
     public const string Unavailable = "unavailable";
+
+    [JsonConstructor]
+    public AuthAccessTokenError2(string profile, string messageId)
+    {
+        Context = DefaultContext;
+        Type = "AuthAccessTokenError2";
+        Profile = profile;
+        MessageId = messageId;
+    }
 
     [JsonProperty(ContextJName)]
     public string Context
@@ -60,7 +68,7 @@ public class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError2>
 
     [JsonProperty(HeadingJName)]
     [JsonConverter(typeof(LanguageMapJsonConverter))]
-    public IReadOnlyCollection<Properties.Label> Heading
+    public IReadOnlyCollection<Label> Heading
     {
         get => GetElementValue(x => x.Heading) ?? [];
         private set => SetElementValue(value);
@@ -68,21 +76,19 @@ public class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError2>
 
     [JsonProperty(NoteJName)]
     [JsonConverter(typeof(LanguageMapJsonConverter))]
-    public IReadOnlyCollection<Properties.Label> Note
+    public IReadOnlyCollection<Label> Note
     {
         get => GetElementValue(x => x.Note) ?? [];
         private set => SetElementValue(value);
     }
 
-    [JsonConstructor]
-    public AuthAccessTokenError2(string profile, string messageId)
+    public AuthAccessTokenError2 SetHeading(string heading)
     {
-        Context = DefaultContext;
-        Type = "AuthAccessTokenError2";
-        Profile = profile;
-        MessageId = messageId;
+        return SetElementValue(x => x.Heading, (IReadOnlyCollection<Label>)[new Label(heading)]);
     }
 
-    public AuthAccessTokenError2 SetHeading(string heading) => SetElementValue(x => x.Heading, (IReadOnlyCollection<Properties.Label>)[new Properties.Label(heading)]);
-    public AuthAccessTokenError2 SetNote(string note) => SetElementValue(x => x.Note, (IReadOnlyCollection<Properties.Label>)[new Properties.Label(note)]);
+    public AuthAccessTokenError2 SetNote(string note)
+    {
+        return SetElementValue(x => x.Note, (IReadOnlyCollection<Label>)[new Label(note)]);
+    }
 }

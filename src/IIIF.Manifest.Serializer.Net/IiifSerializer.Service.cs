@@ -16,10 +16,10 @@ public static partial class IiifSerializer
     }
 
     /// <summary>
-    /// Same as <see cref="WriteV3Service"/> but additionally strips "@context" - unlike a
-    /// top-level Manifest.Services entry (which may legitimately declare its own context per
-    /// Milestone 9), a service embedded inline on a content resource (e.g. an Image API service on
-    /// a painting body) never carries one in any real cookbook recipe.
+    ///     Same as <see cref="WriteV3Service" /> but additionally strips "@context" - unlike a
+    ///     top-level Manifest.Services entry (which may legitimately declare its own context per
+    ///     Milestone 9), a service embedded inline on a content resource (e.g. an Image API service on
+    ///     a painting body) never carries one in any real cookbook recipe.
     /// </summary>
     private static JObject WriteV3EmbeddedResourceService(IBaseService service)
     {

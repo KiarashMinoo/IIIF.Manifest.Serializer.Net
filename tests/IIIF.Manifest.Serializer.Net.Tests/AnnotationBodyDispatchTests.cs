@@ -7,17 +7,16 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using IIIF.Manifests.Serializer.Properties.Services.Search;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Shared.Trackable;
-using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Round 2 (SDK_VERSIONING_GUIDE.md §11, Milestone 22): <c>Annotation.Body</c> (declared
-/// <see cref="IBaseResource"/>) had no polymorphic-dispatch <c>JsonConverter</c>, so a standalone
-/// <c>Annotation</c> round-tripped through plain <c>JsonConvert</c>/<c>TrackableObject.Parse</c>
-/// (not <c>IiifSerializer</c>'s hand-built V3 Canvas reader) threw trying to instantiate the
-/// interface directly - explicitly flagged as a "Known follow-up" in both Milestones 13 and (via
-/// round 2's independent re-verification) still true beforehand.
+///     Round 2 (SDK_VERSIONING_GUIDE.md §11, Milestone 22): <c>Annotation.Body</c> (declared
+///     <see cref="IBaseResource" />) had no polymorphic-dispatch <c>JsonConverter</c>, so a standalone
+///     <c>Annotation</c> round-tripped through plain <c>JsonConvert</c>/<c>TrackableObject.Parse</c>
+///     (not <c>IiifSerializer</c>'s hand-built V3 Canvas reader) threw trying to instantiate the
+///     interface directly - explicitly flagged as a "Known follow-up" in both Milestones 13 and (via
+///     round 2's independent re-verification) still true beforehand.
 /// </summary>
 public class AnnotationBodyDispatchTests
 {

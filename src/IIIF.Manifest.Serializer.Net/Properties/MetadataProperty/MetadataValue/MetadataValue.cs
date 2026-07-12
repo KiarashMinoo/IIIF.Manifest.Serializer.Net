@@ -9,6 +9,11 @@ public class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
     public const string ValueJName = "@value";
     public const string LanguageJName = "@language";
 
+    public MetadataValue(string value, string language) : this(value)
+    {
+        Language = language;
+    }
+
     [JsonProperty(ValueJName)] public override string Value => base.Value;
 
     [JsonProperty(LanguageJName)]
@@ -18,10 +23,8 @@ public class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
         private set => SetElementValue(value);
     }
 
-    public MetadataValue(string value, string language) : this(value)
+    public MetadataValue SetValue(string value)
     {
-        Language = language;
+        return SetElementValue(a => a.Value, value);
     }
-
-    public MetadataValue SetValue(string value) => SetElementValue(a => a.Value, value);
 }

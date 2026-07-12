@@ -1,14 +1,13 @@
 using IIIF.Manifests.Serializer.Shared;
 using Newtonsoft.Json;
 
-namespace IIIF.Manifests.Serializer.Properties.Interfaces
-{
-    public interface IViewingDirectionSupport<out TNode>
-        where TNode : BaseNode<TNode>, IViewingDirectionSupport<TNode>
-    {
-        [JsonProperty(Constants.ViewingDirectionJName)]
-        ViewingDirection? ViewingDirection { get; }
+namespace IIIF.Manifests.Serializer.Properties.Interfaces;
 
-        TNode SetViewingDirection(ViewingDirection viewingDirection);
-    }
+public interface IViewingDirectionSupport<out TNode>
+    where TNode : BaseNode<TNode>, IViewingDirectionSupport<TNode>
+{
+    [JsonProperty(Constants.ViewingDirectionJName)]
+    ViewingDirection? ViewingDirection { get; }
+
+    TNode SetViewingDirection(ViewingDirection viewingDirection);
 }

@@ -1,24 +1,35 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.SystemTextJson;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 
 /// <summary>
-/// The W3C Web Annotation Protocol's "AnnotationCollection" - a paged list of Annotations, distinct
-/// from both the IIIF <see cref="Nodes.Collection"/> (a list of Manifests/Collections) and
-/// <see cref="AnnotationPage"/> (one page of that list). Cookbook recipe 0309-annotation-collection
-/// is its own standalone top-level document (<c>anno_coll.json</c>), separate from the Manifest
-/// that references it via each <see cref="AnnotationPage"/>'s <c>partOf</c>.
+///     The W3C Web Annotation Protocol's "AnnotationCollection" - a paged list of Annotations, distinct
+///     from both the IIIF <see cref="Nodes.Collection" /> (a list of Manifests/Collections) and
+///     <see cref="AnnotationPage" /> (one page of that list). Cookbook recipe 0309-annotation-collection
+///     is its own standalone top-level document (<c>anno_coll.json</c>), separate from the Manifest
+///     that references it via each <see cref="AnnotationPage" />'s <c>partOf</c>.
 /// </summary>
 [PresentationAPI("3.0", Notes = "W3C Web Annotation Protocol paging concept, distinct from the IIIF Collection resource.")]
-[System.Text.Json.Serialization.JsonConverter(typeof(SystemTextJson.AnnotationCollectionSystemTextJsonConverter))]
+[System.Text.Json.Serialization.JsonConverter(typeof(AnnotationCollectionSystemTextJsonConverter))]
 public class AnnotationCollection : BaseNode<AnnotationCollection>
 {
     public const string TotalJName = "total";
     public const string FirstJName = "first";
     public const string LastJName = "last";
+
+    [Newtonsoft.Json.JsonConstructor]
+    internal AnnotationCollection(string id) : base(id, "AnnotationCollection")
+    {
+    }
+
+    public AnnotationCollection(string id, Label label) : this(id)
+    {
+        AddLabel(label);
+    }
 
     [JsonProperty(TotalJName)]
     public int? Total
@@ -40,13 +51,6 @@ public class AnnotationCollection : BaseNode<AnnotationCollection>
         get => GetElementValue(x => x.Last);
         private set => SetElementValue(value);
     }
-
-    [JsonConstructor]
-    internal AnnotationCollection(string id) : base(id, "AnnotationCollection")
-    {
-    }
-
-    public AnnotationCollection(string id, Label label) : this(id) => AddLabel(label);
 
     public AnnotationCollection SetTotal(int total)
     {

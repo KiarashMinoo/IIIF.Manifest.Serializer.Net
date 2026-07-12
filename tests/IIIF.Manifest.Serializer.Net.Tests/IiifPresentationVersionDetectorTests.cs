@@ -1,4 +1,3 @@
-using IIIF.Manifests.Serializer;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;

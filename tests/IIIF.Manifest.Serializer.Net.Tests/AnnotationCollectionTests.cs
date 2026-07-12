@@ -5,8 +5,8 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group F: the W3C AnnotationCollection - recipe 0309-annotation-collection's standalone
-/// <c>anno_coll.json</c> document (distinct from the IIIF <see cref="Collection"/> resource type).
+///     Cookbook Group F: the W3C AnnotationCollection - recipe 0309-annotation-collection's standalone
+///     <c>anno_coll.json</c> document (distinct from the IIIF <see cref="Collection" /> resource type).
 /// </summary>
 public class AnnotationCollectionTests
 {

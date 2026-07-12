@@ -8,10 +8,10 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group E: recipe 0013-placeholderCanvas - a full embedded Canvas shown before an A/V
-/// Canvas's own content is available (e.g. a poster-frame thumbnail). Fixed a pre-existing defect
-/// along the way: <see cref="Manifest.PlaceholderCanvas"/> previously modeled this as a bare
-/// string tagged 2.0, but the property is 3.0-only and always a full Canvas object per spec §5.4.2.
+///     Cookbook Group E: recipe 0013-placeholderCanvas - a full embedded Canvas shown before an A/V
+///     Canvas's own content is available (e.g. a poster-frame thumbnail). Fixed a pre-existing defect
+///     along the way: <see cref="Manifest.PlaceholderCanvas" /> previously modeled this as a bare
+///     string tagged 2.0, but the property is 3.0-only and always a full Canvas object per spec §5.4.2.
 /// </summary>
 public class PlaceholderCanvasTests
 {

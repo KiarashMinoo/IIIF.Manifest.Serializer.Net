@@ -1,13 +1,12 @@
-using System.Linq;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// <see cref="ManifestHelper"/>'s <c>SetMetadata</c>/<c>GetMetadata</c> convenience extension
-/// methods (find-or-create a <c>Metadata</c> entry by label, optionally per-language) had
-/// zero test coverage.
+///     <see cref="ManifestHelper" />'s <c>SetMetadata</c>/<c>GetMetadata</c> convenience extension
+///     methods (find-or-create a <c>Metadata</c> entry by label, optionally per-language) had
+///     zero test coverage.
 /// </summary>
 public class ManifestHelperTests
 {

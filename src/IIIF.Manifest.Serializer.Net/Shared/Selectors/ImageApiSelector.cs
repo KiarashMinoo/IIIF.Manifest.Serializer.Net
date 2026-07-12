@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
 
 /// <summary>
-/// An "ImageApiSelector" (IIIF Presentation API Annex) - selects a region/size/rotation/quality/
-/// format of an Image API resource using the same syntax as an Image API request URI's parameters.
-/// All fields are optional; only the ones actually constraining the selection need be present.
+///     An "ImageApiSelector" (IIIF Presentation API Annex) - selects a region/size/rotation/quality/
+///     format of an Image API resource using the same syntax as an Image API request URI's parameters.
+///     All fields are optional; only the ones actually constraining the selection need be present.
 /// </summary>
 public class ImageApiSelector : TrackableObject<ImageApiSelector>, ISelector
 {
@@ -17,11 +17,10 @@ public class ImageApiSelector : TrackableObject<ImageApiSelector>, ISelector
     public const string QualityJName = "quality";
     public const string FormatJName = "format";
 
-    [JsonProperty(TypeJName)]
-    public string Type
+    [JsonConstructor]
+    public ImageApiSelector()
     {
-        get => GetElementValue(x => x.Type) ?? "ImageApiSelector";
-        private set => SetElementValue(value);
+        Type = "ImageApiSelector";
     }
 
     [JsonProperty(RegionJName)]
@@ -59,10 +58,11 @@ public class ImageApiSelector : TrackableObject<ImageApiSelector>, ISelector
         private set => SetElementValue(value);
     }
 
-    [JsonConstructor]
-    public ImageApiSelector()
+    [JsonProperty(TypeJName)]
+    public string Type
     {
-        Type = "ImageApiSelector";
+        get => GetElementValue(x => x.Type) ?? "ImageApiSelector";
+        private set => SetElementValue(value);
     }
 
     public ImageApiSelector SetRegion(string region)
@@ -71,7 +71,10 @@ public class ImageApiSelector : TrackableObject<ImageApiSelector>, ISelector
         return this;
     }
 
-    public ImageApiSelector SetRegion(int x, int y, int width, int height) => SetRegion($"{x},{y},{width},{height}");
+    public ImageApiSelector SetRegion(int x, int y, int width, int height)
+    {
+        return SetRegion($"{x},{y},{width},{height}");
+    }
 
     public ImageApiSelector SetSize(string size)
     {

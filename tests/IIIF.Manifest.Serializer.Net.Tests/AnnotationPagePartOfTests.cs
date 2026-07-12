@@ -2,17 +2,16 @@ using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
-using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group G remainder: recipe 0309-annotation-collection wires an externally-referenced
-/// <see cref="AnnotationPage"/> back to its owning <see cref="AnnotationCollection"/> via
-/// PartOf (already generically available on every BaseNode, just not previously wired into the
-/// hand-rolled Canvas writer/reader) plus W3C-style <see cref="AnnotationPage.Next"/>/
-/// <see cref="AnnotationPage.Prev"/> paging between sibling pages.
+///     Cookbook Group G remainder: recipe 0309-annotation-collection wires an externally-referenced
+///     <see cref="AnnotationPage" /> back to its owning <see cref="AnnotationCollection" /> via
+///     PartOf (already generically available on every BaseNode, just not previously wired into the
+///     hand-rolled Canvas writer/reader) plus W3C-style <see cref="AnnotationPage.Next" />/
+///     <see cref="AnnotationPage.Prev" /> paging between sibling pages.
 /// </summary>
 public class AnnotationPagePartOfTests
 {

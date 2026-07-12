@@ -8,8 +8,8 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests.Integration;
 
 /// <summary>
-/// Tests for IIIF Cookbook Recipe 0001: Simplest Manifest - Single Image File
-/// https://iiif.io/api/cookbook/recipe/0001-mvm-image/
+///     Tests for IIIF Cookbook Recipe 0001: Simplest Manifest - Single Image File
+///     https://iiif.io/api/cookbook/recipe/0001-mvm-image/
 /// </summary>
 public class Recipe0001Tests
 {
@@ -17,30 +17,30 @@ public class Recipe0001Tests
     public void SimplestManifest_Should_SerializeCorrectly()
     {
         var imageResource = new ImageResource(
-                id: "http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png",
-                format: ImageFormat.Png
+                "http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png",
+                ImageFormat.Png
             )
             .SetHeight(1800)
             .SetWidth(1200);
 
         var canvas = new Canvas(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1",
-            label: new Label("p. 1"),
-            height: 1800,
-            width: 1200
+            "https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1",
+            new Label("p. 1"),
+            1800,
+            1200
         );
 
         var image = new Image(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image",
-            resource: imageResource,
-            on: canvas.Id
+            "https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image",
+            imageResource,
+            canvas.Id
         );
 
         canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
 
         var manifest = new Manifest(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json",
-            label: new Label("Single Image Example")
+            "https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json",
+            new Label("Single Image Example")
         );
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
@@ -98,30 +98,30 @@ public class Recipe0001Tests
     public void SimplestManifest_Should_RoundTrip()
     {
         var imageResource = new ImageResource(
-                id: "http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png",
-                format: ImageFormat.Png
+                "http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png",
+                ImageFormat.Png
             )
             .SetHeight(1800)
             .SetWidth(1200);
 
         var canvas = new Canvas(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1",
-            label: new Label("p. 1"),
-            height: 1800,
-            width: 1200
+            "https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1",
+            new Label("p. 1"),
+            1800,
+            1200
         );
 
         var image = new Image(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image",
-            resource: imageResource,
-            on: canvas.Id
+            "https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image",
+            imageResource,
+            canvas.Id
         );
 
         canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
 
         var manifest = new Manifest(
-            id: "https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json",
-            label: new Label("Single Image Example")
+            "https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json",
+            new Label("Single Image Example")
         );
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
@@ -159,30 +159,30 @@ public class Recipe0001Tests
     public void SimplestManifest_With_MultipleCanvases_Should_Work()
     {
         var manifest = new Manifest(
-            id: "https://example.org/iiif/book1/manifest",
-            label: new Label("Multi-page Book Example")
+            "https://example.org/iiif/book1/manifest",
+            new Label("Multi-page Book Example")
         );
 
-        for (int i = 1; i <= 3; i++)
+        for (var i = 1; i <= 3; i++)
         {
             var imageResource = new ImageResource(
-                    id: $"https://example.org/images/page{i}.jpg",
-                    format: "image/jpeg"
+                    $"https://example.org/images/page{i}.jpg",
+                    "image/jpeg"
                 )
                 .SetHeight(2000)
                 .SetWidth(1500);
 
             var canvas = new Canvas(
-                id: $"https://example.org/iiif/book1/canvas/p{i}",
-                label: new Label($"Page {i}"),
-                height: 2000,
-                width: 1500
+                $"https://example.org/iiif/book1/canvas/p{i}",
+                new Label($"Page {i}"),
+                2000,
+                1500
             );
 
             var image = new Image(
-                id: $"https://example.org/iiif/book1/annotation/p{i:D4}-image",
-                resource: imageResource,
-                on: canvas.Id
+                $"https://example.org/iiif/book1/annotation/p{i:D4}-image",
+                imageResource,
+                canvas.Id
             );
 
             canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
@@ -200,7 +200,7 @@ public class Recipe0001Tests
         var canvases = sequences![0]["canvases"] as JArray;
         canvases.Should().HaveCount(3);
 
-        for (int i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
             var canvasObj = canvases![i] as JObject;
             canvasObj!["label"]!.ToString().Should().Be($"Page {i + 1}");
@@ -213,30 +213,30 @@ public class Recipe0001Tests
     public void SimplestManifest_Should_Have_RequiredFields()
     {
         var imageResource = new ImageResource(
-                id: "https://example.org/image.jpg",
-                format: "image/jpeg"
+                "https://example.org/image.jpg",
+                "image/jpeg"
             )
             .SetHeight(1000)
             .SetWidth(800);
 
         var canvas = new Canvas(
-            id: "https://example.org/canvas/1",
-            label: new Label("Test Canvas"),
-            height: 1000,
-            width: 800
+            "https://example.org/canvas/1",
+            new Label("Test Canvas"),
+            1000,
+            800
         );
 
         var image = new Image(
-            id: "https://example.org/annotation/1",
-            resource: imageResource,
-            on: canvas.Id
+            "https://example.org/annotation/1",
+            imageResource,
+            canvas.Id
         );
 
         canvas.AddAnnotation(new Annotation(image.Id, image.Resource, image.On));
 
         var manifest = new Manifest(
-            id: "https://example.org/manifest.json",
-            label: new Label("Test Manifest")
+            "https://example.org/manifest.json",
+            new Label("Test Manifest")
         );
         manifest.AddItem(canvas);
 

@@ -1,11 +1,10 @@
 using IIIF.Manifests.Serializer.Nodes;
-using IIIF.Manifests.Serializer.Properties;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 8 coverage push: targeted tests for legacy-only surfaces that the reshape
-/// milestones didn't otherwise exercise (Collection paging, Structure viewing direction/start).
+///     Milestone 8 coverage push: targeted tests for legacy-only surfaces that the reshape
+///     milestones didn't otherwise exercise (Collection paging, Structure viewing direction/start).
 /// </summary>
 public class CoveragePushTests
 {

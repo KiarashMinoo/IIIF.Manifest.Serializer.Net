@@ -5,10 +5,10 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// <see cref="JsonCollectionPropertyHelper"/> is the shared single-value-or-array read/write helper
-/// used to eliminate repetitive converter code - it had zero direct test coverage even though every
-/// hand-rolled converter in the codebase relies on the same "single value collapses, multiple
-/// values become an array" behavior it implements generically here.
+///     <see cref="JsonCollectionPropertyHelper" /> is the shared single-value-or-array read/write helper
+///     used to eliminate repetitive converter code - it had zero direct test coverage even though every
+///     hand-rolled converter in the codebase relies on the same "single value collapses, multiple
+///     values become an array" behavior it implements generically here.
 /// </summary>
 public class JsonCollectionPropertyHelperTests
 {
@@ -87,7 +87,7 @@ public class JsonCollectionPropertyHelperTests
         var serializer = new JsonSerializer();
         writer.WriteStartObject();
 
-        JsonCollectionPropertyHelper.WriteCollectionProperty(writer, serializer, "label", System.Array.Empty<string>());
+        JsonCollectionPropertyHelper.WriteCollectionProperty(writer, serializer, "label", Array.Empty<string>());
 
         writer.WriteEndObject();
         var obj = (JObject)writer.Token!;

@@ -1,8 +1,8 @@
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// <see cref="Language"/> and <see cref="Motivation"/>'s static named instances had zero test
-/// coverage.
+///     <see cref="Language" /> and <see cref="Motivation" />'s static named instances had zero test
+///     coverage.
 /// </summary>
 public class LanguageAndMotivationTests
 {

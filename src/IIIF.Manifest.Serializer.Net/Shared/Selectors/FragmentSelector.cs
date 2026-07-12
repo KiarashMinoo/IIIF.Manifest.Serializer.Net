@@ -4,8 +4,8 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
 
 /// <summary>
-/// A W3C "FragmentSelector" conforming to the Media Fragments spec - selects a spatial region
-/// (<c>xywh=x,y,w,h</c>) or temporal range (<c>t=start,end</c>) of the targeted resource.
+///     A W3C "FragmentSelector" conforming to the Media Fragments spec - selects a spatial region
+///     (<c>xywh=x,y,w,h</c>) or temporal range (<c>t=start,end</c>) of the targeted resource.
 /// </summary>
 public class FragmentSelector : TrackableObject<FragmentSelector>, ISelector
 {
@@ -14,11 +14,12 @@ public class FragmentSelector : TrackableObject<FragmentSelector>, ISelector
     public const string ValueJName = "value";
     public const string MediaFragmentConformsTo = "http://www.w3.org/TR/media-frags/";
 
-    [JsonProperty(TypeJName)]
-    public string Type
+    [JsonConstructor]
+    public FragmentSelector(string value)
     {
-        get => GetElementValue(x => x.Type) ?? "FragmentSelector";
-        private set => SetElementValue(value);
+        Type = "FragmentSelector";
+        ConformsTo = MediaFragmentConformsTo;
+        Value = value;
     }
 
     [JsonProperty(ConformsToJName)]
@@ -35,14 +36,15 @@ public class FragmentSelector : TrackableObject<FragmentSelector>, ISelector
         private set => SetElementValue(value);
     }
 
-    [JsonConstructor]
-    public FragmentSelector(string value)
+    [JsonProperty(TypeJName)]
+    public string Type
     {
-        Type = "FragmentSelector";
-        ConformsTo = MediaFragmentConformsTo;
-        Value = value;
+        get => GetElementValue(x => x.Type) ?? "FragmentSelector";
+        private set => SetElementValue(value);
     }
 
-    public static FragmentSelector ForRegion(int x, int y, int width, int height) =>
-        new($"xywh={x},{y},{width},{height}");
+    public static FragmentSelector ForRegion(int x, int y, int width, int height)
+    {
+        return new FragmentSelector($"xywh={x},{y},{width},{height}");
+    }
 }

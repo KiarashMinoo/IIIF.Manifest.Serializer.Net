@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <PackageId>IIIF.Manifest.Serializer.Net.TextGranularity</PackageId>
-    <Title>IIIF Manifest Serializer .NET Text Granularity Extension</Title>
-    <Description>Text Granularity extension models and helpers for OCR text segmentation in IIIF Presentation API manifests.</Description>
-    <PackageTags>iiif;manifest;presentation-api;text-granularity;ocr;text</PackageTags>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <PackageId>IIIF.Manifest.Serializer.Net.TextGranularity</PackageId>
+        <Title>IIIF Manifest Serializer .NET Text Granularity Extension</Title>
+        <Description>Text Granularity extension models and helpers for OCR text segmentation in IIIF Presentation API manifests.</Description>
+        <PackageTags>iiif;manifest;presentation-api;text-granularity;ocr;text</PackageTags>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj"/>
+    </ItemGroup>
 </Project>

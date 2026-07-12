@@ -4,25 +4,24 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// The Georeference extension's <see cref="PolynomialTransformation"/> and
-/// <see cref="PolynomialTransformationOption"/> (the "polynomial" of the two georeferencing
-/// transformation algorithms - see SDK_VERSIONING_GUIDE.md's Georeference milestone) had zero test
-/// coverage, and writing these tests surfaced a real, currently-dead bug.
-///
-/// <para>
-/// <strong>Known bug, not fixed here</strong> (the test-generation task this file was written under
-/// scopes to tests only, never production code): <see cref="PolynomialTransformationOption.Order"/>
-/// has no <c>[JsonProperty]</c> attribute and no public constructor parameter, only a
-/// <c>private set</c> - so <c>Order</c> can never actually be given a non-zero value through any
-/// public API (not via JSON deserialization, since Newtonsoft's default contract resolver only
-/// treats a private setter as writable when <c>[JsonProperty]</c> is explicitly present on the
-/// member, and every other settable property in this codebase does carry that attribute for
-/// exactly this reason; not via a fluent setter, since none exists). A repo-wide search confirms
-/// nothing in the codebase currently constructs a <c>PolynomialTransformationOption</c> with a real
-/// order value either, so this is dead-on-arrival rather than an active regression. Flagged for a
-/// future fix (add <c>[JsonProperty("order")]</c> plus either a public constructor parameter or a
-/// fluent <c>SetOrder</c>, matching this codebase's established pattern) rather than fixed here.
-/// </para>
+///     The Georeference extension's <see cref="PolynomialTransformation" /> and
+///     <see cref="PolynomialTransformationOption" /> (the "polynomial" of the two georeferencing
+///     transformation algorithms - see SDK_VERSIONING_GUIDE.md's Georeference milestone) had zero test
+///     coverage, and writing these tests surfaced a real, currently-dead bug.
+///     <para>
+///         <strong>Known bug, not fixed here</strong> (the test-generation task this file was written under
+///         scopes to tests only, never production code): <see cref="PolynomialTransformationOption.Order" />
+///         has no <c>[JsonProperty]</c> attribute and no public constructor parameter, only a
+///         <c>private set</c> - so <c>Order</c> can never actually be given a non-zero value through any
+///         public API (not via JSON deserialization, since Newtonsoft's default contract resolver only
+///         treats a private setter as writable when <c>[JsonProperty]</c> is explicitly present on the
+///         member, and every other settable property in this codebase does carry that attribute for
+///         exactly this reason; not via a fluent setter, since none exists). A repo-wide search confirms
+///         nothing in the codebase currently constructs a <c>PolynomialTransformationOption</c> with a real
+///         order value either, so this is dead-on-arrival rather than an active regression. Flagged for a
+///         future fix (add <c>[JsonProperty("order")]</c> plus either a public constructor parameter or a
+///         fluent <c>SetOrder</c>, matching this codebase's established pattern) rather than fixed here.
+///     </para>
 /// </summary>
 public class PolynomialTransformationTests
 {

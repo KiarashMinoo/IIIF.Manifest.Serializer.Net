@@ -1,33 +1,33 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <RootNamespace>IIIF.Manifests.Serializer.Tests</RootNamespace>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>IIIF.Manifests.Serializer.Tests</RootNamespace>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit" />
-    <PackageReference Include="xunit.runner.visualstudio">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <!-- AwesomeAssertions, not FluentAssertions: FluentAssertions 8+ relicensed to a paid
-         commercial model; AwesomeAssertions is the Apache-2.0 drop-in fork by its original author. -->
-    <PackageReference Include="AwesomeAssertions" />
-    <PackageReference Include="Newtonsoft.Json" />
-    <PackageReference Include="coverlet.collector">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+        <PackageReference Include="xunit"/>
+        <PackageReference Include="xunit.runner.visualstudio">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <!-- AwesomeAssertions, not FluentAssertions: FluentAssertions 8+ relicensed to a paid
+             commercial model; AwesomeAssertions is the Apache-2.0 drop-in fork by its original author. -->
+        <PackageReference Include="AwesomeAssertions"/>
+        <PackageReference Include="Newtonsoft.Json"/>
+        <PackageReference Include="coverlet.collector">
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\examples\IIIF.Manifest.Serializer.Net.Cookbook\IIIF.Manifest.Serializer.Net.Cookbook.csproj" />
-    <ProjectReference Include="..\..\examples\IIIF.Manifest.Serializer.Net.Examples\IIIF.Manifest.Serializer.Net.Examples.csproj" />
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj" />
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
-    <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj" />
-    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\examples\IIIF.Manifest.Serializer.Net.Cookbook\IIIF.Manifest.Serializer.Net.Cookbook.csproj"/>
+        <ProjectReference Include="..\..\examples\IIIF.Manifest.Serializer.Net.Examples\IIIF.Manifest.Serializer.Net.Examples.csproj"/>
+        <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.Georeference\IIIF.Manifest.Serializer.Net.Georeference.csproj"/>
+        <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.NavPlace\IIIF.Manifest.Serializer.Net.NavPlace.csproj"/>
+        <ProjectReference Include="..\..\extensions\IIIF.Manifest.Serializer.Net.TextGranularity\IIIF.Manifest.Serializer.Net.TextGranularity.csproj"/>
+        <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj"/>
+    </ItemGroup>
 
 </Project>

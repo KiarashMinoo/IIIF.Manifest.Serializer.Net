@@ -1,7 +1,5 @@
-using System.Collections.Generic;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Service;
 using IIIF.Manifests.Serializer.Shared.Trackable;
@@ -10,8 +8,8 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 
 /// <summary>
-/// One suggestion in a <see cref="TermPageResponse"/> - the autocomplete response body. Only
-/// <see cref="Value"/> is required; a bare <c>{"value": "..."}</c> is a valid minimal Term.
+///     One suggestion in a <see cref="TermPageResponse" /> - the autocomplete response body. Only
+///     <see cref="Value" /> is required; a bare <c>{"value": "..."}</c> is a valid minimal Term.
 /// </summary>
 [SearchAPI("2.0")]
 public class SearchTerm : TrackableObject<SearchTerm>
@@ -22,6 +20,12 @@ public class SearchTerm : TrackableObject<SearchTerm>
     public const string LabelJName = "label";
     public const string LanguageJName = "language";
     public const string ServiceJName = "service";
+
+    [JsonConstructor]
+    public SearchTerm(string value)
+    {
+        Value = value;
+    }
 
     [JsonProperty(TypeJName)]
     public string? Type
@@ -67,12 +71,6 @@ public class SearchTerm : TrackableObject<SearchTerm>
         private set => SetElementValue(value);
     }
 
-    [JsonConstructor]
-    public SearchTerm(string value)
-    {
-        Value = value;
-    }
-
     public SearchTerm SetType(string type)
     {
         Type = type;
@@ -85,7 +83,10 @@ public class SearchTerm : TrackableObject<SearchTerm>
         return this;
     }
 
-    public SearchTerm SetLabel(string label) => SetElementValue(x => x.Label, (IReadOnlyCollection<Label>)[new Label(label)]);
+    public SearchTerm SetLabel(string label)
+    {
+        return SetElementValue(x => x.Label, (IReadOnlyCollection<Label>)[new Label(label)]);
+    }
 
     public SearchTerm SetLanguage(string language)
     {

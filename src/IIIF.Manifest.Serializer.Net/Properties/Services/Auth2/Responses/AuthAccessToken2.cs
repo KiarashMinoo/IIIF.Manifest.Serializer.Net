@@ -5,8 +5,8 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 
 /// <summary>
-/// The successful <c>postMessage</c> response an <see cref="AuthAccessTokenService2"/> sends back
-/// to the client - carries the opaque access token the client then sends to a probe service.
+///     The successful <c>postMessage</c> response an <see cref="AuthAccessTokenService2" /> sends back
+///     to the client - carries the opaque access token the client then sends to a probe service.
 /// </summary>
 [AuthAPI("2.0")]
 public class AuthAccessToken2 : TrackableObject<AuthAccessToken2>
@@ -17,6 +17,15 @@ public class AuthAccessToken2 : TrackableObject<AuthAccessToken2>
     public const string MessageIdJName = "messageId";
     public const string AccessTokenJName = "accessToken";
     public const string ExpiresInJName = "expiresIn";
+
+    [JsonConstructor]
+    public AuthAccessToken2(string messageId, string accessToken)
+    {
+        Context = DefaultContext;
+        Type = "AuthAccessToken2";
+        MessageId = messageId;
+        AccessToken = accessToken;
+    }
 
     [JsonProperty(ContextJName)]
     public string Context
@@ -51,15 +60,6 @@ public class AuthAccessToken2 : TrackableObject<AuthAccessToken2>
     {
         get => GetElementValue(x => x.ExpiresIn);
         private set => SetElementValue(value);
-    }
-
-    [JsonConstructor]
-    public AuthAccessToken2(string messageId, string accessToken)
-    {
-        Context = DefaultContext;
-        Type = "AuthAccessToken2";
-        MessageId = messageId;
-        AccessToken = accessToken;
     }
 
     public AuthAccessToken2 SetExpiresIn(int expiresIn)

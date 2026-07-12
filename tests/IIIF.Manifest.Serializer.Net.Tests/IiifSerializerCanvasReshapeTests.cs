@@ -1,14 +1,15 @@
 using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
+using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 1 (SDK_VERSIONING_GUIDE.md): IiifSerializer round-trips through the reshaped
-/// Canvas (Items-native, generalized to Video/otherContent-as-annotations, not just Image/Audio).
+///     Milestone 1 (SDK_VERSIONING_GUIDE.md): IiifSerializer round-trips through the reshaped
+///     Canvas (Items-native, generalized to Video/otherContent-as-annotations, not just Image/Audio).
 /// </summary>
 public class IiifSerializerCanvasReshapeTests
 {
@@ -35,7 +36,7 @@ public class IiifSerializerCanvasReshapeTests
     public void Serialize_Should_WriteCanvasAnnotationsAsAnnotationPageReferences()
     {
         var canvas = new Canvas("https://example.org/canvas/1", new Label("Page 1"), 1000, 800);
-        canvas.AddAnnotationPageReference(new Nodes.Contents.Annotation.AnnotationPage("https://example.org/annotation-list/transcript"));
+        canvas.AddAnnotationPageReference(new AnnotationPage("https://example.org/annotation-list/transcript"));
 
         var manifest = new Manifest("https://example.org/manifest", new Label("Transcript Example"));
         manifest.AddItem(canvas);
@@ -53,7 +54,7 @@ public class IiifSerializerCanvasReshapeTests
     public void ThreeDotOhConstructedCanvas_Should_SerializeAsStructurallyValidLegacyV2Json()
     {
         var canvas = new Canvas("https://example.org/canvas/1", new Label("Page 1"), 1000, 800);
-        var resource = new Nodes.Contents.Image.Resource.ImageResource("https://example.org/image.png", "image/png").SetHeight(1000).SetWidth(800);
+        var resource = new ImageResource("https://example.org/image.png", "image/png").SetHeight(1000).SetWidth(800);
         canvas.AddAnnotation(new Annotation("https://example.org/annotation/1", resource, canvas.Id));
 
         var manifest = new Manifest("https://example.org/manifest", new Label("Single Image Example"));

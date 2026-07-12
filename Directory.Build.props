@@ -1,42 +1,42 @@
 <Project>
-  <PropertyGroup Label="Versioning">
-    <Version>3.0.1</Version>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);1591;CS0067</NoWarn>
-    <Configurations>Debug;Release</Configurations>
-    <LangVersion>latestmajor</LangVersion>
-    <Platforms>AnyCPU</Platforms>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DebugSymbols>false</DebugSymbols>
-    <DebugType>None</DebugType>
-    <DefineConstants />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
-  <PropertyGroup Label="nuget">
-    <IsPackable>true</IsPackable>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Kiarash Minoo, IIIF Manifest Serializer</Authors>
-    <Company>Kiarash Minoo</Company>
-    <Product>IIIF Manifest Serializer .NET</Product>
-    <Description>Version-aware IIIF Presentation API manifest serializer using Newtonsoft.Json.</Description>    
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-    <Copyright>Copyright (c) Kiarash Minoo</Copyright>
-  </PropertyGroup>
-  <ItemGroup Condition="'$(IsPackable)' == 'true'">
-    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
+    <PropertyGroup Label="Versioning">
+        <Version>3.0.1</Version>
+    </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>Library</OutputType>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591;CS0067</NoWarn>
+        <Configurations>Debug;Release</Configurations>
+        <LangVersion>latestmajor</LangVersion>
+        <Platforms>AnyCPU</Platforms>
+        <PlatformTarget>AnyCPU</PlatformTarget>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)'=='Release'">
+        <DebugSymbols>false</DebugSymbols>
+        <DebugType>None</DebugType>
+        <DefineConstants/>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+        <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+    <PropertyGroup Label="nuget">
+        <IsPackable>true</IsPackable>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>Kiarash Minoo, IIIF Manifest Serializer</Authors>
+        <Company>Kiarash Minoo</Company>
+        <Product>IIIF Manifest Serializer .NET</Product>
+        <Description>Version-aware IIIF Presentation API manifest serializer using Newtonsoft.Json.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <Copyright>Copyright (c) Kiarash Minoo</Copyright>
+    </PropertyGroup>
+    <ItemGroup Condition="'$(IsPackable)' == 'true'">
+        <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>

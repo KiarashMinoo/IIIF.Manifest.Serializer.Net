@@ -1,4 +1,3 @@
-using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
@@ -10,27 +9,30 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0001-0011: the simplest single-canvas image/audio/video manifests, plus the
-/// language/rights/format basics and the "book" viewing-direction and paging-behavior variants.
+///     Recipes 0001-0011: the simplest single-canvas image/audio/video manifests, plus the
+///     language/rights/format basics and the "book" viewing-direction and paging-behavior variants.
 /// </summary>
 internal sealed class FoundationRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0001: Simplest Manifest - Single Image", Recipe0001),
-        new("Recipe 0002: Simplest Manifest - Single Audio", Recipe0002),
-        new("Recipe 0003: Simplest Manifest - Single Video", Recipe0003),
-        new("Recipe 0004: Canvas Size and Image Size Differ", Recipe0004),
-        new("Recipe 0005: Support IIIF Image Deep Zoom", Recipe0005),
-        new("Recipe 0006: Simplest Manifest with Multiple Language Values", Recipe0006),
-        new("Recipe 0007: String Formats (HTML in Descriptive Properties)", Recipe0007),
-        new("Recipe 0008: Rights Statement", Recipe0008),
-        new("Recipe 0009: Simplest Book", Recipe0009),
-        new("Recipe 0010: Book with Right-to-Left Viewing Direction", Recipe0010Rtl),
-        new("Recipe 0010: Diary with Top-to-Bottom Viewing Direction", Recipe0010Ttb),
-        new("Recipe 0011: Continuous Scroll Behavior", Recipe0011Continuous),
-        new("Recipe 0011: Individuals Behavior", Recipe0011Individuals)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0001: Simplest Manifest - Single Image", Recipe0001),
+            new("Recipe 0002: Simplest Manifest - Single Audio", Recipe0002),
+            new("Recipe 0003: Simplest Manifest - Single Video", Recipe0003),
+            new("Recipe 0004: Canvas Size and Image Size Differ", Recipe0004),
+            new("Recipe 0005: Support IIIF Image Deep Zoom", Recipe0005),
+            new("Recipe 0006: Simplest Manifest with Multiple Language Values", Recipe0006),
+            new("Recipe 0007: String Formats (HTML in Descriptive Properties)", Recipe0007),
+            new("Recipe 0008: Rights Statement", Recipe0008),
+            new("Recipe 0009: Simplest Book", Recipe0009),
+            new("Recipe 0010: Book with Right-to-Left Viewing Direction", Recipe0010Rtl),
+            new("Recipe 0010: Diary with Top-to-Bottom Viewing Direction", Recipe0010Ttb),
+            new("Recipe 0011: Continuous Scroll Behavior", Recipe0011Continuous),
+            new("Recipe 0011: Individuals Behavior", Recipe0011Individuals)
+        ];
+    }
 
     // ---- 0001-mvm-image -----------------------------------------------------------------------
 
@@ -134,7 +136,9 @@ internal sealed class FoundationRecipes : IRecipeSet
         manifest.AddSummary(new Description("<p>Picture taken by the <a href=\"https://github.com/glenrobson\">IIIF Technical Coordinator</a></p>").SetLanguage("en"));
         manifest.SetRights(new Rights("http://creativecommons.org/licenses/by-sa/3.0/"));
         manifest.SetRequiredStatement(new RequiredStatement(new Label("Attribution"),
-            new Description("<span>Glen Robson, IIIF Technical Coordinator. <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a> <a href=\"https://creativecommons.org/licenses/by-sa/3.0\" title=\"CC BY-SA 3.0\"><img src=\"https://licensebuttons.net/l/by-sa/3.0/88x31.png\"/></a></span>").SetLanguage("en")));
+            new Description(
+                    "<span>Glen Robson, IIIF Technical Coordinator. <a href=\"https://creativecommons.org/licenses/by-sa/3.0\">CC BY-SA 3.0</a> <a href=\"https://creativecommons.org/licenses/by-sa/3.0\" title=\"CC BY-SA 3.0\"><img src=\"https://licensebuttons.net/l/by-sa/3.0/88x31.png\"/></a></span>")
+                .SetLanguage("en")));
 
         var canvas = NewCanvas("0008-rights", "p1", null, 3024, 4032);
         canvas.AddAnnotation(PaintingImage(canvas, "0008-rights", "p0001-image", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId));

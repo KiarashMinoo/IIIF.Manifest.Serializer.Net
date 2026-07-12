@@ -10,11 +10,11 @@ public class GeometryType : ValuableItem<GeometryType>
     {
     }
 
-    public static GeometryType Point => new GeometryType(nameof(Point));
-    public static GeometryType MultiPoint => new GeometryType(nameof(MultiPoint));
-    public static GeometryType LineString => new GeometryType(nameof(LineString));
-    public static GeometryType MultiLineString => new GeometryType(nameof(MultiLineString));
-    public static GeometryType Polygon => new GeometryType(nameof(Polygon));
-    public static GeometryType MultiPolygon => new GeometryType(nameof(MultiPolygon));
-    public static GeometryType GeometryCollection => new GeometryType(nameof(GeometryCollection));
+    public static GeometryType Point => new(nameof(Point));
+    public static GeometryType MultiPoint => new(nameof(MultiPoint));
+    public static GeometryType LineString => new(nameof(LineString));
+    public static GeometryType MultiLineString => new(nameof(MultiLineString));
+    public static GeometryType Polygon => new(nameof(Polygon));
+    public static GeometryType MultiPolygon => new(nameof(MultiPolygon));
+    public static GeometryType GeometryCollection => new(nameof(GeometryCollection));
 }

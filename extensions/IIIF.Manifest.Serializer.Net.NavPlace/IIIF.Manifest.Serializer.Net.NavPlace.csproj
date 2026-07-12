@@ -1,34 +1,34 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <PackageId>IIIF.Manifest.Serializer.Net.NavPlace</PackageId>
-    <Title>IIIF Manifest Serializer .NET navPlace Extension</Title>
-    <Description>navPlace extension models and serializers for geographic location metadata in IIIF Presentation API manifests.</Description>
-    <PackageTags>iiif;manifest;presentation-api;navplace;geojson;geographic;location</PackageTags>
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="GeometryJsonConverter.cs">
-      <DependentUpon>Geometry.cs</DependentUpon>
-    </Compile>
-    <Compile Update="GeometryType.cs">
-      <DependentUpon>Geometry.cs</DependentUpon>
-    </Compile>
-    <Compile Update="CoordinateItemJsonConverter.cs">
-      <DependentUpon>CoordinateItem.cs</DependentUpon>
-    </Compile>
-    <Compile Update="CoordinateItem.cs">
-      <DependentUpon>Geometry.cs</DependentUpon>
-    </Compile>
-    <Compile Update="ICoordinateItemSupport.cs">
-      <DependentUpon>Geometry.cs</DependentUpon>
-    </Compile>
-    <Compile Update="FeatureProperties.cs">
-      <DependentUpon>Feature.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <PropertyGroup>
+        <PackageId>IIIF.Manifest.Serializer.Net.NavPlace</PackageId>
+        <Title>IIIF Manifest Serializer .NET navPlace Extension</Title>
+        <Description>navPlace extension models and serializers for geographic location metadata in IIIF Presentation API manifests.</Description>
+        <PackageTags>iiif;manifest;presentation-api;navplace;geojson;geographic;location</PackageTags>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="Newtonsoft.Json"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\IIIF.Manifest.Serializer.Net\IIIF.Manifest.Serializer.Net.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="GeometryJsonConverter.cs">
+            <DependentUpon>Geometry.cs</DependentUpon>
+        </Compile>
+        <Compile Update="GeometryType.cs">
+            <DependentUpon>Geometry.cs</DependentUpon>
+        </Compile>
+        <Compile Update="CoordinateItemJsonConverter.cs">
+            <DependentUpon>CoordinateItem.cs</DependentUpon>
+        </Compile>
+        <Compile Update="CoordinateItem.cs">
+            <DependentUpon>Geometry.cs</DependentUpon>
+        </Compile>
+        <Compile Update="ICoordinateItemSupport.cs">
+            <DependentUpon>Geometry.cs</DependentUpon>
+        </Compile>
+        <Compile Update="FeatureProperties.cs">
+            <DependentUpon>Feature.cs</DependentUpon>
+        </Compile>
+    </ItemGroup>
 </Project>

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace IIIF.Manifests.Serializer.Extensions;
 
 public interface ICoordinateItemSupport<out TCoordinateItemSupport>

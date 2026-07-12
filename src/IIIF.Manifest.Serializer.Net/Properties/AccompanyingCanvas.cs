@@ -4,7 +4,7 @@ using IIIF.Manifests.Serializer.Shared;
 namespace IIIF.Manifests.Serializer.Properties;
 
 /// <summary>
-/// IIIF AccompanyingCanvas property - references a canvas that accompanies the manifest.
+///     IIIF AccompanyingCanvas property - references a canvas that accompanies the manifest.
 /// </summary>
 [PresentationAPI("2.0")]
 public class AccompanyingCanvas(string id) : BaseItem<AccompanyingCanvas>(id, "sc:Canvas");

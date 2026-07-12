@@ -13,24 +13,27 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0299-0346: cropping an image region, linking an externally-referenced AnnotationPage
-/// back to its Manifest, a paginated AnnotationCollection (both the Manifest side and the
-/// standalone document), navPlace/navDate together on a Collection's members, a per-layer
-/// annotation on one item of a Choice, and a multilingual Choice used as an annotation body.
+///     Recipes 0299-0346: cropping an image region, linking an externally-referenced AnnotationPage
+///     back to its Manifest, a paginated AnnotationCollection (both the Manifest side and the
+///     standalone document), navPlace/navDate together on a Collection's members, a per-layer
+///     annotation on one item of a Choice, and a multilingual Choice used as an annotation body.
 /// </summary>
 internal sealed class AnnotationCollectionRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0299: Cropping an Image (Region)", Recipe0299),
-        new("Recipe 0306: Linking Annotations to Manifests", Recipe0306),
-        new("Recipe 0306: Referenced AnnotationPage", Recipe0306AnnotationPage),
-        new("Recipe 0309: Annotation Collection", Recipe0309),
-        new("Recipe 0309: Standalone AnnotationCollection Document", Recipe0309Collection),
-        new("Recipe 0318: navPlace and navDate on a Collection", Recipe0318),
-        new("Recipe 0326: Annotating a Choice of Images", Recipe0326),
-        new("Recipe 0346: Multilingual Annotation Body", Recipe0346)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0299: Cropping an Image (Region)", Recipe0299),
+            new("Recipe 0306: Linking Annotations to Manifests", Recipe0306),
+            new("Recipe 0306: Referenced AnnotationPage", Recipe0306AnnotationPage),
+            new("Recipe 0309: Annotation Collection", Recipe0309),
+            new("Recipe 0309: Standalone AnnotationCollection Document", Recipe0309Collection),
+            new("Recipe 0318: navPlace and navDate on a Collection", Recipe0318),
+            new("Recipe 0326: Annotating a Choice of Images", Recipe0326),
+            new("Recipe 0346: Multilingual Annotation Body", Recipe0346)
+        ];
+    }
 
     // ---- 0299-region ----------------------------------------------------------------------------
 
@@ -53,7 +56,7 @@ internal sealed class AnnotationCollectionRecipes : IRecipeSet
     {
         var manifest = NewManifest("0306-linking-annotations-to-manifests", "Picture of Göttingen taken during the 2019 IIIF Conference");
         var canvas = NewCanvas("0306-linking-annotations-to-manifests", "canvas-1", null, 3024, 4032, "canvas-1");
-        canvas.AddAnnotation(PaintingImage(canvas, "0306-linking-annotations-to-manifests", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, idIsFull: true));
+        canvas.AddAnnotation(PaintingImage(canvas, "0306-linking-annotations-to-manifests", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, true));
 
         // The recipe's annotationpage.json is a separate, externally-referenced resource (see
         // Recipe0306AnnotationPage) - the canvas itself only carries the {id,type} stub.
@@ -64,7 +67,7 @@ internal sealed class AnnotationCollectionRecipes : IRecipeSet
     private static AnnotationPage Recipe0306AnnotationPage()
     {
         var target = new AnnotationTarget(Id("0306-linking-annotations-to-manifests", "canvas-1"), "Canvas")
-            .SetPartOf(Id("0306-linking-annotations-to-manifests", "manifest.json"), "Manifest")
+            .SetPartOf(Id("0306-linking-annotations-to-manifests", "manifest.json"))
             .SetSelector(FragmentSelector.ForRegion(300, 800, 1200, 1200));
         var comment = new Annotation(Id("0306-linking-annotations-to-manifests", "canvas-1/annopage-2/anno-1"),
             new TextualBody("Der Gänseliesel-Brunnen").SetLanguage("de").SetFormat("text/plain"), target).SetMotivation("commenting");
@@ -88,24 +91,26 @@ internal sealed class AnnotationCollectionRecipes : IRecipeSet
         canvas1.AddAnnotation(PaintingImage(canvas1, "0309-annotation-collection", "p1",
             "https://iiif.io/api/image/3.0/example/reference/4ce82cef49fb16798f4c2440307c3d6f-newspaper-p1/full/max/0/default.jpg", "image/jpeg", null, null,
             "https://iiif.io/api/image/3.0/example/reference/4ce82cef49fb16798f4c2440307c3d6f-newspaper-p1"));
-        var page1 = new AnnotationPage(p1Id).AddPartOf(new Properties.PartOf(collectionId, "AnnotationCollection")).SetNext(p2Id);
+        var page1 = new AnnotationPage(p1Id).AddPartOf(new PartOf(collectionId, "AnnotationCollection")).SetNext(p2Id);
         canvas1.AddAnnotationPageReference(page1);
 
         var canvas2 = new Canvas(Id("0309-annotation-collection", "canvas/p2"), new Label("p. 2", "none"), 5000, 3602);
         canvas2.AddAnnotation(PaintingImage(canvas2, "0309-annotation-collection", "p2",
             "https://iiif.io/api/image/3.0/example/reference/4ce82cef49fb16798f4c2440307c3d6f-newspaper-p2/full/max/0/default.jpg", "image/jpeg", null, null,
             "https://iiif.io/api/image/3.0/example/reference/4ce82cef49fb16798f4c2440307c3d6f-newspaper-p2"));
-        var page2 = new AnnotationPage(p2Id).AddPartOf(new Properties.PartOf(collectionId, "AnnotationCollection")).SetPrev(p1Id);
+        var page2 = new AnnotationPage(p2Id).AddPartOf(new PartOf(collectionId, "AnnotationCollection")).SetPrev(p1Id);
         canvas2.AddAnnotationPageReference(page2);
 
         return manifest.AddItem(canvas1).AddItem(canvas2);
     }
 
-    private static AnnotationCollection Recipe0309Collection() =>
-        new AnnotationCollection(Id("0309-annotation-collection", "anno_coll.json"), new Label("Newspaper layout markup"))
+    private static AnnotationCollection Recipe0309Collection()
+    {
+        return new AnnotationCollection(Id("0309-annotation-collection", "anno_coll.json"), new Label("Newspaper layout markup"))
             .SetTotal(8)
             .SetFirst(Id("0309-annotation-collection", "anno_p1.json"))
             .SetLast(Id("0309-annotation-collection", "anno_p2.json"));
+    }
 
     // ---- 0318-navPlace-navDate (Collection) ---------------------------------------------------------
 

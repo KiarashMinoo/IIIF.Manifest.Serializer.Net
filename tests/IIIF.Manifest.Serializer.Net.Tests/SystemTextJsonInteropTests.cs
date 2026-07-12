@@ -9,13 +9,13 @@ using STJ = System.Text.Json;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// A developer who serializes/deserializes a Manifest/Collection/AnnotationCollection/ContentState
-/// directly with <c>System.Text.Json</c> (e.g. because ASP.NET Core defaults to it, or they just
-/// forgot to call <see cref="IiifSerializer"/>) must still get correct IIIF JSON, not whatever
-/// System.Text.Json's own reflection-based default would produce against types that only carry
-/// Newtonsoft attributes. Each of the 4 top-level document types carries a
-/// <c>[System.Text.Json.Serialization.JsonConverter]</c> that bridges to this SDK's existing
-/// Newtonsoft-based read/write logic, so no consumer configuration is required.
+///     A developer who serializes/deserializes a Manifest/Collection/AnnotationCollection/ContentState
+///     directly with <c>System.Text.Json</c> (e.g. because ASP.NET Core defaults to it, or they just
+///     forgot to call <see cref="IiifSerializer" />) must still get correct IIIF JSON, not whatever
+///     System.Text.Json's own reflection-based default would produce against types that only carry
+///     Newtonsoft attributes. Each of the 4 top-level document types carries a
+///     <c>[System.Text.Json.Serialization.JsonConverter]</c> that bridges to this SDK's existing
+///     Newtonsoft-based read/write logic, so no consumer configuration is required.
 /// </summary>
 public class SystemTextJsonInteropTests
 {

@@ -6,9 +6,9 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 10 (SDK_VERSIONING_GUIDE.md §10, finding 2): IIIF Content State API 1.0 was 0%
-/// modeled before this milestone - no way to build/parse the deep-linking "content state" object,
-/// nor to encode/decode the base64url string real viewers pass around via `iiif-content`.
+///     Milestone 10 (SDK_VERSIONING_GUIDE.md §10, finding 2): IIIF Content State API 1.0 was 0%
+///     modeled before this milestone - no way to build/parse the deep-linking "content state" object,
+///     nor to encode/decode the base64url string real viewers pass around via `iiif-content`.
 /// </summary>
 public class ContentStateTests
 {
@@ -117,7 +117,7 @@ public class ContentStateTests
     public void ContentStateCodec_Should_RoundTripThroughBase64UrlEncoding()
     {
         var contentState = new ContentState(
-            new ContentStateTarget("https://example.org/manifest/canvas1", "Canvas").SetPointSelector(10.5))
+                new ContentStateTarget("https://example.org/manifest/canvas1", "Canvas").SetPointSelector(10.5))
             .SetId("https://example.org/content-state/1");
 
         var encoded = ContentStateCodec.Encode(contentState);

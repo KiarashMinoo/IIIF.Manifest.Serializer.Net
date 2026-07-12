@@ -11,20 +11,23 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0035-0045: variations on how images are painted onto a Canvas - a foldout sequence
-/// with a non-paged behavior, a composite of a full image plus a cropped detail, an Image API
-/// rotation delivered either as a service parameter or via CSS, and CSS-styled annotations.
+///     Recipes 0035-0045: variations on how images are painted onto a Canvas - a foldout sequence
+///     with a non-paged behavior, a composite of a full image plus a cropped detail, an Image API
+///     rotation delivered either as a service parameter or via CSS, and CSS-styled annotations.
 /// </summary>
 internal sealed class MediaVariationRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0035: Foldouts", Recipe0035),
-        new("Recipe 0036: Composition From Multiple Images", Recipe0036),
-        new("Recipe 0040: Image Rotation Service", Recipe0040Service),
-        new("Recipe 0040: Image Rotation via CSS", Recipe0040Css),
-        new("Recipe 0045: Simple Annotation with CSS Styling", Recipe0045)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0035: Foldouts", Recipe0035),
+            new("Recipe 0036: Composition From Multiple Images", Recipe0036),
+            new("Recipe 0040: Image Rotation Service", Recipe0040Service),
+            new("Recipe 0040: Image Rotation via CSS", Recipe0040Css),
+            new("Recipe 0045: Simple Annotation with CSS Styling", Recipe0045)
+        ];
+    }
 
     // ---- 0035-foldouts --------------------------------------------------------------------------
 
@@ -50,10 +53,7 @@ internal sealed class MediaVariationRecipes : IRecipeSet
             var (suffix, label, height, width, behavior) = pages[i];
             var n = i + 1;
             var canvas = NewCanvas("0035-foldouts", $"{n}", label, height, width);
-            if (behavior is not null)
-            {
-                canvas.AddBehavior(new Behavior(behavior));
-            }
+            if (behavior is not null) canvas.AddBehavior(new Behavior(behavior));
 
             var imageId = $"https://iiif.io/api/image/3.0/example/reference/0a469c27256eda739d43124cc448a3ba-{suffix}/full/max/0/default.jpg";
             canvas.AddAnnotation(PaintingImage(canvas, "0035-foldouts", $"000{n}-image", imageId, "image/jpeg", height, width,
@@ -69,7 +69,7 @@ internal sealed class MediaVariationRecipes : IRecipeSet
     private static Manifest Recipe0036()
     {
         var manifest = NewManifest("0036-composition-from-multiple-images", "Folio from Grandes Chroniques de France, ca. 1460");
-        var canvas = NewCanvas("0036-composition-from-multiple-images", "p1", null, 5412, 7216, labelOverride: "f. 033v-034r [Chilpéric Ier tue Galswinthe, se remarie et est assassiné]", labelLanguage: "none");
+        var canvas = NewCanvas("0036-composition-from-multiple-images", "p1", null, 5412, 7216, "f. 033v-034r [Chilpéric Ier tue Galswinthe, se remarie et est assassiné]", "none");
         canvas.AddAnnotation(PaintingImage(canvas, "0036-composition-from-multiple-images", "p0001-image",
             "https://iiif.io/api/image/3.0/example/reference/899da506920824588764bc12b10fc800-bnf_chateauroux/full/max/0/default.jpg", "image/jpeg", 5412, 7216,
             "https://iiif.io/api/image/3.0/example/reference/899da506920824588764bc12b10fc800-bnf_chateauroux"));

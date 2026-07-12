@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
 
 /// <summary>
-/// A W3C "PointSelector" - selects either a spatial point (<see cref="X"/>/<see cref="Y"/>, pixel
-/// coordinates on an image) or a temporal point (<see cref="T"/>, seconds into an AV recording).
-/// The cookbook uses the same <c>type</c> value for both shapes; only the populated fields differ.
+///     A W3C "PointSelector" - selects either a spatial point (<see cref="X" />/<see cref="Y" />, pixel
+///     coordinates on an image) or a temporal point (<see cref="T" />, seconds into an AV recording).
+///     The cookbook uses the same <c>type</c> value for both shapes; only the populated fields differ.
 /// </summary>
 public class PointSelector : TrackableObject<PointSelector>, ISelector
 {
@@ -15,11 +15,10 @@ public class PointSelector : TrackableObject<PointSelector>, ISelector
     public const string YJName = "y";
     public const string TJName = "t";
 
-    [JsonProperty(TypeJName)]
-    public string Type
+    [JsonConstructor]
+    private PointSelector()
     {
-        get => GetElementValue(x => x.Type) ?? "PointSelector";
-        private set => SetElementValue(value);
+        Type = "PointSelector";
     }
 
     [JsonProperty(XJName)]
@@ -43,13 +42,20 @@ public class PointSelector : TrackableObject<PointSelector>, ISelector
         private set => SetElementValue(value);
     }
 
-    [JsonConstructor]
-    private PointSelector()
+    [JsonProperty(TypeJName)]
+    public string Type
     {
-        Type = "PointSelector";
+        get => GetElementValue(x => x.Type) ?? "PointSelector";
+        private set => SetElementValue(value);
     }
 
-    public static PointSelector ForSpatialPoint(int x, int y) => new() { X = x, Y = y };
+    public static PointSelector ForSpatialPoint(int x, int y)
+    {
+        return new PointSelector { X = x, Y = y };
+    }
 
-    public static PointSelector ForTemporalPoint(double t) => new() { T = t };
+    public static PointSelector ForTemporalPoint(double t)
+    {
+        return new PointSelector { T = t };
+    }
 }

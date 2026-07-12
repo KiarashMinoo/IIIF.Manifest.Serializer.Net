@@ -1,4 +1,3 @@
-using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
@@ -21,10 +20,7 @@ public static partial class IiifSerializer
         WriteV3Behavior(structure, obj);
 
         var items = structure.Items.Select(WriteV3RangeItem).ToList();
-        if (items.Count > 0)
-        {
-            obj["items"] = new JArray(items);
-        }
+        if (items.Count > 0) obj["items"] = new JArray(items);
 
         WriteV3NodeExtras(structure, obj);
 
@@ -47,7 +43,6 @@ public static partial class IiifSerializer
         ReadV3Behavior(obj, structure);
 
         foreach (var itemObj in obj["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
-        {
             switch ((string?)itemObj["type"])
             {
                 case "Range":
@@ -57,7 +52,6 @@ public static partial class IiifSerializer
                     structure.AddItem(new CanvasReference(ReadRequiredString(itemObj, "id")));
                     break;
             }
-        }
 
         ReadV3NodeExtras(obj, structure);
 

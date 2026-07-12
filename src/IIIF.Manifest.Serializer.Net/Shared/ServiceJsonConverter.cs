@@ -1,6 +1,4 @@
-﻿using System;
-using IIIF.Manifests.Serializer;
-using IIIF.Manifests.Serializer.Helpers;
+﻿using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Shared.Service;
@@ -11,9 +9,9 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Shared;
 
 /// <summary>
-/// JSON converter for deserializing IIIF service objects.
-/// Supports multiple service types including Image API, Auth API, Search API, Discovery API, and Content State API.
-/// Automatically detects service type based on @type field or profile property.
+///     JSON converter for deserializing IIIF service objects.
+///     Supports multiple service types including Image API, Auth API, Search API, Discovery API, and Content State API.
+///     Automatically detects service type based on @type field or profile property.
 /// </summary>
 public class ServiceJsonConverter : JsonConverter<IBaseService>
 {
@@ -33,27 +31,10 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
         ContractResolver = new LeafContractResolver()
     });
 
-    private sealed class LeafContractResolver : IIIFJsonContractResolver
-    {
-        protected override JsonConverter? ResolveContractConverter(Type objectType)
-        {
-            var converter = base.ResolveContractConverter(objectType);
-
-            // Only suppress the converter for concrete leaf types (which inherit it via the
-            // interface-attribute quirk noted above, and would otherwise recurse into
-            // ServiceJsonConverter.ReadJson/WriteJson for themselves). Auth 2.0's services nest
-            // *other* services polymorphically (e.g. AuthProbeService2.Service holding
-            // AuthAccessService2), so when objectType is the interface itself, the converter must
-            // stay active to dispatch to the right concrete type - otherwise Newtonsoft tries to
-            // instantiate IBaseService directly and throws.
-            return converter is ServiceJsonConverter && objectType != typeof(IBaseService) ? null : converter;
-        }
-    }
-
     /// <summary>
-    /// Reads JSON and deserializes it into an appropriate service object.
-    /// Handles both single service objects and arrays of services.
-    /// For arrays, returns the first successfully deserialized service.
+    ///     Reads JSON and deserializes it into an appropriate service object.
+    ///     Handles both single service objects and arrays of services.
+    ///     For arrays, returns the first successfully deserialized service.
     /// </summary>
     /// <param name="reader">The JSON reader.</param>
     /// <param name="objectType">The type of object to deserialize.</param>
@@ -69,7 +50,6 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
         var jToken = JToken.Load(reader);
 
         if (jToken is JArray jArray)
-        {
             // Handle array of services - take the first valid one
             foreach (var serviceToken in jArray)
             {
@@ -81,21 +61,17 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
                     break;
                 }
             }
-        }
-        else if (jToken is JObject jObject)
-        {
-            service = DetectAndDeserializeService(jObject);
-        }
+        else if (jToken is JObject jObject) service = DetectAndDeserializeService(jObject);
 
         return service;
     }
 
     /// <summary>
-    /// Detects the service type from a JSON token and deserializes it into the appropriate service object.
-    /// Detection strategy:
-    /// 1. Check @type field for exact service type match
-    /// 2. If @type is not recognized, check profile field for pattern matching
-    /// 3. Fallback to ImageService if detection fails
+    ///     Detects the service type from a JSON token and deserializes it into the appropriate service object.
+    ///     Detection strategy:
+    ///     1. Check @type field for exact service type match
+    ///     2. If @type is not recognized, check profile field for pattern matching
+    ///     3. Fallback to ImageService if detection fails
     /// </summary>
     /// <param name="serviceToken">The JSON token representing a service.</param>
     /// <returns>A deserialized service object, or null if the service type cannot be determined.</returns>
@@ -145,7 +121,6 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
         {
             var profileValue = jProfile.ToString();
             if (profileValue.Contains("auth", StringComparison.OrdinalIgnoreCase))
-            {
                 try
                 {
                     return WithPrefixedIdType(serviceToken).ToObject<AuthService1>(LeafSerializer);
@@ -154,23 +129,13 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
                 {
                     // Not a valid Auth 1.0 shape either - continue to fallback.
                 }
-            }
             else if (profileValue.Contains("search", StringComparison.OrdinalIgnoreCase))
-            {
                 return WithUnprefixedIdType(serviceToken).ToObject<SearchService>(LeafSerializer);
-            }
             else if (profileValue.Contains("discovery", StringComparison.OrdinalIgnoreCase))
-            {
                 return WithUnprefixedIdType(serviceToken).ToObject<DiscoveryService>(LeafSerializer);
-            }
             else if (profileValue.Contains("content-state", StringComparison.OrdinalIgnoreCase))
-            {
                 return WithUnprefixedIdType(serviceToken).ToObject<ContentStateService>(LeafSerializer);
-            }
-            else if (profileValue.Contains("image", StringComparison.OrdinalIgnoreCase))
-            {
-                return WithPrefixedIdType(serviceToken).ToObject<Properties.Services.Service>(LeafSerializer);
-            }
+            else if (profileValue.Contains("image", StringComparison.OrdinalIgnoreCase)) return WithPrefixedIdType(serviceToken).ToObject<Properties.Services.Service>(LeafSerializer);
         }
 
         // Fallback: try to deserialize as the most common service type (ImageService)
@@ -186,16 +151,13 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
     }
 
     /// <summary>
-    /// Clones <paramref name="serviceToken"/> with its id/type keys normalized to the "@id"/"@type"
-    /// shape that BaseItem-derived leaf services (Image, Auth 1.0, Auth 2.0) bind their constructor
-    /// parameters against. A no-op when the token already uses that shape.
+    ///     Clones <paramref name="serviceToken" /> with its id/type keys normalized to the "@id"/"@type"
+    ///     shape that BaseItem-derived leaf services (Image, Auth 1.0, Auth 2.0) bind their constructor
+    ///     parameters against. A no-op when the token already uses that shape.
     /// </summary>
     private static JToken WithPrefixedIdType(JToken serviceToken)
     {
-        if (serviceToken is not JObject { } obj || obj["id"] is null && obj["type"] is null)
-        {
-            return serviceToken;
-        }
+        if (serviceToken is not JObject { } obj || (obj["id"] is null && obj["type"] is null)) return serviceToken;
 
         var clone = (JObject)obj.DeepClone();
         RenameIfPresent(clone, "id", "@id");
@@ -204,17 +166,14 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
     }
 
     /// <summary>
-    /// Clones <paramref name="serviceToken"/> with its id/type keys normalized to the unprefixed
-    /// "id"/"type" shape that services postdating Presentation 3.0 (Search, AutoComplete, Discovery,
-    /// Content State, Auth 2.0) bind their constructor parameters against. A no-op when the token
-    /// already uses that shape.
+    ///     Clones <paramref name="serviceToken" /> with its id/type keys normalized to the unprefixed
+    ///     "id"/"type" shape that services postdating Presentation 3.0 (Search, AutoComplete, Discovery,
+    ///     Content State, Auth 2.0) bind their constructor parameters against. A no-op when the token
+    ///     already uses that shape.
     /// </summary>
     private static JToken WithUnprefixedIdType(JToken serviceToken)
     {
-        if (serviceToken is not JObject { } obj || obj["@id"] is null && obj["@type"] is null)
-        {
-            return serviceToken;
-        }
+        if (serviceToken is not JObject { } obj || (obj["@id"] is null && obj["@type"] is null)) return serviceToken;
 
         var clone = (JObject)obj.DeepClone();
         RenameIfPresent(clone, "@id", "id");
@@ -224,18 +183,15 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
 
     private static void RenameIfPresent(JObject obj, string oldName, string newName)
     {
-        if (obj[oldName] is not { } value || obj[newName] is not null)
-        {
-            return;
-        }
+        if (obj[oldName] is not { } value || obj[newName] is not null) return;
 
         obj.Remove(oldName);
         obj[newName] = value;
     }
 
     /// <summary>
-    /// Writes a service object to JSON.
-    /// Delegates to the standard serializer to use each service type's own converter.
+    ///     Writes a service object to JSON.
+    ///     Delegates to the standard serializer to use each service type's own converter.
     /// </summary>
     /// <param name="writer">The JSON writer.</param>
     /// <param name="value">The service object to serialize.</param>
@@ -252,5 +208,22 @@ public class ServiceJsonConverter : JsonConverter<IBaseService>
         // serializer.Serialize(writer, value) would re-enter this method. Use LeafSerializer to write the
         // concrete object's own properties instead of recursing back into this converter.
         LeafSerializer.Serialize(writer, value);
+    }
+
+    private sealed class LeafContractResolver : IIIFJsonContractResolver
+    {
+        protected override JsonConverter? ResolveContractConverter(Type objectType)
+        {
+            var converter = base.ResolveContractConverter(objectType);
+
+            // Only suppress the converter for concrete leaf types (which inherit it via the
+            // interface-attribute quirk noted above, and would otherwise recurse into
+            // ServiceJsonConverter.ReadJson/WriteJson for themselves). Auth 2.0's services nest
+            // *other* services polymorphically (e.g. AuthProbeService2.Service holding
+            // AuthAccessService2), so when objectType is the interface itself, the converter must
+            // stay active to dispatch to the right concrete type - otherwise Newtonsoft tries to
+            // instantiate IBaseService directly and throws.
+            return converter is ServiceJsonConverter && objectType != typeof(IBaseService) ? null : converter;
+        }
     }
 }

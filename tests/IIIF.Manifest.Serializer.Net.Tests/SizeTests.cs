@@ -3,8 +3,8 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// <see cref="Size"/> (an IIIF Image API "sizes" array entry: a plain width/height pair) had zero
-/// test coverage.
+///     <see cref="Size" /> (an IIIF Image API "sizes" array entry: a plain width/height pair) had zero
+///     test coverage.
 /// </summary>
 public class SizeTests
 {

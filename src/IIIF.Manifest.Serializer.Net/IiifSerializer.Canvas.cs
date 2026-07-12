@@ -1,4 +1,3 @@
-using System.Linq;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Properties;
@@ -20,37 +19,19 @@ public static partial class IiifSerializer
 
         WriteV3Behavior(canvas, obj);
 
-        if (canvas.Height is not null)
-        {
-            obj["height"] = canvas.Height.Value;
-        }
+        if (canvas.Height is not null) obj["height"] = canvas.Height.Value;
 
-        if (canvas.Width is not null)
-        {
-            obj["width"] = canvas.Width.Value;
-        }
+        if (canvas.Width is not null) obj["width"] = canvas.Width.Value;
 
-        if (canvas.Duration is not null)
-        {
-            obj["duration"] = canvas.Duration.Value;
-        }
+        if (canvas.Duration is not null) obj["duration"] = canvas.Duration.Value;
 
-        if (canvas.PlaceholderCanvas is not null)
-        {
-            obj["placeholderCanvas"] = WriteV3Canvas(canvas.PlaceholderCanvas);
-        }
+        if (canvas.PlaceholderCanvas is not null) obj["placeholderCanvas"] = WriteV3Canvas(canvas.PlaceholderCanvas);
 
         var pages = canvas.Items.OfType<AnnotationPage>().Select(WriteV3AnnotationPage).ToList();
-        if (pages.Count > 0)
-        {
-            obj["items"] = new JArray(pages);
-        }
+        if (pages.Count > 0) obj["items"] = new JArray(pages);
 
         var annotationRefs = canvas.Annotations.Select(WriteV3AnnotationPageReference).ToList();
-        if (annotationRefs.Count > 0)
-        {
-            obj["annotations"] = new JArray(annotationRefs);
-        }
+        if (annotationRefs.Count > 0) obj["annotations"] = new JArray(annotationRefs);
 
         WriteV3NodeExtras(canvas, obj);
 
@@ -65,28 +46,15 @@ public static partial class IiifSerializer
 
         ReadV3Behavior(obj, canvas);
 
-        if ((double?)obj["duration"] is { } duration)
-        {
-            canvas.SetDuration(duration);
-        }
+        if ((double?)obj["duration"] is { } duration) canvas.SetDuration(duration);
 
-        if (obj["placeholderCanvas"] is JObject placeholderObj)
-        {
-            canvas.SetPlaceholderCanvas(ReadV3Canvas(placeholderObj));
-        }
+        if (obj["placeholderCanvas"] is JObject placeholderObj) canvas.SetPlaceholderCanvas(ReadV3Canvas(placeholderObj));
 
         foreach (var annotationObj in obj["items"]?.OfType<JObject>().SelectMany(x => x["items"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) ?? Enumerable.Empty<JObject>())
-        {
             if (ReadV3Annotation(canvas, annotationObj) is { } annotation)
-            {
                 canvas.AddAnnotation(annotation);
-            }
-        }
 
-        foreach (var annotationsRef in obj["annotations"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>())
-        {
-            canvas.AddAnnotationPageReference(ReadV3AnnotationPageReference(annotationsRef, canvas));
-        }
+        foreach (var annotationsRef in obj["annotations"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) canvas.AddAnnotationPageReference(ReadV3AnnotationPageReference(annotationsRef, canvas));
 
         ReadV3NodeExtras(obj, canvas);
 

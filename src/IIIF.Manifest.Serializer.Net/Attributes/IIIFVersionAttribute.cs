@@ -1,52 +1,49 @@
-﻿using System;
+﻿namespace IIIF.Manifests.Serializer.Attributes;
 
-namespace IIIF.Manifests.Serializer.Attributes
+/// <summary>
+///     Specifies which IIIF API versions support this class, property, or method.
+/// </summary>
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Field)]
+public class IIIFVersionAttribute : Attribute
 {
     /// <summary>
-    /// Specifies which IIIF API versions support this class, property, or method.
+    ///     Creates an attribute indicating API version support.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Method | AttributeTargets.Field, AllowMultiple = false)]
-    public class IIIFVersionAttribute : Attribute
+    /// <param name="minVersion">Minimum supported version (e.g., "2.0")</param>
+    /// <param name="maxVersion">Maximum supported version (null = still supported)</param>
+    public IIIFVersionAttribute(string minVersion, string? maxVersion = null)
     {
-        /// <summary>
-        /// The minimum IIIF API version that supports this feature.
-        /// </summary>
-        public string MinVersion { get; }
-
-        /// <summary>
-        /// The maximum IIIF API version that supports this feature (null = current/latest).
-        /// </summary>
-        public string? MaxVersion { get; }
-
-        /// <summary>
-        /// Indicates if this feature is deprecated in newer versions.
-        /// </summary>
-        public bool IsDeprecated { get; set; }
-
-        /// <summary>
-        /// The version in which this feature was deprecated (if applicable).
-        /// </summary>
-        public string DeprecatedInVersion { get; set; } = null!;
-
-        /// <summary>
-        /// Suggested replacement for deprecated features.
-        /// </summary>
-        public string ReplacedBy { get; set; } = null!;
-
-        /// <summary>
-        /// Additional notes about version compatibility.
-        /// </summary>
-        public string Notes { get; set; } = null!;
-
-        /// <summary>
-        /// Creates an attribute indicating API version support.
-        /// </summary>
-        /// <param name="minVersion">Minimum supported version (e.g., "2.0")</param>
-        /// <param name="maxVersion">Maximum supported version (null = still supported)</param>
-        public IIIFVersionAttribute(string minVersion, string? maxVersion = null)
-        {
-            MinVersion = minVersion;
-            MaxVersion = maxVersion;
-        }
+        MinVersion = minVersion;
+        MaxVersion = maxVersion;
     }
+
+    /// <summary>
+    ///     The minimum IIIF API version that supports this feature.
+    /// </summary>
+    public string MinVersion { get; }
+
+    /// <summary>
+    ///     The maximum IIIF API version that supports this feature (null = current/latest).
+    /// </summary>
+    public string? MaxVersion { get; }
+
+    /// <summary>
+    ///     Indicates if this feature is deprecated in newer versions.
+    /// </summary>
+    public bool IsDeprecated { get; set; }
+
+    /// <summary>
+    ///     The version in which this feature was deprecated (if applicable).
+    /// </summary>
+    public string DeprecatedInVersion { get; set; } = null!;
+
+    /// <summary>
+    ///     Suggested replacement for deprecated features.
+    /// </summary>
+    public string ReplacedBy { get; set; } = null!;
+
+    /// <summary>
+    ///     Additional notes about version compatibility.
+    /// </summary>
+    public string Notes { get; set; } = null!;
 }

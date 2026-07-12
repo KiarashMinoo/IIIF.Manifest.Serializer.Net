@@ -1,4 +1,3 @@
-using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Choice;
@@ -11,21 +10,24 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0027-0033: alternative Range page ordering, per-canvas metadata, multi-volume works
-/// (both as a Collection of Manifests and as a single bound Manifest with Ranges), the simplest
-/// Collection, and an image Choice.
+///     Recipes 0027-0033: alternative Range page ordering, per-canvas metadata, multi-volume works
+///     (both as a Collection of Manifests and as a single bound Manifest with Ranges), the simplest
+///     Collection, and an image Choice.
 /// </summary>
 internal sealed class CollectionAndChoiceRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0027: Alternative Page Order", Recipe0027),
-        new("Recipe 0029: Metadata Anywhere", Recipe0029),
-        new("Recipe 0030: Multi-Volume Work (Collection)", Recipe0030),
-        new("Recipe 0031: Bound Multi-Volume Work (Single Manifest)", Recipe0031),
-        new("Recipe 0032: Simple Collection", Recipe0032),
-        new("Recipe 0033: Image Choice", Recipe0033)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0027: Alternative Page Order", Recipe0027),
+            new("Recipe 0029: Metadata Anywhere", Recipe0029),
+            new("Recipe 0030: Multi-Volume Work (Collection)", Recipe0030),
+            new("Recipe 0031: Bound Multi-Volume Work (Single Manifest)", Recipe0031),
+            new("Recipe 0032: Simple Collection", Recipe0032),
+            new("Recipe 0033: Image Choice", Recipe0033)
+        ];
+    }
 
     // ---- 0027-alternative-page-order --------------------------------------------------------------
 
@@ -50,16 +52,10 @@ internal sealed class CollectionAndChoiceRecipes : IRecipeSet
         }
 
         var physical = new Structure(Id("0027-alternative-page-order", "range/r1"), new Label("Physical sequence")).AddBehavior(new Behavior("sequence"));
-        for (var n = 1; n <= 4; n++)
-        {
-            physical.AddCanvasReference(CanvasId("0027-alternative-page-order", $"p{n}"));
-        }
+        for (var n = 1; n <= 4; n++) physical.AddCanvasReference(CanvasId("0027-alternative-page-order", $"p{n}"));
 
         var authorIntended = new Structure(Id("0027-alternative-page-order", "range/r2"), new Label("Author-intended sequence")).AddBehavior(new Behavior("sequence"));
-        foreach (var n in new[] { 2, 3, 4, 1 })
-        {
-            authorIntended.AddCanvasReference(CanvasId("0027-alternative-page-order", $"p{n}"));
-        }
+        foreach (var n in new[] { 2, 3, 4, 1 }) authorIntended.AddCanvasReference(CanvasId("0027-alternative-page-order", $"p{n}"));
 
         return manifest.AddStructure(physical).AddStructure(authorIntended);
     }
@@ -128,7 +124,11 @@ internal sealed class CollectionAndChoiceRecipes : IRecipeSet
     private static Manifest Recipe0031()
     {
         var manifest = NewManifest("0031-bound-multivolume", new Label("Gottesdienstliche Ceremonien, Oder H. Kirchen-Gebräuche Und Religions-Pflichten Der Christen", "de"));
-        var pages = new[] { ("1_frontcover", "Front cover"), ("2_insidefrontcover", "Inside front cover"), ("3_titlepage1", "Vol. 1 title page"), ("4_titlepage1_verso", "Vol. 1 title page (verso)"), ("5_titlepage2", "Vol. 2 title page"), ("6_titlepage2_verso", "Vol. 2 title page (verso)") };
+        var pages = new[]
+        {
+            ("1_frontcover", "Front cover"), ("2_insidefrontcover", "Inside front cover"), ("3_titlepage1", "Vol. 1 title page"), ("4_titlepage1_verso", "Vol. 1 title page (verso)"), ("5_titlepage2", "Vol. 2 title page"),
+            ("6_titlepage2_verso", "Vol. 2 title page (verso)")
+        };
         for (var i = 0; i < pages.Length; i++)
         {
             var (suffix, label) = pages[i];

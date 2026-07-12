@@ -4,10 +4,6 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
 public class TrackableObjectPropertyChangedEventArgs : PropertyChangedEventArgs
 {
-    public bool IsList { get; }
-
-    public ListChangedType? ListChangedType { get; }
-
     public TrackableObjectPropertyChangedEventArgs(string propertyName) : base(propertyName)
     {
     }
@@ -17,4 +13,8 @@ public class TrackableObjectPropertyChangedEventArgs : PropertyChangedEventArgs
         IsList = true;
         ListChangedType = listChangedType;
     }
+
+    public bool IsList { get; }
+
+    public ListChangedType? ListChangedType { get; }
 }

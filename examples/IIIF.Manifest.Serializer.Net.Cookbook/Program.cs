@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 internal static class Program

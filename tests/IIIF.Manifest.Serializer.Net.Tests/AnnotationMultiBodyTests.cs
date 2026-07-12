@@ -8,11 +8,11 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Cookbook Group I (discovered while researching recipes for CookbookCatalog M9, not in the
-/// original A-H gap analysis): the W3C Annotation Model allows <c>body</c> to be a single value or
-/// an array of sibling resources (distinct from <c>Choice</c>, which models mutually-exclusive
-/// alternatives) - recipe 0022-linking-with-a-hotspot pairs a TextualBody with a SpecificResource
-/// link as two sibling bodies on one "linking" Annotation.
+///     Cookbook Group I (discovered while researching recipes for CookbookCatalog M9, not in the
+///     original A-H gap analysis): the W3C Annotation Model allows <c>body</c> to be a single value or
+///     an array of sibling resources (distinct from <c>Choice</c>, which models mutually-exclusive
+///     alternatives) - recipe 0022-linking-with-a-hotspot pairs a TextualBody with a SpecificResource
+///     link as two sibling bodies on one "linking" Annotation.
 /// </summary>
 public class AnnotationMultiBodyTests
 {

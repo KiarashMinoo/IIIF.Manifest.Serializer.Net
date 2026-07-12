@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.Services;
 
 /// <summary>
-/// Represents an Activity Streams activity for change discovery.
+///     Represents an Activity Streams activity for change discovery.
 /// </summary>
 [DiscoveryAPI("1.0")]
 public class Activity : TrackableObject<Activity>
@@ -19,6 +19,13 @@ public class Activity : TrackableObject<Activity>
     public const string EndTimeJName = "endTime";
     public const string SummaryJName = "summary";
     public const string ActorJName = "actor";
+
+    public Activity(string type, ActivityObject @object, string endTime)
+    {
+        Type = type;
+        Object = @object;
+        EndTime = endTime;
+    }
 
     [JsonProperty(IdJName)]
     public string? Id
@@ -42,8 +49,8 @@ public class Activity : TrackableObject<Activity>
     }
 
     /// <summary>
-    /// The destination of a "Move" activity - required for that type; <see cref="Object"/> then
-    /// carries the source the resource was moved from.
+    ///     The destination of a "Move" activity - required for that type; <see cref="Object" /> then
+    ///     carries the source the resource was moved from.
     /// </summary>
     [DiscoveryAPI("1.0")]
     [JsonProperty(TargetJName)]
@@ -84,13 +91,6 @@ public class Activity : TrackableObject<Activity>
         private set => SetElementValue(value);
     }
 
-    public Activity(string type, ActivityObject @object, string endTime)
-    {
-        Type = type;
-        Object = @object;
-        EndTime = endTime;
-    }
-
     public Activity SetId(string id)
     {
         Id = id;
@@ -98,7 +98,7 @@ public class Activity : TrackableObject<Activity>
     }
 
     /// <summary>
-    /// Sets the destination for a "Move" activity - <see cref="Object"/> should carry the source.
+    ///     Sets the destination for a "Move" activity - <see cref="Object" /> should carry the source.
     /// </summary>
     public Activity SetTarget(DiscoveryResourceReference target)
     {

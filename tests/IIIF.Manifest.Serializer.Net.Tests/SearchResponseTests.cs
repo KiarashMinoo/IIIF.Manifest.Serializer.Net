@@ -8,10 +8,10 @@ using Newtonsoft.Json.Linq;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// Milestone 13 (SDK_VERSIONING_GUIDE.md §10, finding 5): Content Search API 2.0's actual response
-/// shapes (the search AnnotationPage with hit highlighting/paging, and the autocomplete TermPage)
-/// were entirely unmodeled - only the service *descriptors* (SearchService/AutoCompleteService)
-/// existed.
+///     Milestone 13 (SDK_VERSIONING_GUIDE.md §10, finding 5): Content Search API 2.0's actual response
+///     shapes (the search AnnotationPage with hit highlighting/paging, and the autocomplete TermPage)
+///     were entirely unmodeled - only the service *descriptors* (SearchService/AutoCompleteService)
+///     existed.
 /// </summary>
 public class SearchResponseTests
 {

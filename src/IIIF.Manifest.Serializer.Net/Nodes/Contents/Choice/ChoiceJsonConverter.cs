@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -21,10 +19,7 @@ public class ChoiceJsonConverter : JsonConverter<Choice>
         writer.WriteValue("Choice");
         writer.WritePropertyName("items");
         writer.WriteStartArray();
-        foreach (var item in value.Items)
-        {
-            serializer.Serialize(writer, item);
-        }
+        foreach (var item in value.Items) serializer.Serialize(writer, item);
         writer.WriteEndArray();
         writer.WriteEndObject();
     }
@@ -32,10 +27,7 @@ public class ChoiceJsonConverter : JsonConverter<Choice>
     public override Choice? ReadJson(JsonReader reader, Type objectType, Choice? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {
         var token = JToken.Load(reader);
-        if (token.Type == JTokenType.Null)
-        {
-            return null;
-        }
+        if (token.Type == JTokenType.Null) return null;
 
         var obj = (JObject)token;
         var items = (obj["items"] as JArray ?? [])

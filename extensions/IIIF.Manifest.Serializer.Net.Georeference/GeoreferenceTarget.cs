@@ -5,15 +5,21 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Extensions;
 
 /// <summary>
-/// A <see cref="GeoreferenceAnnotation"/>'s target - the Canvas or Image Service being
-/// georeferenced, optionally narrowed to a specific region via a <see cref="Selector"/>. Serializes
-/// as one of the 3 shapes the spec allows (see <see cref="GeoreferenceTargetJsonConverter"/>): a
-/// bare URI string, a full resource object (id/type/height/width), or a SpecificResource wrapping
-/// a <see cref="GeoreferenceSvgSelector"/>.
+///     A <see cref="GeoreferenceAnnotation" />'s target - the Canvas or Image Service being
+///     georeferenced, optionally narrowed to a specific region via a <see cref="Selector" />. Serializes
+///     as one of the 3 shapes the spec allows (see <see cref="GeoreferenceTargetJsonConverter" />): a
+///     bare URI string, a full resource object (id/type/height/width), or a SpecificResource wrapping
+///     a <see cref="GeoreferenceSvgSelector" />.
 /// </summary>
 [JsonConverter(typeof(GeoreferenceTargetJsonConverter))]
 public class GeoreferenceTarget : TrackableObject<GeoreferenceTarget>
 {
+    public GeoreferenceTarget(string sourceId, string? sourceType = null)
+    {
+        SourceId = sourceId;
+        SourceType = sourceType;
+    }
+
     public string SourceId
     {
         get => GetElementValue(x => x.SourceId)!;
@@ -39,7 +45,7 @@ public class GeoreferenceTarget : TrackableObject<GeoreferenceTarget>
     }
 
     /// <summary>
-    /// The SpecificResource wrapper's own id - only meaningful when <see cref="Selector"/> is set.
+    ///     The SpecificResource wrapper's own id - only meaningful when <see cref="Selector" /> is set.
     /// </summary>
     public string? SpecificResourceId
     {
@@ -52,12 +58,6 @@ public class GeoreferenceTarget : TrackableObject<GeoreferenceTarget>
     {
         get => GetElementValue(x => x.Selector);
         private set => SetElementValue(value);
-    }
-
-    public GeoreferenceTarget(string sourceId, string? sourceType = null)
-    {
-        SourceId = sourceId;
-        SourceType = sourceType;
     }
 
     public GeoreferenceTarget SetSourceDimensions(int height, int width)

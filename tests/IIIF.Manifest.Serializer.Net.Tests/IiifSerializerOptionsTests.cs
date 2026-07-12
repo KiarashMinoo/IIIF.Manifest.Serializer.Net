@@ -1,5 +1,3 @@
-using IIIF.Manifests.Serializer;
-
 namespace IIIF.Manifests.Serializer.Tests;
 
 public class IiifSerializerOptionsTests
@@ -15,7 +13,7 @@ public class IiifSerializerOptionsTests
     {
         var options = new IiifSerializerOptions(
             IiifPresentationVersion.V2_1,
-            preserveLegacyProperties: true);
+            true);
 
         options.Version.Should().Be(IiifPresentationVersion.V2_1);
         options.PreserveLegacyProperties.Should().BeTrue();

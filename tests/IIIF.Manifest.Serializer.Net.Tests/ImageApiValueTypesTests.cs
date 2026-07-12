@@ -1,9 +1,9 @@
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// The small Image API value-type wrappers (<see cref="ImageFeature"/>, <see cref="ImageQuality"/>,
-/// <see cref="Profile"/>) had zero test coverage - their static named instances were never
-/// constructed by any existing test.
+///     The small Image API value-type wrappers (<see cref="ImageFeature" />, <see cref="ImageQuality" />,
+///     <see cref="Profile" />) had zero test coverage - their static named instances were never
+///     constructed by any existing test.
 /// </summary>
 public class ImageApiValueTypesTests
 {

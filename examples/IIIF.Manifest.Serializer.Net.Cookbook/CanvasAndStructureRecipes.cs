@@ -1,4 +1,3 @@
-using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
@@ -12,24 +11,27 @@ using static IIIF.Manifests.Serializer.Net.Cookbook.RecipeBuilders;
 namespace IIIF.Manifests.Serializer.Net.Cookbook;
 
 /// <summary>
-/// Recipes 0013-0026: canvas-level features (placeholder/accompanying canvases, deep-linking
-/// start, A/V transcription rendering, supplementary annotations - HTML, tagging, hotspot linking)
-/// and the first Range/Structure-based tables of contents.
+///     Recipes 0013-0026: canvas-level features (placeholder/accompanying canvases, deep-linking
+///     start, A/V transcription rendering, supplementary annotations - HTML, tagging, hotspot linking)
+///     and the first Range/Structure-based tables of contents.
 /// </summary>
 internal sealed class CanvasAndStructureRecipes : IRecipeSet
 {
-    public IEnumerable<ExampleDefinition> GetRecipes() =>
-    [
-        new("Recipe 0013: Placeholder Canvas", Recipe0013),
-        new("Recipe 0014: Accompanying Canvas", Recipe0014),
-        new("Recipe 0015: Deep Linking with Start", Recipe0015),
-        new("Recipe 0017: Transcription of Audio/Video Content", Recipe0017),
-        new("Recipe 0019: HTML in Annotations", Recipe0019),
-        new("Recipe 0021: Tagging", Recipe0021),
-        new("Recipe 0022: Linking with a Hotspot", Recipe0022),
-        new("Recipe 0024: Table of Contents for Book", Recipe0024),
-        new("Recipe 0026: Table of Contents for Opera", Recipe0026)
-    ];
+    public IEnumerable<ExampleDefinition> GetRecipes()
+    {
+        return
+        [
+            new("Recipe 0013: Placeholder Canvas", Recipe0013),
+            new("Recipe 0014: Accompanying Canvas", Recipe0014),
+            new("Recipe 0015: Deep Linking with Start", Recipe0015),
+            new("Recipe 0017: Transcription of Audio/Video Content", Recipe0017),
+            new("Recipe 0019: HTML in Annotations", Recipe0019),
+            new("Recipe 0021: Tagging", Recipe0021),
+            new("Recipe 0022: Linking with a Hotspot", Recipe0022),
+            new("Recipe 0024: Table of Contents for Book", Recipe0024),
+            new("Recipe 0026: Table of Contents for Opera", Recipe0026)
+        ];
+    }
 
     // ---- 0013-placeholderCanvas ------------------------------------------------------------------
 
@@ -64,7 +66,7 @@ internal sealed class CanvasAndStructureRecipes : IRecipeSet
         accompanying.AddAnnotation(PaintingImage(accompanying, "0014-accompanyingcanvas", "accompanying/annotation/image",
             "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0/full/,998/0/default.jpg", "image/jpeg", 998, 772,
             "https://iiif.io/api/image/3.0/example/reference/4b45bba3ea612ee46f5371ce84dbcd89-mahler-0"));
-        canvas.SetAccompanyingCanvas(new Properties.AccompanyingCanvas(accompanying.Id));
+        canvas.SetAccompanyingCanvas(new AccompanyingCanvas(accompanying.Id));
 
         return manifest.AddItem(canvas).AddItem(accompanying);
     }
@@ -107,10 +109,11 @@ internal sealed class CanvasAndStructureRecipes : IRecipeSet
     {
         var manifest = NewManifest("0019-html-in-annotations", "Picture of Göttingen taken during the 2019 IIIF Conference");
         var canvas = NewCanvas("0019-html-in-annotations", "canvas-1", null, 3024, 4032, "canvas-1");
-        canvas.AddAnnotation(PaintingImage(canvas, "0019-html-in-annotations", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, idIsFull: true));
+        canvas.AddAnnotation(PaintingImage(canvas, "0019-html-in-annotations", "canvas-1/annopage-1/anno-1", GottingenImageId, "image/jpeg", 3024, 4032, GottingenServiceId, true));
 
         var comment = new Annotation(Id("0019-html-in-annotations", "canvas-1/annopage-2/anno-1"),
-                new TextualBody("<p>Göttinger Marktplatz mit <a href='https://de.wikipedia.org/wiki/G%C3%A4nseliesel-Brunnen_(G%C3%B6ttingen)'>Gänseliesel Brunnen <img src='https://en.wikipedia.org/static/images/project-logos/enwiki.png' alt='Wikipedia logo'></a></p>")
+                new TextualBody(
+                        "<p>Göttinger Marktplatz mit <a href='https://de.wikipedia.org/wiki/G%C3%A4nseliesel-Brunnen_(G%C3%B6ttingen)'>Gänseliesel Brunnen <img src='https://en.wikipedia.org/static/images/project-logos/enwiki.png' alt='Wikipedia logo'></a></p>")
                     .SetLanguage("de").SetFormat("text/html"),
                 canvas.Id)
             .SetMotivation("commenting");

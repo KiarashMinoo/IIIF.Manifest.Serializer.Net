@@ -4,10 +4,10 @@ using IIIF.Manifests.Serializer.Shared.Exceptions;
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-/// The 3 custom JSON validation exceptions (<see cref="JsonNodeRequiredException{T}"/>,
-/// <see cref="JsonObjectMustBeJArray{T}"/>, <see cref="JsonObjectMustBeJObject{T}"/>) had zero test
-/// coverage - none of the current hand-rolled converters happen to exercise their throw sites, so
-/// these are constructed directly to verify the message shape a caller would eventually see.
+///     The 3 custom JSON validation exceptions (<see cref="JsonNodeRequiredException{T}" />,
+///     <see cref="JsonObjectMustBeJArray{T}" />, <see cref="JsonObjectMustBeJObject{T}" />) had zero test
+///     coverage - none of the current hand-rolled converters happen to exercise their throw sites, so
+///     these are constructed directly to verify the message shape a caller would eventually see.
 /// </summary>
 public class JsonExceptionTests
 {
