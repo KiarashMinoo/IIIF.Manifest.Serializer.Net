@@ -1631,4 +1631,75 @@ hand-authored planning document).
 No code changes - this round is documentation/research only, per issue #12's own scope. No new
 tests; full suite unchanged at 499 unit tests + 8 architecture tests.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, and round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage.
+## Round 16: validation layer and release hardening (issue #13)
+
+Scope (issue #13, "SDK Phase 7"): prepare the SDK for stable public consumption - add an opt-in
+validation layer separate from parsing (parsing itself must stay tolerant), prove the NuGet
+packages actually work when consumed from a clean project (not just as in-repo project
+references), and document a release checklist covering tests/packaging/license/docs/public-API
+compatibility/validator evaluation.
+
+**New validation layer** (`src/IIIF.Manifest.Serializer.Net/Validation/`): `IiifValidator` with
+`ValidateManifest`/`ValidateCollection`/`ValidateJson` entry points, `IiifValidationResult`
+(`IsValid` + `Errors`), `IiifValidationError` (`RuleId`/`Severity`/`Message`/`Path`),
+`IiifValidationSeverity` (Info/Warning/Error), and `IiifValidationOptions`
+(`Version`/`Strict`) - matching the shapes issue #13's own examples sketch almost exactly. Nothing
+in `IiifSerializer` calls this implicitly; parsing behavior is completely unchanged. Rule set (a
+foundational baseline, not an exhaustive spec validator - documented as such in `docs/README.md`):
+- Required `label` on Manifest/Collection (`Error`).
+- `Canvas` must have height+width, duration, or both (`Error`) - covers both visual and
+  audio-only/time-based canvases correctly.
+- `behavior` values checked against the **actual Presentation API 3.0 §5.4.3 table** (fetched via
+  WebFetch rather than assumed from memory - Layout/Temporal/Collection/Range/Canvas behaviors each
+  have a real, spec-defined valid-resource-type list, e.g. `facing-pages`/`non-paged` are
+  Canvas-only, `multi-part`/`together` are Collection-only) (`Warning`).
+- `requiredStatement` completeness - both `label` and `value` non-empty when present (`Error`).
+- **Version-aware**: targeting `V2_0`/`V2_1` warns about the same 3.0-only, no-legacy-equivalent
+  properties `docs/README.md`'s "Downgrade limitations" table (Round 10) already documents
+  (`placeholderCanvas`, `start`, top-level `services`) - the validator and the docs table now stay
+  in sync by construction, cross-referencing each other.
+- `Strict` mode: an additional well-formed-URI check on `rights`, too noisy for default use against
+  tolerantly-imported real-world data but useful when authoring new documents.
+
+Needed an `IsExternalInit` polyfill (`Validation/IsExternalInit.cs`) since the core project targets
+netstandard2.1, which has no built-in support for C# 9 `record`/`init` without it - a well-known,
+standard workaround, not a real runtime type.
+
+**Package smoke test** (`scripts/smoke-test-packages.ps1`): packs all 4 packages, installs them
+into a throwaway clean console app via `--source` (deliberately never a `ProjectReference`, so this
+proves the *published artifacts* work, not just the in-repo project graph), and confirms a Manifest
+with a navPlace extension actually builds/serializes/round-trips. Verified by actually running it
+end-to-end during this round (twice - the first run caught two real script bugs, both fixed before
+landing): a PowerShell `-notmatch` array-vs-scalar gotcha in the output-matching check, and a
+version-resolution bug where a naive `<id>.*.nupkg` glob for the core package would also match
+every extension package's `.nupkg` (all four share the same name prefix) - fixed by deriving each
+package's version from its own `.nupkg` filename via an anchored regex instead of a wildcard
+filter. Wired into `.github/workflows/publish-nuget.yml`'s `pack` job, running immediately after
+packing and before the packages are uploaded/published - a failure there blocks the whole release,
+satisfying "CI or release workflow validates packages before publishing."
+
+**Release checklist** (`docs/RELEASE_CHECKLIST.md`): tests/quality gates, packaging, license,
+documentation re-verification (pointing back at each coverage doc's own "how this was verified"
+section), and two decisions made explicit rather than silently deferred:
+- **Public API compatibility**: evaluated adopting `Microsoft.CodeAnalysis.PublicApiAnalyzers` (MIT
+  licensed, satisfies `CLAUDE.md`'s licensing-discipline rule) but deferred it - it requires
+  committing an initial baseline covering the SDK's entire existing public surface across 4
+  packages, a substantial one-time cost distinct from this round's scope. Documented as a future
+  consideration, with the interim manual-check approach (no removing/breaking a public member
+  unless it was already `[Obsolete(error: true)]` in the prior release) written down instead of
+  left implicit.
+- **Official validators**: reused Round 15's research rather than re-deriving it - the Presentation
+  API validator (offline-capable, `validate-dir`) is flagged as a genuine, concrete future
+  release-hardening follow-up (running the Cookbook catalog's output through it), explicitly not
+  implemented here since issue #13 itself excludes "enabling validator CI directly." The Image API
+  validator remains not usable for this SDK without a new mock-server test harness, also
+  explicitly deferred rather than glossed over.
+
+Tests: 16 new (`IiifValidatorTests.cs`) covering every rule above plus the explicit
+parser-vs-validator split issue #13 asks for (a minimal legacy document missing a label
+deserializes without throwing, then the validator reports the missing label). Full suite: **515
+unit tests + 8 architecture tests, all passing**, 0 build warnings/errors introduced. The package
+smoke test itself is a script, not a unit test (per its own nature - it packs artifacts and runs a
+separate throwaway console app), verified by direct execution rather than only code review.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage, and round 16 validation layer plus release-hardening (package smoke test, release checklist).

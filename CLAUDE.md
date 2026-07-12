@@ -63,6 +63,9 @@ was to reshape it into a **version-aware** SDK:
   + base64url codec), Image API service descriptor (2.x/3.0 toggle, tiles, extraFormats, info.json).
 - Extensions: navPlace, Georeference, Text Granularity - each an independently-versioned NuGet
   package.
+- `IIIF.Manifests.Serializer.Validation` - an opt-in, version-aware validation layer
+  (`IiifValidator.ValidateManifest`/`ValidateCollection`/`ValidateJson`) separate from parsing,
+  which stays tolerant by design. See [`docs/README.md`](docs/README.md#validation).
 - `System.Text.Json` interop: `Manifest`/`Collection`/`AnnotationCollection`/`ContentState` each
   carry a bridging converter, so using System.Text.Json directly (or ASP.NET Core's default
   (de)serialization) produces the same correct output as `IiifSerializer` - see

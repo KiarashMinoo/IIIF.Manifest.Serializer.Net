@@ -1,25 +1,21 @@
 <Solution>
-    <Configurations>
-        <Platform Name="Any CPU"/>
-    </Configurations>
     <Folder Name="/examples/">
-        <Project Path="examples/IIIF.Manifest.Serializer.Net.Cookbook/IIIF.Manifest.Serializer.Net.Cookbook.csproj"/>
-        <Project Path="examples/IIIF.Manifest.Serializer.Net.Examples/IIIF.Manifest.Serializer.Net.Examples.csproj"/>
+        <Project Path="examples/IIIF.Manifest.Serializer.Net.Cookbook/IIIF.Manifest.Serializer.Net.Cookbook.csproj" />
+        <Project Path="examples/IIIF.Manifest.Serializer.Net.Examples/IIIF.Manifest.Serializer.Net.Examples.csproj" />
     </Folder>
-    <Folder Name="/extensions/"/>
+    <Folder Name="/extensions/">
+        <Project Path="extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj" />
+        <Project Path="extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj" />
+        <Project Path="extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj" />
+    </Folder>
     <Folder Name="/Solution Items/">
-        <File Path="Directory.Build.props"/>
+        <File Path="Directory.Build.props" />
     </Folder>
     <Folder Name="/src/">
-        <Project Path="src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj"/>
+        <Project Path="src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj" />
     </Folder>
     <Folder Name="/tests/">
-        <Project Path="tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj"/>
-        <Project Path="tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj"/>
+        <Project Path="tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj" />
+        <Project Path="tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj" />
     </Folder>
-    <Project
-            Path="extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj"/>
-    <Project Path="extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj"/>
-    <Project
-            Path="extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj"/>
 </Solution>
