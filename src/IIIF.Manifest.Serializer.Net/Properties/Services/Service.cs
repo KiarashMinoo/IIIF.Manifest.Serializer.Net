@@ -306,4 +306,34 @@ public class Service : BaseItem<Service>, IDimensionSupport<Service>, IBaseServi
 
         return obj.ToString(Formatting.Indented);
     }
+
+    /// <summary>
+    ///     Parses a standalone <c>info.json</c> document - unprefixed <c>id</c>/<c>type</c> - back
+    ///     into a <see cref="Service" />. The inverse of <see cref="ToInfoJson" />: rewrites
+    ///     <c>id</c>/<c>type</c> to <c>@id</c>/<c>@type</c> before delegating to the same
+    ///     deserialization path <see cref="IiifSerializer" /> uses for embedded services, so both
+    ///     shapes stay in sync with exactly one source of truth.
+    /// </summary>
+    public static Service FromInfoJson(string json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json));
+        }
+
+        var obj = JObject.Parse(json);
+        if (obj["id"] is { } idToken)
+        {
+            obj.Remove("id");
+            obj["@id"] = idToken;
+        }
+
+        if (obj["type"] is { } typeToken)
+        {
+            obj.Remove("type");
+            obj["@type"] = typeToken;
+        }
+
+        return Parse<Service>(obj.ToString());
+    }
 }

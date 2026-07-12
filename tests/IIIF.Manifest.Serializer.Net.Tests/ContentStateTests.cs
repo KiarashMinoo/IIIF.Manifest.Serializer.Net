@@ -138,4 +138,21 @@ public class ContentStateTests
         var act = () => ContentStateCodec.Decode("");
         act.Should().Throw<ArgumentException>();
     }
+
+    [Fact]
+    public void ContentStateCodec_Decode_Should_ThrowFormatException_When_LengthIsInvalid()
+    {
+        // A base64url string whose length mod 4 == 1 can never be valid (no padding scheme fixes it).
+        var act = () => ContentStateCodec.Decode("a");
+
+        act.Should().Throw<FormatException>().WithMessage("*incorrect length*");
+    }
+
+    [Fact]
+    public void ContentStateCodec_Decode_Should_ThrowFormatException_When_ContentIsGarbled()
+    {
+        var act = () => ContentStateCodec.Decode("!!!not-valid-base64url!!!");
+
+        act.Should().Throw<FormatException>();
+    }
 }

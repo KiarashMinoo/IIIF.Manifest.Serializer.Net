@@ -1338,4 +1338,69 @@ VersionIsDetectedButUnimportable` in `CollectionReshapeTests.cs`;
 `Serialize_Should_ExcludeV3OnlyProperties_FromLegacyV2Manifest` in `IiifSerializerTests.cs`). Full
 suite: **459 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), and round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix.
+## Round 11: auxiliary API surface audit (issue #8)
+
+Scope (issue #8, "SDK Phase 4"): review and complete models/serializers/tests for the non-core
+Presentation API families - Image API service descriptors, Auth (1.0 legacy + 2.0 flow), Content
+Search, Change Discovery, and Content State - against the issue's acceptance criteria: a
+documented coverage table per family, read/write tests per family, standalone-and-embedded both
+working where applicable, unsupported/partial areas explicitly listed, and mixed-version scenarios
+documented.
+
+Audited all five families in parallel (one focused pass each, citing file:line for every claim).
+Verdict: the models themselves were already thorough - every field the issue lists by name
+(`profile`/`protocol`/`tiles`/`sizes`/... for Image; all 4 Auth 2.0 service types plus response
+payloads; search/autocomplete descriptors plus the actual `SearchResponse`/`TermPageResponse`
+result shapes, not just descriptors; `OrderedCollection`/`OrderedCollectionPage`/`Activity` with
+actor/object/target/dataset/rights/paging; Content State's annotation shape, point selector, and
+`iiif-content` codec) was already modeled and had at least one read/write test. What was
+genuinely missing:
+
+**One real code gap, fixed**: `Service` (the Image API descriptor) had `ToInfoJson()` to write a
+standalone `info.json` document but no inverse - no way to *parse* one back into a `Service`. The
+issue's own acceptance criteria explicitly requires "standalone payloads ... work" (not just write),
+and its own example shows a raw `info.json` document as input. Added `Service.FromInfoJson(string)`
+(`Properties/Services/Service.cs`): renames `id`/`type` to `@id`/`@type` (the inverse of
+`ToInfoJson`'s rename) and delegates to the same `TrackableObject.Parse<Service>` path
+`IiifSerializer` already trusts for embedded services, so both shapes stay backed by one
+deserialization path rather than a second hand-rolled one.
+
+**Test gaps, not code gaps** (all confirmed correct on first run):
+- No test exercised an embedded service specifically on an `ImageResource` (only Manifest-level
+  embedding was tested) or the issue's explicitly-named "mixed Presentation 3 + Image 2" scenario -
+  `ServiceRoundTripTests.ImageService_Should_RoundTripWhenEmbeddedOnAnImageResource_
+  ThroughIiifSerializer` added (a P3 Manifest/Canvas/Annotation whose `ImageResource` body carries
+  an `ImageService2`-typed embedded service, round-tripped through `IiifSerializer`).
+- No negative/malformed-payload test existed for **any** of the five families, despite the issue's
+  own "Tests" section explicitly asking for them. Added one per family:
+  `UnrecognizedServiceType_Should_BeSilentlyDropped_NotThrow` (the shared `ServiceJsonConverter`
+  fallback - confirmed it already silently drops unrecognized service shapes rather than faulting
+  the whole document, covering Image/Auth/Search/Discovery/ContentState at once since they share
+  this converter); `AuthProbeService2_Parse_Should_Throw_When_JsonIsMalformed`;
+  `SearchResponse_Parse_Should_Throw_When_JsonIsMalformed`;
+  `DiscoveryCollectionPage_Parse_Should_Throw_When_JsonIsMalformed`;
+  `ContentStateCodec_Decode_Should_ThrowFormatException_When_LengthIsInvalid` and
+  `..._When_ContentIsGarbled`.
+- `Activity.Type` is a plain string (no closed enum) but only `Update`/`Move`/`Create` had
+  dedicated fixtures - added a `[Theory]` covering `Add`/`Remove`/`Delete` too
+  (`Activity_Should_RoundTripAdditionalActivityTypes`).
+
+**Documentation gap fixed**: added an "Auxiliary API coverage table" to `docs/README.md` (under
+"Services") - one row per family covering descriptors, standalone-vs-embedded support, and
+explicitly-out-of-scope notes. This is the one item genuinely missing across all five families
+(none had a per-family coverage table before, only prose narrative scattered across milestones) -
+satisfies the issue's "documented coverage table," "unsupported/partial areas... with reasons," and
+"mixed-version scenarios are documented" acceptance criteria in one place. Search 1.0 legacy
+response compatibility is recorded there as explicitly out of scope (structurally superseded by
+2.0; `Profile` already accepts a 1.0-shaped profile URI as a plain string extension point with no
+dedicated type needed), and Content State's lack of a region/`FragmentSelector` object is recorded
+as a deliberate spec-accurate design (Milestone 21), not an omission.
+
+Tests: 13 new across `ImageServiceCompletenessTests.cs` (3: `FromInfoJson` round-trip, the issue's
+own literal info.json example, blank-input throw), `ServiceRoundTripTests.cs` (2: embedded-on-
+ImageResource/mixed-version, unrecognized-service-silently-dropped), `ContentStateTests.cs` (2:
+invalid-length and garbled-content decode), `SearchResponseTests.cs` (1), `DiscoveryServiceTests.cs`
+(4: 3 additional activity types + 1 malformed-JSON), `Auth2ServiceTests.cs` (1). Full suite: **472
+unit tests + 8 architecture tests, all passing**, 0 build warnings/errors introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, and round 11 auxiliary API surface audit with the Image API info.json read gap fixed.

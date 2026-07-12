@@ -2,6 +2,7 @@ using System.Linq;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Properties.Services.Discovery;
 using IIIF.Manifests.Serializer.Shared.Trackable;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
@@ -104,5 +105,29 @@ public class DiscoveryServiceTests
         deserialized.Canonical.Should().Be("https://example.org/iiif/1");
         deserialized.SeeAlso.Single().Format.Should().Be("application/ld+json");
         deserialized.Provider.Single().Label.Single().Value.Should().Be("Example Organization");
+    }
+
+    [Theory]
+    [InlineData("Add")]
+    [InlineData("Remove")]
+    [InlineData("Delete")]
+    public void Activity_Should_RoundTripAdditionalActivityTypes(string activityType)
+    {
+        // Activity.Type is a plain string (no closed enum), so every spec activity type - not just
+        // Create/Update/Move, which already had dedicated tests - round-trips identically.
+        var activity = new Activity(activityType, new ActivityObject("https://example.org/manifest", "Manifest"), "2017-09-20T00:00:00Z");
+
+        var deserialized = TrackableObject.Parse<Activity>(activity.Serialize());
+
+        deserialized.Type.Should().Be(activityType);
+        deserialized.Object.Id.Should().Be("https://example.org/manifest");
+    }
+
+    [Fact]
+    public void DiscoveryCollectionPage_Parse_Should_Throw_When_JsonIsMalformed()
+    {
+        var act = () => TrackableObject.Parse<DiscoveryCollectionPage>("{ this is not valid json");
+
+        act.Should().Throw<JsonException>();
     }
 }
