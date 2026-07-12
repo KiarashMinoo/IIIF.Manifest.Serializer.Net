@@ -16,7 +16,6 @@ public class Recipe0001Tests
     [Fact]
     public void SimplestManifest_Should_SerializeCorrectly()
     {
-        // Arrange
         var imageResource = new ImageResource(
                 id: "http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png",
                 format: ImageFormat.Png
@@ -46,62 +45,58 @@ public class Recipe0001Tests
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
 
-        // Act
         var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
         var jObject = JObject.Parse(json);
 
-        // Assert - Manifest structure
-        jObject["@context"].ToString().Should().Be("http://iiif.io/api/presentation/2/context.json");
-        jObject["@id"].ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json");
-        jObject["@type"].ToString().Should().Be("sc:Manifest");
-        jObject["label"].ToString().Should().Be("Single Image Example");
+        jObject["@context"]!.ToString().Should().Be("http://iiif.io/api/presentation/2/context.json");
+        jObject["@id"]!.ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/manifest.json");
+        jObject["@type"]!.ToString().Should().Be("sc:Manifest");
+        jObject["label"]!.ToString().Should().Be("Single Image Example");
 
-        // Assert - Sequences
         var sequences = jObject["sequences"] as JArray;
         sequences.Should().NotBeNull();
         sequences.Should().HaveCount(1);
 
         var seq = sequences![0] as JObject;
-        seq!["@id"].ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
-        seq["@type"].ToString().Should().Be("sc:Sequence");
+        seq.Should().NotBeNull();
+        seq!["@id"]!.ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
+        seq["@type"]!.ToString().Should().Be("sc:Sequence");
 
-        // Assert - Canvas
         var canvases = seq["canvases"] as JArray;
         canvases.Should().NotBeNull();
         canvases.Should().HaveCount(1);
 
         var canvasObj = canvases![0] as JObject;
-        canvasObj!["@id"].ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1");
-        canvasObj["@type"].ToString().Should().Be("sc:Canvas");
-        canvasObj["label"].ToString().Should().Be("p. 1");
-        canvasObj["height"].Value<int>().Should().Be(1800);
-        canvasObj["width"].Value<int>().Should().Be(1200);
+        canvasObj.Should().NotBeNull();
+        canvasObj!["@id"]!.ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1");
+        canvasObj["@type"]!.ToString().Should().Be("sc:Canvas");
+        canvasObj["label"]!.ToString().Should().Be("p. 1");
+        canvasObj["height"]!.Value<int>().Should().Be(1800);
+        canvasObj["width"]!.Value<int>().Should().Be(1200);
 
-        // Assert - Images
         var images = canvasObj["images"] as JArray;
         images.Should().NotBeNull();
         images.Should().HaveCount(1);
 
         var imageObj = images![0] as JObject;
-        imageObj!["@id"].ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image");
-        imageObj["@type"].ToString().Should().Be("oa:Annotation");
-        imageObj["motivation"].ToString().Should().Be("sc:painting");
-        imageObj["on"].ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1");
+        imageObj.Should().NotBeNull();
+        imageObj!["@id"]!.ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image");
+        imageObj["@type"]!.ToString().Should().Be("oa:Annotation");
+        imageObj["motivation"]!.ToString().Should().Be("sc:painting");
+        imageObj["on"]!.ToString().Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1");
 
-        // Assert - Image Resource
         var resource = imageObj["resource"] as JObject;
         resource.Should().NotBeNull();
-        resource!["@id"].ToString().Should().Be("http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png");
-        resource["@type"].ToString().Should().Be("dctypes:Image");
-        resource["format"].ToString().Should().Be("image/png");
-        resource["height"].Value<int>().Should().Be(1800);
-        resource["width"].Value<int>().Should().Be(1200);
+        resource!["@id"]!.ToString().Should().Be("http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png");
+        resource["@type"]!.ToString().Should().Be("dctypes:Image");
+        resource["format"]!.ToString().Should().Be("image/png");
+        resource["height"]!.Value<int>().Should().Be(1800);
+        resource["width"]!.Value<int>().Should().Be(1200);
     }
 
     [Fact]
     public void SimplestManifest_Should_RoundTrip()
     {
-        // Arrange
         var imageResource = new ImageResource(
                 id: "http://iiif.io/api/presentation/2.1/example/fixtures/resources/page1-full.png",
                 format: ImageFormat.Png
@@ -131,29 +126,25 @@ public class Recipe0001Tests
         manifest.AddItem(canvas);
         manifest.SetSequenceId("https://iiif.io/api/cookbook/recipe/0001-mvm-image/sequence/s0");
 
-        // Act - Serialize to JSON
         var json = JsonConvert.SerializeObject(manifest);
-
-        // Act - Deserialize back
         var deserializedManifest = JsonConvert.DeserializeObject<Manifest>(json);
 
-        // Assert
         deserializedManifest.Should().NotBeNull();
         deserializedManifest!.Id.Should().Be(manifest.Id);
         deserializedManifest.Label.Should().HaveCount(1);
         deserializedManifest.Label.First().Value.Should().Be("Single Image Example");
 
         deserializedManifest.Sequences.Should().HaveCount(1);
-        var deserializedSequence = deserializedManifest.Sequences.First();
+        var deserializedSequence = deserializedManifest.Sequences.First()!;
         deserializedSequence.Canvases.Should().HaveCount(1);
 
-        var deserializedCanvas = deserializedSequence.Canvases.First();
+        var deserializedCanvas = deserializedSequence.Canvases.First()!;
         deserializedCanvas.Id.Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1");
         deserializedCanvas.Height.Should().Be(1800);
         deserializedCanvas.Width.Should().Be(1200);
 
         deserializedCanvas.Images.Should().HaveCount(1);
-        var deserializedImage = deserializedCanvas.Images.First();
+        var deserializedImage = deserializedCanvas.Images.First()!;
         deserializedImage.Id.Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/annotation/p0001-image");
         deserializedImage.On.Should().Be("https://iiif.io/api/cookbook/recipe/0001-mvm-image/canvas/p1");
         deserializedImage.Motivation.Should().Be("sc:painting");
@@ -167,13 +158,11 @@ public class Recipe0001Tests
     [Fact]
     public void SimplestManifest_With_MultipleCanvases_Should_Work()
     {
-        // Arrange - Create a manifest with multiple canvases (book-like structure)
         var manifest = new Manifest(
             id: "https://example.org/iiif/book1/manifest",
             label: new Label("Multi-page Book Example")
         );
 
-        // Add multiple pages
         for (int i = 1; i <= 3; i++)
         {
             var imageResource = new ImageResource(
@@ -202,11 +191,9 @@ public class Recipe0001Tests
 
         manifest.SetSequenceId("https://example.org/iiif/book1/sequence/normal");
 
-        // Act
         var json = JsonConvert.SerializeObject(manifest, Formatting.Indented);
         var jObject = JObject.Parse(json);
 
-        // Assert
         var sequences = jObject["sequences"] as JArray;
         sequences.Should().HaveCount(1);
 
@@ -216,16 +203,15 @@ public class Recipe0001Tests
         for (int i = 0; i < 3; i++)
         {
             var canvasObj = canvases![i] as JObject;
-            canvasObj!["label"].ToString().Should().Be($"Page {i + 1}");
-            canvasObj["height"].Value<int>().Should().Be(2000);
-            canvasObj["width"].Value<int>().Should().Be(1500);
+            canvasObj!["label"]!.ToString().Should().Be($"Page {i + 1}");
+            canvasObj["height"]!.Value<int>().Should().Be(2000);
+            canvasObj["width"]!.Value<int>().Should().Be(1500);
         }
     }
 
     [Fact]
     public void SimplestManifest_Should_Have_RequiredFields()
     {
-        // Arrange
         var imageResource = new ImageResource(
                 id: "https://example.org/image.jpg",
                 format: "image/jpeg"
@@ -254,11 +240,9 @@ public class Recipe0001Tests
         );
         manifest.AddItem(canvas);
 
-        // Act
         var json = JsonConvert.SerializeObject(manifest);
         var jObject = JObject.Parse(json);
 
-        // Assert - Required fields per IIIF Presentation API 2.0
         jObject["@context"].Should().NotBeNull("@context is required");
         jObject["@id"].Should().NotBeNull("@id is required");
         jObject["@type"].Should().NotBeNull("@type is required");

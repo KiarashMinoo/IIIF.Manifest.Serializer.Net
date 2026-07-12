@@ -72,7 +72,7 @@ public static class DemoCatalog
     {
         var manifest = new Manifest("https://example.org/demo/book/manifest", new Label("Paged Book Demo"));
         manifest.SetViewingDirection(ViewingDirection.Ltr);
-        manifest.SetViewingHint(ViewingHint.Paged);
+        manifest.AddBehavior(Behavior.Paged);
         manifest.SetStart("https://example.org/demo/book/canvas/2");
         manifest.SetSequenceId("https://example.org/demo/book/sequence/normal");
 
@@ -89,7 +89,7 @@ public static class DemoCatalog
     private static Collection CreateCollectionExample()
     {
         var collection = new Collection("https://example.org/demo/collection", new Label("Collection Demo"));
-        collection.SetViewingHint(ViewingHint.Individuals);
+        collection.AddBehavior(Behavior.Individuals);
         collection.AddManifestReference("https://example.org/demo/book/manifest");
         collection.AddManifestReference("https://example.org/demo/search/manifest");
         collection.AddItem(new Collection("https://example.org/demo/collection/sub", new Label("Sub collection")));
