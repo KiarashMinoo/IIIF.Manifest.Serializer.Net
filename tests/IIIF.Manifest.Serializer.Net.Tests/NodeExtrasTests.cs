@@ -39,7 +39,7 @@ public class NodeExtrasTests
     public void Manifest_Description_Should_BeComputedLegacyViewOfSummary()
     {
         var manifest = new Manifest("https://example.org/manifest", new Label("Test"))
-            .AddDescription(new Description("Legacy description"));
+            .AddSummary(new Description("Legacy description"));
 
         manifest.Summary.Should().ContainSingle(x => x.Value == "Legacy description");
         manifest.Description.Should().ContainSingle(x => x.Value == "Legacy description");

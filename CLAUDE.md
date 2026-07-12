@@ -25,14 +25,16 @@ was to reshape it into a **version-aware** SDK:
    concepts (`Sequences`, `Canvas.Images`, `ViewingHint`, `License`, `Attribution`, `Within`, ...) are
    *getters only* - synthesized on demand from the same 3.0-native storage, never tagged
    `[Obsolete]` (reading old-shaped data must never produce compiler noise).
-4. **Legacy mutators are read-only from now on.** Every setter/adder tied to a legacy shape
-   (`AddSequence`, `AddImage`, `SetLicense`, `AddAttribution`, ...) is
-   `[Obsolete("...", error: true)]` - a compile-time wall, not a runtime one. Code that already
-   targets the old API keeps compiling as-is (Obsolete doesn't affect already-built binaries); new
-   source code must go through the 3.0-native fluent API (`AddItem`, `AddAnnotation`, `SetRights`,
-   `SetRequiredStatement`, ...) or explicitly suppress the warning-as-error. **This is the end
-   state the user asked for: users work with the latest features; every obsolete item is
-   read-only.**
+4. **Legacy mutators still work, but nudge callers toward the current API.** Every setter/adder
+   tied to a legacy shape (`AddSequence`, `AddImage`, `SetLicense`, `AddAttribution`, ...) is
+   `[Obsolete("...")]` at warning level (no `error: true`) - callers see a compiler warning naming
+   the 3.0-native replacement, but the call still compiles and behaves correctly (every legacy
+   mutator already forwards internally to the same 3.0-native storage the replacement API writes
+   to, e.g. `Canvas.AddImage` constructs an `Annotation` and routes it through the same path as
+   `AddAnnotation`). New source code should prefer the 3.0-native fluent API (`AddItem`,
+   `AddAnnotation`, `SetRights`, `SetRequiredStatement`, ...), but is not compile-blocked from using
+   the legacy one. **This was changed from an earlier `error: true` compile-time-wall design - see
+   Round 9 in the versioning guide for the reasoning.**
 5. **Cross-check against the wider IIIF ecosystem, not just the Presentation API spec itself.**
    [`github.com/IIIF/awesome-iiif`](https://github.com/IIIF/awesome-iiif)'s Standards section (Auth,
    Content Search, Change Discovery, Content State, Image API, plus the navPlace/Georeference/Text
@@ -98,8 +100,10 @@ rounds to the end; don't rewrite history that's already there.
   `service`) and `BaseNode<T>` (label/summary/metadata/thumbnail/rendering/homepage/seeAlso/rights/
   requiredStatement/partOf/behavior/provider - shared by every top-level resource).
 - **New 3.0-native property**: back any legacy 2.x equivalent with a *computed, read-only* view -
-  never the other way around. Legacy getters stay untagged; legacy setters get
-  `[Obsolete(error: true)]`.
+  never the other way around. Legacy getters stay untagged; legacy setters/mutators get
+  `[Obsolete("...")]` at warning level (no `error: true`) plus a `[PresentationAPI(...,
+  IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "...")]` mirroring the sibling
+  getter's tag.
 - **`[JsonIgnore]` new 3.0-only storage properties** that shouldn't leak into legacy 2.x JSON via
   plain `JsonConvert` reflection (this bit the project twice already - see the versioning guide's
   "Known follow-up" notes).

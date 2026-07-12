@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
@@ -183,14 +184,31 @@ public class CanvasReshapeTests
     [InlineData(nameof(Canvas.AddAudio))]
     [InlineData(nameof(Canvas.AddVideo))]
     [InlineData(nameof(Canvas.AddOtherContent))]
-    public void LegacyMutators_Should_BeMarkedObsoleteAsCompileErrors(string methodName)
+    public void LegacyMutators_Should_BeMarkedObsoleteAsWarnings(string methodName)
     {
         var method = typeof(Canvas).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
         var obsolete = method!.GetCustomAttribute<System.ObsoleteAttribute>();
-        obsolete.Should().NotBeNull("legacy mutators must be tagged obsolete-error per the versioning guide");
-        obsolete!.IsError.Should().BeTrue("legacy setters/mutators must be a compile-time error (IsError=true), not just a warning");
+        obsolete.Should().NotBeNull("legacy mutators must be tagged obsolete per the versioning guide");
+        obsolete!.IsError.Should().BeFalse("legacy mutators remain callable - deprecated with a warning, not a compile-time error");
+    }
+
+    [Theory]
+    [InlineData(nameof(Canvas.AddImage))]
+    [InlineData(nameof(Canvas.AddAudio))]
+    [InlineData(nameof(Canvas.AddVideo))]
+    [InlineData(nameof(Canvas.AddOtherContent))]
+    public void LegacyMutators_Should_CarryIIIFVersionAttribute_DescribingTheDeprecation(string methodName)
+    {
+        var method = typeof(Canvas).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+
+        method.Should().NotBeNull();
+        var version = method!.GetCustomAttribute<IIIFVersionAttribute>();
+        version.Should().NotBeNull("legacy mutators must document their deprecation via an IIIFVersionAttribute-derived attribute");
+        version!.IsDeprecated.Should().BeTrue();
+        version.DeprecatedInVersion.Should().Be("3.0");
+        version.ReplacedBy.Should().NotBeNullOrEmpty();
     }
 
     [Fact]
@@ -210,5 +228,20 @@ public class CanvasReshapeTests
         property.Should().NotBeNull();
         property!.GetCustomAttribute<System.ObsoleteAttribute>().Should()
             .BeNull("legacy getters must stay warning-free so reading a parsed legacy document produces no compiler noise");
+    }
+
+    [Theory]
+    [InlineData(nameof(Canvas.Images))]
+    [InlineData(nameof(Canvas.Audios))]
+    [InlineData(nameof(Canvas.Videos))]
+    public void LegacyGetters_Should_CarryIIIFVersionAttribute_DescribingTheDeprecation(string propertyName)
+    {
+        var property = typeof(Canvas).GetProperty(propertyName);
+
+        property.Should().NotBeNull();
+        var version = property!.GetCustomAttribute<IIIFVersionAttribute>();
+        version.Should().NotBeNull($"{propertyName} is a computed legacy view and must document its replacement");
+        version!.IsDeprecated.Should().BeTrue();
+        version.ReplacedBy.Should().Be("items");
     }
 }

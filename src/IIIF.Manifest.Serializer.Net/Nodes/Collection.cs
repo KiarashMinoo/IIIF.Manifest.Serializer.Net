@@ -170,21 +170,24 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.")]
         public Collection AddCollection(Collection collection)
         {
             AddItem(collection);
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.")]
         public Collection RemoveCollection(Collection collection)
         {
             RemoveItem(collection);
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddManifestReference instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddManifestReference instead.")]
         public Collection AddManifest(string manifestId)
         {
             AddItem(new Manifest(manifestId));
@@ -202,7 +205,8 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddManifestReference instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddManifestReference instead.")]
         public Collection RemoveManifest(string manifestId)
         {
             var existing = Items.OfType<Manifest>().FirstOrDefault(x => x.Id == manifestId);
@@ -214,7 +218,8 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.")]
         public Collection AddMember(object member)
         {
             switch (member)
@@ -233,7 +238,8 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.")]
         public Collection RemoveMember(object member)
         {
             switch (member)

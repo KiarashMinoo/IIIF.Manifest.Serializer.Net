@@ -86,14 +86,16 @@ namespace IIIF.Manifests.Serializer.Nodes
 
         public Structure(string id, Label label) : this(id) => AddLabel(label);
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddCanvasReference instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddCanvasReference instead.")]
         public Structure AddCanvas(string canvas)
         {
             AddItem(new CanvasReference(canvas));
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddCanvasReference instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddCanvasReference instead.")]
         public Structure RemoveCanvas(string canvas)
         {
             RemoveCanvasReference(canvas);
@@ -121,14 +123,16 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddRangeReference instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddRangeReference instead.")]
         public Structure AddRange(string range)
         {
             AddItem(new RangeReference(range));
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddRangeReference instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddRangeReference instead.")]
         public Structure RemoveRange(string range)
         {
             RemoveRangeReference(range);
@@ -157,14 +161,16 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.")]
         public Structure AddMember(object member)
         {
             AddMemberCore(member);
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct items directly via AddItem instead.")]
         public Structure RemoveMember(object member)
         {
             switch (member)

@@ -70,6 +70,12 @@ namespace IIIF.Manifests.Serializer.Nodes
             private set => ReplacePaintingAnnotations(x => x.Body is ImageResource, (value ?? []).Select(ToAnnotation));
         }
 
+        /// <summary>
+        /// Legacy (2.x) view of the painting annotations on this Canvas whose body is an audio resource.
+        /// Computed from <see cref="BaseNode{TBaseNode}.Items"/> (the 3.0-native storage); not itself the
+        /// backing store. Prefer <see cref="AddAnnotation"/> for new code.
+        /// </summary>
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(nameof(Audios))]
         public IReadOnlyCollection<Audio> Audios
         {
@@ -77,6 +83,12 @@ namespace IIIF.Manifests.Serializer.Nodes
             private set => ReplacePaintingAnnotations(x => x.Body is AudioResource, (value ?? []).Select(ToAnnotation));
         }
 
+        /// <summary>
+        /// Legacy (2.x) view of the painting annotations on this Canvas whose body is a video resource.
+        /// Computed from <see cref="BaseNode{TBaseNode}.Items"/> (the 3.0-native storage); not itself the
+        /// backing store. Prefer <see cref="AddAnnotation"/> for new code.
+        /// </summary>
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
         [JsonProperty(nameof(Videos))]
         public IReadOnlyCollection<Video> Videos
         {
@@ -132,28 +144,32 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with an ImageResource body and use AddAnnotation instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with an ImageResource body and use AddAnnotation instead.")]
         public Canvas AddImage(Image image)
         {
             AddAnnotationCore(ToAnnotation(image));
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with an AudioResource body and use AddAnnotation instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with an AudioResource body and use AddAnnotation instead.")]
         public Canvas AddAudio(Audio audio)
         {
             AddAnnotationCore(ToAnnotation(audio));
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with a VideoResource body and use AddAnnotation instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct an Annotation with a VideoResource body and use AddAnnotation instead.")]
         public Canvas AddVideo(Video video)
         {
             AddAnnotationCore(ToAnnotation(video));
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddAnnotationPageReference instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "annotations")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddAnnotationPageReference instead.")]
         public Canvas AddOtherContent(OtherContent otherContent)
         {
             Annotations = Annotations.With(ToAnnotationPageReference(otherContent));

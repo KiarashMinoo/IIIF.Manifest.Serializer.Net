@@ -1166,4 +1166,124 @@ byte-identical output to V2_1, `NotSupportedException` for both new enum values 
 overloads, and the corresponding `DeserializeManifest` case). Full suite: **409 tests, all
 passing**, 0 build warnings/errors introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, and round 6 version-detection hardening.
+## Round 7: audit legacy-import normalization (SDK Phase 2)
+
+Scope (issue #6, "SDK Phase 2"): verify that Presentation 2.0/2.1 legacy documents fully normalize
+into the 3.0-native canonical model - `description`→`summary`, `attribution`→`requiredStatement`,
+`license`→`rights`, `within`→`partOf`, `related`→`homepage`, `viewingHint`→`behavior`,
+`sequences`/`canvases`/`images`→`items`/`AnnotationPage`/`Annotation` - and that unknown properties,
+partial/minimal documents, and both round-trip directions (legacy→3.0, legacy→legacy) all behave
+correctly and tolerantly.
+
+Given how much of this was already built across Round 1's Milestones 1-8 (the entire "reshape
+around 3.0-native storage" effort), this was primarily an **audit** - read every relevant model
+file and existing test before assuming anything was missing, rather than reimplementing already-
+correct behavior. Result: every mapping the issue asks for was already correctly implemented and
+already had at least per-property test coverage (`BaseNodeReshapeTests.cs`,
+`ManifestSequenceReshapeTests.cs`, `CanvasReshapeTests.cs`, `BehaviorLegacyLeakTests.cs`) - except
+one real, concrete bug and several real test-coverage gaps:
+
+- **Real bug**: `BaseNode.AddDescription`/`RemoveDescription` were the only legacy mutators in the
+  whole `Description`/`Attribution`/`License`/`Within`/`Related` family *not* tagged
+  `[Obsolete(error: true)]` - simply missed during Milestone 8's "consistency sweep" (confirmed:
+  the sweep's own reflection test, `BaseNodeReshapeTests.LegacyMutators_Should_
+  BeMarkedObsoleteAsCompileErrors`, never included them in its `[InlineData]` list either). Fixed,
+  and the one existing call site (`NodeExtrasTests.cs`) was rewritten to set the modern `Summary`
+  property and assert the legacy `Description` getter reflects it - the same pattern every other
+  legacy-view test in this codebase already uses, rather than a `#pragma warning disable` escape
+  hatch that would have been the only one of its kind.
+- **Test gaps, not code gaps** (the underlying behavior already worked correctly for all of these -
+  confirmed by writing the test and watching it pass on the first try, not by fixing anything):
+  a direct `description`-JSON-in→`Summary` test (the other four legacy properties each already had
+  one; `Description` didn't); the issue's own literal attribution/license and nested sequence/
+  canvas/image acceptance examples, run end-to-end as their own tests rather than only exercised
+  piecemeal across other files; explicit legacy→3.0 and legacy→legacy round-trip tests combining
+  multiple mapped properties in one document; a generic (non-extension-specific) unknown-property
+  preservation test through the legacy `JsonConvert` path; tolerant-parsing tests for a
+  minimal-required-fields-only document and a canvas with no `images` at all; and a `viewingHint`→
+  `behavior` write-time mapping test (the fallback itself - `WriteV3Behavior` falling back to
+  `ViewingHint` when `Behavior` is empty - was already implemented, just untested in isolation).
+
+**Known gap, found but explicitly deferred, not fixed**: `ServiceJsonConverter.
+DetectAndDeserializeService`'s final fallback silently returns `null` (dropping the service
+entirely) when a service's `@type`/`type` is unrecognized, its `profile` doesn't match any known
+keyword, *and* it doesn't parse as a generic Image service either. This means "unknown service
+types should be preserved when possible" (this issue's own wording) does not currently hold - a
+genuinely unrecognized service is lost, not preserved. Fixing this properly needs a new
+`IBaseService`-implementing fallback type that stores the raw service JSON verbatim (mirroring how
+unknown *properties* are already preserved via `[JsonExtensionData]`/`ElementDescriptor`'s
+`IsAdditional` flag) - a real new type with its own read/write/round-trip tests, materially larger
+than the rest of this round's audit-and-testing scope, and not covered by any of the issue's own
+concrete `Tests` section examples (only "unknown-property preservation," not "unknown service
+preservation," is listed there). Left as a follow-up rather than attempted partially here.
+
+Tests: 9 new (`LegacyImportNormalizationTests.cs`) plus 2 theory-list corrections in
+`BaseNodeReshapeTests.cs` (`AddDescription`/`RemoveDescription` added to the obsolete-mutator
+check; `Description`/`SetSummary`/`AddSummary`/`RemoveSummary` added to the not-obsolete checks).
+Full suite: **424 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
+introduced.
+
+## Round 8: decorate obsolete members with IIIFVersionAttribute metadata
+
+Scope (ad hoc request, no associated issue): every `[Obsolete]`-tagged member across the SDK -
+27 legacy mutators (`Add*`/`Remove*`/`Set*`) spread across `Canvas`, `Collection`, `Manifest`,
+`Structure`, and `BaseNode<TBaseNode>` - carried no `IIIFVersionAttribute`-derived attribute at all,
+unlike their sibling legacy *getter* properties, which have consistently carried
+`[PresentationAPI(minVersion, maxVersion, IsDeprecated = true, DeprecatedInVersion = "3.0",
+ReplacedBy = "...")]` since Round 1. This meant reflection-based tooling (docs generation, API
+diffing, IDE tooltips reading the attribute rather than the free-text `Obsolete` message) had no
+structured way to see *what* a deprecated mutator was replaced by.
+
+Fixed by adding `[PresentationAPI(...)]` to all 27 mutators, each one mirroring the exact
+`MinVersion`/`MaxVersion`/`DeprecatedInVersion`/`ReplacedBy` values already present on its
+corresponding legacy getter (e.g. `Canvas.AddImage` mirrors `Canvas.Images`'s
+`[PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy =
+"items")]`). `BaseNode.SetViewingHint` mirrors `BaseNode.ViewingHint`'s existing tag exactly, per
+the reference-implementation pattern.
+
+**Adjacent gap found and fixed in the same pass**: `Canvas.Audios` and `Canvas.Videos` - legacy
+computed views structurally identical to `Canvas.Images` right next to them - had no
+`IIIFVersionAttribute` at all (not even on the getter), unlike `Images`. Added the matching
+`[PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy =
+"items")]` to both.
+
+Tests: 30 new (`LegacyMutators_Should_CarryIIIFVersionAttribute_DescribingTheDeprecation` theories
+added to `CanvasReshapeTests.cs`, `CollectionReshapeTests.cs`, `ManifestSequenceReshapeTests.cs`,
+`StructureReshapeTests.cs`, `BaseNodeReshapeTests.cs`, mirroring each file's existing
+`LegacyMutators_Should_BeMarkedObsoleteAsCompileErrors` theory list; plus
+`LegacyGetters_Should_CarryIIIFVersionAttribute_DescribingTheDeprecation` in
+`CanvasReshapeTests.cs` covering `Images`/`Audios`/`Videos`). Full suite: **454 unit tests + 8
+architecture tests, all passing**, 0 build warnings/errors introduced.
+
+## Round 9: downgrade legacy mutators from compile-error to compile-warning
+
+Scope (ad hoc request, no associated issue): reverse part of the Round 1-8 "compile-time wall"
+design (§4/mandate item 4 in `CLAUDE.md`). Every legacy mutator (`AddImage`, `AddSequence`,
+`SetLicense`, `AddAttribution`, ... - the same 26 members touched in Round 8, all of `BaseNode<T>`'s
+family except `SetViewingHint`, which was already warning-level and untouched) was
+`[Obsolete("...", error: true)]`, meaning any code - old or new - calling one of them failed to
+compile. The user asked for this to stop: legacy mutators should keep working, not error, since
+every one of them already internally forwards to the current 3.0-native API under the hood (e.g.
+`Canvas.AddImage` builds an `Annotation` and routes it through the same `AddAnnotationCore` path
+`AddAnnotation` uses; `Manifest.AddSequence` funnels through `ReplaceFromLegacySequences` into
+`Items`).
+
+Changed: dropped `error: true` from all 26 `[Obsolete(...)]` mutator attributes across `Canvas.cs`,
+`Collection.cs`, `Manifest.cs`, `Structure.cs`, `Shared/BaseNode.cs` - they now behave exactly like
+the pre-existing `SetViewingHint` (a compiler warning naming the replacement, not a build break).
+The `[PresentationAPI(...)]` metadata added in Round 8 is untouched - `IsDeprecated`/
+`DeprecatedInVersion`/`ReplacedBy` still document the same deprecation, just no longer enforced at
+compile time. `CLAUDE.md`'s mandate section and "Conventions to follow" were updated to match (no
+longer describes a compile-time wall as the end state).
+
+Tests: the 5 `LegacyMutators_Should_BeMarkedObsoleteAsCompileErrors` theories (one per
+`*ReshapeTests.cs` file, asserting `IsError == true`) were renamed to
+`LegacyMutators_Should_BeMarkedObsoleteAsWarnings` and their assertions flipped to `IsError ==
+false`. No other test changes were needed - the Round 8 `IIIFVersionAttribute`-coverage theories
+assert on `[PresentationAPI]`, not `[Obsolete]`, so they were unaffected by the severity change.
+Full suite: **454 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
+introduced (no call site in this repo's own source/tests/examples/cookbook actually calls a legacy
+mutator directly, so the warning doesn't surface anywhere in-tree - only external consumers will see
+it).
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, and round 9 legacy-mutator severity downgrade (error to warning).
