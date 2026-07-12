@@ -3,6 +3,7 @@ using System.Linq;
 using IIIF.Manifests.Serializer.Examples;
 using IIIF.Manifests.Serializer.Net.Cookbook;
 using IIIF.Manifests.Serializer.Nodes;
+using IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 using Newtonsoft.Json.Linq;
 using ExampleDefinition = IIIF.Manifests.Serializer.Net.Cookbook.ExampleDefinition;
 
@@ -21,11 +22,34 @@ public class ExampleCatalogTests
     public static IEnumerable<object[]> CookbookExamples => CookbookCatalog.GetAll().Select(example => new object[] { example });
     public static IEnumerable<object[]> DemoExamples => DemoCatalog.GetAll().Select(example => new object[] { example });
 
+    public static IEnumerable<object[]> ContentStateCookbookExamples => CookbookCatalog.GetAll()
+        .Where(example => example.Build() is ContentState)
+        .Select(example => new object[] { example });
+
     [Theory]
     [MemberData(nameof(CookbookExamples))]
     public void Cookbook_examples_should_round_trip_through_IiifSerializer(ExampleDefinition example)
     {
         AssertRoundTrips(example.Title, example.Build());
+    }
+
+    [Theory]
+    [MemberData(nameof(ContentStateCookbookExamples))]
+    public void ContentState_sharing_recipes_should_round_trip_through_ContentStateCodec(ExampleDefinition example)
+    {
+        // The generic Cookbook_examples_should_round_trip_through_IiifSerializer theory only
+        // special-cases Manifest/Collection - a ContentState-returning recipe (0485/0540/0599,
+        // the "sharing" recipes) falls into its default plain-JsonConvert branch and never
+        // actually exercises ContentStateCodec.Encode/Decode (the "iiif-content" base64url string
+        // these recipes exist to demonstrate). Issue #10's own "Tests" section calls this out by
+        // name, so it needs its own dedicated theory.
+        var contentState = (ContentState)example.Build();
+
+        var encoded = ContentStateCodec.Encode(contentState);
+        var decoded = ContentStateCodec.Decode(encoded);
+
+        decoded.Id.Should().Be(contentState.Id);
+        decoded.Target.Select(x => x.Id).Should().BeEquivalentTo(contentState.Target.Select(x => x.Id));
     }
 
     [Theory]
