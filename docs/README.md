@@ -315,6 +315,10 @@ own package version alongside any core release it's packed against.
   Every catalog entry is round-tripped through `IiifSerializer` by the test suite, so the Cookbook
   doubles as a fidelity check against real IIIF documents, not just internal consistency.
 
+  See [`COOKBOOK_COVERAGE.md`](COOKBOOK_COVERAGE.md) for the full per-recipe coverage matrix (all
+  71 official recipes / 78 catalog entries, each with its SDK class, official recipe URL, and test
+  coverage).
+
 ## Testing
 
 ```powershell
@@ -336,6 +340,9 @@ latest generated report (no hard coverage gate is enforced yet - report visibili
   history of how the multi-version reshape, the extended standards coverage (Auth/Search/Discovery/
   Content State/Image API), the Cookbook catalog, and the structural refactor described above were
   each implemented and verified.
+- [`COOKBOOK_COVERAGE.md`](COOKBOOK_COVERAGE.md) - the per-recipe coverage matrix for every
+  official IIIF Cookbook recipe: implementation status, SDK class, official recipe URL, and test
+  coverage.
 - Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own generated
   API reference under `docs/` (types, members, attributes, Mermaid diagrams, package dependencies),
   mirroring the source tree 1:1 (`src/IIIF.Manifest.Serializer.Net/Nodes/Contents/Annotation` →

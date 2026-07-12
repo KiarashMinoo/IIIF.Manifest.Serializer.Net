@@ -1485,4 +1485,49 @@ BeSettableThroughFluentApi` replace the old `_KnownBug`-suffixed test now that t
 Full suite: **483 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
 introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, and round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed.
+## Round 13: cookbook coverage inventory (issue #10)
+
+Scope (issue #10, "SDK Phase 6A"): turn official IIIF Cookbook coverage into a verifiable
+compatibility suite - inventory every official recipe, classify implementation status, ensure
+`CookbookCatalog.GetAll()` reaches everything, confirm recipes serve as regression tests (not just
+sample code), confirm no live network dependency in normal test runs, and produce the coverage
+matrix document the earlier Cookbook rounds never actually wrote.
+
+**Verified, not assumed, 100% parity**: fetched the live recipe list directly
+(`gh api repos/IIIF/cookbook-recipes/contents/recipe`) and diffed it against every `RecipeNNNN`
+method name across `examples/IIIF.Manifest.Serializer.Net.Cookbook/*Recipes.cs` - the two lists
+matched exactly (71 official recipes, excluding the 3 non-recipe entries `0000_template`/
+`0231-transcript-meta-recipe`/`0466-link-for-loading-manifest` this catalog already correctly
+excludes). Zero recipes missing, zero extras, zero Pending/Partial/Blocked classifications needed.
+
+**Confirmed already-solid infrastructure** (no changes needed): `CookbookCatalog.GetAll()`
+aggregates all nine `IRecipeSet` Strategy implementations and already reaches every one of the 78
+catalog entries; `ExampleCatalogTests.Cookbook_examples_should_round_trip_through_IiifSerializer`
+already uses every catalog entry as a `[Theory]`/`[MemberData]`-driven regression test (both
+directions, both versions) - genuinely "recipes as regression tests," not merely runnable sample
+code; a repo-wide grep for `HttpClient`/`WebRequest`/`GetAsync` across `tests/` and `examples/`
+confirmed zero live network dependency anywhere.
+
+**One real test gap found and closed**: the 3 Content State "sharing" recipes (0485, 0540's
+second document, 0599) return a `ContentState`, not a `Manifest`/`Collection` - the generic
+round-trip theory's `default` branch only plain-`JsonConvert`-serializes them, never actually
+exercising `ContentStateCodec.Encode`/`Decode` (the `iiif-content` base64url string these recipes
+exist to demonstrate). Issue #10's own "Tests" section calls this out by name
+("Content State encode/decode test for sharing recipes"). Added
+`ContentState_sharing_recipes_should_round_trip_through_ContentStateCodec` - a second
+`[Theory]`/`[MemberData]` in `ExampleCatalogTests.cs` filtering `CookbookCatalog.GetAll()` to just
+the `ContentState`-returning entries and round-tripping each through the actual codec.
+
+**Deliverable created**: `docs/COOKBOOK_COVERAGE.md` - the coverage matrix this issue's acceptance
+criteria requires and which did not exist in any form before this round (confirmed: no
+`docs/COOKBOOK_COVERAGE.md`, no `examples/.../README.md`). One row per catalog entry (78 rows) with
+official recipe URL, status, SDK class/method, test coverage, and notes, plus a table of the 3
+intentionally-excluded non-recipe entries and a "how this was verified" section documenting the
+`gh api` diff methodology so a future recipe addition can be checked the same way. Linked from
+`docs/README.md`'s "Examples and Cookbook" section and "Documentation index".
+
+Tests: 1 new `[Theory]` (3 cases) - `ContentState_sharing_recipes_should_round_trip_through_
+ContentStateCodec` in `ExampleCatalogTests.cs`. Full suite: **486 unit tests + 8 architecture
+tests, all passing**, 0 build warnings/errors introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, and round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix.
