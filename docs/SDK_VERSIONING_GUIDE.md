@@ -1286,4 +1286,56 @@ introduced (no call site in this repo's own source/tests/examples/cookbook actua
 mutator directly, so the warning doesn't surface anywhere in-tree - only external consumers will see
 it).
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, and round 9 legacy-mutator severity downgrade (error to warning).
+## Round 10: versioned-writer audit (issue #7)
+
+Scope (issue #7, "SDK Phase 3"): verify the 3.0/2.1/2.0 writers are deterministic and complete
+against the issue's own acceptance criteria - default-to-3.0, explicit-version output shapes,
+no cross-version property leakage, clear exceptions for unsupported versions, and documented
+downgrade limitations for 3.0-only data.
+
+Like Round 7, this was primarily an **audit**: the version-aware writer architecture (built across
+Rounds 1-6) already satisfied 8 of the issue's 10 checklist items outright -
+`Serialize(resource)` defaulting to 3.0, correct `id`/`type` vs `@id`/`@type` and property-name
+shapes for both directions, `NotSupportedException` for `Metadata_1_0`/`V4_0_Rc`/any future enum
+value on both `Serialize` overloads, and V2_0/V2_1 being intentionally wire-identical (confirmed
+against the live spec: no version field, no structural difference between 2.0 and 2.1).
+
+**One real bug found and fixed**: `BaseNode.ViewingHint`'s getter read only its own independent
+storage, never falling back to `Behavior` - the reverse of the already-correct `WriteV3Behavior`
+fallback (`viewingHint` → `behavior` when writing 3.0). This meant a `Manifest` built purely via
+the 3.0-native `AddBehavior(...)` fluent API - never calling the obsolete `SetViewingHint` - lost
+its behavior entirely when written as `V2_1`/`V2_0`: `viewingHint` was simply absent from the
+output, a genuine, silent downgrade data-loss bug, and exactly the "behavior -> viewingHint where
+safe" mapping the issue's own body calls out by name. Fixed by adding
+`ComputeViewingHintFromBehavior()` to `BaseNode<TBaseNode>` (`Shared/BaseNode.cs`): the `ViewingHint`
+getter now falls back to the first `Behavior` value that is also spec-valid as a `ViewingHint`
+(`paged`, `continuous`, `individuals`, `facing-pages`, `non-paged`, `multi-part`) when its own
+storage is empty. Behavior-only values (`unordered`, `sequence`, `auto-advance`, `hidden`, ...) are
+intentionally left unconverted - per the issue's own "otherwise omit" rule - rather than picking an
+incorrect value. This only ever *adds* a value where none existed before (falls back only when the
+independent storage is null), so no existing test's expectations changed.
+
+**Test gaps, not code gaps** (confirmed correct on first run, not fixed):
+- No explicit `V2_0` test existed for `Collection` (only `Manifest` had one) -
+  `IiifSerializer_Should_WriteTheSameLegacyShape_When_CollectionVersionIsV2_0` added.
+- No test asserted that a legacy `V2_1` Manifest write excludes 3.0-only properties
+  (`rights`/`requiredStatement`/`partOf`/`items`) - only the Canvas-level "no items" case was
+  covered - `Serialize_Should_ExcludeV3OnlyProperties_FromLegacyV2Manifest` added.
+- No negative test existed for `DeserializeCollection` with a detected-but-unimportable version
+  (only `DeserializeManifest` had one) - `DeserializeCollection_Should_ThrowNotSupported_When_
+  VersionIsDetectedButUnimportable` added.
+
+**Documentation gap fixed**: added a "Downgrade limitations" subsection to `docs/README.md` (under
+"Multi-version serialization") enumerating exactly which 3.0-only properties convert safely,
+which are omitted, and why - satisfying the issue's "downgrade limitations are documented"
+acceptance criterion, which had no prior dedicated section.
+
+Tests: 7 new (`SerializeV2_Should_MapBehaviorToViewingHint_When_ValueIsSharedBetweenBoth`,
+`SerializeV2_Should_OmitViewingHint_When_BehaviorHasNo2xEquivalent` in
+`ObsoleteCompatibilityTests.cs`; `IiifSerializer_Should_WriteTheSameLegacyShape_When_
+CollectionVersionIsV2_0`, `DeserializeCollection_Should_ThrowNotSupported_When_
+VersionIsDetectedButUnimportable` in `CollectionReshapeTests.cs`;
+`Serialize_Should_ExcludeV3OnlyProperties_FromLegacyV2Manifest` in `IiifSerializerTests.cs`). Full
+suite: **459 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), and round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix.

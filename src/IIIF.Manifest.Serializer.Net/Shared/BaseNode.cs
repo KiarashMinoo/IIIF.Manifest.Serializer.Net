@@ -145,13 +145,31 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         private set => SetElementValue(value);
     }
 
+    /// <summary>
+    /// Values valid as both <see cref="Properties.Behavior"/> (3.0) and <see cref="Properties.ViewingHint"/>
+    /// (2.x) per spec - the safe subset <see cref="ViewingHint"/> falls back to when writing legacy 2.x JSON
+    /// for a resource that only has <see cref="Behavior"/> set (e.g. constructed via <see cref="AddBehavior"/>).
+    /// Behavior-only values with no 2.x equivalent (<c>unordered</c>, <c>sequence</c>, <c>auto-advance</c>, ...)
+    /// are intentionally omitted, not converted - see SDK_VERSIONING_GUIDE.md Round 10.
+    /// </summary>
+    private static readonly HashSet<string> SharedBehaviorViewingHintValues =
+    [
+        "paged", "continuous", "individuals", "facing-pages", "non-paged", "multi-part"
+    ];
+
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Replaced by behavior.")]
     [JsonProperty(ViewingHintJName)]
     public ViewingHint? ViewingHint
     {
-        get => GetElementValue(x => x.ViewingHint);
+        get => GetElementValue(x => x.ViewingHint) ?? ComputeViewingHintFromBehavior();
         private set => SetElementValue(value);
+    }
+
+    private ViewingHint? ComputeViewingHintFromBehavior()
+    {
+        var value = Behavior.Select(x => x.Value).FirstOrDefault(SharedBehaviorViewingHintValues.Contains);
+        return value is not null ? new ViewingHint(value) : null;
     }
 
     [PresentationAPI("2.0")]

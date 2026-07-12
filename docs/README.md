@@ -117,6 +117,22 @@ as a **write** target throws `NotSupportedException` rather than silently produc
 [`SDK_VERSIONING_GUIDE.md`, Round 6](SDK_VERSIONING_GUIDE.md#round-6-harden-version-detection---metadata-api-10-and-presentation-40-rc-tracking)
 for the full research and rationale.
 
+### Downgrade limitations (writing 3.0-native data as legacy 2.x)
+
+Writing a 3.0-native model as `V2_0`/`V2_1` is **deterministic**, but not always lossless - some
+3.0-only concepts have no 2.x equivalent at all. This SDK's rule (per
+[`SDK_VERSIONING_GUIDE.md`, Round 10](SDK_VERSIONING_GUIDE.md#round-10-versioned-writer-audit-issue-7)):
+convert to the legacy shape when a safe equivalent exists, otherwise omit the property from legacy
+output rather than guessing or throwing.
+
+| 3.0-native property | 2.x write behavior |
+| --- | --- |
+| `summary`, `requiredStatement`, `rights`, `partOf`, `homepage` | Always converted to `description`/`attribution`/`license`/`within`/`related` - these are computed legacy views over the same storage, so nothing is lost. |
+| `behavior` | Converted to `viewingHint` only for the values valid in both (`paged`, `continuous`, `individuals`, `facing-pages`, `non-paged`, `multi-part`). Behavior-only values (`unordered`, `sequence`, `thumbnail-nav`, `no-nav`, `auto-advance`, `no-auto-advance`, `repeat`, `no-repeat`, `together`, `hidden`) are omitted - `viewingHint` is left unset rather than picking an arbitrary/incorrect value. |
+| `items` beyond the first `Manifest` sequence | A `Manifest` with more than one legacy `sequence` on read keeps the extra sequences on `AdditionalSequences` precisely so they round-trip back out on 2.x write - see [Round 7](SDK_VERSIONING_GUIDE.md#round-7-audit-legacy-import-normalization-sdk-phase-2). A **3.0-constructed** `Manifest` only ever has one canvas ordering (`Items`), so it always writes as a single `sequence`. |
+| `placeholderCanvas`, `accompanyingCanvas`, `start`, top-level `services` | 3.0-only, no 2.x equivalent shape at all - omitted entirely from `V2_0`/`V2_1` output. |
+| `AnnotationCollection` | 3.0-only resource type - `Serialize(annotationCollection, ...)` throws `NotSupportedException` for any non-`V3_0` target rather than attempting a legacy shape that doesn't exist. |
+
 ## Newtonsoft.Json and System.Text.Json interop
 
 This SDK is built on **Newtonsoft.Json** (custom `[JsonConverter]`s, `IiifSerializer`'s hand-rolled

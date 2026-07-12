@@ -6,6 +6,7 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Audio;
 using IIIF.Manifests.Serializer.Nodes.Contents.Audio.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
+using IIIF.Manifests.Serializer.Properties;
 using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Tests;
@@ -39,6 +40,28 @@ public class IiifSerializerTests
         var v2_1Json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1));
 
         v2_0Json.Should().Be(v2_1Json);
+    }
+
+    [Fact]
+    public void Serialize_Should_ExcludeV3OnlyProperties_FromLegacyV2Manifest()
+    {
+        var manifest = new Manifest("https://example.org/manifest", new Label("Test"))
+            .SetRights(Rights.CcBy)
+            .SetRequiredStatement(new RequiredStatement(new Label("Provider"), new Description("Courtesy of Example Library")))
+            .AddPartOf(new PartOf("https://example.org/collection", "Collection"));
+
+        var json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1));
+        var obj = JObject.Parse(json);
+
+        obj["rights"].Should().BeNull("v3-only property must not leak into legacy v2.1 output");
+        obj["requiredStatement"].Should().BeNull("v3-only property must not leak into legacy v2.1 output");
+        obj["partOf"].Should().BeNull("v3-only property must not leak into legacy v2.1 output");
+        obj["items"].Should().BeNull("v3-only property must not leak into legacy v2.1 output");
+
+        // The legacy-shaped equivalents should be present instead.
+        obj["license"]!.ToString().Should().Be(Rights.CcBy.Value);
+        obj["attribution"]!.ToString().Should().Contain("Courtesy of Example Library");
+        obj["within"]!["@id"]!.ToString().Should().Be("https://example.org/collection");
     }
 
     [Fact]
