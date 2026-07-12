@@ -293,12 +293,14 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return SetLabel(Label.Without(label));
     }
 
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddSummary instead.", error: true)]
     public TBaseNode AddDescription(Description description)
     {
         Description = Description.With(description);
         return (TBaseNode)this;
     }
 
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use RemoveSummary instead.", error: true)]
     public TBaseNode RemoveDescription(Description description)
     {
         Description = Description.Without(description);

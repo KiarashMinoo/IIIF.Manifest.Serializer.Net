@@ -193,6 +193,8 @@ public class BaseNodeReshapeTests
     [InlineData(nameof(BaseNode<Manifest>.AddWithin))]
     [InlineData(nameof(BaseNode<Manifest>.RemoveWithin))]
     [InlineData(nameof(BaseNode<Manifest>.SetRelated))]
+    [InlineData(nameof(BaseNode<Manifest>.AddDescription))]
+    [InlineData(nameof(BaseNode<Manifest>.RemoveDescription))]
     public void LegacyMutators_Should_BeMarkedObsoleteAsCompileErrors(string methodName)
     {
         var method = typeof(BaseNode<Manifest>).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
@@ -209,6 +211,9 @@ public class BaseNodeReshapeTests
     [InlineData(nameof(BaseNode<Manifest>.AddPartOf))]
     [InlineData(nameof(BaseNode<Manifest>.RemovePartOf))]
     [InlineData(nameof(BaseNode<Manifest>.AddHomepage))]
+    [InlineData(nameof(BaseNode<Manifest>.SetSummary))]
+    [InlineData(nameof(BaseNode<Manifest>.AddSummary))]
+    [InlineData(nameof(BaseNode<Manifest>.RemoveSummary))]
     public void ReplacementMutators_Should_NotBeObsolete(string methodName)
     {
         var method = typeof(BaseNode<Manifest>).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
@@ -222,6 +227,7 @@ public class BaseNodeReshapeTests
     [InlineData(nameof(BaseNode<Manifest>.Attribution))]
     [InlineData(nameof(BaseNode<Manifest>.Within))]
     [InlineData(nameof(BaseNode<Manifest>.Related))]
+    [InlineData(nameof(BaseNode<Manifest>.Description))]
     public void LegacyGetters_Should_NotBeObsolete(string propertyName)
     {
         var property = typeof(BaseNode<Manifest>).GetProperty(propertyName);

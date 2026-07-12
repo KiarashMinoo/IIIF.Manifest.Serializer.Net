@@ -1166,4 +1166,61 @@ byte-identical output to V2_1, `NotSupportedException` for both new enum values 
 overloads, and the corresponding `DeserializeManifest` case). Full suite: **409 tests, all
 passing**, 0 build warnings/errors introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, and round 6 version-detection hardening.
+## Round 7: audit legacy-import normalization (SDK Phase 2)
+
+Scope (issue #6, "SDK Phase 2"): verify that Presentation 2.0/2.1 legacy documents fully normalize
+into the 3.0-native canonical model - `description`→`summary`, `attribution`→`requiredStatement`,
+`license`→`rights`, `within`→`partOf`, `related`→`homepage`, `viewingHint`→`behavior`,
+`sequences`/`canvases`/`images`→`items`/`AnnotationPage`/`Annotation` - and that unknown properties,
+partial/minimal documents, and both round-trip directions (legacy→3.0, legacy→legacy) all behave
+correctly and tolerantly.
+
+Given how much of this was already built across Round 1's Milestones 1-8 (the entire "reshape
+around 3.0-native storage" effort), this was primarily an **audit** - read every relevant model
+file and existing test before assuming anything was missing, rather than reimplementing already-
+correct behavior. Result: every mapping the issue asks for was already correctly implemented and
+already had at least per-property test coverage (`BaseNodeReshapeTests.cs`,
+`ManifestSequenceReshapeTests.cs`, `CanvasReshapeTests.cs`, `BehaviorLegacyLeakTests.cs`) - except
+one real, concrete bug and several real test-coverage gaps:
+
+- **Real bug**: `BaseNode.AddDescription`/`RemoveDescription` were the only legacy mutators in the
+  whole `Description`/`Attribution`/`License`/`Within`/`Related` family *not* tagged
+  `[Obsolete(error: true)]` - simply missed during Milestone 8's "consistency sweep" (confirmed:
+  the sweep's own reflection test, `BaseNodeReshapeTests.LegacyMutators_Should_
+  BeMarkedObsoleteAsCompileErrors`, never included them in its `[InlineData]` list either). Fixed,
+  and the one existing call site (`NodeExtrasTests.cs`) was rewritten to set the modern `Summary`
+  property and assert the legacy `Description` getter reflects it - the same pattern every other
+  legacy-view test in this codebase already uses, rather than a `#pragma warning disable` escape
+  hatch that would have been the only one of its kind.
+- **Test gaps, not code gaps** (the underlying behavior already worked correctly for all of these -
+  confirmed by writing the test and watching it pass on the first try, not by fixing anything):
+  a direct `description`-JSON-in→`Summary` test (the other four legacy properties each already had
+  one; `Description` didn't); the issue's own literal attribution/license and nested sequence/
+  canvas/image acceptance examples, run end-to-end as their own tests rather than only exercised
+  piecemeal across other files; explicit legacy→3.0 and legacy→legacy round-trip tests combining
+  multiple mapped properties in one document; a generic (non-extension-specific) unknown-property
+  preservation test through the legacy `JsonConvert` path; tolerant-parsing tests for a
+  minimal-required-fields-only document and a canvas with no `images` at all; and a `viewingHint`→
+  `behavior` write-time mapping test (the fallback itself - `WriteV3Behavior` falling back to
+  `ViewingHint` when `Behavior` is empty - was already implemented, just untested in isolation).
+
+**Known gap, found but explicitly deferred, not fixed**: `ServiceJsonConverter.
+DetectAndDeserializeService`'s final fallback silently returns `null` (dropping the service
+entirely) when a service's `@type`/`type` is unrecognized, its `profile` doesn't match any known
+keyword, *and* it doesn't parse as a generic Image service either. This means "unknown service
+types should be preserved when possible" (this issue's own wording) does not currently hold - a
+genuinely unrecognized service is lost, not preserved. Fixing this properly needs a new
+`IBaseService`-implementing fallback type that stores the raw service JSON verbatim (mirroring how
+unknown *properties* are already preserved via `[JsonExtensionData]`/`ElementDescriptor`'s
+`IsAdditional` flag) - a real new type with its own read/write/round-trip tests, materially larger
+than the rest of this round's audit-and-testing scope, and not covered by any of the issue's own
+concrete `Tests` section examples (only "unknown-property preservation," not "unknown service
+preservation," is listed there). Left as a follow-up rather than attempted partially here.
+
+Tests: 9 new (`LegacyImportNormalizationTests.cs`) plus 2 theory-list corrections in
+`BaseNodeReshapeTests.cs` (`AddDescription`/`RemoveDescription` added to the obsolete-mutator
+check; `Description`/`SetSummary`/`AddSummary`/`RemoveSummary` added to the not-obsolete checks).
+Full suite: **424 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
+introduced.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, and round 7 legacy-import normalization audit.
