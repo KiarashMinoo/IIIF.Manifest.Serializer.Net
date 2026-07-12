@@ -28,6 +28,58 @@ public class IiifSerializerTests
     }
 
     [Fact]
+    public void Serialize_Should_WriteTheSameLegacyShape_When_VersionIsV2_0()
+    {
+        // 2.0 and 2.1 are wire-format-identical (no version field, no structural difference per
+        // the live spec - see IiifPresentationVersion.V2_0's remarks), so explicitly requesting
+        // V2_0 must succeed and produce the same shape as V2_1, not throw.
+        var manifest = CreateImageManifest();
+
+        var v2_0Json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_0));
+        var v2_1Json = IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V2_1));
+
+        v2_0Json.Should().Be(v2_1Json);
+    }
+
+    [Fact]
+    public void Serialize_Should_Throw_When_VersionIsMetadata1_0()
+    {
+        var manifest = CreateImageManifest();
+
+        var act = () => IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.Metadata_1_0));
+
+        act.Should().Throw<NotSupportedException>().WithMessage("*Metadata_1_0*");
+    }
+
+    [Fact]
+    public void Serialize_Should_Throw_When_VersionIsV4_0Rc()
+    {
+        // Presentation 4.0 is still a draft/RC - this SDK must never silently write it.
+        var manifest = CreateImageManifest();
+
+        var act = () => IiifSerializer.Serialize(manifest, new IiifSerializerOptions(IiifPresentationVersion.V4_0_Rc));
+
+        act.Should().Throw<NotSupportedException>().WithMessage("*V4_0_Rc*");
+    }
+
+    [Fact]
+    public void DeserializeManifest_Should_ThrowNotSupported_When_VersionIsDetectedButUnimportable()
+    {
+        const string json = """
+                            {
+                              "@context": "http://www.shared-canvas.org/ns/context.json",
+                              "@id": "https://example.org/manifest",
+                              "@type": "sc:Manifest",
+                              "sequences": []
+                            }
+                            """;
+
+        var act = () => IiifSerializer.DeserializeManifest(json);
+
+        act.Should().Throw<NotSupportedException>().WithMessage("*Metadata_1_0*");
+    }
+
+    [Fact]
     public void Serialize_Should_WriteLatestV3_ByDefault()
     {
         var manifest = CreateImageManifest();

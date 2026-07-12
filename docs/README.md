@@ -108,6 +108,15 @@ Manifest fromLegacy = IiifSerializer.DeserializeManifest(legacyJson);
 var firstSequenceCanvases = fromLegacy.Sequences.Single().Canvases; // computed, read-only
 ```
 
+`IiifPresentationVersionDetector` also recognizes (but does not import/export) two further
+`IiifPresentationVersion` values, for classification rather than authoring: `Metadata_1_0` (the
+"Shared Canvas" predecessor to Presentation 2.0, `@context`:
+`http://www.shared-canvas.org/ns/context.json`) and `V4_0_Rc` (Presentation 4.0, still a draft as
+of this writing, `@context`: `http://iiif.io/api/presentation/4/context.json`). Requesting either
+as a **write** target throws `NotSupportedException` rather than silently producing output - see
+[`SDK_VERSIONING_GUIDE.md`, Round 6](SDK_VERSIONING_GUIDE.md#round-6-harden-version-detection---metadata-api-10-and-presentation-40-rc-tracking)
+for the full research and rationale.
+
 ## Newtonsoft.Json and System.Text.Json interop
 
 This SDK is built on **Newtonsoft.Json** (custom `[JsonConverter]`s, `IiifSerializer`'s hand-rolled
