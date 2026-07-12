@@ -3,14 +3,13 @@ name: CI
 on:
   push:
     branches:
-      - main
-      - develop
-      - 'release/**'
+      - '**'
+    tags-ignore:
+      - '**'
   pull_request:
     branches:
-      - main
-      - develop
-      - 'release/**'
+      - '**'
+  merge_group: {}
   workflow_dispatch: {}
 
 permissions:
