@@ -134,7 +134,7 @@ rounds to the end; don't rewrite history that's already there.
 ## Build & test
 
 ```powershell
-dotnet build IIIF.Manifest.Serializer.Net.sln
+dotnet build IIIF.Manifest.Serializer.Net.slnx
 dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
 dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj
 ```

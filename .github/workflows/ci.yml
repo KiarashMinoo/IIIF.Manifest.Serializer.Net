@@ -37,10 +37,10 @@ jobs:
           global-json-file: global.json
 
       - name: Restore
-        run: dotnet restore IIIF.Manifest.Serializer.Net.sln
+        run: dotnet restore IIIF.Manifest.Serializer.Net.slnx
 
       - name: Build (Release)
-        run: dotnet build IIIF.Manifest.Serializer.Net.sln --configuration Release --no-restore -p:GeneratePackageOnBuild=false
+        run: dotnet build IIIF.Manifest.Serializer.Net.slnx --configuration Release --no-restore -p:GeneratePackageOnBuild=false
 
       - name: Test (Release)
         run: dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj --configuration Release --no-build
@@ -56,7 +56,7 @@ jobs:
           --results-directory ./coverage-raw
 
       - name: Generate coverage report
-        if: always()
+        if: success()
         run: |
           dotnet tool update --global dotnet-reportgenerator-globaltool --version 5.4.4
           reportgenerator \

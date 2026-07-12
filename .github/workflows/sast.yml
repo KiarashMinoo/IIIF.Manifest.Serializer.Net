@@ -40,7 +40,7 @@ jobs:
       languages: '["csharp"]'
       dotnet-versions: |
         8.0.x
-      solution-path: 'IIIF.Manifest.Serializer.Net.sln'
+      solution-path: 'IIIF.Manifest.Serializer.Net.slnx'
       enable-codeql: ${{ github.event_name != 'workflow_dispatch' || inputs.enable-codeql }}
       codeql-queries: 'security-extended,security-and-quality'
       fail-on-findings: ${{ github.event_name == 'workflow_dispatch' && inputs.fail-on-findings }}

@@ -259,7 +259,7 @@ them:
 ## Testing
 
 ```powershell
-dotnet build IIIF.Manifest.Serializer.Net.sln
+dotnet build IIIF.Manifest.Serializer.Net.slnx
 dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
 ```
 
@@ -345,7 +345,7 @@ than have it overwritten by source-derived generation.
    parse."
 4. Run the full build and test suite before opening a PR:
    ```powershell
-   dotnet build IIIF.Manifest.Serializer.Net.sln
+  dotnet build IIIF.Manifest.Serializer.Net.slnx
    dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
    ```
 

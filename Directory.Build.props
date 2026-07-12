@@ -12,6 +12,7 @@
     <Configurations>Debug;Release</Configurations>
     <LangVersion>latestmajor</LangVersion>
     <Platforms>AnyCPU</Platforms>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugSymbols>false</DebugSymbols>

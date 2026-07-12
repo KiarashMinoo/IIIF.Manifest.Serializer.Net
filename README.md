@@ -234,8 +234,8 @@ The catalog excludes cookbook folders that do not contain manifest JSON of their
 The repository uses the .NET SDK configured by `global.json`:
 
 ```powershell
-dotnet restore IIIF.Manifest.Serializer.Net.sln
-dotnet build IIIF.Manifest.Serializer.Net.sln
+dotnet restore IIIF.Manifest.Serializer.Net.slnx
+dotnet build IIIF.Manifest.Serializer.Net.slnx
 dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
 ```
 
