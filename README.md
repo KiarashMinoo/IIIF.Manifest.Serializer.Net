@@ -11,7 +11,10 @@ The core package targets `netstandard2.1`, uses `Newtonsoft.Json`, and exposes a
 - Extension target frameworks: `netstandard2.1;net8.0`.
 - Test project target framework: `net8.0`.
 - Checked-in coverage summary: about 72% line coverage.
-- Root README status: current project overview. Older generated docs under `docs/` may lag behind the current 3.0-first model.
+- Test suite: 336 tests (xUnit + FluentAssertions), all passing.
+- Documentation: every source folder under `src/`/`extensions/` now has a generated, source-derived
+  API-reference README under `docs/` (regenerated - see [Documentation](#documentation) below); it is
+  current, not lagging.
 
 ## What It Supports
 
@@ -27,6 +30,10 @@ The core package targets `netstandard2.1`, uses `Newtonsoft.Json`, and exposes a
 - IIIF Content State 1.0 objects and `iiif-content` base64url encode/decode helpers.
 - Extension packages for navPlace, Georeference, and Text Granularity.
 - A cookbook example project with faithful C# reconstructions of 71 real IIIF Cookbook recipes.
+- `System.Text.Json` interop for `Manifest`/`Collection`/`AnnotationCollection`/`ContentState`: each
+  carries a bridging `[JsonConverter]` so `System.Text.Json.JsonSerializer.Serialize`/`Deserialize`
+  (and ASP.NET Core's default (de)serialization) produce the same correct IIIF JSON as
+  `IiifSerializer`, with no extra configuration.
 
 ## Standards Coverage
 
@@ -155,6 +162,17 @@ IiifSerializer.DeserializeAnnotationCollection(json);
 
 Version detection is handled by `IiifPresentationVersionDetector` using context, type, and structural cues.
 
+Alternatively, since `Manifest`/`Collection`/`AnnotationCollection`/`ContentState` each carry a
+bridging `System.Text.Json` converter, plain `System.Text.Json.JsonSerializer` works too and
+produces identical output - no `IiifSerializer` call, no converter registration required:
+
+```csharp
+using System.Text.Json;
+
+string json = JsonSerializer.Serialize(manifest);           // same JSON as IiifSerializer.Serialize(manifest)
+var parsed = JsonSerializer.Deserialize<Manifest>(json)!;    // version auto-detected, same as DeserializeManifest
+```
+
 ## Annotation and Resource Modeling
 
 The current annotation model covers the common Presentation 3.0/W3C Annotation shapes:
@@ -244,11 +262,42 @@ Extension projects have their own package IDs:
 - `IIIF.Manifest.Serializer.Net.Georeference`
 - `IIIF.Manifest.Serializer.Net.TextGranularity`
 
-## Documentation Notes
+All four packages are consumed straight from [nuget.org](https://www.nuget.org) - there is no
+`NuGet.Config` in this repository and no private/custom feed to configure.
 
-`docs/SDK_VERSIONING_GUIDE.md` is the authoritative design record for the multi-version reshape and standards coverage work. `docs/README.md` is an older generated documentation index and may not reflect the current 3.0-first model as accurately as this root README and the versioning guide.
+## Documentation
 
-When changing serializer behavior, update tests and prefer checking the real JSON shape through `IiifSerializer` rather than relying on direct `JsonConvert` output. Direct `JsonConvert` is still used for legacy compatibility surfaces and for specific standalone payloads, but the version-aware serializer is the intended public entry point for manifests, collections, and annotation collections.
+- **[`docs/README.md`](docs/README.md)** - the full project guide: installation, quick start,
+  multi-version serialization, Newtonsoft.Json/System.Text.Json interop, the object model, the
+  `IiifSerializer` architecture, services, extension packages, the Cookbook's Strategy+Registry
+  design, and testing.
+- **[`docs/SDK_VERSIONING_GUIDE.md`](docs/SDK_VERSIONING_GUIDE.md)** - the authoritative design
+  record: the 2.x↔3.0 property mapping table, the Obsolete-tagging convention, and the full
+  milestone history (multi-version reshape, extended standards coverage, the Cookbook catalog, the
+  Facade/Strategy/Registry structural refactor, and the System.Text.Json interop bridge).
+- **Generated API reference** - every folder under `src/IIIF.Manifest.Serializer.Net/` and
+  `extensions/*` has its own README under `docs/`, mirroring the source tree 1:1 (types, members,
+  attributes, Mermaid diagrams, package dependencies). Two-level catalog below; each area links to
+  its own deeper nesting.
+
+  | Area | Types | Files | Diagrams |
+  | --- | --- | --- | --- |
+  | [Attributes](docs/Attributes/README.md) | 10 | 10 | ✓ |
+  | [Extensions](docs/Extensions/README.md) | 22 | 23 | ✓ |
+  | &nbsp;&nbsp;[NavPlace](docs/Extensions/NavPlace/README.md) | 9 | 10 | ✓ |
+  | &nbsp;&nbsp;[Georeference](docs/Extensions/Georeference/README.md) | 11 | 11 | ✓ |
+  | &nbsp;&nbsp;[TextGranularity](docs/Extensions/TextGranularity/README.md) | 2 | 2 | ✓ |
+  | [Helpers](docs/Helpers/README.md) | 6 | 6 | ✓ |
+  | [Nodes](docs/Nodes/README.md) | 34 | 34 | ✓ |
+  | [Properties](docs/Properties/README.md) | 65 | 65 | ✓ |
+  | [Shared](docs/Shared/README.md) | 39 | 36 | ✓ |
+  | [SystemTextJson](docs/SystemTextJson/README.md) | 4 | 4 | ✓ |
+
+  ~180 types / ~178 files documented across 44 folders. See
+  [`docs/README.md#docs-catalog`](docs/README.md#docs-catalog) for the fully expanded catalog
+  (every subfolder, not just each area's direct children) and the coverage audit.
+
+When changing serializer behavior, update tests and prefer checking the real JSON shape through `IiifSerializer` rather than relying on direct `JsonConvert` output. Direct `JsonConvert` is still used for legacy compatibility surfaces and for specific standalone payloads, but the version-aware serializer is the intended public entry point for manifests, collections, and annotation collections. When adding a genuinely new 3.0-native property, back any legacy 2.x equivalent with a computed read-only view rather than the other way around (see `docs/SDK_VERSIONING_GUIDE.md` §3-4).
 
 ## License
 

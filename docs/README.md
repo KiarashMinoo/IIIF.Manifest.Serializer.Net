@@ -263,10 +263,10 @@ dotnet build IIIF.Manifest.Serializer.Net.sln
 dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
 ```
 
-329 tests (xUnit + FluentAssertions), including per-feature round-trip tests and an automatic
-per-catalog-entry round-trip test for every Cookbook recipe. Coverage is collected via
-`coverlet.collector` in CI; see `coverage-report/` for the latest generated report (no hard coverage
-gate is enforced yet - report visibility comes first).
+336 tests (xUnit + FluentAssertions), including per-feature round-trip tests, an automatic
+per-catalog-entry round-trip test for every Cookbook recipe, and the System.Text.Json interop
+suite. Coverage is collected via `coverlet.collector` in CI; see `coverage-report/` for the latest
+generated report (no hard coverage gate is enforced yet - report visibility comes first).
 
 ## Documentation index
 
@@ -275,11 +275,63 @@ gate is enforced yet - report visibility comes first).
   history of how the multi-version reshape, the extended standards coverage (Auth/Search/Discovery/
   Content State/Image API), the Cookbook catalog, and the structural refactor described above were
   each implemented and verified.
-- The per-namespace `docs/Nodes/`, `docs/Properties/`, `docs/Shared/`, `docs/Helpers/` folders
-  contain older, narrower READMEs written against an earlier, Presentation-2.0-only shape of the
-  model (`Sequence`-centric, pre-dating `Items`/the multi-version reshape). Treat them as
-  historical background rather than a current API reference - `SDK_VERSIONING_GUIDE.md` and the
-  source itself are authoritative for the current model.
+- Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own generated
+  API reference under `docs/` (types, members, attributes, Mermaid diagrams, package dependencies),
+  mirroring the source tree 1:1 (`src/IIIF.Manifest.Serializer.Net/Nodes/Contents/Annotation` →
+  [`docs/Nodes/Contents/Annotation`](Nodes/Contents/Annotation/README.md), etc.). These are
+  regenerated from source and doc-comments, not hand-maintained - see the **Docs Catalog** below for
+  the full index, or start from [`docs/Nodes/README.md`](Nodes/README.md),
+  [`docs/Properties/README.md`](Properties/README.md), [`docs/Shared/README.md`](Shared/README.md),
+  [`docs/Attributes/README.md`](Attributes/README.md), [`docs/Helpers/README.md`](Helpers/README.md),
+  [`docs/SystemTextJson/README.md`](SystemTextJson/README.md), and
+  [`docs/Extensions/README.md`](Extensions/README.md).
+
+### Docs Catalog
+
+Two-level index of every generated area (badges: `Types` = public/internal types documented,
+`Files` = source files documented, `Diagrams` = whether a `## Diagrams` section has at least one
+Mermaid block). Sorted alphabetically; children shown are each area's direct subfolders only -
+follow a child's own link for its further nesting (e.g. `Nodes/Contents` has 10 more content-type
+subfolders, `Properties/Services` has 4).
+
+- [Attributes](Attributes/README.md) `Types:10` `Files:10` `Diagrams:✓`
+- [Extensions](Extensions/README.md) `Types:22` `Files:23` `Diagrams:✓`
+  - [NavPlace](Extensions/NavPlace/README.md) `Types:9` `Files:10` `Diagrams:✓`
+  - [Georeference](Extensions/Georeference/README.md) `Types:11` `Files:11` `Diagrams:✓`
+  - [TextGranularity](Extensions/TextGranularity/README.md) `Types:2` `Files:2` `Diagrams:✓`
+- [Helpers](Helpers/README.md) `Types:6` `Files:6` `Diagrams:✓`
+- [Nodes](Nodes/README.md) `Types:34` `Files:34` `Diagrams:✓`
+  - [Contents](Nodes/Contents/README.md) `Types:0` `Files:0` `Diagrams:✓` *(pure grouping folder - 10 further content-type subfolders)*
+- [Properties](Properties/README.md) `Types:65` `Files:65` `Diagrams:✓`
+  - [Interfaces](Properties/Interfaces/README.md) `Types:4` `Files:4` `Diagrams:✓`
+  - [MetadataProperty](Properties/MetadataProperty/README.md) `Types:1` `Files:1` `Diagrams:✗` *(single self-contained type)*
+  - [Services](Properties/Services/README.md) `Types:8` `Files:8` `Diagrams:✓` *(3 further subfolders: Auth2, Discovery, Search)*
+- [Shared](Shared/README.md) `Types:39` `Files:36` `Diagrams:✓`
+  - [Content](Shared/Content/README.md) `Types:2` `Files:1` `Diagrams:✓`
+  - [Exceptions](Shared/Exceptions/README.md) `Types:3` `Files:3` `Diagrams:✓`
+  - [Selectors](Shared/Selectors/README.md) `Types:6` `Files:6` `Diagrams:✓`
+  - [Service](Shared/Service/README.md) `Types:1` `Files:1` `Diagrams:✗` *(single self-contained type)*
+  - [Trackable](Shared/Trackable/README.md) `Types:9` `Files:10` `Diagrams:✓`
+  - [ValuableItem](Shared/ValuableItem/README.md) `Types:2` `Files:2` `Diagrams:✓`
+- [SystemTextJson](SystemTextJson/README.md) `Types:4` `Files:4` `Diagrams:✓`
+
+**Totals**: ~180 types and ~178 source files documented across 44 folders (plus the `Extensions`
+navigational index), spanning the core SDK (`src/IIIF.Manifest.Serializer.Net/`) and all 3
+extension packages.
+
+**Last generated**: 2026-07-12.
+
+### Coverage Audit
+
+Every folder in scope (`src/IIIF.Manifest.Serializer.Net/**` and `extensions/*/**`, excluding
+`bin`/`obj`) has a generated README with all required sections (Contents, Overview, Files,
+Types & Members, Diagrams, Package Dependencies, See Also): ✅ all 44 folders, plus the
+`Extensions` navigational index. No folder needed a retry pass or was left with placeholder
+content. `examples/*` and `tests/*` were intentionally excluded from this run (examples are
+demo/consumer code, not documented library API surface; tests are excluded per policy). The
+top-level `docs/README.md` (this file) and `docs/SDK_VERSIONING_GUIDE.md` were preserved
+unchanged by the regeneration, per an explicit decision to keep this hand-authored content rather
+than have it overwritten by source-derived generation.
 
 ## Contributing
 
