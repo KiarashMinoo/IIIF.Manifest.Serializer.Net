@@ -22,6 +22,7 @@ Granularity extensions.
 - [Testing](#testing)
 - [Documentation index](#documentation-index)
 - [Contributing](#contributing)
+- [Release hygiene](#release-hygiene)
 - [License](#license)
 
 ## Why this library
@@ -149,7 +150,9 @@ extensions/                           Independently-versioned extension packages
 examples/
   IIIF.Manifest.Serializer.Net.Examples          Small hand-picked feature demos
   IIIF.Manifest.Serializer.Net.Cookbook          Every github.com/IIIF/cookbook-recipes recipe, runnable
-tests/IIIF.Manifest.Serializer.Net.Tests        xUnit + FluentAssertions test suite
+tests/
+  IIIF.Manifest.Serializer.Net.Tests             xUnit + AwesomeAssertions test suite
+  IIIF.Manifest.Serializer.Net.ArchTests         NetArchTest.Rules namespace-layering checks
 docs/                                            This documentation set
 ```
 
@@ -261,12 +264,14 @@ them:
 ```powershell
 dotnet build IIIF.Manifest.Serializer.Net.slnx
 dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
+dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj
 ```
 
-336 tests (xUnit + FluentAssertions), including per-feature round-trip tests, an automatic
+393 unit tests (xUnit + AwesomeAssertions), including per-feature round-trip tests, an automatic
 per-catalog-entry round-trip test for every Cookbook recipe, and the System.Text.Json interop
-suite. Coverage is collected via `coverlet.collector` in CI; see `coverage-report/` for the latest
-generated report (no hard coverage gate is enforced yet - report visibility comes first).
+suite - plus 8 architecture tests (NetArchTest.Rules) enforcing namespace layering and naming
+conventions. Coverage is collected via `coverlet.collector` in CI; see `coverage-report/` for the
+latest generated report (no hard coverage gate is enforced yet - report visibility comes first).
 
 ## Documentation index
 
@@ -345,9 +350,56 @@ than have it overwritten by source-derived generation.
    parse."
 4. Run the full build and test suite before opening a PR:
    ```powershell
-  dotnet build IIIF.Manifest.Serializer.Net.slnx
+   dotnet build IIIF.Manifest.Serializer.Net.slnx
    dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj
+   dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj
    ```
+
+## Release hygiene
+
+- **Versioning**: the core package version lives in the root [`Directory.Build.props`](../Directory.Build.props)
+  (`<Version>`); each extension's version is set independently in
+  [`extensions/Directory.Build.props`](../extensions/Directory.Build.props). Bump the relevant file,
+  not individual `.csproj` files - `Directory.Packages.props` under `src/`, `extensions/`,
+  `examples/`, and `tests/` centralizes third-party package *versions*, not this project's own.
+- **License**: the repository ships under **MIT** ([`LICENSE`](../LICENSE)). `PackageLicenseExpression`
+  (root `Directory.Build.props`) and the README license badge must always agree with the `LICENSE`
+  file - if one ever changes, update all three in the same commit.
+- **CI** (`.github/workflows/ci.yml`): every push/PR restores, builds in Release, runs both test
+  projects (`Tests` and `ArchTests`) in Release, then re-runs `Tests` in Debug with coverage
+  collection (Release strips PDBs, so coverage needs a Debug build to instrument against) and
+  publishes the coverage summary to the job summary plus an artifact.
+- **SAST** (`.github/workflows/sast.yml`): CodeQL (`security-extended`+`security-and-quality`) runs
+  on push/PR/weekly schedule. By default this is **informational only** - `fail-on-findings` is
+  `false` unless explicitly set `true` on a manual `workflow_dispatch` run. A separate
+  `pr-security-gate` job always hard-fails a PR if it has any *open* **High/Critical** code-scanning
+  alert, regardless of the `fail-on-findings` setting - so PRs are never blocked by low/medium
+  findings, only ones that actually matter. This is the explicit, decided policy; don't change the
+  High/Critical threshold without updating this note.
+- **Patch management** (`.github/workflows/patch-management.yml`): an OWASP Dependency-Check run,
+  triggered weekly and whenever `Directory.Build.props`/`Directory.Packages.props`/`*.csproj`/
+  `*.slnx`/`global.json` change. Fails the build on packages with a known CVE at CVSS ≥ 7 by default
+  (`fail-on-vulnerable: true`); does **not** fail merely for being outdated
+  (`fail-on-outdated: false`) - outdated-but-not-vulnerable dependencies are tracked via an
+  auto-opened issue instead of blocking anything.
+- **Publishing** (`.github/workflows/publish-nuget.yml`): triggers on `v*.*.*` tags, or manually via
+  `workflow_dispatch` for a `prerelease` channel with an optional version suffix. Builds, runs both
+  test projects, packs all 4 packages (core + 3 extensions), and pushes every `.nupkg` to nuget.org
+  with `--skip-duplicate`. All workflows pin the .NET SDK via `global-json-file: global.json` -
+  never hardcode a different SDK version in a workflow.
+- **Package smoke test** - run this locally before tagging a release to catch packaging problems
+  CI's `--no-build` steps wouldn't surface:
+  ```powershell
+  dotnet restore IIIF.Manifest.Serializer.Net.slnx
+  dotnet build IIIF.Manifest.Serializer.Net.slnx --configuration Release --no-restore -p:GeneratePackageOnBuild=false
+  dotnet test IIIF.Manifest.Serializer.Net.slnx --configuration Release --no-build
+  dotnet pack src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj --configuration Release --no-build
+  dotnet pack extensions/IIIF.Manifest.Serializer.Net.NavPlace/IIIF.Manifest.Serializer.Net.NavPlace.csproj --configuration Release --no-build
+  dotnet pack extensions/IIIF.Manifest.Serializer.Net.Georeference/IIIF.Manifest.Serializer.Net.Georeference.csproj --configuration Release --no-build
+  dotnet pack extensions/IIIF.Manifest.Serializer.Net.TextGranularity/IIIF.Manifest.Serializer.Net.TextGranularity.csproj --configuration Release --no-build
+  ```
+  Confirm every `.nupkg` contains its `README.md` and a correct `<license>`/`<projectUrl>`/
+  `<repository>` before pushing a tag.
 
 ## License
 
