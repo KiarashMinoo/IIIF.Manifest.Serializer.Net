@@ -29,6 +29,8 @@ bld/
 
 # Roslyn cache directories
 *.ide/
+.idea/
+.vscode/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -222,3 +224,9 @@ Results.*.xml
 
 
 .idea
+
+# Coverage and CI-generated artifacts
+coverage-raw/
+coverage-report/
+artifacts/
+**/artifacts/
