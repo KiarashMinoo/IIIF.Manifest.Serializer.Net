@@ -66,13 +66,18 @@ was to reshape it into a **version-aware** SDK:
 - `IIIF.Manifests.Serializer.Validation` - an opt-in, version-aware validation layer
   (`IiifValidator.ValidateManifest`/`ValidateCollection`/`ValidateJson`) separate from parsing,
   which stays tolerant by design. See [`docs/README.md`](docs/README.md#validation).
+- `IIIF.Manifests.Serializer.ChangeTracking` - an EF Core-style, pull-based object-graph change
+  tracker built into `TrackableObject<T>` (so every model type gets it for free): `HasChanges`/
+  `GetChanges()`/`ClearChanges()`/`AcceptChanges()`, parent/child propagation, and
+  `Manifest.GetChangedManifest()`/`GetChangeSet()` plus `IiifSerializer.SerializeChangedOnly` for
+  changed-only/delta output. See [`docs/CHANGE_TRACKING.md`](docs/CHANGE_TRACKING.md).
 - `System.Text.Json` interop: `Manifest`/`Collection`/`AnnotationCollection`/`ContentState` each
   carry a bridging converter, so using System.Text.Json directly (or ASP.NET Core's default
   (de)serialization) produces the same correct output as `IiifSerializer` - see
   [`docs/README.md`](docs/README.md#newtonsoftjson-and-systemtextjson-interop).
 - Cookbook: 71 real recipes (78 catalog entries), built around a Strategy + Registry design
   (`IRecipeSet` implementations aggregated by `CookbookCatalog`).
-- ~393 tests (xUnit + AwesomeAssertions - **not** FluentAssertions, see "Licensing" below), plus a
+- ~535 tests (xUnit + AwesomeAssertions - **not** FluentAssertions, see "Licensing" below), plus a
   dedicated `ArchTests` project (NetArchTest.Rules) enforcing namespace layering. ~82% line
   coverage.
 - Full generated API reference under `docs/` mirroring the source tree (see

@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using IIIF.Manifests.Serializer.ChangeTracking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -42,6 +43,15 @@ public class TrackableObject
         }
 
         trackableObject = JsonConvert.DeserializeObject<TTrackableObject>(json, JsonSerializerSettings);
+
+        // Change tracking (issue #23): a document freshly loaded from storage has no "pending
+        // edits" yet - establish this as the clean baseline, per docs/CHANGE_TRACKING.md's
+        // "deserialization starts clean by default" decision. TTrackableObject is only constrained
+        // to the non-generic TrackableObject here (Parse<T>/TryParse<T> serve every trackable type,
+        // including this base class itself), so the change-tracking interface is checked at
+        // runtime rather than via a compile-time generic constraint.
+        (trackableObject as IIiifChangeTrackable)?.ClearChanges();
+
         return trackableObject is not null;
     }
 }
