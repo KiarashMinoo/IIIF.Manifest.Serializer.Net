@@ -10,10 +10,9 @@ namespace IIIF.Manifests.Serializer.Shared.Content.Resources;
 /// 0139-geolocate-canvas-fragment embeds a bare GeoJSON Feature directly as an Annotation body,
 /// distinct from navPlace's usual Manifest/Canvas-level <c>navPlace</c> property). Consulted by both
 /// <see cref="BaseResourceJsonConverter"/> (the generic JsonConvert/TrackableObject.Parse path) and
-/// <c>IiifSerializer</c>'s hand-rolled V3 Canvas reader. An extension type registers itself from its
-/// own static constructor, which runs the first time that type is touched - typically already
-/// guaranteed by the time a document referencing it needs to be read, since calling code must
-/// construct/reference the type to have produced that document in the first place.
+/// <c>IiifSerializer</c>'s hand-rolled V3 Canvas reader. Extension packages should expose explicit,
+/// idempotent registration methods (for example <c>NavPlaceExtensions.Register()</c>) and call those
+/// before deserializing documents that may contain extension body types.
 /// </summary>
 public static class ResourceTypeRegistry
 {

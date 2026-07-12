@@ -62,7 +62,7 @@ jobs:
     uses: KiarashMinoo/.github/.github/workflows/reusable-patch-management.yml@main
     with:
       dotnet-versions: |
-        8.0.x
+        10.0.x
       solution-path: 'IIIF.Manifest.Serializer.Net.slnx'
       fail-on-vulnerable: ${{ github.event_name != 'workflow_dispatch' || inputs.fail-on-vulnerable }}
       fail-on-outdated: ${{ github.event_name == 'workflow_dispatch' && inputs.fail-on-outdated }}

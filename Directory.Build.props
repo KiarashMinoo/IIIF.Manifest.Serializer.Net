@@ -28,8 +28,8 @@
     <Authors>Kiarash Minoo, IIIF Manifest Serializer</Authors>
     <Company>Kiarash Minoo</Company>
     <Product>IIIF Manifest Serializer .NET</Product>
-    <Description>Version-aware IIIF Presentation API manifest serializer using Newtonsoft.Json.</Description>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Description>Version-aware IIIF Presentation API manifest serializer using Newtonsoft.Json.</Description>    
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

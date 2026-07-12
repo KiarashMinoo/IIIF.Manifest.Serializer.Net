@@ -45,6 +45,9 @@ jobs:
       - name: Test (Release)
         run: dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj --configuration Release --no-build
 
+      - name: ArchTests (Release)
+        run: dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj --configuration Release --no-build
+
       # Release strips PDBs (DebugSymbols=false, DebugType=None in Directory.Build.props), so
       # coverlet has nothing to instrument against a Release build. Coverage is measured in Debug.
       - name: Test with coverage (Debug)

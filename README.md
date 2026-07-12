@@ -15,9 +15,9 @@ The core package targets `netstandard2.1`, uses `Newtonsoft.Json`, and exposes a
 - Core package version: `3.0.1` from `Directory.Build.props`.
 - Core target framework: `netstandard2.1`.
 - Extension target framework: `netstandard2.1`.
-- Test project target framework: `net8.0`.
+- Test and example project target framework: `net10.0`.
 - Checked-in coverage summary: about 72% line coverage.
-- Test suite: 336 tests (xUnit + FluentAssertions), all passing.
+- Test suite: 336 tests (xUnit + AwesomeAssertions), all passing.
 - Documentation: every source folder under `src/`/`extensions/` now has a generated, source-derived
   API-reference README under `docs/` (regenerated - see [Documentation](#documentation) below); it is
   current, not lagging.
@@ -198,7 +198,7 @@ The extension projects add spec-specific types and fluent helpers:
 - Georeference: georeferencing annotations, SVG selectors, targets, resource coordinates, and polynomial/thin-plate-spline transformations.
 - Text Granularity: `page`, `block`, `paragraph`, `line`, `word`, and `glyph`.
 
-All three extension projects target `netstandard2.1;net8.0` and reference the core package.
+All three extension projects target `netstandard2.1` and reference the core package.
 
 ## Cookbook Examples
 
@@ -258,7 +258,7 @@ The checked-in coverage summary currently reports line coverage around 72%.
 
 ## Packaging
 
-The core library version is defined in `Directory.Build.props` and is currently `3.0.0`. The core package metadata describes the package as:
+The core library version is defined in `Directory.Build.props` and is currently `3.0.1`. The core package metadata describes the package as:
 
 > Version-aware IIIF Presentation API manifest serializer using Newtonsoft.Json.
 
@@ -270,6 +270,9 @@ Extension projects have their own package IDs:
 
 All four packages are consumed straight from [nuget.org](https://www.nuget.org) - there is no
 `NuGet.Config` in this repository and no private/custom feed to configure.
+
+Package versions are managed centrally with folder-scoped `Directory.Packages.props` files in
+`src/`, `extensions/`, `examples/`, and `tests/`.
 
 ## Documentation
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
@@ -9,6 +10,17 @@ namespace IIIF.Manifests.Serializer.Extensions;
 
 public static class TextGranularityExtensions
 {
+    private static int isRegistered;
+
+    /// <summary>
+    /// Registers Text Granularity extension hooks.
+    /// Safe to call multiple times.
+    /// </summary>
+    public static void Register()
+    {
+        _ = Interlocked.Exchange(ref isRegistered, 1);
+    }
+
     extension<TResource>(TResource resource) where TResource : IBaseResource, IAdditionalPropertiesSupport<TResource>
     {
         [TextGranularityExtension("3.0")]

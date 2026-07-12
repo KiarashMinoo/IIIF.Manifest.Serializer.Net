@@ -13,7 +13,9 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// 0139-geolocate-canvas-fragment "tagging" a Canvas region with a GeoJSON location) - distinct from
 /// navPlace's usual Manifest/Canvas-level <c>navPlace</c> property. Registers itself with
 /// <see cref="ResourceTypeRegistry"/> so core's Annotation-body dispatch (which cannot reference
-/// this extension assembly) can still recognize <c>"type":"Feature"</c> bodies.
+/// this extension assembly) can still recognize <c>"type":"Feature"</c> bodies. Prefer explicit
+/// bootstrap via <see cref="NavPlaceExtensions.Register"/>; static-constructor registration remains as
+/// a backward-compatible fallback.
 /// </summary>
 public class Feature : UnprefixedBaseItem<Feature>, IBaseResource
 {
@@ -21,6 +23,11 @@ public class Feature : UnprefixedBaseItem<Feature>, IBaseResource
     public const string PropertiesJName = "properties";
 
     static Feature()
+    {
+        RegisterResourceType();
+    }
+
+    internal static void RegisterResourceType()
     {
         ResourceTypeRegistry.Register("Feature", obj => obj.ToObject<Feature>(BaseResourceJsonConverter.LeafSerializer)!);
     }

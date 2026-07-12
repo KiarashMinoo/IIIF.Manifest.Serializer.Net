@@ -1,4 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+﻿using System.Threading;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Shared;
@@ -13,6 +14,22 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// </summary>
 public static class NavPlaceExtensions
 {
+    private static int isRegistered;
+
+    /// <summary>
+    /// Registers navPlace extension resource/body types with core serializers.
+    /// Safe to call multiple times.
+    /// </summary>
+    public static void Register()
+    {
+        if (Interlocked.Exchange(ref isRegistered, 1) == 1)
+        {
+            return;
+        }
+
+        Feature.RegisterResourceType();
+    }
+
     extension<TNode>(TNode node) where TNode : BaseNode<TNode>, IAdditionalPropertiesSupport<TNode>
     {
         /// <summary>

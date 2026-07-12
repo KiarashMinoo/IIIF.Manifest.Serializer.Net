@@ -53,6 +53,9 @@ jobs:
       - name: Test (Release)
         run: dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj --configuration Release --no-build
 
+      - name: ArchTests (Release)
+        run: dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj --configuration Release --no-build
+
       - name: Pack packages
         run: |
           mkdir -p ./artifacts/packages
