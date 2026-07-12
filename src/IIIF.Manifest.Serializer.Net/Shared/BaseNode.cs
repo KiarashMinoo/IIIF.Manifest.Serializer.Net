@@ -293,14 +293,16 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return SetLabel(Label.Without(label));
     }
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddSummary instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "summary")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddSummary instead.")]
     public TBaseNode AddDescription(Description description)
     {
         Description = Description.With(description);
         return (TBaseNode)this;
     }
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use RemoveSummary instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "summary")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use RemoveSummary instead.")]
     public TBaseNode RemoveDescription(Description description)
     {
         Description = Description.Without(description);
@@ -337,14 +339,16 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         return (TBaseNode)this;
     }
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use SetRequiredStatement instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "requiredStatement")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use SetRequiredStatement instead.")]
     public TBaseNode AddAttribution(Attribution attribution)
     {
         Attribution = Attribution.With(attribution);
         return (TBaseNode)this;
     }
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use SetRequiredStatement instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "requiredStatement")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use SetRequiredStatement instead.")]
     public TBaseNode RemoveAttribution(Attribution attribution)
     {
         Attribution = Attribution.Without(attribution);
@@ -368,14 +372,16 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     public TBaseNode AddBehavior(Behavior behavior) => SetElementValue(a => a.Behavior, (collection) => collection.With(behavior));
     public TBaseNode RemoveBehavior(Behavior behavior) => SetElementValue(a => a.Behavior, (collection) => collection.Without(behavior));
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddPartOf instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "partOf")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddPartOf instead.")]
     public TBaseNode AddWithin(Within within)
     {
         Within = Within.With(within);
         return (TBaseNode)this;
     }
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddPartOf instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "partOf")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddPartOf instead.")]
     public TBaseNode RemoveWithin(Within within)
     {
         Within = Within.Without(within);
@@ -398,7 +404,8 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     public TBaseNode SetLogo(Logo logo) => SetElementValue(a => a.Logo, logo);
     public TBaseNode SetThumbnail(Thumbnail thumbnail) => SetElementValue(a => a.Thumbnail, thumbnail);
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use SetRights instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "rights")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use SetRights instead.")]
     public TBaseNode SetLicense(License license)
     {
         License = license;
@@ -407,10 +414,12 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
 
     public TBaseNode SetRights(Rights rights) => SetElementValue(a => a.Rights, rights);
 
+    [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Replaced by behavior.")]
     public TBaseNode SetViewingHint(ViewingHint viewingHint) => SetElementValue(a => a.ViewingHint, viewingHint);
 
-    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddHomepage instead.", error: true)]
+    [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "homepage")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use AddHomepage instead.")]
     public TBaseNode SetRelated(string related)
     {
         Related = related;

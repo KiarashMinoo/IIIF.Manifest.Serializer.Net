@@ -1223,4 +1223,67 @@ check; `Description`/`SetSummary`/`AddSummary`/`RemoveSummary` added to the not-
 Full suite: **424 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
 introduced.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, and round 7 legacy-import normalization audit.
+## Round 8: decorate obsolete members with IIIFVersionAttribute metadata
+
+Scope (ad hoc request, no associated issue): every `[Obsolete]`-tagged member across the SDK -
+27 legacy mutators (`Add*`/`Remove*`/`Set*`) spread across `Canvas`, `Collection`, `Manifest`,
+`Structure`, and `BaseNode<TBaseNode>` - carried no `IIIFVersionAttribute`-derived attribute at all,
+unlike their sibling legacy *getter* properties, which have consistently carried
+`[PresentationAPI(minVersion, maxVersion, IsDeprecated = true, DeprecatedInVersion = "3.0",
+ReplacedBy = "...")]` since Round 1. This meant reflection-based tooling (docs generation, API
+diffing, IDE tooltips reading the attribute rather than the free-text `Obsolete` message) had no
+structured way to see *what* a deprecated mutator was replaced by.
+
+Fixed by adding `[PresentationAPI(...)]` to all 27 mutators, each one mirroring the exact
+`MinVersion`/`MaxVersion`/`DeprecatedInVersion`/`ReplacedBy` values already present on its
+corresponding legacy getter (e.g. `Canvas.AddImage` mirrors `Canvas.Images`'s
+`[PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy =
+"items")]`). `BaseNode.SetViewingHint` mirrors `BaseNode.ViewingHint`'s existing tag exactly, per
+the reference-implementation pattern.
+
+**Adjacent gap found and fixed in the same pass**: `Canvas.Audios` and `Canvas.Videos` - legacy
+computed views structurally identical to `Canvas.Images` right next to them - had no
+`IIIFVersionAttribute` at all (not even on the getter), unlike `Images`. Added the matching
+`[PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy =
+"items")]` to both.
+
+Tests: 30 new (`LegacyMutators_Should_CarryIIIFVersionAttribute_DescribingTheDeprecation` theories
+added to `CanvasReshapeTests.cs`, `CollectionReshapeTests.cs`, `ManifestSequenceReshapeTests.cs`,
+`StructureReshapeTests.cs`, `BaseNodeReshapeTests.cs`, mirroring each file's existing
+`LegacyMutators_Should_BeMarkedObsoleteAsCompileErrors` theory list; plus
+`LegacyGetters_Should_CarryIIIFVersionAttribute_DescribingTheDeprecation` in
+`CanvasReshapeTests.cs` covering `Images`/`Audios`/`Videos`). Full suite: **454 unit tests + 8
+architecture tests, all passing**, 0 build warnings/errors introduced.
+
+## Round 9: downgrade legacy mutators from compile-error to compile-warning
+
+Scope (ad hoc request, no associated issue): reverse part of the Round 1-8 "compile-time wall"
+design (§4/mandate item 4 in `CLAUDE.md`). Every legacy mutator (`AddImage`, `AddSequence`,
+`SetLicense`, `AddAttribution`, ... - the same 26 members touched in Round 8, all of `BaseNode<T>`'s
+family except `SetViewingHint`, which was already warning-level and untouched) was
+`[Obsolete("...", error: true)]`, meaning any code - old or new - calling one of them failed to
+compile. The user asked for this to stop: legacy mutators should keep working, not error, since
+every one of them already internally forwards to the current 3.0-native API under the hood (e.g.
+`Canvas.AddImage` builds an `Annotation` and routes it through the same `AddAnnotationCore` path
+`AddAnnotation` uses; `Manifest.AddSequence` funnels through `ReplaceFromLegacySequences` into
+`Items`).
+
+Changed: dropped `error: true` from all 26 `[Obsolete(...)]` mutator attributes across `Canvas.cs`,
+`Collection.cs`, `Manifest.cs`, `Structure.cs`, `Shared/BaseNode.cs` - they now behave exactly like
+the pre-existing `SetViewingHint` (a compiler warning naming the replacement, not a build break).
+The `[PresentationAPI(...)]` metadata added in Round 8 is untouched - `IsDeprecated`/
+`DeprecatedInVersion`/`ReplacedBy` still document the same deprecation, just no longer enforced at
+compile time. `CLAUDE.md`'s mandate section and "Conventions to follow" were updated to match (no
+longer describes a compile-time wall as the end state).
+
+Tests: the 5 `LegacyMutators_Should_BeMarkedObsoleteAsCompileErrors` theories (one per
+`*ReshapeTests.cs` file, asserting `IsError == true`) were renamed to
+`LegacyMutators_Should_BeMarkedObsoleteAsWarnings` and their assertions flipped to `IsError ==
+false`. No other test changes were needed - the Round 8 `IIIFVersionAttribute`-coverage theories
+assert on `[PresentationAPI]`, not `[Obsolete]`, so they were unaffected by the severity change.
+Full suite: **454 unit tests + 8 architecture tests, all passing**, 0 build warnings/errors
+introduced (no call site in this repo's own source/tests/examples/cookbook actually calls a legacy
+mutator directly, so the warning doesn't surface anywhere in-tree - only external consumers will see
+it).
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, and round 9 legacy-mutator severity downgrade (error to warning).

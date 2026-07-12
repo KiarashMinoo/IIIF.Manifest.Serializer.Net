@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Reflection;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
@@ -189,14 +190,29 @@ public class ManifestSequenceReshapeTests
     [Theory]
     [InlineData(nameof(Manifest.AddSequence))]
     [InlineData(nameof(Manifest.RemoveSequence))]
-    public void LegacyMutators_Should_BeMarkedObsoleteAsCompileErrors(string methodName)
+    public void LegacyMutators_Should_BeMarkedObsoleteAsWarnings(string methodName)
     {
         var method = typeof(Manifest).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
 
         method.Should().NotBeNull();
         var obsolete = method!.GetCustomAttribute<System.ObsoleteAttribute>();
         obsolete.Should().NotBeNull();
-        obsolete!.IsError.Should().BeTrue();
+        obsolete!.IsError.Should().BeFalse("legacy mutators remain callable - deprecated with a warning, not a compile-time error");
+    }
+
+    [Theory]
+    [InlineData(nameof(Manifest.AddSequence))]
+    [InlineData(nameof(Manifest.RemoveSequence))]
+    public void LegacyMutators_Should_CarryIIIFVersionAttribute_DescribingTheDeprecation(string methodName)
+    {
+        var method = typeof(Manifest).GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public);
+
+        method.Should().NotBeNull();
+        var version = method!.GetCustomAttribute<IIIFVersionAttribute>();
+        version.Should().NotBeNull("legacy mutators must document their deprecation via an IIIFVersionAttribute-derived attribute");
+        version!.IsDeprecated.Should().BeTrue();
+        version.DeprecatedInVersion.Should().Be("3.0");
+        version.ReplacedBy.Should().NotBeNullOrEmpty();
     }
 
     [Fact]

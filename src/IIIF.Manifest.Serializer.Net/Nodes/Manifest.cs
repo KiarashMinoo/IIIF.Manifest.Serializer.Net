@@ -194,14 +194,16 @@ namespace IIIF.Manifests.Serializer.Nodes
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct canvases directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct canvases directly via AddItem instead.")]
         public Manifest AddSequence(Sequence sequence)
         {
             ReplaceFromLegacySequences(Sequences.With(sequence));
             return this;
         }
 
-        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct canvases directly via AddItem instead.", error: true)]
+        [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+        [Obsolete("Deprecated in IIIF Presentation API 3.0. Construct canvases directly via AddItem instead.")]
         public Manifest RemoveSequence(Sequence sequence)
         {
             ReplaceFromLegacySequences(Sequences.Without(sequence));
