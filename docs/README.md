@@ -283,7 +283,11 @@ own package version alongside any core release it's packed against.
 ## Examples and Cookbook
 
 - **`examples/IIIF.Manifest.Serializer.Net.Examples`** - a small hand-picked set of feature demos
-  (`DemoCatalog.GetAll()`). Run with `dotnet run --project examples/IIIF.Manifest.Serializer.Net.Examples`.
+  (`DemoCatalog.GetAll()`), each locally-authored and inspired by a real-world usage pattern
+  [`iiif.io/demos/`](https://iiif.io/demos/) links out to (search overlays, deep zoom, paged books,
+  reunification, storytelling/guided tours, mixed-media objects, navPlace) - see
+  [`DEMO_COVERAGE.md`](DEMO_COVERAGE.md) for the full mapping. Run with
+  `dotnet run --project examples/IIIF.Manifest.Serializer.Net.Examples`.
 - **`examples/IIIF.Manifest.Serializer.Net.Cookbook`** - a faithful C# reconstruction of every real
   recipe in [`github.com/IIIF/cookbook-recipes`](https://github.com/IIIF/cookbook-recipes) (71
   recipes, 78 catalog entries counting recipes with more than one manifest/document). Run with
@@ -343,6 +347,8 @@ latest generated report (no hard coverage gate is enforced yet - report visibili
 - [`COOKBOOK_COVERAGE.md`](COOKBOOK_COVERAGE.md) - the per-recipe coverage matrix for every
   official IIIF Cookbook recipe: implementation status, SDK class, official recipe URL, and test
   coverage.
+- [`DEMO_COVERAGE.md`](DEMO_COVERAGE.md) - maps each `DemoCatalog` scenario to the real-world usage
+  pattern it represents, and lists categories intentionally not given a separate demo, with reasons.
 - Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own generated
   API reference under `docs/` (types, members, attributes, Mermaid diagrams, package dependencies),
   mirroring the source tree 1:1 (`src/IIIF.Manifest.Serializer.Net/Nodes/Contents/Annotation` →
