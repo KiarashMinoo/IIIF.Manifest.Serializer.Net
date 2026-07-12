@@ -1,4 +1,5 @@
 using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -91,5 +92,41 @@ public static partial class IiifSerializer
             obj[newName] = obj[oldName];
             obj.Remove(oldName);
         }
+    }
+
+    /// <summary>
+    ///     Writes every property an extension package (navPlace, TextGranularity, ...) attached via
+    ///     the additional-properties mechanism (<see cref="IAdditionalPropertiesSupport{T}" />) back
+    ///     into the V3 <paramref name="obj" /> being built. The hand-rolled V3 writer builds its
+    ///     <see cref="JObject" /> field-by-field rather than going through Newtonsoft's automatic
+    ///     property serialization, so it never reaches the <c>[JsonExtensionData]</c> bridge that
+    ///     makes extension data survive a plain <c>JsonConvert.SerializeObject</c> call - without
+    ///     this, an extension property set via e.g. <c>SetNavPlace</c>/<c>SetTextGranularity</c>
+    ///     would silently vanish from <see cref="IiifSerializer" />'s V3 output. Safe by
+    ///     construction: only <c>IsAdditional</c>-flagged <see cref="ElementDescriptor" /> entries
+    ///     are written, and no core-modeled property is ever marked additional.
+    /// </summary>
+    private static void WriteV3AdditionalProperties<TTrackableObject>(TrackableObject<TTrackableObject> node, JObject obj)
+        where TTrackableObject : TrackableObject<TTrackableObject>
+    {
+        foreach (var kvp in node.ElementDescriptors.Where(x => x.Value.IsAdditional))
+            obj[kvp.Key] = kvp.Value.Value is JToken token ? token : JToken.FromObject(kvp.Value.Value!, JsonSerializer.Create(TrackableObject.JsonSerializerSettings));
+    }
+
+    /// <summary>
+    ///     The read-side counterpart of <see cref="WriteV3AdditionalProperties{TTrackableObject}" />:
+    ///     if <paramref name="key" /> is present on <paramref name="obj" />, stores it as a raw,
+    ///     additional-flagged <see cref="ElementDescriptor" /> so the corresponding extension
+    ///     package's getter (e.g. <c>NavPlace</c>/<c>TextGranularity</c>) can read it back via
+    ///     lazy on-first-access conversion, the same as if it had arrived through the
+    ///     <c>[JsonExtensionData]</c> bridge. Named per-key rather than a generic "sweep every
+    ///     unrecognized property" pass because only this SDK's own approved extensions
+    ///     (navPlace/Georeference/TextGranularity) are in scope - see SDK_VERSIONING_GUIDE.md Round
+    ///     12; a fully generic sweep risks miscategorizing a not-yet-hand-rolled core V3 property.
+    /// </summary>
+    private static void ReadV3AdditionalProperty<TTrackableObject>(JObject obj, TrackableObject<TTrackableObject> node, string key)
+        where TTrackableObject : TrackableObject<TTrackableObject>
+    {
+        if (obj[key] is { } token) node.ElementDescriptors[key] = new ElementDescriptor(token, true);
     }
 }

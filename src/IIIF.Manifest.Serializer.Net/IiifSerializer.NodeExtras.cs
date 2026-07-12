@@ -44,6 +44,8 @@ public static partial class IiifSerializer
 
         var seeAlso = node.SeeAlso.Select(WriteV3SeeAlso).ToList();
         if (seeAlso.Count > 0) obj["seeAlso"] = new JArray(seeAlso);
+
+        WriteV3AdditionalProperties(node, obj);
     }
 
     private static void ReadV3NodeExtras<TBaseNode>(JObject obj, BaseNode<TBaseNode> node) where TBaseNode : BaseNode<TBaseNode>
@@ -70,7 +72,14 @@ public static partial class IiifSerializer
         foreach (var homepageObj in obj["homepage"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) node.AddHomepage(ReadV3Homepage(homepageObj));
 
         foreach (var seeAlsoObj in obj["seeAlso"]?.OfType<JObject>() ?? Enumerable.Empty<JObject>()) node.AddSeeAlso(ReadV3SeeAlso(seeAlsoObj));
+
+        // navPlace (extensions/IIIF.Manifest.Serializer.Net.NavPlace) - core can't reference the
+        // extension assembly, so the JSON key name is necessarily hardcoded here; see
+        // WriteV3AdditionalProperties/ReadV3AdditionalProperty's doc comments for why this is
+        // targeted rather than a generic unknown-property sweep.
+        ReadV3AdditionalProperty(obj, node, "navPlace");
     }
+    
 
     private static void WriteV3Behavior<TBaseNode>(BaseNode<TBaseNode> node, JObject obj) where TBaseNode : BaseNode<TBaseNode>
     {

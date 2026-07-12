@@ -6,22 +6,11 @@ namespace IIIF.Manifests.Serializer.Tests;
 /// <summary>
 ///     The Georeference extension's <see cref="PolynomialTransformation" /> and
 ///     <see cref="PolynomialTransformationOption" /> (the "polynomial" of the two georeferencing
-///     transformation algorithms - see SDK_VERSIONING_GUIDE.md's Georeference milestone) had zero test
-///     coverage, and writing these tests surfaced a real, currently-dead bug.
-///     <para>
-///         <strong>Known bug, not fixed here</strong> (the test-generation task this file was written under
-///         scopes to tests only, never production code): <see cref="PolynomialTransformationOption.Order" />
-///         has no <c>[JsonProperty]</c> attribute and no public constructor parameter, only a
-///         <c>private set</c> - so <c>Order</c> can never actually be given a non-zero value through any
-///         public API (not via JSON deserialization, since Newtonsoft's default contract resolver only
-///         treats a private setter as writable when <c>[JsonProperty]</c> is explicitly present on the
-///         member, and every other settable property in this codebase does carry that attribute for
-///         exactly this reason; not via a fluent setter, since none exists). A repo-wide search confirms
-///         nothing in the codebase currently constructs a <c>PolynomialTransformationOption</c> with a real
-///         order value either, so this is dead-on-arrival rather than an active regression. Flagged for a
-///         future fix (add <c>[JsonProperty("order")]</c> plus either a public constructor parameter or a
-///         fluent <c>SetOrder</c>, matching this codebase's established pattern) rather than fixed here.
-///     </para>
+///     transformation algorithms - see SDK_VERSIONING_GUIDE.md's Georeference milestone).
+///     <see cref="PolynomialTransformationOption.Order" /> previously had no <c>[JsonProperty]</c>
+///     attribute and no way to set it via a public API (only a bare <c>private set</c>), so it could
+///     never actually be given a non-zero value - fixed in SDK_VERSIONING_GUIDE.md Round 12 by
+///     adding <c>[JsonProperty("order")]</c> and a fluent <see cref="PolynomialTransformationOption.SetOrder" />.
 /// </summary>
 public class PolynomialTransformationTests
 {
@@ -34,13 +23,22 @@ public class PolynomialTransformationTests
     }
 
     [Fact]
-    public void Options_Order_Should_DefaultToZero_AndCannotCurrentlyBeSet_KnownBug()
+    public void Options_Order_Should_RoundTripThroughJsonConvert()
     {
-        // No [JsonProperty]/public constructor/fluent setter exists for Order (see class-level
-        // remarks), so JSON deserialization silently leaves it at its default regardless of input.
         var options = JsonConvert.DeserializeObject<PolynomialTransformationOption>("""{"order": 7}""")!;
 
-        options.Order.Should().Be(0);
+        options.Order.Should().Be(7);
+    }
+
+    [Fact]
+    public void Options_SetOrder_Should_BeSettableThroughFluentApi()
+    {
+        var options = new PolynomialTransformationOption().SetOrder(3);
+
+        options.Order.Should().Be(3);
+
+        var json = JsonConvert.SerializeObject(options);
+        JObject.Parse(json)["order"]!.Value<long>().Should().Be(3);
     }
 
     [Fact]
