@@ -3,7 +3,7 @@ name: Publish NuGet Packages
 # IIIF is release-only (no develop/beta channel) — every manual dispatch of this
 # workflow finalizes a version, generates a CHANGELOG.md section, tags, creates a
 # GitHub Release, builds, tests, packs, and publishes. Version is auto-incremented
-# (minor++, major held fixed — see bump-component below) by reusable-ci.yml's shared
+# (patch++ only — see bump-component below) by reusable-ci.yml's shared
 # update-version.ps1 script, same script ThunderPropagator's release channel uses — no
 # manual version override input, to keep the process identical across repos.
 on:
@@ -35,9 +35,9 @@ jobs:
     uses: KiarashMinoo/.github/.github/workflows/reusable-ci.yml@main
     with:
       channel: release
-      # IIIF grows the minor version and keeps major fixed (e.g. 3.1.4 -> 3.2.0),
-      # instead of the default major-bump-per-release-only-push protocol.
-      bump-component: minor
+      # IIIF only grows the patch version (e.g. 3.1.4 -> 3.1.5), instead of the default
+      # major-bump-per-release-only-push protocol.
+      bump-component: patch
       dotnet-versions: |
         10.0.x
       solution-path: 'IIIF.Manifest.Serializer.Net.slnx'
