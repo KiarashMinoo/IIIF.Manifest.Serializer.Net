@@ -1,95 +1,102 @@
-# ================================
 # IIIF.Manifest.Serializer.Net
-# Reorganized .gitignore (VS/.NET)
-# ================================
+# .NET library repo ignore rules
 
-# Editor and user state
+# ---------------------------------------------------------------------------
+# User-specific IDE and editor state
+# ---------------------------------------------------------------------------
 .vs/
 .vscode/
 .idea/
 *.suo
 *.user
-*.userprefs
+*.userosscache
 *.sln.docstates
 *.DotSettings.user
-*.ini
 
+# ---------------------------------------------------------------------------
+# Local AI and analysis tooling
+# ---------------------------------------------------------------------------
+.agents/
+.claude/
+.codex/
+.code-review-graph/
+
+# ---------------------------------------------------------------------------
 # Build outputs
-[Dd]ebug/
-[Dd]ebugPublic/
-[Dd]ebugPS/
-[Rr]elease/
-[Rr]eleases/
-[Rr]eleasePS/
-[Bb]in/
-[Oo]bj/
-[Ll]ogs/
-[Dd]atabase/
-bld/
-build/
-x64/
-AppPackages/
-publish/
-csx/
-*.build.csdef
+# ---------------------------------------------------------------------------
+**/[Bb]in/
+**/[Oo]bj/
+**/[Dd]ebug/
+**/[Dd]ebugPublic/
+**/[Rr]elease/
+**/[Rr]eleases/
+**/[Pp]ublish/
+**/[Aa]pp[Pp]ackages/
+artifacts/
 
-# Test and coverage outputs
+# ---------------------------------------------------------------------------
+# Test results and coverage
+# ---------------------------------------------------------------------------
+TestResults/
+**/TestResults/
 [Tt]est[Rr]esult*/
-[Bb]uild[Ll]og.*
-TestResult.xml
-Results.*.xml
-*.VisualState.xml
+*.trx
 *.coverage
 *.coveragexml
 *.dotCover
+coverage/
 coverage-raw/
 coverage-report/
 
-# CI and packaging artifacts
-artifacts/
-**/artifacts/
-packages/*
+# ---------------------------------------------------------------------------
+# NuGet and package artifacts
+# ---------------------------------------------------------------------------
 *.nupkg
 *.snupkg
-*.cache.bin
-/release-notes.md
-src/NuGet.Server/Packages/**/*.nupkg
-src/NuGet.Server/Packages/**/*.sha512
-src/NuGet.Server/Packages/**/*.nuspec
-src/NuGet.Server/packages/*.bin
-
-# NuGet tooling
-.nuget/credprovider
-.nuget/.marker.v*
+*.symbols.nupkg
+*.nuspec
+packages/
+.nuget/
 nuget.exe
-tools/
 
-# Keep package build targets and specific fixtures
-!packages/build/
-!packages/Microsoft.Web.Xdt.1.0.0-alpha/
+# Keep checked-in package fixtures if tests add them later.
 !**/TestData/*.nupkg
+!**/TestData/*.snupkg
 
-# Web/publish profiles
+# ---------------------------------------------------------------------------
+# Publish profiles and local deployment settings
+# ---------------------------------------------------------------------------
 *.[Pp]ublish.xml
-*.azurePubxml
 *.pubxml
+*.azurePubxml
 *.publishsettings
-src/NuGet.Server/Server.Publish.xml
 
-# Logs and temporary files
+# ---------------------------------------------------------------------------
+# Logs, diagnostics, and temporary files
+# ---------------------------------------------------------------------------
 *.log
 *.tmp
 *.tmp_proj
+*.cache
+*.cachefile
+*.binlog
+*.pidb
+*.svclog
+*.orig
 *~
 ~$*
-*.orig
 
-# Generated and cache files
-*.cachefile
-*.meta
-*.obj
+# ---------------------------------------------------------------------------
+# Generated compiler and native build intermediates
+# ---------------------------------------------------------------------------
+*.dll
+*.exe
 *.pdb
+*.mdb
 *.ilk
+*.obj
+*.iobj
+*.ipdb
 *.pch
 *.pgc
 *.pgd
@@ -98,60 +105,43 @@ src/NuGet.Server/Server.Publish.xml
 *.tlb
 *.tli
 *.tlh
-*.pidb
-*.svclog
-*.scc
-*.vspscc
-*.vssscc
-*.psess
-*.vsp
-*.vspx
-*.ncb
-*.opensdf
-*.sdf
-*.aps
 ipch/
 
-# Legacy generated sources and project outputs
+# ---------------------------------------------------------------------------
+# Legacy .NET/Visual Studio generated files
+# ---------------------------------------------------------------------------
 AssemblyInfo.g.cs
 DebugConstants.cs
 ClientBin/
 Generated_Code/
 FakesAssemblies/
 
-# SQL and BI outputs
-sql/
-*.mdf
-*.ldf
-*.rdl.data
-*.bim.layout
-*.bim_*.settings
-
-# Misc project/tool artifacts
+# ---------------------------------------------------------------------------
+# ReSharper, Rider, NCrunch, and other .NET tooling
+# ---------------------------------------------------------------------------
 _ReSharper*/
 *.[Rr]e[Ss]harper
 _TeamCity*
 _NCrunch_*
 .*crunch*.local.xml
-_Chutzpah*
+*.ncrunchsolution
+*.ncrunchproject
 .JustCode
 AutoTest.Net/
-.sass-cache/
-[Ee]xpress/
-DocProject/buildhelp/
-DocProject/Help/*.HxT
-DocProject/Help/*.HxC
-DocProject/Help/*.hhc
-DocProject/Help/*.hhk
-DocProject/Help/*.hhp
-DocProject/Help/Html2
-DocProject/Help/html
-$tf/
-*.gpState
-*.mm.*
 
-# Historical extension paths
-src/VsExtension/source.extension.vsixmanifest
-
-# Node (if introduced by tooling)
+# ---------------------------------------------------------------------------
+# Node and frontend tooling, if introduced by docs or examples
+# ---------------------------------------------------------------------------
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------------------------------------------------------------------------
+# OS metadata
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
