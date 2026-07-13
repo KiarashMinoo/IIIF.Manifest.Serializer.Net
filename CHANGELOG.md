@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.8] — 2026-07-13
+
+### ⚙️ CI / Tooling
+
+- Use secret for NuGet user in publish workflow `(34c141a)` — Kiarash Minoo
+
 ## [3.0.7] — 2026-07-13
 
 ### ⚙️ CI / Tooling
