@@ -61,4 +61,4 @@ jobs:
       nuget-target: 'nuget.org'
     secrets:
       gh-token: ${{ secrets.GITHUB_TOKEN }}
-      nuget-user: ${{ secrets.NUGET_USER }}
+      nuget-user: 'yanis_1984'
