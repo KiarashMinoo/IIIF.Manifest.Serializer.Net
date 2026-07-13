@@ -18,6 +18,8 @@ jobs:
   # repo secret named NUGET_USER (Settings > Secrets and variables > Actions > Secrets)
   # with your nuget.org account name.
   release:
+    permissions:
+      contents: write # ceiling for the reusable workflow's own contents:write jobs (tag/release/commit)
     uses: KiarashMinoo/.github/.github/workflows/reusable-release-ci.yml@main
     with:
       dotnet-versions: |
