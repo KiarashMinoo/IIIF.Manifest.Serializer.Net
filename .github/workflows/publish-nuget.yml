@@ -1,9 +1,10 @@
 name: Publish NuGet Packages
 
 # IIIF is release-only (no develop/beta channel) — every manual dispatch of this
-# workflow finalizes a version, tags, creates a GitHub Release, builds, tests, packs,
-# and publishes. Version is auto-incremented (patch++) by reusable-release-ci.yml's
-# shared update-version.ps1 script, same as ThunderPropagator's release-ci job — no
+# workflow finalizes a version, generates a CHANGELOG.md section, tags, creates a
+# GitHub Release, builds, tests, packs, and publishes. Version is auto-incremented
+# (minor++, major held fixed — see bump-component below) by reusable-ci.yml's shared
+# update-version.ps1 script, same script ThunderPropagator's release channel uses — no
 # manual version override input, to keep the process identical across repos.
 on:
   workflow_dispatch: {}
@@ -13,26 +14,30 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # NuGet.org Trusted Publishing (OIDC) is built directly into reusable-release-ci.yml
-  # (it has its own inline publish-nuget job) — this repo doesn't need its own. Set a
-  # repo secret named NUGET_USER (Settings > Secrets and variables > Actions > Secrets)
-  # with your nuget.org account name.
+  # NuGet.org Trusted Publishing (OIDC) is built directly into reusable-ci.yml (it has
+  # its own inline publish-nuget job) — this repo doesn't need its own. Set a repo
+  # secret named NUGET_USER (Settings > Secrets and variables > Actions > Secrets) with
+  # your nuget.org account name.
   #
   # IMPORTANT: a job-level `permissions:` block is exhaustive, not additive -- any
   # scope not listed here is implicitly set to "none" for every nested job the called
   # reusable workflow runs, regardless of what that nested job requests for itself.
-  # This must list every scope ANY of reusable-release-ci.yml's jobs need across the
-  # whole run: contents:write (tag/release/commit), packages:write + id-token:write
-  # (publish-nuget, for GitHub Packages / NuGet.org OIDC respectively), actions:write
-  # (cleanup-nuget-artifacts, to delete run artifacts).
+  # This must list every scope ANY of reusable-ci.yml's jobs need across the whole run:
+  # contents:write (version/changelog commit, tag, GitHub Release), packages:write +
+  # id-token:write (publish-nuget, for GitHub Packages / NuGet.org OIDC respectively),
+  # actions:write (cleanup-nuget-artifacts, to delete run artifacts).
   release:
     permissions:
       contents: write
       packages: write
       id-token: write
       actions: write
-    uses: KiarashMinoo/.github/.github/workflows/reusable-release-ci.yml@main
+    uses: KiarashMinoo/.github/.github/workflows/reusable-ci.yml@main
     with:
+      channel: release
+      # IIIF grows the minor version and keeps major fixed (e.g. 3.1.4 -> 3.2.0),
+      # instead of the default major-bump-per-release-only-push protocol.
+      bump-component: minor
       dotnet-versions: |
         10.0.x
       solution-path: 'IIIF.Manifest.Serializer.Net.slnx'
