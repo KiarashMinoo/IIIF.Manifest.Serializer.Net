@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.9] — 2026-07-13
+
+### ⚙️ CI / Tooling
+
+- Switch NuGet publish workflow to classic API key `(ab1a63e)` — Kiarash Minoo
+
 ## [3.0.8] — 2026-07-13
 
 ### ⚙️ CI / Tooling

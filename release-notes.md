@@ -1,5 +1,5 @@
-## [3.0.8] — 2026-07-13
+## [3.0.9] — 2026-07-13
 
 ### ⚙️ CI / Tooling
 
-- Use secret for NuGet user in publish workflow `(34c141a)` — Kiarash Minoo
+- Switch NuGet publish workflow to classic API key `(ab1a63e)` — Kiarash Minoo
