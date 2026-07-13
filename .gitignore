@@ -52,6 +52,7 @@ packages/*
 *.nupkg
 *.snupkg
 *.cache.bin
+/release-notes.md
 src/NuGet.Server/Packages/**/*.nupkg
 src/NuGet.Server/Packages/**/*.sha512
 src/NuGet.Server/Packages/**/*.nuspec

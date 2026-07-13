@@ -16,10 +16,12 @@ updates:
         patterns:
           - "xunit*"
           - "FluentAssertions"
+          - "AwesomeAssertions"
           - "Microsoft.NET.Test.Sdk"
       json-packages:
         patterns:
           - "Newtonsoft.Json"
+          - "System.Text.Json"
 
   - package-ecosystem: "github-actions"
     directory: "/"
@@ -33,3 +35,9 @@ updates:
       - "security"
       - "ci"
     open-pull-requests-limit: 5
+    groups:
+      github-actions:
+        patterns:
+          - "actions/*"
+          - "github/codeql-action/*"
+          - "NuGet/login"

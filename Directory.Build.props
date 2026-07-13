@@ -1,6 +1,6 @@
 <Project>
     <PropertyGroup Label="Versioning">
-        <Version>3.0.1</Version>
+        <Version>3.0.0</Version>
     </PropertyGroup>
     <PropertyGroup>
         <OutputType>Library</OutputType>
@@ -34,9 +34,11 @@
         <RepositoryUrl>https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageIcon>logo-sm.png</PackageIcon>
         <Copyright>Copyright (c) Kiarash Minoo</Copyright>
     </PropertyGroup>
     <ItemGroup Condition="'$(IsPackable)' == 'true'">
         <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\"/>
+        <None Include="$(MSBuildThisFileDirectory)logo-sm.png" Pack="true" PackagePath="\"/>
     </ItemGroup>
 </Project>
