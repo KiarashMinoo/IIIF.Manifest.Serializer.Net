@@ -54,7 +54,9 @@ jobs:
       test-command: |
         dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj --configuration Release --no-build
         dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj --configuration Release --no-build
-      post-pack-command: pwsh ./scripts/smoke-test-packages.ps1 -SkipPack
+      # pack-solution.ps1 (used by reusable-ci.yml's Pack step) writes to artifacts/pkg, not
+      # smoke-test-packages.ps1's own default (artifacts/packages) -- point it at the right dir.
+      post-pack-command: pwsh ./scripts/smoke-test-packages.ps1 -SkipPack -PackagesDir artifacts/pkg
       publish-to-nuget: true
       nuget-target: 'nuget.org'
     secrets:

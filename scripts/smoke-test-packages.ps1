@@ -10,25 +10,37 @@
     Build/pack configuration. Defaults to Release (matches .github/workflows/publish-nuget.yml).
 
 .PARAMETER SkipPack
-    Skip the `dotnet pack` step and reuse whatever is already in artifacts/packages - useful when
-    re-running just the smoke-app step after a pack already succeeded.
+    Skip the `dotnet pack` step and reuse whatever is already in -PackagesDir - useful when
+    re-running just the smoke-app step after a pack already succeeded, or (as in CI) when a
+    prior step already packed via the shared pack-solution.ps1 script.
+
+.PARAMETER PackagesDir
+    Directory (relative to the repo root) to pack into / read .nupkg files from. Defaults to
+    artifacts/packages for standalone local use. When run as publish-nuget.yml's
+    post-pack-command with -SkipPack, this must be set to artifacts/pkg instead, since that's
+    where the shared pack-solution.ps1 script (used by reusable-ci.yml's Pack step) actually
+    writes packed output -- the two scripts don't share a default directory name.
 
 .EXAMPLE
     ./scripts/smoke-test-packages.ps1
 
 .EXAMPLE
     ./scripts/smoke-test-packages.ps1 -Configuration Debug -SkipPack
+
+.EXAMPLE
+    ./scripts/smoke-test-packages.ps1 -SkipPack -PackagesDir artifacts/pkg
 #>
 param(
     [string]$Configuration = "Release",
     [switch]$SkipPack,
-    [string]$VersionSuffix = ""
+    [string]$VersionSuffix = "",
+    [string]$PackagesDir = "artifacts/packages"
 )
 
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path "$PSScriptRoot/.."
-$packagesDir = Join-Path $repoRoot "artifacts/packages"
+$packagesDir = Join-Path $repoRoot $PackagesDir
 $smokeDir = Join-Path $repoRoot "artifacts/smoke-test"
 
 if (-not $SkipPack) {
