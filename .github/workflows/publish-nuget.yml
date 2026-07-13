@@ -17,9 +17,20 @@ jobs:
   # (it has its own inline publish-nuget job) — this repo doesn't need its own. Set a
   # repo secret named NUGET_USER (Settings > Secrets and variables > Actions > Secrets)
   # with your nuget.org account name.
+  #
+  # IMPORTANT: a job-level `permissions:` block is exhaustive, not additive -- any
+  # scope not listed here is implicitly set to "none" for every nested job the called
+  # reusable workflow runs, regardless of what that nested job requests for itself.
+  # This must list every scope ANY of reusable-release-ci.yml's jobs need across the
+  # whole run: contents:write (tag/release/commit), packages:write + id-token:write
+  # (publish-nuget, for GitHub Packages / NuGet.org OIDC respectively), actions:write
+  # (cleanup-nuget-artifacts, to delete run artifacts).
   release:
     permissions:
-      contents: write # ceiling for the reusable workflow's own contents:write jobs (tag/release/commit)
+      contents: write
+      packages: write
+      id-token: write
+      actions: write
     uses: KiarashMinoo/.github/.github/workflows/reusable-release-ci.yml@main
     with:
       dotnet-versions: |
