@@ -7,19 +7,19 @@ public partial class TrackableObject<TTrackableObject>
     where TTrackableObject : TrackableObject<TTrackableObject>
 {
     protected TValue? GetElementValue<TValue>(
-        out bool isModified,
+        out ModificationType modificationType,
         [CallerMemberName] string? memberName = null
     )
     {
-        return GetElementValue<TValue>((TTrackableObject)this, out isModified, out _, memberName);
+        return GetElementValue<TValue>((TTrackableObject)this, out modificationType, out _, memberName);
     }
 
     protected TValue? GetElementValue<TValue>(
         Expression<Func<TTrackableObject, TValue>> expression,
-        out bool isModified
+        out ModificationType modificationType
     )
     {
-        return GetElementValue<TValue>(out isModified, GetMemberName(expression));
+        return GetElementValue<TValue>(out modificationType, GetMemberName(expression));
     }
 
     protected TValue? GetElementValue<TValue>(

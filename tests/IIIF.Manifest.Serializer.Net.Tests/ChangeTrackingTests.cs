@@ -318,4 +318,36 @@ public class ChangeTrackingTests
 
         manifest.HasChanges.Should().BeTrue();
     }
+
+    [Fact]
+    public void AddThenRemoveSameCollectionItem_Should_LeaveNoNetChange()
+    {
+        var manifest = new Manifest("https://example.org/manifest", new Label("Book"));
+        manifest.AddItem(new Canvas("https://example.org/canvas/baseline", new Label("Baseline"), 100, 100));
+        manifest.ClearChanges();
+        var canvas = new Canvas("https://example.org/canvas/1", new Label("Page 1"), 100, 100);
+
+        manifest.AddItem(canvas);
+        manifest.RemoveItem(canvas);
+
+        manifest.HasChanges.Should().BeFalse();
+        manifest.GetChanges().Should().BeEmpty();
+    }
+
+    [Fact]
+    public void RemovingOneDuplicateReference_Should_ReportExactlyOneRemoval()
+    {
+        var manifest = new Manifest("https://example.org/manifest", new Label("Book"));
+        var canvas = new Canvas("https://example.org/canvas/1", new Label("Page 1"), 100, 100);
+        manifest.AddItem(canvas);
+        manifest.AddItem(canvas);
+        manifest.ClearChanges();
+
+        manifest.RemoveItem(canvas);
+
+        manifest.Items.Should().ContainSingle().Which.Should().BeSameAs(canvas);
+        manifest.GetChanges().Should().ContainSingle(x =>
+            x.Kind == IiifChangeKind.CollectionItemRemoved &&
+            x.OriginalValue == canvas);
+    }
 }

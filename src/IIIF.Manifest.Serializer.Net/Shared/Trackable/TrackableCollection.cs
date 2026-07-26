@@ -1,6 +1,5 @@
-﻿using System.Collections;
+using System.Collections;
 using System.ComponentModel;
-using System.Linq;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
@@ -12,30 +11,34 @@ public interface ITrackableCollection
     void Add(object item);
 }
 
-public class TrackableCollection<T>() :
+public partial class TrackableCollection<T> :
+    TrackableObject,
     ICollection<T>,
     IReadOnlyCollection<T>,
     ITrackableCollection
 {
-    private readonly bool _initialized = true;
-    private readonly IList<T> _items = [];
+    private readonly List<ElementDescriptor<T>> _items = [];
+
+    public TrackableCollection()
+    {
+    }
+
+    public TrackableCollection(IEnumerable<T> items)
+    {
+        if (items is null) throw new ArgumentNullException(nameof(items));
+
+        foreach (var item in items)
+        {
+            SubscribeItem(item);
+            _items.Add(new ElementDescriptor<T>(item));
+        }
+    }
 
     public event TrackableCollectionChangingEventHandler? CollectionChanging;
     public event TrackableCollectionChangedEventHandler? CollectionChanged;
 
-    public int Count => _items.Count;
-    public bool IsReadOnly => _items.IsReadOnly;
-
-
-    public TrackableCollection(IEnumerable<T> items) : this()
-    {
-        foreach (var item in items)
-        {
-            _initialized = false;
-            Add(item);
-            _initialized = true;
-        }
-    }
+    public int Count => _items.Count(x => x.ModificationType != ModificationType.Removed);
+    public bool IsReadOnly => false;
 
     protected virtual void OnCollectionChanging(T item, CollectionChangedType collectionChangedType, int index)
     {
@@ -51,16 +54,16 @@ public class TrackableCollection<T>() :
 
     protected virtual void OnItemPropertyChanging(object sender, PropertyChangingEventArgs e)
     {
-        var trackableObject = (T)sender;
-        var index = _items.IndexOf(trackableObject);
-        OnCollectionChanging(trackableObject, CollectionChangedType.Modify, index);
+        var item = (T)sender;
+        var index = FindItemIndex(item);
+        OnCollectionChanging(item, CollectionChangedType.Modify, index);
     }
 
     protected virtual void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
-        var trackableObject = (T)sender;
-        var index = _items.IndexOf(trackableObject);
-        OnCollectionChanged(trackableObject, CollectionChangedType.Modify, index);
+        var item = (T)sender;
+        var index = FindItemIndex(item);
+        OnCollectionChanged(item, CollectionChangedType.Modify, index);
     }
 
     private void OnPrivateCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
@@ -103,96 +106,105 @@ public class TrackableCollection<T>() :
             notifyPropertyChanged.PropertyChanged -= OnItemPropertyChanged;
     }
 
-    private int AddCore(T trackableObject)
+    private int FindItemIndex(T item)
     {
-        if (IsReadOnly)
+        var visibleIndex = 0;
+        foreach (var descriptor in _items)
         {
-            throw new InvalidOperationException("Cannot add items to read-only collection");
+            if (descriptor.ModificationType == ModificationType.Removed) continue;
+            if (EqualityComparer<T>.Default.Equals(descriptor.Value, item)) return visibleIndex;
+            visibleIndex++;
         }
 
-        if (_initialized)
-            OnCollectionChanging(trackableObject, CollectionChangedType.Add, _items.Count);
+        return -1;
+    }
 
-        SubscribeItem(trackableObject);
+    private int FindDescriptorIndex(T item)
+    {
+        return _items.FindIndex(x =>
+            x.ModificationType != ModificationType.Removed &&
+            EqualityComparer<T>.Default.Equals(x.Value, item));
+    }
 
-        _items.Add(trackableObject);
-        var index = _items.Count - 1;
+    private int AddCore(T item)
+    {
+        if (IsReadOnly) throw new InvalidOperationException("Cannot add items to read-only collection");
 
-        if (_initialized)
-            OnCollectionChanged(trackableObject, CollectionChangedType.Add, index);
+        var index = Count;
+        OnCollectionChanging(item, CollectionChangedType.Add, index);
+        SubscribeItem(item);
 
+        var descriptor = new ElementDescriptor<T>(item);
+        descriptor.SetModificationType(ModificationType.Added);
+        _items.Add(descriptor);
+
+        OnCollectionChanged(item, CollectionChangedType.Add, index);
         return index;
     }
 
-    public int Add(T trackableObject)
+    public int Add(T item)
     {
-        return AddCore(trackableObject);
+        return AddCore(item);
     }
 
     void ITrackableCollection.Add(object item)
     {
-        if (item is not T trackableObject)
-            throw new ArgumentException($"Cannot add items to trackable collection");
-
-        AddCore(trackableObject);
+        if (item is not T typedItem) throw new ArgumentException("Cannot add item to trackable collection", nameof(item));
+        AddCore(typedItem);
     }
 
-    void ICollection<T>.Add(T trackableObject)
+    void ICollection<T>.Add(T item)
     {
-        AddCore(trackableObject);
+        AddCore(item);
     }
 
     public bool Remove(T item)
     {
-        if (IsReadOnly)
-        {
-            return false;
-        }
+        if (IsReadOnly) return false;
 
-        var index = _items.IndexOf(item);
-        if (index < 0)
-        {
-            return false;
-        }
+        var descriptorIndex = FindDescriptorIndex(item);
+        if (descriptorIndex < 0) return false;
 
-        var trackableObject = _items[index];
+        var descriptor = _items[descriptorIndex];
+        var visibleIndex = FindItemIndex(item);
+        OnCollectionChanging(descriptor.Value, CollectionChangedType.Remove, visibleIndex);
+        UnsubscribeItem(descriptor.Value);
 
-        OnCollectionChanging(trackableObject, CollectionChangedType.Remove, index);
+        if (descriptor.ModificationType == ModificationType.Added)
+            _items.RemoveAt(descriptorIndex);
+        else
+            descriptor.SetModificationType(ModificationType.Removed);
 
-        UnsubscribeItem(trackableObject);
-
-        _items.RemoveAt(index);
-
-        OnCollectionChanged(trackableObject, CollectionChangedType.Remove, index);
-
+        OnCollectionChanged(descriptor.Value, CollectionChangedType.Remove, visibleIndex);
         return true;
     }
 
     public void Clear()
     {
-        foreach (var trackableObject in _items.ToList())
-        {
-            Remove(trackableObject);
-        }
+        foreach (var item in _items.Where(x => x.ModificationType != ModificationType.Removed).Select(x => x.Value).ToList()) Remove(item);
     }
 
     public bool Contains(T item)
     {
-        return _items.Contains(item);
+        return FindDescriptorIndex(item) >= 0;
     }
 
     public void CopyTo(T[] array, int arrayIndex)
     {
-        _items.CopyTo(array, arrayIndex);
+        _items.Where(x => x.ModificationType != ModificationType.Removed).Select(x => x.Value).ToArray().CopyTo(array, arrayIndex);
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        return _items.GetEnumerator();
+        return _items
+            .Where(x => x.ModificationType != ModificationType.Removed)
+            .Select(x => x.Value)
+            .GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
+
 }

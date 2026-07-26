@@ -9,8 +9,9 @@ using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
-public class TrackableObject
+public partial class TrackableObject
 {
+    [JsonIgnore] internal readonly Dictionary<string, ElementDescriptor> ElementDescriptors = [];
     protected internal static JsonSerializerSettings JsonSerializerSettings { get; } = new()
     {
         Formatting = Formatting.Indented,
@@ -59,8 +60,6 @@ public class TrackableObject
 public partial class TrackableObject<TTrackableObject> : TrackableObject, INotifyPropertyChanging, INotifyPropertyChanged
     where TTrackableObject : TrackableObject<TTrackableObject>
 {
-    [JsonIgnore] internal readonly Dictionary<string, ElementDescriptor> ElementDescriptors = [];
-
     /// <summary>
     ///     Bridges "additional" (extension) ElementDescriptors to Newtonsoft's JsonExtensionData
     ///     mechanism, so properties set via <see cref="IAdditionalPropertiesSupport{TAdditionalPropertiesSupport}" />
@@ -159,15 +158,19 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             {
                 UnAllocateDelegates(elementDescriptor.Value);
 
-                if (target.ElementDescriptors.Remove(memberName))
-                    target.OnPropertyChanged(memberName);
+                if (elementDescriptor.ModificationType == ModificationType.Added)
+                    target.ElementDescriptors.Remove(memberName);
+                else
+                    elementDescriptor.SetModificationType(ModificationType.Removed);
+
+                target.OnPropertyChanged(memberName);
             }
         }
         else
         {
             var isEnumerable = value is IEnumerable and not string and not JToken;
 
-            if (isEnumerable)
+            if (isEnumerable && value is not ITrackableCollection)
             {
                 var valueType = value.GetType();
                 var elementType = valueType
@@ -192,11 +195,21 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             if (elementDescriptor is not null)
             {
                 UnAllocateDelegates(elementDescriptor.Value);
-                target.ElementDescriptors[memberName] = new ElementDescriptor(elementDescriptor, value);
+
+                var newElementDescriptor = new ElementDescriptor(elementDescriptor, value);
+                var modificationType = elementDescriptor.ModificationType == ModificationType.Added
+                    ? ModificationType.Added
+                    : Equals(elementDescriptor.OriginalValue, value)
+                        ? ModificationType.Unchanged
+                        : ModificationType.Changed;
+                newElementDescriptor.SetModificationType(modificationType);
+                target.ElementDescriptors[memberName] = newElementDescriptor;
             }
             else
             {
-                target.ElementDescriptors.Add(memberName, new ElementDescriptor(value, isAdditional));
+                elementDescriptor = new ElementDescriptor(value, isAdditional);
+                elementDescriptor.SetModificationType(ModificationType.Added);
+                target.ElementDescriptors.Add(memberName, elementDescriptor);
             }
 
             target.OnPropertyChanged(memberName);
@@ -247,12 +260,12 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
     /// <typeparam name="TValue">The type of the value.</typeparam>
     /// <param name="target">The target trackable object.</param>
     /// <param name="memberName">The name of the member to get.</param>
-    /// <param name="isModified">Output parameter indicating if the value has been modified.</param>
+    /// <param name="modificationType">Output parameter indicating modificationType.</param>
     /// <param name="isAdditional">Output parameter indicating if this is an additional property.</param>
     /// <returns>The element value, or default if not found.</returns>
     private static TValue? GetElementValue<TValue>(
         TTrackableObject target,
-        out bool isModified,
+        out ModificationType modificationType,
         out bool isAdditional,
         [CallerMemberName] string? memberName = null
     )
@@ -261,9 +274,9 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
 
         if (string.IsNullOrWhiteSpace(memberName)) throw new ArgumentException("Member name cannot be null or whitespace.", nameof(memberName));
 
-        if (target.ElementDescriptors.TryGetValue(memberName, out var elementDescriptor))
+        if (target.ElementDescriptors.TryGetValue(memberName, out var elementDescriptor) && elementDescriptor.ModificationType != ModificationType.Removed)
         {
-            isModified = elementDescriptor.IsModified;
+            modificationType = elementDescriptor.ModificationType;
             isAdditional = elementDescriptor.IsAdditional;
 
             // Safe cast with null handling
@@ -296,7 +309,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             }
         }
 
-        isModified = false;
+        modificationType = ModificationType.Unknown;
         isAdditional = false;
         return default;
     }

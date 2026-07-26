@@ -37,13 +37,13 @@ public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
     //Getters
 
     TValue? GetElementValue<TValue>(
-        out bool isModified,
+        out ModificationType modificationType,
         [CallerMemberName] string? memberName = null
     );
 
     TValue? GetElementValue<TValue>(
         Expression<Func<TAdditionalPropertiesSupport, TValue>> expression,
-        out bool isModified
+        out ModificationType modificationType
     );
 
     TValue? GetElementValue<TValue>(

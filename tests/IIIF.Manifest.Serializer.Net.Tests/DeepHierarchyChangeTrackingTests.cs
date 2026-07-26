@@ -70,7 +70,7 @@ public class DeepHierarchyChangeTrackingTests
         hierarchy.Manifest.HasChanges.Should().BeTrue();
         hierarchy.Manifest.GetChanges().Should().ContainSingle(x =>
             x.Path == "Items[0].Items[0].Items[0].Bodies[0].Format" &&
-            x.Kind == IiifChangeKind.Modified &&
+            x.Kind == IiifChangeKind.Added &&
             (string?)x.CurrentValue == "text/plain");
     }
 
@@ -99,7 +99,7 @@ public class DeepHierarchyChangeTrackingTests
         hierarchy.Manifest.HasChanges.Should().BeTrue();
         hierarchy.Manifest.GetChanges().Should().ContainSingle(x =>
             x.Path == "Items[0].Items[0].Next" &&
-            x.Kind == IiifChangeKind.Modified);
+            x.Kind == IiifChangeKind.Added);
     }
 
     [Fact]

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using IIIF.Manifests.Serializer.ChangeTracking;
 using IIIF.Manifests.Serializer.Shared.Trackable;
 
 namespace IIIF.Manifests.Serializer.Tests;
@@ -100,5 +101,39 @@ public class TrackableCollectionTests
         collection.Clear();
 
         collection.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Collection_Should_ImplementIiifChangeTracking_FromItsItemDescriptors()
+    {
+        var collection = new TrackableCollection<string>(["baseline"]);
+        var trackable = (IIiifChangeTrackable)collection;
+
+        trackable.HasChanges.Should().BeFalse();
+
+        collection.Add("added");
+
+        trackable.HasChanges.Should().BeTrue();
+        trackable.GetChanges().Should().ContainSingle(x =>
+            x.Path == "[1]" &&
+            x.Kind == IiifChangeKind.CollectionItemAdded &&
+            (string?)x.CurrentValue == "added");
+    }
+
+    [Fact]
+    public void AcceptChanges_Should_ResetCollectionDescriptors_AndKeepAcceptedState()
+    {
+        var collection = new TrackableCollection<string>(["first", "second"]);
+        var trackable = (IIiifChangeTrackable)collection;
+        collection.Remove("first");
+
+        trackable.GetChanges().Should().ContainSingle(x =>
+            x.Path == "[0]" && x.Kind == IiifChangeKind.CollectionItemRemoved);
+
+        trackable.AcceptChanges();
+
+        collection.Should().Equal("second");
+        trackable.HasChanges.Should().BeFalse();
+        trackable.GetChanges().Should().BeEmpty();
     }
 }

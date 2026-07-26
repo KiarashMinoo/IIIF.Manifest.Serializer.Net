@@ -23,19 +23,19 @@ public partial class TrackableObject<TTrackableObject> : IAdditionalPropertiesSu
     }
 
     TValue? IAdditionalPropertiesSupport<TTrackableObject>.GetElementValue<TValue>(
-        out bool isModified,
+        out ModificationType modificationType,
         string? memberName
     ) where TValue : default
     {
-        return GetAdditionalProperty<TValue>(out isModified, memberName);
+        return GetAdditionalProperty<TValue>(out modificationType, memberName);
     }
 
     TValue? IAdditionalPropertiesSupport<TTrackableObject>.GetElementValue<TValue>(
         Expression<Func<TTrackableObject, TValue>> expression,
-        out bool isModified
+        out ModificationType modificationType
     ) where TValue : default
     {
-        return GetAdditionalProperty<TValue>(out isModified, GetMemberName(expression));
+        return GetAdditionalProperty<TValue>(out modificationType, GetMemberName(expression));
     }
     //Setters
 
@@ -46,9 +46,9 @@ public partial class TrackableObject<TTrackableObject> : IAdditionalPropertiesSu
 
     //Getters
 
-    private TValue? GetAdditionalProperty<TValue>(out bool isModified, string? memberName)
+    private TValue? GetAdditionalProperty<TValue>(out ModificationType modificationType, string? memberName)
     {
-        var rtn = GetElementValue<TValue>((TTrackableObject)this, out isModified, out var isAdditional, memberName);
+        var rtn = GetElementValue<TValue>((TTrackableObject)this, out modificationType, out var isAdditional, memberName);
 
         return !isAdditional
             ? throw new InvalidOperationException("The specified member is not an additional property.")

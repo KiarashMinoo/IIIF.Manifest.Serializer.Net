@@ -2,6 +2,14 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
 public class ElementDescriptor<TValueType> : IDisposable
 {
+    private readonly bool _hasModifiedValue;
+
+    public TValueType OriginalValue { get; }
+    public TValueType? ModifiedValue { get; }
+    public bool IsAdditional { get; }
+    public TValueType Value => _hasModifiedValue ? ModifiedValue! : OriginalValue;
+    public ModificationType ModificationType { get; private set; } = ModificationType.Unchanged;
+
     internal ElementDescriptor(TValueType originalValue, bool isAdditional = false)
     {
         OriginalValue = originalValue;
@@ -11,7 +19,9 @@ public class ElementDescriptor<TValueType> : IDisposable
     internal ElementDescriptor(TValueType originalValue, TValueType modifiedValue, bool isAdditional = false) : this(originalValue)
     {
         ModifiedValue = modifiedValue;
+        _hasModifiedValue = true;
         IsAdditional = isAdditional;
+        SetModificationType(ModificationType.Changed);
     }
 
     internal ElementDescriptor(ElementDescriptor<TValueType> elementDescriptor, TValueType modifiedValue)
@@ -19,13 +29,12 @@ public class ElementDescriptor<TValueType> : IDisposable
     {
     }
 
-    public TValueType OriginalValue { get; }
-    public TValueType? ModifiedValue { get; }
-    public bool IsAdditional { get; }
-    public TValueType Value => ModifiedValue ?? OriginalValue;
-    public bool IsModified => ModifiedValue is not null && !EqualityComparer<TValueType>.Default.Equals(OriginalValue, ModifiedValue);
+    internal void SetModificationType(ModificationType modificationType)
+    {
+        ModificationType = modificationType;
+    }
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
         GC.SuppressFinalize(this);
     }
