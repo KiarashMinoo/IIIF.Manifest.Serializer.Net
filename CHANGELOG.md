@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.12] — 2026-07-26
+
+### ♻️ Refactoring
+
+- unify descriptor-based change tracking `(bc80c57)` — Kiarash Minoo
+
 ## [3.0.11] — 2026-07-26
 
 ### 🚀 Features
