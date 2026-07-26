@@ -1,7 +1,8 @@
 ﻿using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
-namespace IIIF.Manifests.Serializer.Shared.Trackable;
+namespace IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 
 public partial class TrackableObject<TTrackableObject>
     where TTrackableObject : TrackableObject<TTrackableObject>

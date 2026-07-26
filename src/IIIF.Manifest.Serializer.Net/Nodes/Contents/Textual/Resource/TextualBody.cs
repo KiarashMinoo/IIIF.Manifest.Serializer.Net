@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
 ///     <see cref="Embedded.Resource.EmbeddedContentResource" />.
 /// </summary>
 [PresentationAPI("3.0")]
-public class TextualBody : TrackableObject<TextualBody>, IBaseResource
+public sealed class TextualBody : TrackableObject<TextualBody>, IBaseResource
 {
     public const string TypeJName = "type";
     public const string ValueJName = "value";

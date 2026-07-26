@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties;
 
 [PresentationAPI("2.0")]
-public class Rendering : FormattableItem<Rendering>
+public sealed class Rendering : FormattableItem<Rendering>
 {
     public const string LabelJName = "label";
 

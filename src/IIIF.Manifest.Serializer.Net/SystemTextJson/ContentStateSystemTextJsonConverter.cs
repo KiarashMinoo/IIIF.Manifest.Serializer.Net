@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using IIIF.Manifests.Serializer.Shared.Trackable;
 using ContentStateDocument = IIIF.Manifests.Serializer.Nodes.Contents.ContentState.ContentState;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer.SystemTextJson;
 

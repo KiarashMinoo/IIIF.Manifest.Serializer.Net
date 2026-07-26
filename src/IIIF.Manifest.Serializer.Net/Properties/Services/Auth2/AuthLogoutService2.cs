@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2;
 ///     required and must clearly identify the domain/institution the user is logging out of.
 /// </summary>
 [AuthAPI("2.0", Notes = "Auth API 2.0 logout service.")]
-public class AuthLogoutService2 : UnprefixedBaseItem<AuthLogoutService2>, IBaseService
+public sealed class AuthLogoutService2 : UnprefixedBaseItem<AuthLogoutService2>, IBaseService
 {
     public const string LabelJName = "label";
 

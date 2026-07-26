@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties;
@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 ///     2.x attribution carries no label, so the legacy view synthesizes one).
 /// </summary>
 [PresentationAPI("3.0", Notes = "Replaces attribution from API 2.x. Structural change: attribution has no label, requiredStatement does.")]
-public class RequiredStatement : TrackableObject<RequiredStatement>
+public sealed class RequiredStatement : TrackableObject<RequiredStatement>
 {
     public const string LabelJName = "label";
     public const string ValueJName = "value";

@@ -1,6 +1,6 @@
-﻿namespace IIIF.Manifests.Serializer.Shared;
+namespace IIIF.Manifests.Serializer.Shared;
 
-public class Constants
+public sealed class Constants
 {
     public const string WidthJName = "width";
     public const string HeightJName = "height";

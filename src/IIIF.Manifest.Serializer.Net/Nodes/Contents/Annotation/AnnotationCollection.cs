@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 /// </summary>
 [PresentationAPI("3.0", Notes = "W3C Web Annotation Protocol paging concept, distinct from the IIIF Collection resource.")]
 [System.Text.Json.Serialization.JsonConverter(typeof(AnnotationCollectionSystemTextJsonConverter))]
-public class AnnotationCollection : BaseNode<AnnotationCollection>
+public sealed class AnnotationCollection : BaseNode<AnnotationCollection>
 {
     public const string TotalJName = "total";
     public const string FirstJName = "first";

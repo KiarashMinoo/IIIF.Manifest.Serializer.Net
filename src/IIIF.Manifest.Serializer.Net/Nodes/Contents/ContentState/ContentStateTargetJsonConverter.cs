@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 ///     </c>
 ///     ) - see <see cref="ContentStateTarget" />.
 /// </summary>
-public class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
+public sealed class ContentStateTargetJsonConverter : JsonConverter<ContentStateTarget>
 {
     public override void WriteJson(JsonWriter writer, ContentStateTarget? value, JsonSerializer serializer)
     {

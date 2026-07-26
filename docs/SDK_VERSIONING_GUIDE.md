@@ -1733,7 +1733,7 @@ explicit gap rather than left unexplained), and `IiifChangeSet` (`RootId`/`RootT
 properties, since netstandard2.1 needs `RequiredMemberAttribute`/`CompilerFeatureRequiredAttribute`
 polyfills this repo doesn't carry yet, beyond just the existing `IsExternalInit` one).
 
-**Core implementation** (`Shared/Trackable/TrackableObject.ChangeTracking.cs`, a new partial-class
+**Core implementation** (now `Shared/Trackable/Core/TrackableObject.ChangeTracking.cs`, a partial-class
 file on the existing shared base - this alone gives every derived type in the SDK, roughly 180
 model types, change tracking for free): a structural-vs-value split for collection-valued
 properties (anything whose element type implements the existing `IBaseItem` marker - `Items`,
@@ -1760,6 +1760,14 @@ for `CollectionItemAdded`/`CollectionItemRemoved` instead of `ElementDescriptor.
 `_keysAtLastClear` (snapshots which `ElementDescriptors` keys existed at clear time; any key set for
 the first time afterward is reported `Modified` with `OriginalValue = null`, even though its own
 `ElementDescriptor.IsModified` says otherwise).
+
+**Current descriptor-only refactor (3.0.12+)**: the implementation no longer uses
+`IChangeTrackingCoreAccess`, `_collectionBaselines`, or `_keysAtLastClear`. The non-generic
+`TrackableObject` owns the recursive `IIiifChangeTrackable` engine and property descriptors;
+`TrackableCollection<T>` derives from it and owns item descriptors. Added/changed/removed states are
+therefore recorded at the value itself, and objects and collections share the same visited-set
+recursion. The source is organized under `Core`, `Collections`, `ChangeTracking`, `Notifications`,
+and `AdditionalProperties` without changing the public namespace.
 
 **Changed-only output** (`Nodes/Manifest.ChangeTracking.cs`, `Manifest`-only so far - the only
 document type the issue's own examples exercise): `GetChangedManifest()` reconstructs a best-effort,

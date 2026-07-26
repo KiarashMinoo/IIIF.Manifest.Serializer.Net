@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     or rectangular region of the targeted Canvas/Image Service - the preferred selector shape for
 ///     Georeference Annotations per the extension spec (§3.3.2).
 /// </summary>
-public class GeoreferenceSvgSelector : TrackableObject<GeoreferenceSvgSelector>
+public sealed class GeoreferenceSvgSelector : TrackableObject<GeoreferenceSvgSelector>
 {
     public const string TypeJName = "type";
     public const string ValueJName = "value";

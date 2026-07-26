@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 ///     to the client - carries the opaque access token the client then sends to a probe service.
 /// </summary>
 [AuthAPI("2.0")]
-public class AuthAccessToken2 : TrackableObject<AuthAccessToken2>
+public sealed class AuthAccessToken2 : TrackableObject<AuthAccessToken2>
 {
     public const string DefaultContext = "http://iiif.io/api/auth/2/context.json";
     public const string ContextJName = "@context";

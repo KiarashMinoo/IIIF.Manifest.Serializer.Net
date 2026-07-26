@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.Selectors;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 /// </summary>
 [PresentationAPI("3.0")]
 [JsonConverter(typeof(AnnotationTargetJsonConverter))]
-public class AnnotationTarget : TrackableObject<AnnotationTarget>
+public sealed class AnnotationTarget : TrackableObject<AnnotationTarget>
 {
     public AnnotationTarget(string sourceId, string? sourceType = null)
     {

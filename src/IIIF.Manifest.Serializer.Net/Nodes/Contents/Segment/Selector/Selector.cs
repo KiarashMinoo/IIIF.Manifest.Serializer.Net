@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Segment.Selector;
 
-public class Selector(string id, string type) : BaseItem<Selector>(id, type)
+public sealed class Selector(string id, string type) : BaseItem<Selector>(id, type)
 {
     public const string RegionJName = "region";
 

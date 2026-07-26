@@ -6,4 +6,4 @@ namespace IIIF.Manifests.Serializer.Properties;
 
 [PresentationAPI("2.0")]
 [JsonConverter(typeof(ValuableItemJsonConverter<Attribution>))]
-public class Attribution(string value) : ValuableItem<Attribution>(value);
+public sealed class Attribution(string value) : ValuableItem<Attribution>(value);

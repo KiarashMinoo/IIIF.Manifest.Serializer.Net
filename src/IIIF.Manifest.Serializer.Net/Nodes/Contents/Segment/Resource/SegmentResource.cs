@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Segment.Resource;
 
-public class SegmentResource(string id, ResourceType type) : BaseResource<SegmentResource>(id, type)
+public sealed class SegmentResource(string id, ResourceType type) : BaseResource<SegmentResource>(id, type)
 {
     public const string FullJName = "full";
 

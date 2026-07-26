@@ -17,7 +17,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     bootstrap via <see cref="NavPlaceExtensions.Register" />; static-constructor registration remains as
 ///     a backward-compatible fallback.
 /// </summary>
-public class Feature : UnprefixedBaseItem<Feature>, IBaseResource
+public sealed class Feature : UnprefixedBaseItem<Feature>, IBaseResource
 {
     public const string GeometryJName = "geometry";
     public const string PropertiesJName = "properties";

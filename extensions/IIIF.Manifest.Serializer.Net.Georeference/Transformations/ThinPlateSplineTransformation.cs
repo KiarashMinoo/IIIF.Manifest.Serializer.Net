@@ -1,3 +1,3 @@
-﻿namespace IIIF.Manifests.Serializer.Extensions.Transformations;
+namespace IIIF.Manifests.Serializer.Extensions.Transformations;
 
-public class ThinPlateSplineTransformation() : Transformation(TransformationType.ThinPlateSpline);
+public sealed class ThinPlateSplineTransformation() : Transformation(TransformationType.ThinPlateSpline);

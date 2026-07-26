@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [PresentationAPI("2.0", Notes = "Motivation values. sc:painting in 2.x, painting in 3.0.")]
 [JsonConverter(typeof(ValuableItemJsonConverter<Motivation>))]
-public class Motivation(string value) : ValuableItem<Motivation>(value)
+public sealed class Motivation(string value) : ValuableItem<Motivation>(value)
 {
     // IIIF Presentation motivations
     public static Motivation Painting => new("painting");

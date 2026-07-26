@@ -8,7 +8,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     URI, a full resource object (<c>{"id","type","height","width"}</c>), or a SpecificResource
 ///     wrapping a <see cref="GeoreferenceSvgSelector" /> - see <see cref="GeoreferenceTarget" />.
 /// </summary>
-public class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
+public sealed class GeoreferenceTargetJsonConverter : JsonConverter<GeoreferenceTarget>
 {
     public override void WriteJson(JsonWriter writer, GeoreferenceTarget? value, JsonSerializer serializer)
     {

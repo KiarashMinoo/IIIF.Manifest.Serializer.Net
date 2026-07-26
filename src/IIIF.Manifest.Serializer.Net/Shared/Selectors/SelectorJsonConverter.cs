@@ -1,6 +1,6 @@
-using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
 
@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Shared.Selectors;
 ///     implementer inherits it too, so reading/writing a concrete leaf type must skip this converter
 ///     for the leaf type itself.
 /// </summary>
-public class SelectorJsonConverter : JsonConverter<ISelector>
+public sealed class SelectorJsonConverter : JsonConverter<ISelector>
 {
     private static readonly JsonSerializer LeafSerializer = JsonSerializer.Create(new JsonSerializerSettings
     {

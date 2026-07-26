@@ -4,9 +4,9 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
-using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer.Shared.Content.Resources;
 
@@ -19,7 +19,7 @@ namespace IIIF.Manifests.Serializer.Shared.Content.Resources;
 ///     <c>JsonConvert</c>/<c>TrackableObject.Parse</c> would throw trying to instantiate the
 ///     <see cref="IBaseResource" /> interface directly.
 /// </summary>
-public class BaseResourceJsonConverter : JsonConverter<IBaseResource>
+public sealed class BaseResourceJsonConverter : JsonConverter<IBaseResource>
 {
     private const string TypeJName = "@type";
 

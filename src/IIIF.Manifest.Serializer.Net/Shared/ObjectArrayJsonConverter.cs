@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared;
 
-public class ObjectArrayJsonConverter : JsonConverter
+public sealed class ObjectArrayJsonConverter : JsonConverter
 {
     public override bool CanConvert(Type objectType)
     {

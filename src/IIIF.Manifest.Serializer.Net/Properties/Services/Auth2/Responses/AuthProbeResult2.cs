@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 ///     code is always 200; <see cref="Status" /> carries the "real" access status the client acts on.
 /// </summary>
 [AuthAPI("2.0")]
-public class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
+public sealed class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
 {
     public const string DefaultContext = "http://iiif.io/api/auth/2/context.json";
     public const string ContextJName = "@context";

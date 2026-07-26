@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [IIIFVersion("1.0", Notes = "Context URLs identify the API version being used.")]
 [JsonConverter(typeof(ValuableItemJsonConverter<Context>))]
-public class Context(string value) : ValuableItem<Context>(value)
+public sealed class Context(string value) : ValuableItem<Context>(value)
 {
     // IIIF Presentation API contexts
     public static Context Presentation2 => new("http://iiif.io/api/presentation/2/context.json");

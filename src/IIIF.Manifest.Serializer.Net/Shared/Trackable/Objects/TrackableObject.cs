@@ -1,63 +1,17 @@
+using IIIF.Manifests.Serializer.Shared.Trackable.AdditionalProperties;
 using System.Collections;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
-using IIIF.Manifests.Serializer.ChangeTracking;
+using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
+using IIIF.Manifests.Serializer.Shared.Trackable.Core;
+using IIIF.Manifests.Serializer.Shared.Trackable.Notifications;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace IIIF.Manifests.Serializer.Shared.Trackable;
+namespace IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 
-public partial class TrackableObject
-{
-    [JsonIgnore] internal readonly Dictionary<string, ElementDescriptor> ElementDescriptors = [];
-    protected internal static JsonSerializerSettings JsonSerializerSettings { get; } = new()
-    {
-        Formatting = Formatting.Indented,
-        NullValueHandling = NullValueHandling.Ignore,
-        DefaultValueHandling = DefaultValueHandling.Ignore,
-        ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-        ContractResolver = new IIIFJsonContractResolver()
-    };
-
-    public string Serialize()
-    {
-        return JsonConvert.SerializeObject(this, JsonSerializerSettings);
-    }
-
-    public static TTrackableObject Parse<TTrackableObject>(string json)
-        where TTrackableObject : TrackableObject
-    {
-        return !TryParse<TTrackableObject>(json, out var trackableObject)
-            ? throw new ArgumentException("JSON string cannot be null or whitespace.", nameof(json))
-            : trackableObject;
-    }
-
-    public static bool TryParse<TTrackableObject>(string json, [MaybeNullWhen(false)] out TTrackableObject trackableObject)
-        where TTrackableObject : TrackableObject
-    {
-        if (string.IsNullOrWhiteSpace(json))
-        {
-            trackableObject = null;
-            return false;
-        }
-
-        trackableObject = JsonConvert.DeserializeObject<TTrackableObject>(json, JsonSerializerSettings);
-
-        // Change tracking (issue #23): a document freshly loaded from storage has no "pending
-        // edits" yet - establish this as the clean baseline, per docs/CHANGE_TRACKING.md's
-        // "deserialization starts clean by default" decision. TTrackableObject is only constrained
-        // to the non-generic TrackableObject here (Parse<T>/TryParse<T> serve every trackable type,
-        // including this base class itself), so the change-tracking interface is checked at
-        // runtime rather than via a compile-time generic constraint.
-        (trackableObject as IIiifChangeTrackable)?.ClearChanges();
-
-        return trackableObject is not null;
-    }
-}
-
-public partial class TrackableObject<TTrackableObject> : TrackableObject, INotifyPropertyChanging, INotifyPropertyChanged
+public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, INotifyPropertyChanging, INotifyPropertyChanged
     where TTrackableObject : TrackableObject<TTrackableObject>
 {
     /// <summary>
@@ -78,24 +32,26 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
     public event TrackableObjectPropertyChangingEventHandler<TTrackableObject>? TrackableObjectPropertyChanging;
     public event TrackableObjectPropertyChangedEventHandler<TTrackableObject>? TrackableObjectPropertyChanged;
 
-    protected virtual void OnPropertyChanging([CallerMemberName] string? propertyName = null, bool isList = false)
+    protected virtual void OnPropertyChanging([CallerMemberName] string? propertyName = null, CollectionChangeType? changeType = null)
     {
         if (string.IsNullOrWhiteSpace(propertyName))
             throw new ArgumentNullException(nameof(propertyName));
 
-        TrackableObjectPropertyChangingEventArgs args = new(propertyName, isList);
+        var args = changeType is null
+            ? new TrackableObjectPropertyChangingEventArgs(propertyName)
+            : new TrackableObjectPropertyChangingEventArgs(propertyName, changeType.Value);
 
         PropertyChanging?.Invoke(this, args);
         TrackableObjectPropertyChanging?.Invoke((TTrackableObject)this, args);
     }
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null, CollectionChangedType? listChangedType = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null, CollectionChangeType? changeType = null)
     {
         if (string.IsNullOrWhiteSpace(propertyName))
             throw new ArgumentNullException(nameof(propertyName));
 
-        var args = listChangedType is not null
-            ? new TrackableObjectPropertyChangedEventArgs(propertyName, listChangedType.Value)
+        var args = changeType is not null
+            ? new TrackableObjectPropertyChangedEventArgs(propertyName, changeType.Value)
             : new TrackableObjectPropertyChangedEventArgs(propertyName);
 
         PropertyChanged?.Invoke(this, args);
@@ -150,13 +106,18 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
 
         var value = valueFactory(currentValue);
 
+        // In-place TrackableCollection operations already update their item descriptors and raise
+        // collection-aware notifications through the handlers attached to the stored instance.
+        if (value is ITrackableCollection && ReferenceEquals(currentValue, value))
+            return target;
+
         target.OnPropertyChanging(memberName);
 
         if (value is null)
         {
             if (elementDescriptor is not null)
             {
-                UnAllocateDelegates(elementDescriptor.Value);
+                DetachChangeHandlers(elementDescriptor.Value);
 
                 if (elementDescriptor.ModificationType == ModificationType.Added)
                     target.ElementDescriptors.Remove(memberName);
@@ -190,11 +151,11 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
                 value = (TValue)trackableCollection;
             }
 
-            AllocateDelegates(value);
+            AttachChangeHandlers(value);
 
             if (elementDescriptor is not null)
             {
-                UnAllocateDelegates(elementDescriptor.Value);
+                DetachChangeHandlers(elementDescriptor.Value);
 
                 var newElementDescriptor = new ElementDescriptor(elementDescriptor, value);
                 var modificationType = elementDescriptor.ModificationType == ModificationType.Added
@@ -217,40 +178,40 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
 
         return target;
 
-        void TrackableCollectionOnCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
+        void OnTrackedCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
+        {
+            target.OnPropertyChanging(memberName, e.ChangeType);
+        }
+
+        void OnTrackedCollectionChanged(object sender, TrackableCollectionChangedEventArgs e)
+        {
+            target.OnPropertyChanged(memberName, e.ChangeType);
+        }
+
+        void OnTrackedItemPropertyChanging(object sender, PropertyChangingEventArgs e)
         {
             target.OnPropertyChanging(memberName);
         }
 
-        void TrackableCollectionOnCollectionChanged(object sender, TrackableCollectionChangedEventArgs e)
+        void OnTrackedItemPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             target.OnPropertyChanged(memberName);
         }
 
-        void NotifyPropertyChangingOnPropertyChanging(object sender, PropertyChangingEventArgs e)
+        void AttachChangeHandlers(object item)
         {
-            target.OnPropertyChanging(memberName);
+            (item as ITrackableCollection)?.CollectionChanging += OnTrackedCollectionChanging;
+            (item as ITrackableCollection)?.CollectionChanged += OnTrackedCollectionChanged;
+            (item as INotifyPropertyChanging)?.PropertyChanging += OnTrackedItemPropertyChanging;
+            (item as INotifyPropertyChanged)?.PropertyChanged += OnTrackedItemPropertyChanged;
         }
 
-        void NotifyPropertyChangedOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        void DetachChangeHandlers(object item)
         {
-            target.OnPropertyChanged(memberName);
-        }
-
-        void AllocateDelegates(object item)
-        {
-            (item as ITrackableCollection)?.CollectionChanging += TrackableCollectionOnCollectionChanging;
-            (item as ITrackableCollection)?.CollectionChanged += TrackableCollectionOnCollectionChanged;
-            (item as INotifyPropertyChanging)?.PropertyChanging += NotifyPropertyChangingOnPropertyChanging;
-            (item as INotifyPropertyChanged)?.PropertyChanged += NotifyPropertyChangedOnPropertyChanged;
-        }
-
-        void UnAllocateDelegates(object item)
-        {
-            (item as ITrackableCollection)?.CollectionChanging -= TrackableCollectionOnCollectionChanging;
-            (item as ITrackableCollection)?.CollectionChanged -= TrackableCollectionOnCollectionChanged;
-            (item as INotifyPropertyChanging)?.PropertyChanging -= NotifyPropertyChangingOnPropertyChanging;
-            (item as INotifyPropertyChanged)?.PropertyChanged -= NotifyPropertyChangedOnPropertyChanged;
+            (item as ITrackableCollection)?.CollectionChanging -= OnTrackedCollectionChanging;
+            (item as ITrackableCollection)?.CollectionChanged -= OnTrackedCollectionChanged;
+            (item as INotifyPropertyChanging)?.PropertyChanging -= OnTrackedItemPropertyChanging;
+            (item as INotifyPropertyChanged)?.PropertyChanged -= OnTrackedItemPropertyChanged;
         }
     }
 

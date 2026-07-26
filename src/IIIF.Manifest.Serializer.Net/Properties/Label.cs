@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 ///     under "none".
 /// </summary>
 [JsonConverter(typeof(ValuableItemJsonConverter<Label>))]
-public class Label : ValuableItem<Label>
+public sealed class Label : ValuableItem<Label>
 {
     public Label(string value) : base(value)
     {

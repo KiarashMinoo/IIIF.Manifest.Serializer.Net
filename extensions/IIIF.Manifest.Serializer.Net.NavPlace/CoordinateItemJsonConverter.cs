@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
-public class CoordinateItemJsonConverter : JsonConverter<CoordinateItem>
+public sealed class CoordinateItemJsonConverter : JsonConverter<CoordinateItem>
 {
     public override CoordinateItem ReadJson(JsonReader reader, Type objectType, CoordinateItem? existingValue, bool hasExistingValue, JsonSerializer serializer)
     {

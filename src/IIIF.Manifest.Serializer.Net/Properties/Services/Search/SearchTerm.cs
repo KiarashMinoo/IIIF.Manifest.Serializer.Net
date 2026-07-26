@@ -2,7 +2,7 @@ using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Service;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 ///     <see cref="Value" /> is required; a bare <c>{"value": "..."}</c> is a valid minimal Term.
 /// </summary>
 [SearchAPI("2.0")]
-public class SearchTerm : TrackableObject<SearchTerm>
+public sealed class SearchTerm : TrackableObject<SearchTerm>
 {
     public const string TypeJName = "type";
     public const string ValueJName = "value";

@@ -1,7 +1,10 @@
+using IIIF.Manifests.Serializer.Shared.Trackable.AdditionalProperties;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Core;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer;
 

@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 ///     pre-existing "2.0" tag - 2.x had no Agent/provider concept at all.
 /// </summary>
 [PresentationAPI("3.0", Notes = "3.0-only. No 2.x equivalent (2.x had no Agent/provider concept).")]
-public class Provider : FormattableItem<Provider>
+public sealed class Provider : FormattableItem<Provider>
 {
     public const string LabelJName = "label";
     public const string HomepageJName = "homepage";

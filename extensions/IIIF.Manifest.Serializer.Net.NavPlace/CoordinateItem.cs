@@ -1,11 +1,11 @@
-﻿using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
 
 [JsonConverter(typeof(CoordinateItemJsonConverter))]
-public class CoordinateItem : TrackableObject<CoordinateItem>, ICoordinateItemSupport<CoordinateItem>
+public sealed class CoordinateItem : TrackableObject<CoordinateItem>, ICoordinateItemSupport<CoordinateItem>
 {
     internal CoordinateItem()
     {
@@ -13,7 +13,7 @@ public class CoordinateItem : TrackableObject<CoordinateItem>, ICoordinateItemSu
 
     public CoordinateItem(CoordinateItem[] coordinateItems)
     {
-        SetElementValue(x => x.Coordinates, [..coordinateItems]);
+        SetElementValue(x => x.Coordinates, [.. coordinateItems]);
     }
 
     public CoordinateItem(double longitude, double latitude)

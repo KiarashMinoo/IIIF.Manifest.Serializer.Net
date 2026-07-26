@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Embedded.Resource;
 
-public class EmbeddedContentResource : BaseResource<EmbeddedContentResource>
+public sealed class EmbeddedContentResource : BaseResource<EmbeddedContentResource>
 {
     public const string CharsJName = "chars";
     public const string LanguageJname = "language";

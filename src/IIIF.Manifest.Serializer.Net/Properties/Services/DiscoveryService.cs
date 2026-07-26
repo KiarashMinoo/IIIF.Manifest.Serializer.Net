@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 ///     Has no "profile" field per spec.
 /// </summary>
 [DiscoveryAPI("1.0", Notes = "Change Discovery API 1.0 top-level OrderedCollection.")]
-public class DiscoveryService : UnprefixedBaseItem<DiscoveryService>, IBaseService
+public sealed class DiscoveryService : UnprefixedBaseItem<DiscoveryService>, IBaseService
 {
     public const string FirstJName = "first";
     public const string LastJName = "last";

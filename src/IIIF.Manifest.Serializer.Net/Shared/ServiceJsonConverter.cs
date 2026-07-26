@@ -1,10 +1,10 @@
-﻿using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Services;
 using IIIF.Manifests.Serializer.Properties.Services.Auth2;
 using IIIF.Manifests.Serializer.Shared.Service;
-using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer.Shared;
 
@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Shared;
 ///     Supports multiple service types including Image API, Auth API, Search API, Discovery API, and Content State API.
 ///     Automatically detects service type based on @type field or profile property.
 /// </summary>
-public class ServiceJsonConverter : JsonConverter<IBaseService>
+public sealed class ServiceJsonConverter : JsonConverter<IBaseService>
 {
     private const string TypeJName = "@type";
     private const string ProfileJName = "profile";

@@ -1,6 +1,7 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Shared.Trackable.AdditionalProperties;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 
 namespace IIIF.Manifests.Serializer.Extensions.Transformations;
 

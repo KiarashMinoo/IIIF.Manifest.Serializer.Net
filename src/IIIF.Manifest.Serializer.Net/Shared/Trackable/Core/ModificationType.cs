@@ -1,4 +1,4 @@
-﻿namespace IIIF.Manifests.Serializer.Shared.Trackable;
+﻿namespace IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
 public enum ModificationType
 {

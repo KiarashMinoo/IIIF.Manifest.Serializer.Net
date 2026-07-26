@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 ///     resource reference (optionally with a single <c>partOf</c>), or a full SpecificResource wrapping
 ///     a <see cref="ISelector" /> and/or a <c>styleClass</c> (recipe 0045-css).
 /// </summary>
-public class AnnotationTargetJsonConverter : JsonConverter<AnnotationTarget>
+public sealed class AnnotationTargetJsonConverter : JsonConverter<AnnotationTarget>
 {
     public override void WriteJson(JsonWriter writer, AnnotationTarget? value, JsonSerializer serializer)
     {

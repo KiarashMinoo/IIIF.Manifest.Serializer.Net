@@ -1,6 +1,6 @@
-﻿using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     Per the navPlace spec, the value of properties is a JSON object with zero or more properties.
 ///     Terms used in properties should be described by registered IIIF API extensions or local linked data contexts.
 /// </summary>
-public class FeatureProperties : TrackableObject<FeatureProperties>
+public sealed class FeatureProperties : TrackableObject<FeatureProperties>
 {
     public const string LabelJName = "label";
 

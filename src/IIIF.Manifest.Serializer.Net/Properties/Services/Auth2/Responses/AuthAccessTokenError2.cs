@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 ///     unavailable) - modeled as a plain string rather than an enum since it is spec-open-ended text.
 /// </summary>
 [AuthAPI("2.0")]
-public class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError2>
+public sealed class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError2>
 {
     public const string DefaultContext = "http://iiif.io/api/auth/2/context.json";
     public const string ContextJName = "@context";

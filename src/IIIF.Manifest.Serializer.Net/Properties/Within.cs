@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties;
 
 [PresentationAPI("2.0")]
-public class Within(string id) : BaseItem<Within>(id)
+public sealed class Within(string id) : BaseItem<Within>(id)
 {
     public const string LabelJName = "label";
 

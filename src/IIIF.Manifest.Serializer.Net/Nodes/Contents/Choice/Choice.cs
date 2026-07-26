@@ -3,7 +3,7 @@ using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Choice;
@@ -19,7 +19,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Choice;
 /// </summary>
 [PresentationAPI("3.0")]
 [JsonConverter(typeof(ChoiceJsonConverter))]
-public class Choice : TrackableObject<Choice>, IBaseResource
+public sealed class Choice : TrackableObject<Choice>, IBaseResource
 {
     public const string TypeJName = "type";
     public const string ItemsJName = "items";

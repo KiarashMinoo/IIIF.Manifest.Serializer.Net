@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 ///     <see cref="Selector" />s identifying the matched text.
 /// </summary>
 [SearchAPI("2.0")]
-public class SearchHitTarget : TrackableObject<SearchHitTarget>
+public sealed class SearchHitTarget : TrackableObject<SearchHitTarget>
 {
     public const string TypeJName = "type";
     public const string SourceJName = "source";

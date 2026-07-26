@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
 ///     <see cref="Activity" />'s <c>target</c> (the destination of a Move activity).
 /// </summary>
 [DiscoveryAPI("1.0")]
-public class DiscoveryResourceReference : TrackableObject<DiscoveryResourceReference>
+public sealed class DiscoveryResourceReference : TrackableObject<DiscoveryResourceReference>
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

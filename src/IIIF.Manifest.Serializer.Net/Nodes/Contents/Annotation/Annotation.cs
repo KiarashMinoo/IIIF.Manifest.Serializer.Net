@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 ///     the 2.x Image/Audio/Video/OtherContent annotation wrapper classes.
 /// </summary>
 [PresentationAPI("3.0", Notes = "Web Annotation model. In 2.x, this concept was split across Canvas.images/audio/video wrappers.")]
-public class Annotation : BaseItem<Annotation>
+public sealed class Annotation : BaseItem<Annotation>
 {
     public const string MotivationJName = "motivation";
     public const string BodyJName = "body";

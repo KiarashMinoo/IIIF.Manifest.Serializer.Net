@@ -2,7 +2,7 @@ using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties.Services.Discovery;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services;
@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 ///     Represents the object of an Activity Streams activity.
 /// </summary>
 [DiscoveryAPI("1.0")]
-public class ActivityObject : TrackableObject<ActivityObject>
+public sealed class ActivityObject : TrackableObject<ActivityObject>
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

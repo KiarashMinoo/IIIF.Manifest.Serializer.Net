@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared.Selectors;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Content.Resources;
@@ -16,7 +16,7 @@ namespace IIIF.Manifests.Serializer.Shared.Content.Resources;
 ///     *reference* (id/type/partOf) rather than a full embeddable resource.
 /// </summary>
 [PresentationAPI("3.0")]
-public class SpecificResource : TrackableObject<SpecificResource>, IBaseResource
+public sealed class SpecificResource : TrackableObject<SpecificResource>, IBaseResource
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

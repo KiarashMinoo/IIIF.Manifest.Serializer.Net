@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [ImageAPI("2.0", Notes = "Supported in both Image API 2.x and 3.0")]
 [JsonConverter(typeof(ValuableItemJsonConverter<ImageFormat>))]
-public class ImageFormat(string value) : ValuableItem<ImageFormat>(value)
+public sealed class ImageFormat(string value) : ValuableItem<ImageFormat>(value)
 {
     // Common image formats
     public static ImageFormat Jpg => "image/jpeg";

@@ -19,7 +19,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 ///     IIIF Canvas resource - a virtual container representing a page or view.
 /// </summary>
 [PresentationAPI("2.0", Notes = "Core resource. In 3.0, images/otherContent replaced by items (AnnotationPage) / annotations.")]
-public class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
+public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
 {
     public const string ImagesJName = "images";
     public const string OtherContentsJName = "otherContent";

@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </summary>
 [PresentationAPI("2.0", Notes = "Called 'structures' in 2.x, 'Range' in 3.0. Canvases/ranges arrays deprecated in 3.0.")]
 [method: JsonConstructor]
-public class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), IViewingDirectionSupport<Structure>
+public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), IViewingDirectionSupport<Structure>
 {
     public const string CanvasesJName = "canvases";
     public const string RangesJName = "ranges";

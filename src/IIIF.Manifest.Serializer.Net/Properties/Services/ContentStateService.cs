@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 ///     IIIF Content State API 1.0 Service - provides compact representation of resource state.
 /// </summary>
 [ContentStateAPI("1.0", Notes = "Content State API 1.0 service for deep linking and state representation.")]
-public class ContentStateService : BaseItem<ContentStateService>, IBaseService
+public sealed class ContentStateService : BaseItem<ContentStateService>, IBaseService
 {
     [JsonConstructor]
     private ContentStateService(string id, string profile) : base(id, "ContentStateService")

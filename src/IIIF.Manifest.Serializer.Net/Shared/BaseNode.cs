@@ -501,7 +501,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
 
     public TBaseNode SetItems(IReadOnlyCollection<IBaseItem> items)
     {
-        Items = [..items];
+        Items = [.. items];
         return (TBaseNode)this;
     }
 

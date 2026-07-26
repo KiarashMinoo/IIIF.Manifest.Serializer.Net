@@ -1,10 +1,10 @@
-﻿using IIIF.Manifests.Serializer.Shared.ValuableItem;
+using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions.Transformations;
 
 [JsonConverter(typeof(ValuableItemJsonConverter<TransformationType>))]
-public class TransformationType(string value) : ValuableItem<TransformationType>(value)
+public sealed class TransformationType(string value) : ValuableItem<TransformationType>(value)
 {
     /// <summary>
     ///     1st, 2nd or 3rd order polynomial transformation

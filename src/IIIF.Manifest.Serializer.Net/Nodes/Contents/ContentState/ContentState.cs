@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using IIIF.Manifests.Serializer.SystemTextJson;
 using Newtonsoft.Json;
 
@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 /// </summary>
 [ContentStateAPI("1.0")]
 [System.Text.Json.Serialization.JsonConverter(typeof(ContentStateSystemTextJsonConverter))]
-public class ContentState : TrackableObject<ContentState>
+public sealed class ContentState : TrackableObject<ContentState>
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

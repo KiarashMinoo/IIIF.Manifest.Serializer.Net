@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -14,7 +14,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
     ReplacedBy = "behavior", Notes = "viewingHint renamed to behavior in API 3.0")]
 [JsonConverter(typeof(ValuableItemJsonConverter<ViewingHint>))]
-public class ViewingHint(string value) : ValuableItem<ViewingHint>(value)
+public sealed class ViewingHint(string value) : ValuableItem<ViewingHint>(value)
 {
     /// <summary>
     ///     Valid on Collection, Manifest. Each canvas represents a separate page/view.

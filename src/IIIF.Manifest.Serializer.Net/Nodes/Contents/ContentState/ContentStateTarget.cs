@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
@@ -17,7 +17,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 /// </summary>
 [ContentStateAPI("1.0")]
 [JsonConverter(typeof(ContentStateTargetJsonConverter))]
-public class ContentStateTarget : TrackableObject<ContentStateTarget>
+public sealed class ContentStateTarget : TrackableObject<ContentStateTarget>
 {
     public ContentStateTarget(string id, string? resourceType = null)
     {

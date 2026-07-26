@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2;
 ///     and one optional <see cref="AuthLogoutService2" /> via the inherited <c>Service</c> collection.
 /// </summary>
 [AuthAPI("2.0", Notes = "Auth API 2.0 access service (active/kiosk/external profiles).")]
-public class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>, IBaseService
+public sealed class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>, IBaseService
 {
     public const string LabelJName = "label";
     public const string HeadingJName = "heading";
@@ -73,9 +73,9 @@ public class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>, IBaseS
         private set => SetElementValue(value);
     }
 
-    [AuthAPI("2.0")] [JsonIgnore] public AuthAccessTokenService2 AccessTokenService => Service.OfType<AuthAccessTokenService2>().Single();
+    [AuthAPI("2.0")][JsonIgnore] public AuthAccessTokenService2 AccessTokenService => Service.OfType<AuthAccessTokenService2>().Single();
 
-    [AuthAPI("2.0")] [JsonIgnore] public AuthLogoutService2? LogoutService => Service.OfType<AuthLogoutService2>().SingleOrDefault();
+    [AuthAPI("2.0")][JsonIgnore] public AuthLogoutService2? LogoutService => Service.OfType<AuthLogoutService2>().SingleOrDefault();
 
     [AuthAPI("2.0")]
     [JsonProperty(IBaseService.ProfileJName)]

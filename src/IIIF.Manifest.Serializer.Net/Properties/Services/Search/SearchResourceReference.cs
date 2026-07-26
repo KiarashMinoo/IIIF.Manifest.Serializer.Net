@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 ///     <c>first</c>/<c>last</c>.
 /// </summary>
 [SearchAPI("2.0")]
-public class SearchResourceReference : TrackableObject<SearchResourceReference>
+public sealed class SearchResourceReference : TrackableObject<SearchResourceReference>
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

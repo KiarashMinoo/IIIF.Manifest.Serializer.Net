@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Shared.Selectors;
 ///     it here, matching this SDK's established per-API small-type-duplication precedent - see e.g.
 ///     Auth/Discovery/Search's separate <c>*ResourceReference</c> types).
 /// </summary>
-public class SvgSelector : TrackableObject<SvgSelector>, ISelector
+public sealed class SvgSelector : TrackableObject<SvgSelector>, ISelector
 {
     public const string TypeJName = "type";
     public const string ValueJName = "value";

@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
 
 namespace IIIF.Manifests.Serializer.Helpers;
 

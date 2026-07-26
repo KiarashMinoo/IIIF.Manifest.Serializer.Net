@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Embedded;
 
-public class EmbeddedContent : BaseContent<EmbeddedContent, EmbeddedContentResource>
+public sealed class EmbeddedContent : BaseContent<EmbeddedContent, EmbeddedContentResource>
 {
     public const string OnJName = "on";
 

@@ -1,5 +1,5 @@
-﻿using IIIF.Manifests.Serializer.Helpers;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Helpers;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     Point, MultiPoint, LineString, MultiLineString, Polygon, MultiPolygon, GeometryCollection.
 ///     Per RFC 7946, coordinates structure varies by type.
 /// </summary>
-public class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geometry>
+public sealed class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport<Geometry>
 {
     public const string TypeJName = "type";
     public const string CoordinatesJName = "coordinates";

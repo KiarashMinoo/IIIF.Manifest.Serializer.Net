@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue;
 
 [JsonConverter(typeof(ValuableItemJsonConverter<MetadataValue>))]
-public class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
+public sealed class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
 {
     public const string ValueJName = "@value";
     public const string LanguageJName = "@language";

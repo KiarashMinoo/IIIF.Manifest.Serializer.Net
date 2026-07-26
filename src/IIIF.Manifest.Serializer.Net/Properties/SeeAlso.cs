@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties;
 
 [PresentationAPI("2.0")]
-public class SeeAlso : FormattableItem<SeeAlso>
+public sealed class SeeAlso : FormattableItem<SeeAlso>
 {
     public const string ProfileJName = "profile";
     public const string LabelJName = "label";

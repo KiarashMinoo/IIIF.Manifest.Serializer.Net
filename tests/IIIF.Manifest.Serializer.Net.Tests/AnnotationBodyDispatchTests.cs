@@ -6,7 +6,7 @@ using IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 using IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 using IIIF.Manifests.Serializer.Properties.Services.Search;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer.Tests;
 

@@ -1,9 +1,9 @@
-﻿using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties;
 
-public class Size : TrackableObject<Size>
+public sealed class Size : TrackableObject<Size>
 {
     public const string WidthJName = "width";
     public const string HeightJName = "height";

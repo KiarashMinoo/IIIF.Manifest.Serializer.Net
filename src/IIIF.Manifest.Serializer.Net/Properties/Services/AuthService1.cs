@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 ///     Used for login, clickthrough, kiosk, and external authentication patterns.
 /// </summary>
 [AuthAPI("1.0", Notes = "Auth API 1.0 service for content access control.")]
-public class AuthService1 : BaseItem<AuthService1>, IBaseService
+public sealed class AuthService1 : BaseItem<AuthService1>, IBaseService
 {
     public const string LabelJName = "label";
     public const string HeaderJName = "header";

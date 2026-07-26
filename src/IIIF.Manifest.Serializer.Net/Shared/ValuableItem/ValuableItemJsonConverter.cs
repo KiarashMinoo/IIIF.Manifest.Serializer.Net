@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.ValuableItem;
@@ -7,7 +7,7 @@ namespace IIIF.Manifests.Serializer.Shared.ValuableItem;
 ///     JSON converter for ValuableItem types that serializes/deserializes as simple string values.
 /// </summary>
 /// <typeparam name="TValuableItem">The type of ValuableItem to convert.</typeparam>
-public class ValuableItemJsonConverter<TValuableItem> : JsonConverter<TValuableItem>
+public sealed class ValuableItemJsonConverter<TValuableItem> : JsonConverter<TValuableItem>
     where TValuableItem : ValuableItem<TValuableItem>
 {
     /// <summary>

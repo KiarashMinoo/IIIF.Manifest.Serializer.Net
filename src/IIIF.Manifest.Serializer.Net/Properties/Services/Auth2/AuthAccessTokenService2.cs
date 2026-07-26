@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2;
 ///     which it then sends to a probe service. Has no "profile" field per spec.
 /// </summary>
 [AuthAPI("2.0", Notes = "Auth API 2.0 access token service.")]
-public class AuthAccessTokenService2 : UnprefixedBaseItem<AuthAccessTokenService2>, IBaseService
+public sealed class AuthAccessTokenService2 : UnprefixedBaseItem<AuthAccessTokenService2>, IBaseService
 {
     public const string ErrorHeadingJName = "errorHeading";
     public const string ErrorNoteJName = "errorNote";

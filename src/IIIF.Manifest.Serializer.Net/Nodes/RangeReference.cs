@@ -8,7 +8,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 ///     the id is known — 2.x Structure.ranges was always a bare id list, never an embedded
 ///     Range object.
 /// </summary>
-public class RangeReference : BaseItem<RangeReference>
+public sealed class RangeReference : BaseItem<RangeReference>
 {
     [JsonConstructor]
     public RangeReference(string id) : base(id, "Range")

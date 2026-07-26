@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [ImageAPI("2.0", Notes = "Supported in both Image API 2.x and 3.0")]
 [JsonConverter(typeof(ValuableItemJsonConverter<ImageQuality>))]
-public class ImageQuality(string value) : ValuableItem<ImageQuality>(value)
+public sealed class ImageQuality(string value) : ValuableItem<ImageQuality>(value)
 {
     // Standard qualities
     public static ImageQuality Default => new("default");

@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2;
 ///     wraps one or more <see cref="AuthAccessService2" /> via the inherited <c>Service</c> collection.
 /// </summary>
 [AuthAPI("2.0", Notes = "Auth API 2.0 probe service.")]
-public class AuthProbeService2 : UnprefixedBaseItem<AuthProbeService2>, IBaseService
+public sealed class AuthProbeService2 : UnprefixedBaseItem<AuthProbeService2>, IBaseService
 {
     public const string ErrorHeadingJName = "errorHeading";
     public const string ErrorNoteJName = "errorNote";
@@ -45,7 +45,7 @@ public class AuthProbeService2 : UnprefixedBaseItem<AuthProbeService2>, IBaseSer
         private set => SetElementValue(value);
     }
 
-    [AuthAPI("2.0")] [JsonIgnore] public IReadOnlyCollection<AuthAccessService2> AccessServices => Service.OfType<AuthAccessService2>().ToList();
+    [AuthAPI("2.0")][JsonIgnore] public IReadOnlyCollection<AuthAccessService2> AccessServices => Service.OfType<AuthAccessService2>().ToList();
 
     string IBaseService.Profile => string.Empty;
 

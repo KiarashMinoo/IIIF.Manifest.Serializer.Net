@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 using AnnotationNode = IIIF.Manifests.Serializer.Nodes.Contents.Annotation.Annotation;
 
@@ -14,7 +14,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 ///     plus optional match-context highlighting, paging, and ignored-parameter reporting.
 /// </summary>
 [SearchAPI("2.0")]
-public class SearchResponse : TrackableObject<SearchResponse>
+public sealed class SearchResponse : TrackableObject<SearchResponse>
 {
     public const string DefaultContext = "http://iiif.io/api/search/2/context.json";
     public const string ContextJName = "@context";

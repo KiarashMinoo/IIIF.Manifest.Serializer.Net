@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Audio;
 
-public class Audio : BaseContent<Audio, AudioResource>
+public sealed class Audio : BaseContent<Audio, AudioResource>
 {
     public const string MotivationJName = "motivation";
     public const string OnJName = "on";

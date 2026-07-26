@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Segment;
 
-public class Segment : BaseContent<Segment, SegmentResource>
+public sealed class Segment : BaseContent<Segment, SegmentResource>
 {
     public const string MotivationJName = "motivation";
     public const string OnJName = "on";

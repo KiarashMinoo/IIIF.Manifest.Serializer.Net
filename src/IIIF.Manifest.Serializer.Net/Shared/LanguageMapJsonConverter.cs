@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Shared;
 ///     Manifest/Canvas/etc. containers, so they never go through that writer and need to be spec-correct
 ///     on their own. Reads leniently: accepts a full language map, a bare array, or a bare string.
 /// </summary>
-public class LanguageMapJsonConverter : JsonConverter<IReadOnlyCollection<Label>>
+public sealed class LanguageMapJsonConverter : JsonConverter<IReadOnlyCollection<Label>>
 {
     public override void WriteJson(JsonWriter writer, IReadOnlyCollection<Label>? value, JsonSerializer serializer)
     {

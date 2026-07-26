@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Image;
 
-public class Image : BaseContent<Image, ImageResource>
+public sealed class Image : BaseContent<Image, ImageResource>
 {
     public const string MotivationJName = "motivation";
     public const string OnJName = "on";

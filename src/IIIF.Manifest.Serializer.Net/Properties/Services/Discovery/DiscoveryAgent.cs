@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
 ///     same <c>{id,type,label}</c> shape.
 /// </summary>
 [DiscoveryAPI("1.0")]
-public class DiscoveryAgent : TrackableObject<DiscoveryAgent>
+public sealed class DiscoveryAgent : TrackableObject<DiscoveryAgent>
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

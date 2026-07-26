@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Shared;
@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </remarks>
 [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
     ReplacedBy = "AnnotationCollection", Notes = "Layers removed in API 3.0")]
-public class Layer(string id) : BaseNode<Layer>(id, "sc:Layer")
+public sealed class Layer(string id) : BaseNode<Layer>(id, "sc:Layer")
 {
     public const string OtherContentJName = "otherContent";
 

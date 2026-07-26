@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
@@ -14,7 +14,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     pieces (<c>transformation</c>/<c>resourceCoords</c>) existed, with no wrapper modeling this
 ///     top-level construct at all.
 /// </summary>
-public class GeoreferenceAnnotation : TrackableObject<GeoreferenceAnnotation>
+public sealed class GeoreferenceAnnotation : TrackableObject<GeoreferenceAnnotation>
 {
     public const string DefaultGeoreferenceContext = "http://iiif.io/api/extension/georef/1/context.json";
     public const string DefaultPresentationContext = "http://iiif.io/api/presentation/3/context.json";

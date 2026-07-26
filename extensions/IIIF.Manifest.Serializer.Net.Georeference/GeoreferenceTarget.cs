@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions;
@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     a <see cref="GeoreferenceSvgSelector" />.
 /// </summary>
 [JsonConverter(typeof(GeoreferenceTargetJsonConverter))]
-public class GeoreferenceTarget : TrackableObject<GeoreferenceTarget>
+public sealed class GeoreferenceTarget : TrackableObject<GeoreferenceTarget>
 {
     public GeoreferenceTarget(string sourceId, string? sourceType = null)
     {

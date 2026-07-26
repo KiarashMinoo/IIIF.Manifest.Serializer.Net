@@ -1,7 +1,9 @@
 using System.Collections;
 using System.ComponentModel;
+using IIIF.Manifests.Serializer.Shared.Trackable.Core;
+using IIIF.Manifests.Serializer.Shared.Trackable.Notifications;
 
-namespace IIIF.Manifests.Serializer.Shared.Trackable;
+namespace IIIF.Manifests.Serializer.Shared.Trackable.Collections;
 
 public interface ITrackableCollection
 {
@@ -12,7 +14,7 @@ public interface ITrackableCollection
 }
 
 public partial class TrackableCollection<T> :
-    TrackableObject,
+    Core.TrackableObject,
     ICollection<T>,
     IReadOnlyCollection<T>,
     ITrackableCollection
@@ -40,15 +42,15 @@ public partial class TrackableCollection<T> :
     public int Count => _items.Count(x => x.ModificationType != ModificationType.Removed);
     public bool IsReadOnly => false;
 
-    protected virtual void OnCollectionChanging(T item, CollectionChangedType collectionChangedType, int index)
+    protected virtual void OnCollectionChanging(T item, CollectionChangeType changeType, int index)
     {
-        var args = new TrackableCollectionChangingEventArgs<T>(item, collectionChangedType, index);
+        var args = new TrackableCollectionChangingEventArgs<T>(item, changeType, index);
         CollectionChanging?.Invoke(this, args);
     }
 
-    protected virtual void OnCollectionChanged(T item, CollectionChangedType collectionChangedType, int index)
+    protected virtual void OnCollectionChanged(T item, CollectionChangeType changeType, int index)
     {
-        var args = new TrackableCollectionChangedEventArgs<T>(item, collectionChangedType, index);
+        var args = new TrackableCollectionChangedEventArgs<T>(item, changeType, index);
         CollectionChanged?.Invoke(this, args);
     }
 
@@ -56,32 +58,34 @@ public partial class TrackableCollection<T> :
     {
         var item = (T)sender;
         var index = FindItemIndex(item);
-        OnCollectionChanging(item, CollectionChangedType.Modify, index);
+        OnCollectionChanging(item, CollectionChangeType.Changed, index);
     }
 
     protected virtual void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
     {
         var item = (T)sender;
         var index = FindItemIndex(item);
-        OnCollectionChanged(item, CollectionChangedType.Modify, index);
+        OnCollectionChanged(item, CollectionChangeType.Changed, index);
     }
 
-    private void OnPrivateCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
+    private void OnNestedCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
     {
-        OnItemPropertyChanging(sender, new PropertyChangingEventArgs("N/A"));
+        var item = (T)sender;
+        OnCollectionChanging(item, e.ChangeType, FindItemIndex(item));
     }
 
-    private void OnPrivateCollectionChanged(object sender, TrackableCollectionChangedEventArgs e)
+    private void OnNestedCollectionChanged(object sender, TrackableCollectionChangedEventArgs e)
     {
-        OnItemPropertyChanged(sender, new PropertyChangedEventArgs("N/A"));
+        var item = (T)sender;
+        OnCollectionChanged(item, e.ChangeType, FindItemIndex(item));
     }
 
     private void SubscribeItem(T item)
     {
         if (item is ITrackableCollection trackableCollection)
         {
-            trackableCollection.CollectionChanging += OnPrivateCollectionChanging;
-            trackableCollection.CollectionChanged += OnPrivateCollectionChanged;
+            trackableCollection.CollectionChanging += OnNestedCollectionChanging;
+            trackableCollection.CollectionChanged += OnNestedCollectionChanged;
         }
 
         if (item is INotifyPropertyChanging notifyPropertyChanging)
@@ -95,8 +99,8 @@ public partial class TrackableCollection<T> :
     {
         if (item is ITrackableCollection trackableCollection)
         {
-            trackableCollection.CollectionChanging -= OnPrivateCollectionChanging;
-            trackableCollection.CollectionChanged -= OnPrivateCollectionChanged;
+            trackableCollection.CollectionChanging -= OnNestedCollectionChanging;
+            trackableCollection.CollectionChanged -= OnNestedCollectionChanged;
         }
 
         if (item is INotifyPropertyChanging notifyPropertyChanging)
@@ -131,14 +135,14 @@ public partial class TrackableCollection<T> :
         if (IsReadOnly) throw new InvalidOperationException("Cannot add items to read-only collection");
 
         var index = Count;
-        OnCollectionChanging(item, CollectionChangedType.Add, index);
+        OnCollectionChanging(item, CollectionChangeType.Added, index);
         SubscribeItem(item);
 
         var descriptor = new ElementDescriptor<T>(item);
         descriptor.SetModificationType(ModificationType.Added);
         _items.Add(descriptor);
 
-        OnCollectionChanged(item, CollectionChangedType.Add, index);
+        OnCollectionChanged(item, CollectionChangeType.Added, index);
         return index;
     }
 
@@ -167,7 +171,7 @@ public partial class TrackableCollection<T> :
 
         var descriptor = _items[descriptorIndex];
         var visibleIndex = FindItemIndex(item);
-        OnCollectionChanging(descriptor.Value, CollectionChangedType.Remove, visibleIndex);
+        OnCollectionChanging(descriptor.Value, CollectionChangeType.Removed, visibleIndex);
         UnsubscribeItem(descriptor.Value);
 
         if (descriptor.ModificationType == ModificationType.Added)
@@ -175,7 +179,7 @@ public partial class TrackableCollection<T> :
         else
             descriptor.SetModificationType(ModificationType.Removed);
 
-        OnCollectionChanged(descriptor.Value, CollectionChangedType.Remove, visibleIndex);
+        OnCollectionChanged(descriptor.Value, CollectionChangeType.Removed, visibleIndex);
         return true;
     }
 

@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [PresentationAPI("2.0", Notes = "Type values vary between 2.x (sc: prefix) and 3.0 (no prefix).")]
 [JsonConverter(typeof(ValuableItemJsonConverter<ResourceType>))]
-public class ResourceType(string value) : ValuableItem<ResourceType>(value)
+public sealed class ResourceType(string value) : ValuableItem<ResourceType>(value)
 {
     // IIIF Presentation 3.0 types
     public static ResourceType Collection => new("Collection");

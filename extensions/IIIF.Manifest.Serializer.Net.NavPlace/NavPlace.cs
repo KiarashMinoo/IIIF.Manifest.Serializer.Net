@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 ///     Georeference extension's Annotation body - see <c>GeoreferenceAnnotation</c> - whose own
 ///     spec example likewise shows unprefixed id/type).
 /// </summary>
-public class NavPlace : UnprefixedBaseItem<NavPlace>
+public sealed class NavPlace : UnprefixedBaseItem<NavPlace>
 {
     public const string NavPlaceJName = "navPlace";
     public const string FeaturesJName = "features";
@@ -37,7 +37,7 @@ public class NavPlace : UnprefixedBaseItem<NavPlace>
 
     public NavPlace SetFeatures(Feature[] features)
     {
-        return SetElementValue(a => a.Features, _ => [..features]);
+        return SetElementValue(a => a.Features, _ => [.. features]);
     }
 
     public NavPlace AddFeature(Feature feature)

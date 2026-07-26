@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Extensions;
 /// </summary>
 [JsonConverter(typeof(ValuableItemJsonConverter<TextGranularity>))]
 [TextGranularityExtension("3.0")]
-public class TextGranularity : ValuableItem<TextGranularity>
+public sealed class TextGranularity : ValuableItem<TextGranularity>
 {
     public const string TextGranularityJName = "textGranularity";
 

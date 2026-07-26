@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Auth2.Responses;
 ///     optional <c>substitute</c> and <c>location</c> fields.
 /// </summary>
 [AuthAPI("2.0")]
-public class AuthResourceReference : TrackableObject<AuthResourceReference>
+public sealed class AuthResourceReference : TrackableObject<AuthResourceReference>
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

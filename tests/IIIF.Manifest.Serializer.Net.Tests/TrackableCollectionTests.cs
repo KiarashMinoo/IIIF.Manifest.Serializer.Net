@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using IIIF.Manifests.Serializer.ChangeTracking;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
+using IIIF.Manifests.Serializer.Shared.Trackable.Notifications;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
@@ -38,7 +39,7 @@ public class TrackableCollectionTests
     }
 
     [Fact]
-    public void Add_Should_RaiseCollectionChanged_WithAddTypeAndAppendedIndex()
+    public void Add_Should_RaiseCollectionChanged_WithAddedTypeAndAppendedIndex()
     {
         var collection = new TrackableCollection<string>();
         TrackableCollectionChangedEventArgs? raised = null;
@@ -47,12 +48,12 @@ public class TrackableCollectionTests
         collection.Add("only item");
 
         raised.Should().NotBeNull();
-        raised!.CollectionChangedType.Should().Be(CollectionChangedType.Add);
+        raised!.ChangeType.Should().Be(CollectionChangeType.Added);
         raised.Index.Should().Be(0);
     }
 
     [Fact]
-    public void Remove_Should_RaiseCollectionChanged_WithRemoveType()
+    public void Remove_Should_RaiseCollectionChanged_WithRemovedType()
     {
         var item = new NotifyingItem();
         var collection = new TrackableCollection<NotifyingItem>([item]);
@@ -62,11 +63,11 @@ public class TrackableCollectionTests
         collection.Remove(item);
 
         raised.Should().NotBeNull();
-        raised!.CollectionChangedType.Should().Be(CollectionChangedType.Remove);
+        raised!.ChangeType.Should().Be(CollectionChangeType.Removed);
     }
 
     [Fact]
-    public void ItemPropertyChange_Should_RaiseCollectionChanged_WithModifyType_ForItemAlreadyInCollection()
+    public void ItemPropertyChange_Should_RaiseCollectionChanged_WithChangedType_ForItemAlreadyInCollection()
     {
         var item = new NotifyingItem();
         var collection = new TrackableCollection<NotifyingItem>([item]);
@@ -76,7 +77,7 @@ public class TrackableCollectionTests
         item.ChangeValue();
 
         raised.Should().NotBeNull();
-        raised!.CollectionChangedType.Should().Be(CollectionChangedType.Modify);
+        raised!.ChangeType.Should().Be(CollectionChangeType.Changed);
     }
 
     [Fact]

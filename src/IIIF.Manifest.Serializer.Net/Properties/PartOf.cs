@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 ///     2.x "within" property (a bare id + optional label, restructured into id + type).
 /// </summary>
 [PresentationAPI("3.0", Notes = "Replaces within from API 2.x. Restructured to an object array with id/type.")]
-public class PartOf : BaseItem<PartOf>
+public sealed class PartOf : BaseItem<PartOf>
 {
     [JsonConstructor]
     public PartOf(string id, string type) : base(id, type)

@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </summary>
 [PresentationAPI("2.0", Notes = "Supported in 2.x and 3.0. Paging properties added in 2.0.")]
 [System.Text.Json.Serialization.JsonConverter(typeof(CollectionSystemTextJsonConverter))]
-public class Collection : BaseNode<Collection>, IViewingDirectionSupport<Collection>
+public sealed class Collection : BaseNode<Collection>, IViewingDirectionSupport<Collection>
 {
     public const string CollectionsJName = "collections";
     public const string ManifestsJName = "manifests";

@@ -15,7 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </remarks>
 [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
     ReplacedBy = "Manifest.items", Notes = "Sequences removed in API 3.0; canvases moved to items array")]
-public class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequence>
+public sealed class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequence>
 {
     public const string StartCanvasJName = "startCanvas";
     public const string CanvasesJName = "canvases";

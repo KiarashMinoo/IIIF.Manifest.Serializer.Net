@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Search;
@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Search;
 ///     <see cref="SearchResponse.Items" />.
 /// </summary>
 [SearchAPI("2.0")]
-public class SearchHitAnnotationPage : TrackableObject<SearchHitAnnotationPage>
+public sealed class SearchHitAnnotationPage : TrackableObject<SearchHitAnnotationPage>
 {
     public const string TypeJName = "type";
     public const string ItemsJName = "items";

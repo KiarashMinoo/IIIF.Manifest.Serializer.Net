@@ -1,5 +1,5 @@
 using IIIF.Manifests.Serializer.Attributes;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 ///     recording, e.g. to deep-link a viewer to start playback partway through a Canvas.
 /// </summary>
 [ContentStateAPI("1.0")]
-public class ContentStatePointSelector : TrackableObject<ContentStatePointSelector>
+public sealed class ContentStatePointSelector : TrackableObject<ContentStatePointSelector>
 {
     public const string TypeJName = "type";
     public const string TJName = "t";

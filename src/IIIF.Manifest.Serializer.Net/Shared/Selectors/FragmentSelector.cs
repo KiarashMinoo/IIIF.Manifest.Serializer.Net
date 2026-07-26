@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
@@ -7,7 +7,7 @@ namespace IIIF.Manifests.Serializer.Shared.Selectors;
 ///     A W3C "FragmentSelector" conforming to the Media Fragments spec - selects a spatial region
 ///     (<c>xywh=x,y,w,h</c>) or temporal range (<c>t=start,end</c>) of the targeted resource.
 /// </summary>
-public class FragmentSelector : TrackableObject<FragmentSelector>, ISelector
+public sealed class FragmentSelector : TrackableObject<FragmentSelector>, ISelector
 {
     public const string TypeJName = "type";
     public const string ConformsToJName = "conformsTo";

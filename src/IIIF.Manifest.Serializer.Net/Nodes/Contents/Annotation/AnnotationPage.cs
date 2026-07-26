@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 ///     <see cref="Next" />/<see cref="Prev" /> for W3C-style paging between sibling pages.
 /// </summary>
 [PresentationAPI("3.0", Notes = "No direct 2.x equivalent as a concrete type; 2.x inlined images/otherContent directly on Canvas.")]
-public class AnnotationPage : BaseNode<AnnotationPage>
+public sealed class AnnotationPage : BaseNode<AnnotationPage>
 {
     public const string NextJName = "next";
     public const string PrevJName = "prev";

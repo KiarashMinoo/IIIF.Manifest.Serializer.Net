@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 ///     "this used to be here, now it's gone") - use <see cref="GetChangeSet" />'s <c>Changes</c>
 ///     list instead, which records every change including removals.
 /// </summary>
-public partial class Manifest
+public sealed partial class Manifest
 {
     public Manifest GetChangedManifest()
     {

@@ -10,10 +10,10 @@ using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
 using IIIF.Manifests.Serializer.Shared.Selectors;
 using IIIF.Manifests.Serializer.Shared.Service;
-using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using AnnotationNode = IIIF.Manifests.Serializer.Nodes.Contents.Annotation.Annotation;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer;
 

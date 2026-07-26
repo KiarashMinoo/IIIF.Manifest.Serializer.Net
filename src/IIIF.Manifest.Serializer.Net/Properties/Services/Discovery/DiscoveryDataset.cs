@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
@@ -11,7 +11,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
 ///     machine-readable data about the resource (e.g. an OAI-PMH endpoint or a JSON-LD description).
 /// </summary>
 [DiscoveryAPI("1.0")]
-public class DiscoveryDataset : TrackableObject<DiscoveryDataset>
+public sealed class DiscoveryDataset : TrackableObject<DiscoveryDataset>
 {
     public const string IdJName = "id";
     public const string TypeJName = "type";

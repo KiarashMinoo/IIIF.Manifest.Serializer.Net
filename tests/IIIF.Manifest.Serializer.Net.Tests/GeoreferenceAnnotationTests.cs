@@ -1,8 +1,8 @@
 using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Extensions.ResourceCoords;
 using IIIF.Manifests.Serializer.Extensions.Transformations;
-using IIIF.Manifests.Serializer.Shared.Trackable;
 using Newtonsoft.Json.Linq;
+using TrackableObject = IIIF.Manifests.Serializer.Shared.Trackable.Core.TrackableObject;
 
 namespace IIIF.Manifests.Serializer.Tests;
 

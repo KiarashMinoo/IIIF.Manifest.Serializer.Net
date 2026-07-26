@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
 using IIIF.Manifests.Serializer.ChangeTracking;
+using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
 
-namespace IIIF.Manifests.Serializer.Shared.Trackable;
+namespace IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
 /// <summary>
 ///     Shared pull-based change tracker for both property-backed objects and descriptor-backed

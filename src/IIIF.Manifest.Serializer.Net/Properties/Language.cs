@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [PresentationAPI("2.0", Notes = "Language tags used in both 2.x and 3.0 for internationalized strings.")]
 [JsonConverter(typeof(ValuableItemJsonConverter<Language>))]
-public class Language(string value) : ValuableItem<Language>(value)
+public sealed class Language(string value) : ValuableItem<Language>(value)
 {
     // Common languages
     public static Language English => new("en");

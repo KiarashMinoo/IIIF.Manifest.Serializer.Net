@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Video;
 
-public class Video : BaseContent<Video, VideoResource>
+public sealed class Video : BaseContent<Video, VideoResource>
 {
     public const string MotivationJName = "motivation";
     public const string OnJName = "on";

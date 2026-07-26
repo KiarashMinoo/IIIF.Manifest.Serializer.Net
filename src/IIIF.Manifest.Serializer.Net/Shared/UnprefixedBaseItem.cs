@@ -1,6 +1,6 @@
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared.Service;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared;
@@ -101,7 +101,7 @@ public class UnprefixedBaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseIt
 
     public TBaseItem SetService(IReadOnlyCollection<IBaseService> services)
     {
-        Service = [..services];
+        Service = [.. services];
         return (TBaseItem)this;
     }
 

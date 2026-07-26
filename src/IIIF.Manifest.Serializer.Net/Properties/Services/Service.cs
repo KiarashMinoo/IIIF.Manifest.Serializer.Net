@@ -12,7 +12,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 ///     IIIF Image API Service descriptor - provides info about image server capabilities.
 /// </summary>
 [ImageAPI("2.0", Notes = "Service descriptor for Image API. Properties vary between 2.x and 3.0.")]
-public class Service : BaseItem<Service>, IDimensionSupport<Service>, IBaseService
+public sealed class Service : BaseItem<Service>, IDimensionSupport<Service>, IBaseService
 {
     public const string ProtocolJName = "protocol";
     public const string TilesJName = "tiles";

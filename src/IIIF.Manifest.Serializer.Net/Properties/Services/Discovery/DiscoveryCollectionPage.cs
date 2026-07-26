@@ -1,7 +1,7 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
@@ -13,7 +13,7 @@ namespace IIIF.Manifests.Serializer.Properties.Services.Discovery;
 ///     their <c>orderedItems</c> directly) - the two were previously conflated into one class.
 /// </summary>
 [DiscoveryAPI("1.0")]
-public class DiscoveryCollectionPage : TrackableObject<DiscoveryCollectionPage>
+public sealed class DiscoveryCollectionPage : TrackableObject<DiscoveryCollectionPage>
 {
     public const string DefaultContext = "http://iiif.io/api/discovery/1/context.json";
     public const string ContextJName = "@context";

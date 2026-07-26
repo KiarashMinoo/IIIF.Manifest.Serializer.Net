@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
@@ -8,7 +8,7 @@ namespace IIIF.Manifests.Serializer.Shared.Selectors;
 ///     format of an Image API resource using the same syntax as an Image API request URI's parameters.
 ///     All fields are optional; only the ones actually constraining the selection need be present.
 /// </summary>
-public class ImageApiSelector : TrackableObject<ImageApiSelector>, ISelector
+public sealed class ImageApiSelector : TrackableObject<ImageApiSelector>, ISelector
 {
     public const string TypeJName = "type";
     public const string RegionJName = "region";

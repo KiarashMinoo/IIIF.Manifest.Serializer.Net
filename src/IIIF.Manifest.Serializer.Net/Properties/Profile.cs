@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [ImageAPI("2.0", Notes = "Profile values for Image API compliance levels. Format changed between 2.x (URLs) and 3.0 (keywords).")]
 [JsonConverter(typeof(ValuableItemJsonConverter<Profile>))]
-public class Profile(string value) : ValuableItem<Profile>(value)
+public sealed class Profile(string value) : ValuableItem<Profile>(value)
 {
     // IIIF Image API 3.0 profiles
     public static Profile Level0 => new("level0");

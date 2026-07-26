@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [PresentationAPI("2.0", Notes = "In 2.x use 'license', in 3.0 use 'rights'. Values are the same.")]
 [JsonConverter(typeof(ValuableItemJsonConverter<Rights>))]
-public class Rights(string value) : ValuableItem<Rights>(value)
+public sealed class Rights(string value) : ValuableItem<Rights>(value)
 {
     // Creative Commons 4.0
     public static Rights CcBy => new("http://creativecommons.org/licenses/by/4.0/");

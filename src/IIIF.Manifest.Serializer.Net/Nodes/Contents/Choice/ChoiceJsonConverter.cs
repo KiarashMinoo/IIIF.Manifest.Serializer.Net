@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Choice;
 
-public class ChoiceJsonConverter : JsonConverter<Choice>
+public sealed class ChoiceJsonConverter : JsonConverter<Choice>
 {
     public override void WriteJson(JsonWriter writer, Choice? value, JsonSerializer serializer)
     {

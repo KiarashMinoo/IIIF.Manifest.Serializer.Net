@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties;
 
 [PresentationAPI("2.0")]
-public class Thumbnail : FormattableItem<Thumbnail>, IDimensionSupport<Thumbnail>
+public sealed class Thumbnail : FormattableItem<Thumbnail>, IDimensionSupport<Thumbnail>
 {
     [JsonConstructor]
     public Thumbnail(string id) : base(id, "dctypes:Image")

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 
-public class ImageResource : BaseResource<ImageResource>, IDimensionSupport<ImageResource>
+public sealed class ImageResource : BaseResource<ImageResource>, IDimensionSupport<ImageResource>
 {
     [JsonConstructor]
     private ImageResource(string id, string format) : base(id, ResourceType.Image)

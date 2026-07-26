@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
 using IIIF.Manifests.Serializer.Shared;
 using IIIF.Manifests.Serializer.Shared.Content.Resources;
@@ -9,7 +9,7 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Video.Resource;
 /// <summary>
 ///     IIIF Video resource for A/V content.
 /// </summary>
-public class VideoResource : BaseResource<VideoResource>, IDimensionSupport<VideoResource>
+public sealed class VideoResource : BaseResource<VideoResource>, IDimensionSupport<VideoResource>
 {
     public const string DurationJName = "duration";
 

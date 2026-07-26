@@ -1,11 +1,11 @@
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Shared;
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Properties.MetadataProperty;
 
-public class Metadata : TrackableObject<Metadata>
+public sealed class Metadata : TrackableObject<Metadata>
 {
     public const string LabelJName = "label";
     public const string ValueJName = "value";

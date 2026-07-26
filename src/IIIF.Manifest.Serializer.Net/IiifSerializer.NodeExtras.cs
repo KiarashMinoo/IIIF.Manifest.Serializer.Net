@@ -91,7 +91,7 @@ public static partial class IiifSerializer
         // targeted rather than a generic unknown-property sweep.
         ReadV3AdditionalProperty(obj, node, "navPlace");
     }
-    
+
 
     private static void WriteV3Behavior<TBaseNode>(BaseNode<TBaseNode> node, JObject obj) where TBaseNode : BaseNode<TBaseNode>
     {

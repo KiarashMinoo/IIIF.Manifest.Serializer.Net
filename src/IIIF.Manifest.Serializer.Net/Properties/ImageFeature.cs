@@ -1,4 +1,4 @@
-﻿using IIIF.Manifests.Serializer.Attributes;
+using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared.ValuableItem;
 using Newtonsoft.Json;
 
@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [ImageAPI("2.0", Notes = "Supported in both Image API 2.x and 3.0. Feature names consistent across versions.")]
 [JsonConverter(typeof(ValuableItemJsonConverter<ImageFeature>))]
-public class ImageFeature(string value) : ValuableItem<ImageFeature>(value)
+public sealed class ImageFeature(string value) : ValuableItem<ImageFeature>(value)
 {
     // Region features
     public static ImageFeature RegionByPx => new("regionByPx");

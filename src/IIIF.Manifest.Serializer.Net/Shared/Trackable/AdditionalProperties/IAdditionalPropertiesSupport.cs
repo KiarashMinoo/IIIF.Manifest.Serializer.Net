@@ -1,7 +1,9 @@
-﻿using System.Linq.Expressions;
+using IIIF.Manifests.Serializer.Shared.Trackable.AdditionalProperties;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
-namespace IIIF.Manifests.Serializer.Shared.Trackable;
+namespace IIIF.Manifests.Serializer.Shared.Trackable.AdditionalProperties;
 
 public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
     where TAdditionalPropertiesSupport : IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>

@@ -3,12 +3,15 @@ using IIIF.Manifests.Serializer.ChangeTracking;
 using IIIF.Manifests.Serializer.Extensions;
 using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
+using IIIF.Manifests.Serializer.Shared.Trackable.Notifications;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
 ///     Issue #23 ("SDK Change Tracking"): an EF Core-style change tracker over the whole object
-///     graph, generic on <see cref="Shared.Trackable.TrackableObject{TTrackableObject}" /> - see
+///     graph, generic on <see cref="TrackableObject{TTrackableObject}" /> - see
 ///     <c>docs/CHANGE_TRACKING.md</c> for the design (pull-based diffing over the pre-existing
 ///     Original/Modified value pair every property already tracks, rather than an explicit
 ///     parent-attachment/event-bubbling design).
@@ -349,5 +352,24 @@ public class ChangeTrackingTests
         manifest.GetChanges().Should().ContainSingle(x =>
             x.Kind == IiifChangeKind.CollectionItemRemoved &&
             x.OriginalValue == canvas);
+    }
+
+    [Fact]
+    public void CollectionMutation_Should_ExposeCanonicalNotificationNames()
+    {
+        var manifest = new Manifest("https://example.org/manifest", new Label("Book"));
+        manifest.AddItem(new Canvas("https://example.org/canvas/1", new Label("Page 1"), 100, 100));
+        manifest.ClearChanges();
+        TrackableObjectPropertyChangedEventArgs? raised = null;
+        manifest.TrackableObjectPropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(Manifest.Items)) raised = args;
+        };
+
+        manifest.AddItem(new Canvas("https://example.org/canvas/2", new Label("Page 2"), 100, 100));
+
+        raised.Should().NotBeNull();
+        raised!.IsCollection.Should().BeTrue();
+        raised.ChangeType.Should().Be(CollectionChangeType.Added);
     }
 }

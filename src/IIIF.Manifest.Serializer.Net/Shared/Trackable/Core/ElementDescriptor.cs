@@ -1,4 +1,4 @@
-namespace IIIF.Manifests.Serializer.Shared.Trackable;
+namespace IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
 public class ElementDescriptor<TValueType> : IDisposable
 {
@@ -40,7 +40,7 @@ public class ElementDescriptor<TValueType> : IDisposable
     }
 }
 
-public class ElementDescriptor : ElementDescriptor<object>
+public sealed class ElementDescriptor : ElementDescriptor<object>
 {
     internal ElementDescriptor(object originalValue, bool isAdditional = false) : base(originalValue, isAdditional)
     {

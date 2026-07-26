@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Extensions.Transformations;
 
-public class PolynomialTransformation : Transformation
+public sealed class PolynomialTransformation : Transformation
 {
     public PolynomialTransformation(PolynomialTransformationOption options) : base(TransformationType.Polynomial)
     {

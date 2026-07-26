@@ -1,4 +1,4 @@
-using IIIF.Manifests.Serializer.Shared.Trackable;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared.Selectors;
@@ -8,7 +8,7 @@ namespace IIIF.Manifests.Serializer.Shared.Selectors;
 ///     coordinates on an image) or a temporal point (<see cref="T" />, seconds into an AV recording).
 ///     The cookbook uses the same <c>type</c> value for both shapes; only the populated fields differ.
 /// </summary>
-public class PointSelector : TrackableObject<PointSelector>, ISelector
+public sealed class PointSelector : TrackableObject<PointSelector>, ISelector
 {
     public const string TypeJName = "type";
     public const string XJName = "x";

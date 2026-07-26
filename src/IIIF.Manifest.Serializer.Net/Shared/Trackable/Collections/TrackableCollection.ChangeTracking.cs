@@ -1,6 +1,7 @@
 using IIIF.Manifests.Serializer.ChangeTracking;
+using IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
-namespace IIIF.Manifests.Serializer.Shared.Trackable;
+namespace IIIF.Manifests.Serializer.Shared.Trackable.Collections;
 
 public partial class TrackableCollection<T>
 {

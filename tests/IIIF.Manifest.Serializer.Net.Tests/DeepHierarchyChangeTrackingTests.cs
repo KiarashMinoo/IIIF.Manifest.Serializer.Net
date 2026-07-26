@@ -6,18 +6,20 @@ using IIIF.Manifests.Serializer.Nodes;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 using IIIF.Manifests.Serializer.Nodes.Contents.Textual.Resource;
 using IIIF.Manifests.Serializer.Properties;
+using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
+using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 
 namespace IIIF.Manifests.Serializer.Tests;
 
 /// <summary>
-///     Exercises change tracking (<see cref="Shared.Trackable.TrackableObject{TTrackableObject}" />'s
+///     Exercises change tracking (<see cref="TrackableObject{TTrackableObject}" />'s
 ///     pull-based <c>HasChanges</c>/<c>GetChanges</c>) and event bubbling
-///     (<see cref="Shared.Trackable.TrackableCollection{T}" />'s item-level <c>PropertyChanged</c>
+///     (<see cref="TrackableCollection{T}" />'s item-level <c>PropertyChanged</c>
 ///     subscription) through the real, full-depth Manifest object graph rather than the shallow
 ///     one-level fixtures in <see cref="ChangeTrackingTests" />:
 ///     <c>Manifest -&gt; Items (Canvas) -&gt; Items (AnnotationPage) -&gt; Items (Annotation) -&gt;
 ///     Bodies (TextualBody) -&gt; Format</c> - six levels, crossing three nested
-///     <see cref="Shared.Trackable.TrackableCollection{T}" /> instances chained through
+///     <see cref="TrackableCollection{T}" /> instances chained through
 ///     <c>IReadOnlyCollection&lt;IBaseItem&gt;</c> (<c>Items</c>) and one through
 ///     <c>IReadOnlyCollection&lt;IBaseResource&gt;</c> (<c>Bodies</c>) - the latter not recognized as
 ///     an <c>IBaseItem</c>-typed "trackable collection", which is what originally made this path miss

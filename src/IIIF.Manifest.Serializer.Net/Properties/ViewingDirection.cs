@@ -10,7 +10,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </summary>
 [PresentationAPI("2.0", Notes = "Supported in both 2.x and 3.0")]
 [JsonConverter(typeof(ValuableItemJsonConverter<ViewingDirection>))]
-public class ViewingDirection(string value) : ValuableItem<ViewingDirection>(value)
+public sealed class ViewingDirection(string value) : ValuableItem<ViewingDirection>(value)
 {
     public static ViewingDirection Ltr => new("left-to-right");
     public static ViewingDirection Rtl => new("right-to-left");

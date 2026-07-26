@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties;
 
 [JsonConverter(typeof(ValuableItemJsonConverter<Description>))]
-public class Description(string value) : ValuableItem<Description>(value)
+public sealed class Description(string value) : ValuableItem<Description>(value)
 {
     public const string ValueJName = "@value";
     public const string LanguageJName = "@language";

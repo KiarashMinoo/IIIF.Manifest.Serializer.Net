@@ -4,4 +4,4 @@ using Newtonsoft.Json;
 namespace IIIF.Manifests.Serializer.Properties;
 
 [method: JsonConstructor]
-public class StartCanvas(string id) : BaseItem<StartCanvas>(id);
+public sealed class StartCanvas(string id) : BaseItem<StartCanvas>(id);
