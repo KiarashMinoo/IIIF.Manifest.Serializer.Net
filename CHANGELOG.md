@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.13] — 2026-07-26
+
+### ♻️ Refactoring
+
+- reorganize trackable infrastructure and seal leaf types `(57717fb)` — Kiarash Minoo
+
 ## [3.0.12] — 2026-07-26
 
 ### ♻️ Refactoring

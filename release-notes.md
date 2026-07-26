@@ -1,5 +1,5 @@
-## [3.0.12] — 2026-07-26
+## [3.0.13] — 2026-07-26
 
 ### ♻️ Refactoring
 
-- unify descriptor-based change tracking `(bc80c57)` — Kiarash Minoo
+- reorganize trackable infrastructure and seal leaf types `(57717fb)` — Kiarash Minoo
