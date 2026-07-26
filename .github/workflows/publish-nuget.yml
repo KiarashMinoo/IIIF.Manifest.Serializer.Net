@@ -65,5 +65,6 @@ jobs:
       nuget-target: 'nuget.org'
       nuget-auth-mode: 'classic'
     secrets:
-      gh-token: ${{ secrets.GITHUB_TOKEN }}
+      gh-token: ${{ secrets.GH_TOKEN }}
       nuget-api-key: ${{ secrets.NUGET_API_KEY }}
+  
