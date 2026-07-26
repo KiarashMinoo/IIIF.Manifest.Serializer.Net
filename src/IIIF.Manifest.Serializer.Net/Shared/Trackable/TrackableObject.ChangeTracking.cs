@@ -1,5 +1,4 @@
 using System.Collections;
-using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using IIIF.Manifests.Serializer.ChangeTracking;
 
@@ -149,6 +148,27 @@ public partial class TrackableObject<TTrackableObject> : IIiifChangeTrackable, I
             }
             else if (descriptor.Value is IIiifChangeTrackable trackable)
                 PropagateChildChanges(propertyName, trackable, entries, visited);
+            else if (descriptor.Value is IEnumerable enumerable and not string)
+                PropagateEnumerableChanges(propertyName, enumerable, entries, visited);
+        }
+    }
+
+    /// <summary>
+    ///     Mirrors <see cref="HasNestedChanges" />'s generic-enumerable walk for <see cref="GetChangesCore" />:
+    ///     a collection whose element type <see cref="TryGetTrackableCollectionElementType" /> doesn't
+    ///     recognize (e.g. <c>Annotation.Bodies</c>, typed <c>IReadOnlyCollection&lt;IBaseResource&gt;</c>,
+    ///     not <c>IBaseItem</c>) still needs its trackable items walked here - otherwise <c>HasChanges</c>
+    ///     can report <see langword="true" /> for a change that <c>GetChanges()</c> silently drops. No
+    ///     per-item add/remove baseline exists for these collections (only <see cref="CollectCollectionChanges" />
+    ///     has one), so this only surfaces modifications to items already present.
+    /// </summary>
+    private static void PropagateEnumerableChanges(string propertyName, IEnumerable enumerable, List<IiifChangeEntry> entries, HashSet<object> visited)
+    {
+        var index = 0;
+        foreach (var item in enumerable)
+        {
+            if (item is IIiifChangeTrackable itemTrackable) PropagateChildChanges($"{propertyName}[{index}]", itemTrackable, entries, visited);
+            index++;
         }
     }
 
@@ -281,10 +301,10 @@ public partial class TrackableObject<TTrackableObject> : IIiifChangeTrackable, I
     private static bool TryGetTrackableCollectionElementType(object? value, out Type elementType)
     {
         elementType = typeof(object);
-        if (value is null or string) return false;
+        if (value is not ITrackableCollection) return false;
 
         var type = value.GetType();
-        if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(BindingList<>)) return false;
+        if (!type.IsGenericType || type.GetGenericTypeDefinition() != typeof(TrackableCollection<>)) return false;
 
         elementType = type.GetGenericArguments()[0];
         return typeof(IBaseItem).IsAssignableFrom(elementType);

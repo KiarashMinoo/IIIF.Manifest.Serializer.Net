@@ -7,5 +7,14 @@ public class TrackableObjectPropertyChangingEventArgs(
     bool isList = false
 ) : PropertyChangingEventArgs(propertyName)
 {
+    public TrackableObjectPropertyChangingEventArgs(
+        string propertyName,
+        CollectionChangedType collectionChangedType
+    ) : this(propertyName, true)
+    {
+        CollectionChangedType = collectionChangedType;
+    }
+
     public bool IsList { get; } = isList;
+    public CollectionChangedType? CollectionChangedType { get; }
 }

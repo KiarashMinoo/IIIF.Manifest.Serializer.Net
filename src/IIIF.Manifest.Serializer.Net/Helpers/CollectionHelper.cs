@@ -1,3 +1,5 @@
+using IIIF.Manifests.Serializer.Shared.Trackable;
+
 namespace IIIF.Manifests.Serializer.Helpers;
 
 public static class CollectionHelper
@@ -36,13 +38,19 @@ public static class CollectionHelper
         return enumerable.Enumerate<IEnumerable<TItem>, TItem>(action);
     }
 
-    extension<TItem>(IReadOnlyCollection<TItem>? collection)
+    extension<TItem>(IReadOnlyCollection<TItem>? collection) where TItem : notnull
     {
         /// <summary>
         ///     Creates a new IReadOnlyCollection with the specified item added.
         /// </summary>
         public IReadOnlyCollection<TItem> With(TItem item)
         {
+            if (collection is TrackableCollection<TItem> trackableCollection)
+            {
+                trackableCollection.Add(item);
+                return trackableCollection;
+            }
+
             var hashSet = new HashSet<TItem>();
 
             if (collection != null)
@@ -59,6 +67,12 @@ public static class CollectionHelper
         /// </summary>
         public IReadOnlyCollection<TItem> Without(TItem item)
         {
+            if (collection is TrackableCollection<TItem> trackableCollection)
+            {
+                trackableCollection.Remove(item);
+                return trackableCollection;
+            }
+
             var hashSet = new HashSet<TItem>();
 
             if (collection != null)

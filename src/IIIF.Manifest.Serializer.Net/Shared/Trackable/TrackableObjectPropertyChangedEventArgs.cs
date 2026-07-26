@@ -2,19 +2,19 @@
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable;
 
-public class TrackableObjectPropertyChangedEventArgs : PropertyChangedEventArgs
+public class TrackableObjectPropertyChangedEventArgs(
+    string propertyName,
+    bool isList = false
+) : PropertyChangedEventArgs(propertyName)
 {
-    public TrackableObjectPropertyChangedEventArgs(string propertyName) : base(propertyName)
+    public TrackableObjectPropertyChangedEventArgs(
+        string propertyName,
+        CollectionChangedType collectionChangedType
+    ) : this(propertyName, true)
     {
+        CollectionChangedType = collectionChangedType;
     }
 
-    public TrackableObjectPropertyChangedEventArgs(string propertyName, ListChangedType listChangedType) : this(propertyName)
-    {
-        IsList = true;
-        ListChangedType = listChangedType;
-    }
-
-    public bool IsList { get; }
-
-    public ListChangedType? ListChangedType { get; }
+    public bool IsList { get; } = isList;
+    public CollectionChangedType? CollectionChangedType { get; } 
 }

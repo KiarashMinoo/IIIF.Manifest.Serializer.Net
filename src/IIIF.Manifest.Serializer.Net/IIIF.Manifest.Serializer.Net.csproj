@@ -21,5 +21,23 @@
         <Compile Update="Shared\Trackable\TrackableObject.AdditionalPropertiesHandler.cs">
             <DependentUpon>TrackableObject.cs</DependentUpon>
         </Compile>
+        <Compile Update="Shared\Trackable\TrackableObjectPropertyChangedEventArgs.cs">
+          <DependentUpon>TrackableObjectPropertyChangedEventHandler.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Shared\Trackable\TrackableObjectPropertyChangingEventArgs.cs">
+          <DependentUpon>TrackableObjectPropertyChangingEventHandler.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Shared\Trackable\TrackableObject.ChangeTracking.cs">
+          <DependentUpon>TrackableObject.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Shared\Trackable\TrackableCollectionChangedEventArgs.cs">
+          <DependentUpon>TrackableCollectionChangedEventHandler.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Shared\Trackable\TrackableCollectionChangingEventArgs.cs">
+          <DependentUpon>TrackableCollectionChangingEventHandler.cs</DependentUpon>
+        </Compile>
+        <Compile Update="Shared\Trackable\CollectionChangedType.cs">
+          <DependentUpon>TrackableCollection.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>

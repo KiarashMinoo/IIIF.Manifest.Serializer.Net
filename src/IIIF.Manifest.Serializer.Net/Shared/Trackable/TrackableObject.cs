@@ -76,8 +76,8 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public event PropertyChangingEventHandler? PropertyChanging;
-    public event TrackableObjectPropertyChangingEventHandler? TrackableObjectPropertyChanging;
-    public event TrackableObjectPropertyChangedEventHandler? TrackableObjectPropertyChanged;
+    public event TrackableObjectPropertyChangingEventHandler<TTrackableObject>? TrackableObjectPropertyChanging;
+    public event TrackableObjectPropertyChangedEventHandler<TTrackableObject>? TrackableObjectPropertyChanged;
 
     protected virtual void OnPropertyChanging([CallerMemberName] string? propertyName = null, bool isList = false)
     {
@@ -87,10 +87,10 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
         TrackableObjectPropertyChangingEventArgs args = new(propertyName, isList);
 
         PropertyChanging?.Invoke(this, args);
-        TrackableObjectPropertyChanging?.Invoke(this, args);
+        TrackableObjectPropertyChanging?.Invoke((TTrackableObject)this, args);
     }
 
-    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null, ListChangedType? listChangedType = null)
+    protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null, CollectionChangedType? listChangedType = null)
     {
         if (string.IsNullOrWhiteSpace(propertyName))
             throw new ArgumentNullException(nameof(propertyName));
@@ -100,7 +100,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
             : new TrackableObjectPropertyChangedEventArgs(propertyName);
 
         PropertyChanged?.Invoke(this, args);
-        TrackableObjectPropertyChanged?.Invoke(this, args);
+        TrackableObjectPropertyChanged?.Invoke((TTrackableObject)this, args);
     }
 
     private string GetMemberName<TValue>(Expression<Func<TTrackableObject, TValue>> expression)
@@ -136,6 +136,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
 
         TValue currentValue = default!;
         if (target.ElementDescriptors.TryGetValue(memberName, out var elementDescriptor))
+        {
             // Safe cast with proper null handling
             try
             {
@@ -146,6 +147,7 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
                 // If cast fails, use default value
                 currentValue = default!;
             }
+        }
 
         var value = valueFactory(currentValue);
 
@@ -155,24 +157,19 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
         {
             if (elementDescriptor is not null)
             {
-                // Unsubscribe from event if it's a binding list
-                if (elementDescriptor.Value is IBindingList oldBindingList) oldBindingList.ListChanged -= BindingListOnListChanged;
+                UnAllocateDelegates(elementDescriptor.Value);
 
-                if (target.ElementDescriptors.Remove(memberName)) target.OnPropertyChanged(memberName);
+                if (target.ElementDescriptors.Remove(memberName))
+                    target.OnPropertyChanged(memberName);
             }
         }
         else
         {
-            // Check if value is an enumerable (but not a string) that needs to be wrapped in a BindingList.
-            // JToken (JObject/JArray) is deliberately excluded even though it implements IEnumerable:
-            // it only ever reaches here as a raw, not-yet-typed value read via the JsonExtensionData
-            // bridge for additional/extension properties, and must be stored as an atomic scalar so it
-            // can be lazily converted to its real type on first typed access (see GetElementValue).
-            var valueType = value.GetType();
             var isEnumerable = value is IEnumerable and not string and not JToken;
 
             if (isEnumerable)
             {
+                var valueType = value.GetType();
                 var elementType = valueType
                                       .GetInterfaces()
                                       .Concat([valueType])
@@ -181,26 +178,20 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
                                       .FirstOrDefault()
                                   ?? typeof(object);
 
-                var bindingListType = typeof(BindingList<>).MakeGenericType(elementType);
-                var bindingList = (IBindingList)Activator.CreateInstance(bindingListType)!;
+                var trackableCollectionType = typeof(TrackableCollection<>).MakeGenericType(elementType);
+                var trackableCollection = (ITrackableCollection)Activator.CreateInstance(trackableCollectionType)!;
 
-                foreach (var item in (IEnumerable)value) bindingList.Add(item);
+                foreach (var item in (IEnumerable)value) trackableCollection.Add(item);
 
                 // Cast IBindingList to TValue (which should be compatible with the BindingList<T> type)
-                value = (TValue)bindingList;
+                value = (TValue)trackableCollection;
             }
 
-            (value as IBindingList)?.ListChanged += BindingListOnListChanged;
-            (value as INotifyPropertyChanging)?.PropertyChanging += NotifyPropertyChangingOnPropertyChanging;
-            (value as INotifyPropertyChanged)?.PropertyChanged += NotifyPropertyChangedOnPropertyChanged;
+            AllocateDelegates(value);
 
             if (elementDescriptor is not null)
             {
-                // Unsubscribe from old element events
-                (elementDescriptor.Value as IBindingList)?.ListChanged -= BindingListOnListChanged;
-                (elementDescriptor.Value as INotifyPropertyChanging)?.PropertyChanging -= NotifyPropertyChangingOnPropertyChanging;
-                (elementDescriptor.Value as INotifyPropertyChanged)?.PropertyChanged -= NotifyPropertyChangedOnPropertyChanged;
-
+                UnAllocateDelegates(elementDescriptor.Value);
                 target.ElementDescriptors[memberName] = new ElementDescriptor(elementDescriptor, value);
             }
             else
@@ -213,19 +204,40 @@ public partial class TrackableObject<TTrackableObject> : TrackableObject, INotif
 
         return target;
 
-        void BindingListOnListChanged(object sender, ListChangedEventArgs e)
+        void TrackableCollectionOnCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
         {
-            target.OnPropertyChanged(memberName, e.ListChangedType);
+            target.OnPropertyChanging(memberName);
+        }
+
+        void TrackableCollectionOnCollectionChanged(object sender, TrackableCollectionChangedEventArgs e)
+        {
+            target.OnPropertyChanged(memberName);
         }
 
         void NotifyPropertyChangingOnPropertyChanging(object sender, PropertyChangingEventArgs e)
         {
-            target.OnPropertyChanged(memberName);
+            target.OnPropertyChanging(memberName);
         }
 
         void NotifyPropertyChangedOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             target.OnPropertyChanged(memberName);
+        }
+
+        void AllocateDelegates(object item)
+        {
+            (item as ITrackableCollection)?.CollectionChanging += TrackableCollectionOnCollectionChanging;
+            (item as ITrackableCollection)?.CollectionChanged += TrackableCollectionOnCollectionChanged;
+            (item as INotifyPropertyChanging)?.PropertyChanging += NotifyPropertyChangingOnPropertyChanging;
+            (item as INotifyPropertyChanged)?.PropertyChanged += NotifyPropertyChangedOnPropertyChanged;
+        }
+
+        void UnAllocateDelegates(object item)
+        {
+            (item as ITrackableCollection)?.CollectionChanging -= TrackableCollectionOnCollectionChanging;
+            (item as ITrackableCollection)?.CollectionChanged -= TrackableCollectionOnCollectionChanged;
+            (item as INotifyPropertyChanging)?.PropertyChanging -= NotifyPropertyChangingOnPropertyChanging;
+            (item as INotifyPropertyChanged)?.PropertyChanged -= NotifyPropertyChangedOnPropertyChanged;
         }
     }
 
