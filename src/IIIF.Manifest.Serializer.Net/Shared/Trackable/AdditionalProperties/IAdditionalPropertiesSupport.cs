@@ -16,25 +16,9 @@ public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
     );
 
     TAdditionalPropertiesSupport SetElementValue<TValue>(
-        TValue? value,
-        [CallerMemberName] string? memberName = null
-    )
-    {
-        return SetElementValue<TValue>(_ => value, memberName);
-    }
-
-    TAdditionalPropertiesSupport SetElementValue<TValue>(
         Expression<Func<TAdditionalPropertiesSupport, TValue>> expression,
         Func<TValue, TValue?> valueFactory
     );
-
-    TAdditionalPropertiesSupport SetElementValue<TValue>(
-        Expression<Func<TAdditionalPropertiesSupport, TValue>> expression,
-        TValue? value
-    )
-    {
-        return SetElementValue(expression, _ => value);
-    }
 
     //Getters
 
@@ -47,18 +31,4 @@ public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
         Expression<Func<TAdditionalPropertiesSupport, TValue>> expression,
         out ModificationType modificationType
     );
-
-    TValue? GetElementValue<TValue>(
-        [CallerMemberName] string? memberName = null
-    )
-    {
-        return GetElementValue<TValue>(out _, memberName);
-    }
-
-    TValue? GetElementValue<TValue>(
-        Expression<Func<TAdditionalPropertiesSupport, TValue>> expression
-    )
-    {
-        return GetElementValue(expression, out _);
-    }
 }

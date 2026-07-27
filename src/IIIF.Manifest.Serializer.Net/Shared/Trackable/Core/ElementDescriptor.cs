@@ -1,6 +1,6 @@
 namespace IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
-public class ElementDescriptor<TValueType> : IDisposable
+public class ElementDescriptor<TValueType>
 {
     private readonly bool _hasModifiedValue;
 
@@ -32,11 +32,6 @@ public class ElementDescriptor<TValueType> : IDisposable
     internal void SetModificationType(ModificationType modificationType)
     {
         ModificationType = modificationType;
-    }
-
-    void IDisposable.Dispose()
-    {
-        GC.SuppressFinalize(this);
     }
 }
 

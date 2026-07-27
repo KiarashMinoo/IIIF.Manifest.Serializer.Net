@@ -1806,4 +1806,76 @@ represent, `SerializeChangedOnly` parity with the manual two-step equivalent, an
 being unaffected by tracking state. Full suite: **535 unit tests + 8 architecture tests, all
 passing**, 0 build warnings/errors introduced, zero regressions to the pre-existing 515+8.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage, round 16 validation layer plus release-hardening (package smoke test, release checklist), and round 17 EF Core-style object-graph change tracking plus changed-only manifest/delta output.
+## Round 18: Trackable infrastructure audit - event-leak fix, hot-path caching, and interface cleanup
+
+Scope: an ad hoc audit of `Shared/Trackable/*` (the `TrackableObject`/`TrackableCollection<T>` change-
+tracking engine underlying rounds 4 and 17) for cleanup, optimization, and correctness issues,
+followed by fixing everything the audit found.
+
+**Correctness fix - stale event subscriptions on collection replacement**
+(`Objects/TrackableObject.cs`): `SetElementValue`'s attach/detach of a nested value's
+`ITrackableCollection`/`INotifyPropertyChanging`/`INotifyPropertyChanged` handlers used local
+functions capturing `target`/`memberName`. Each call to `SetElementValue` produced a *new* closure
+instance, so a handler attached in one call was never delegate-equal to the one a later call tried
+to detach with `-=` - the detach silently no-oped. This is latent (the common `AddItem`/`.With(...)`
+in-place-mutation path never re-attaches, so it never hit the bug), but any wholesale-replace setter
+(`SetItems`, `SetLabel(collection)`, `SetContext`, `SetService`, ...) called on a property that
+already had a value left the old collection's handlers subscribed to a stale closure indefinitely.
+Fixed by extracting `Core.ChangeNotificationSubscription` - one instance cached per property name
+(`_changeHandlerSubscriptions`, keyed by member name) - so the exact same delegate instances are
+used for every attach and detach of that property, regardless of how many times the value is
+replaced. The same type replaced `TrackableCollection<T>`'s independent, structurally-identical
+inline `SubscribeItem`/`UnsubscribeItem` implementation (which didn't have the bug - its handlers are
+ordinary instance methods, not local functions - but duplicated the same three-interface-check
+mechanics); `TrackableCollection<T>` now owns one `ChangeNotificationSubscription` per collection
+instance, reused for every item.
+
+**Performance fixes**, none behavior-changing:
+
+- `TrackableCollection<T>.Count` was `_items.Count(x => x.ModificationType != Removed)`, an O(n) LINQ
+  scan invoked by `AddCore` on every single `Add` - building an n-item collection through the
+  documented `AddItem` fluent pattern was O(n²). Replaced with an incrementally maintained
+  `_activeCount` field.
+- `Remove` scanned `_items` twice (`FindDescriptorIndex` then `FindItemIndex`) to get the raw and
+  visible index of the same item; merged into one `TryFindForRemoval` pass.
+- `TrackableObject.ChangeTracking.cs`'s `IsItemCollection` re-did `GetType()`/`IsGenericType`/
+  `GetGenericTypeDefinition()`/`GetGenericArguments()` reflection for every `ElementDescriptor` on
+  every `HasChanges`/`GetChanges`/`ClearChanges` traversal; memoized per concrete `Type` in a
+  `ConcurrentDictionary`.
+- `SetElementValue`'s reflection-built `TrackableCollection<>` wrapper (for a raw, non-trackable
+  `IEnumerable` value) re-resolved the element type via a `GetInterfaces()`/`Where` scan on every
+  call; the resolved wrapper `Type` is now memoized per source `Type`.
+
+**Cleanup**: `ElementDescriptor<TValueType>` implemented `IDisposable` with a `Dispose()` that only
+called `GC.SuppressFinalize(this)` - no finalizer, no unmanaged/disposable state, and nothing in the
+codebase ever called `.Dispose()` on it or used a `using` block. Removed entirely.
+
+**Interface cleanup - `IAdditionalPropertiesSupport<T>` made a pure abstract contract**
+(`Shared/Trackable/AdditionalProperties/IAdditionalPropertiesSupport.cs`): the interface's
+`memberName`-only and `expression`-only `GetElementValue` overloads had default interface method
+(DIM) bodies whose erased signatures exactly matched `TrackableObject<T>`'s own `protected`
+`GetElementValue` overloads (`Objects/TrackableObject.Getters.cs`) - needed there so ordinary,
+non-additional properties (`Items`, `Behavior`, ...) can call `GetElementValue` without hitting the
+`IsAdditional` enforcement the interface path routes through for extension properties. A non-public
+class member hiding a public DIM is legal C# but produces a "hides method with default
+implementation" compiler/IDE warning; `new` does not cleanly suppress it across that
+protected-vs-public boundary (it instead added a second "redundant `new`" warning). Removed the
+default bodies from all four convenience/core-adjacent interface members rather than patch around
+the warning - the interface is now a pure abstract contract, matching what was already true for its
+other two members. The two real callers of that convenience shape,
+`AdditionalPropertiesHelper.SetAdditionalProperty`/`GetAdditionalProperty` (the only place any code
+called them, confirmed by search across `src/` and `extensions/`), now call the two core interface
+members directly instead of through a removed middle layer.
+
+**Documentation sync**: `Helpers/AdditionalPropertiesHelper.cs` carried a stale XML doc comment
+describing a `BindingList`/`ListChanged`-based wrapping mechanism with an unfixed unsubscription
+leak - that description didn't match any code in this file or its call chain (the actual wrapping
+uses `TrackableCollection<T>`, predating this round, and the event-leak class of bug is the one this
+round fixed). Corrected to describe the actual mechanism. All `docs/Shared/Trackable/*/README.md`
+pages, the `Shared/Trackable` overview, and `docs/Helpers/README.md` were updated to reflect the
+above changes.
+
+No behavior changes were made to the public API surface; full test suite (557 unit tests + 8
+architecture tests) passes unchanged, 0 build warnings/errors.
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage, round 16 validation layer plus release-hardening (package smoke test, release checklist), round 17 EF Core-style object-graph change tracking plus changed-only manifest/delta output, and round 18 a Trackable-infrastructure audit fixing a latent event-subscription leak, four hot-path reflection/scan optimizations, dead-code removal, and an `IAdditionalPropertiesSupport<T>` interface cleanup.

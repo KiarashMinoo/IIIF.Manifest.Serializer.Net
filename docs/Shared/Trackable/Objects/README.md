@@ -9,7 +9,7 @@ property support over the non-generic core base.
 
 | File | Responsibility |
 | --- | --- |
-| `TrackableObject.cs` | Events, notification interfaces, descriptor exposure, and attachment lifecycle |
+| `TrackableObject.cs` | Events, notification interfaces, descriptor exposure, and the `SetElementValue`/`GetElementValue` engine. Caches a `Core.ChangeNotificationSubscription` per property name (`_changeHandlerSubscriptions`) so attach/detach always use the same delegate identity across separate `SetElementValue` calls - a fresh closure per call would never un-subscribe a handler attached by an earlier call. The reflection used to wrap a raw enumerable into `TrackableCollection<>` is memoized per source `Type` (`TrackableCollectionTypeCache`). The current-value cast for factory-based setters falls back to the same JToken-conversion recovery `GetElementValue` uses, instead of silently discarding an unread additional property's value |
 | `TrackableObject.Getters.cs` | Typed descriptor reads |
 | `TrackableObject.Setters.cs` | Typed fluent writes and collection normalization |
 | `TrackableObject.AdditionalProperties.cs` | `IAdditionalPropertiesSupport<T>` implementation and Newtonsoft.Json extension-data bridge |

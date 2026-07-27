@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using IIIF.Manifests.Serializer.ChangeTracking;
 using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
@@ -296,14 +297,16 @@ public partial class TrackableObject : IIiifChangeTrackable
         return modificationType is ModificationType.Added or ModificationType.Changed or ModificationType.Removed;
     }
 
+    private static readonly ConcurrentDictionary<Type, bool> ItemCollectionTypeCache = new();
+
     private static bool IsItemCollection(object? value)
     {
         if (value is not ITrackableCollection) return false;
 
-        var type = value.GetType();
-        return type.IsGenericType &&
-               type.GetGenericTypeDefinition() == typeof(TrackableCollection<>) &&
-               typeof(IBaseItem).IsAssignableFrom(type.GetGenericArguments()[0]);
+        return ItemCollectionTypeCache.GetOrAdd(value.GetType(), static type =>
+            type.IsGenericType &&
+            type.GetGenericTypeDefinition() == typeof(TrackableCollection<>) &&
+            typeof(IBaseItem).IsAssignableFrom(type.GetGenericArguments()[0]));
     }
 
     private static List<object?> ToObjectList(object? value)

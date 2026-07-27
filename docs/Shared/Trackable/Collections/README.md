@@ -15,6 +15,14 @@ Constructor items form the accepted baseline. New items are `Added`; removing a 
 cancels that pending change; removing an accepted item records `Removed` until changes are
 accepted. Enumeration and `Count` expose only current items.
 
+`Count` is an incrementally maintained field (`_activeCount`), not a per-call `Where(...).Count()`
+scan, so building a large collection through repeated `Add` calls (the documented `AddItem` fluent
+pattern) stays linear rather than quadratic. `Remove` resolves both the raw list index and the
+visible index in a single pass (`TryFindForRemoval`) instead of scanning twice. Each collection
+instance owns one `Core.ChangeNotificationSubscription`, constructed once and reused for every
+item's `SubscribeItem`/`UnsubscribeItem` call, rather than re-checking the
+`ITrackableCollection`/`INotifyPropertyChanging`/`INotifyPropertyChanged` interfaces inline per item.
+
 ## Diagrams
 
 ```mermaid

@@ -7,6 +7,7 @@
 ```text
 Shared/Trackable/
 ├── Core/
+│   ├── ChangeNotificationSubscription.cs
 │   ├── ElementDescriptor.cs
 │   ├── ModificationType.cs
 │   ├── TrackableObject.cs
@@ -51,7 +52,7 @@ The CRTP-derived type adds the strongly typed fluent-property engine and notific
 - collection and child notification attachment;
 - additional-property integration.
 
-Shared state belongs to the non-generic base so every closed generic object and `TrackableCollection<T>` use the same tracking machinery.
+Shared state belongs to the non-generic base so every closed generic object and `TrackableCollection<T>` use the same tracking machinery. Attach/detach of a nested value's own change events is delegated to `Core.ChangeNotificationSubscription`, one instance cached per property name, so replacing a property's value repeatedly doesn't leak stale event subscriptions from earlier values.
 
 ### `ElementDescriptor<TValue>`
 
@@ -73,9 +74,13 @@ An explicit modified-value flag is used internally so value types such as `0`, c
 - new items are marked `Added`;
 - removing an added item cancels it immediately;
 - accepted items are marked `Removed` until `AcceptChanges` or `ClearChanges`;
-- enumeration, `Count`, `Contains`, and `CopyTo` expose only current items;
-- removed item subscriptions are detached immediately;
-- collection changes and nested item changes bubble through notification events.
+- enumeration, `Count`, `Contains`, and `CopyTo` expose only current items; `Count` is an
+  incrementally maintained counter, not a per-call scan, so repeated `Add` stays linear;
+- removed item subscriptions are detached immediately, and removal resolves the raw/visible index
+  in one scan rather than two;
+- collection changes and nested item changes bubble through notification events, subscribed via one
+  `Core.ChangeNotificationSubscription` instance per collection (shared across every item, not
+  reconstructed per item).
 
 The item descriptors are the structural source of truth. No parallel collection-baseline dictionary is maintained.
 
@@ -97,11 +102,14 @@ Collection event arguments expose `ChangeType`. TrackableObject property event a
 A fluent setter follows this sequence:
 
 1. Resolve the member name.
-2. Read the current descriptor value.
+2. Read the current descriptor value (falling back to JToken conversion if it's still a raw,
+   not-yet-typed additional-property value).
 3. Produce the requested value through the setter factory.
 4. Raise the changing notification.
-5. Normalize a non-trackable enumerable into `TrackableCollection<T>`.
-6. Attach child and collection handlers.
+5. Normalize a non-trackable enumerable into `TrackableCollection<T>` (the target type is
+   memoized per source `Type` rather than re-resolved by reflection every call).
+6. Attach child and collection handlers through the property's cached `ChangeNotificationSubscription`,
+   detaching the same subscription from the previous value first.
 7. Update the descriptor state.
 8. Raise the changed notification.
 

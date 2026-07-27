@@ -20,12 +20,16 @@ public partial class TrackableCollection<T> :
     ITrackableCollection
 {
     private readonly List<ElementDescriptor<T>> _items = [];
+    private readonly ChangeNotificationSubscription _itemSubscription;
+    private int _activeCount;
 
     public TrackableCollection()
     {
+        _itemSubscription = new ChangeNotificationSubscription(
+            OnNestedCollectionChanging, OnNestedCollectionChanged, OnItemPropertyChanging, OnItemPropertyChanged);
     }
 
-    public TrackableCollection(IEnumerable<T> items)
+    public TrackableCollection(IEnumerable<T> items) : this()
     {
         if (items is null) throw new ArgumentNullException(nameof(items));
 
@@ -33,13 +37,14 @@ public partial class TrackableCollection<T> :
         {
             SubscribeItem(item);
             _items.Add(new ElementDescriptor<T>(item));
+            _activeCount++;
         }
     }
 
     public event TrackableCollectionChangingEventHandler? CollectionChanging;
     public event TrackableCollectionChangedEventHandler? CollectionChanged;
 
-    public int Count => _items.Count(x => x.ModificationType != ModificationType.Removed);
+    public int Count => _activeCount;
     public bool IsReadOnly => false;
 
     protected virtual void OnCollectionChanging(T item, CollectionChangeType changeType, int index)
@@ -82,32 +87,12 @@ public partial class TrackableCollection<T> :
 
     private void SubscribeItem(T item)
     {
-        if (item is ITrackableCollection trackableCollection)
-        {
-            trackableCollection.CollectionChanging += OnNestedCollectionChanging;
-            trackableCollection.CollectionChanged += OnNestedCollectionChanged;
-        }
-
-        if (item is INotifyPropertyChanging notifyPropertyChanging)
-            notifyPropertyChanging.PropertyChanging += OnItemPropertyChanging;
-
-        if (item is INotifyPropertyChanged notifyPropertyChanged)
-            notifyPropertyChanged.PropertyChanged += OnItemPropertyChanged;
+        _itemSubscription.Attach(item);
     }
 
     private void UnsubscribeItem(T item)
     {
-        if (item is ITrackableCollection trackableCollection)
-        {
-            trackableCollection.CollectionChanging -= OnNestedCollectionChanging;
-            trackableCollection.CollectionChanged -= OnNestedCollectionChanged;
-        }
-
-        if (item is INotifyPropertyChanging notifyPropertyChanging)
-            notifyPropertyChanging.PropertyChanging -= OnItemPropertyChanging;
-
-        if (item is INotifyPropertyChanged notifyPropertyChanged)
-            notifyPropertyChanged.PropertyChanged -= OnItemPropertyChanged;
+        _itemSubscription.Detach(item);
     }
 
     private int FindItemIndex(T item)
@@ -130,6 +115,28 @@ public partial class TrackableCollection<T> :
             EqualityComparer<T>.Default.Equals(x.Value, item));
     }
 
+    private bool TryFindForRemoval(T item, out int descriptorIndex, out int visibleIndex)
+    {
+        var scannedVisibleIndex = 0;
+        for (var i = 0; i < _items.Count; i++)
+        {
+            if (_items[i].ModificationType == ModificationType.Removed) continue;
+
+            if (EqualityComparer<T>.Default.Equals(_items[i].Value, item))
+            {
+                descriptorIndex = i;
+                visibleIndex = scannedVisibleIndex;
+                return true;
+            }
+
+            scannedVisibleIndex++;
+        }
+
+        descriptorIndex = -1;
+        visibleIndex = -1;
+        return false;
+    }
+
     private int AddCore(T item)
     {
         if (IsReadOnly) throw new InvalidOperationException("Cannot add items to read-only collection");
@@ -141,6 +148,7 @@ public partial class TrackableCollection<T> :
         var descriptor = new ElementDescriptor<T>(item);
         descriptor.SetModificationType(ModificationType.Added);
         _items.Add(descriptor);
+        _activeCount++;
 
         OnCollectionChanged(item, CollectionChangeType.Added, index);
         return index;
@@ -166,11 +174,9 @@ public partial class TrackableCollection<T> :
     {
         if (IsReadOnly) return false;
 
-        var descriptorIndex = FindDescriptorIndex(item);
-        if (descriptorIndex < 0) return false;
+        if (!TryFindForRemoval(item, out var descriptorIndex, out var visibleIndex)) return false;
 
         var descriptor = _items[descriptorIndex];
-        var visibleIndex = FindItemIndex(item);
         OnCollectionChanging(descriptor.Value, CollectionChangeType.Removed, visibleIndex);
         UnsubscribeItem(descriptor.Value);
 
@@ -179,6 +185,7 @@ public partial class TrackableCollection<T> :
         else
             descriptor.SetModificationType(ModificationType.Removed);
 
+        _activeCount--;
         OnCollectionChanged(descriptor.Value, CollectionChangeType.Removed, visibleIndex);
         return true;
     }

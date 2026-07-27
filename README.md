@@ -335,6 +335,10 @@ locally before tagging.
   record: the 2.x↔3.0 property mapping table, the Obsolete-tagging convention, and the full
   milestone history (multi-version reshape, extended standards coverage, the Cookbook catalog, the
   Facade/Strategy/Registry structural refactor, and the System.Text.Json interop bridge).
+- **[Change tracking guide](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/CHANGE_TRACKING.md)** - the
+  pull-based, EF Core-style object-graph change tracker: `HasChanges`/`GetChanges()`/`ClearChanges()`/
+  `AcceptChanges()`, parent/child propagation, collection add/remove semantics, and changed-only
+  manifest/delta output via `Manifest.GetChangedManifest()`/`GetChangeSet()`.
 - **API reference** - every folder under `src/IIIF.Manifest.Serializer.Net/` and
   `extensions/*` has its own README under `docs/`, mirroring the source tree 1:1 (types, members,
   attributes, Mermaid diagrams, package dependencies). Two-level catalog below; each area links to

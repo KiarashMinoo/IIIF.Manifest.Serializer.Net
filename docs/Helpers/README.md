@@ -23,7 +23,7 @@
 
 | File | Primary type(s) | LOC (approx) | Responsibility |
 | --- | --- | --- | --- |
-| `AdditionalPropertiesHelper.cs` | `AdditionalPropertiesHelper` | 44 | Extension methods for storing/retrieving unhandled ("additional") properties on trackable objects |
+| `AdditionalPropertiesHelper.cs` | `AdditionalPropertiesHelper` | 43 | Extension methods for storing/retrieving unhandled ("additional") properties on trackable objects |
 | `CollectionHelper.cs` | `CollectionHelper` | 83 | Immutable add/remove helpers plus fluent `Attach`/`Detach`/`Enumerate` collection extensions |
 | `DatetimeHelper.cs` | `DatetimeHelper` | 45 | Lenient multi-format ISO-8601 date/time string parsing (e.g. for IIIF `navDate`) |
 | `JsonCollectionPropertyHelper.cs` | `JsonCollectionPropertyHelper` | 108 | Reads/writes JSON properties that may be a single value or an array, for use inside `JsonConverter`s |
@@ -47,11 +47,11 @@
 
 - **Kind / Namespace**: `static class` — `IIIF.Manifests.Serializer.Helpers`
 - **Inherits/Implements**: none — static class; operates via a C# `extension<TAdditionalPropertiesSupport>(TAdditionalPropertiesSupport target)` block constrained to `where TAdditionalPropertiesSupport : IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>`.
-- **Relationship to `Shared/Trackable`**: this helper is the public-surface companion to the change-tracking infrastructure in `Shared/Trackable` — it calls `target.SetElementValue(value, propertyName)` / `target.GetElementValue<TValue>(propertyName)`, which are members implemented by `TrackableObject` (the base for trackable IIIF nodes) via `IAdditionalPropertiesSupport<T>`. In other words, this is how "unknown"/unmapped JSON properties encountered during deserialization get stored on and retrieved from a `TrackableObject`-derived instance with `isAdditional = true` markers in its `ElementDescriptors`.
+- **Relationship to `Shared/Trackable`**: this helper is the public-surface companion to the change-tracking infrastructure in `Shared/Trackable` — it calls the two *core* `IAdditionalPropertiesSupport<T>` members directly, `target.SetElementValue<TValue>(_ => value, propertyName)` / `target.GetElementValue<TValue>(out _, propertyName)`, which are implemented explicitly by `TrackableObject` (the base for trackable IIIF nodes). In other words, this is how "unknown"/unmapped JSON properties encountered during deserialization get stored on and retrieved from a `TrackableObject`-derived instance with `isAdditional = true` markers in its `ElementDescriptors`. (The interface's `memberName`-only/`expression`-only convenience overloads were removed - see [Additional Properties](../Shared/Trackable/AdditionalProperties/README.md) - so this helper calls the core members directly instead of going through them.)
 - **Key methods** (both stateless, thread-safety follows whatever `target` provides — no shared/static mutable state in the helper itself):
   - `TAdditionalPropertiesSupport SetAdditionalProperty<TValue>(string propertyName, TValue? value)` — stores a value into `target`'s element descriptors marked as additional; returns `target` for fluent chaining.
   - `TValue? GetAdditionalProperty<TValue>(string propertyName)` — retrieves a previously stored additional value, or `default` if not found/not marked additional.
-- **Known caveat (from source comment)**: values that are enumerable get wrapped in a `BindingList` internally and subscribed to `ListChanged`, but unsubscription on element removal is not fully implemented (handler references aren't retained) — a potential memory-leak risk in long-running processes with heavy additional-property churn.
+- **Enumerable values**: a raw enumerable value gets wrapped in `TrackableCollection<T>` by the underlying `SetElementValue` engine (`Shared/Trackable/Objects/TrackableObject.cs`), which attaches/detaches its change-notification handlers through a per-property `Core.ChangeNotificationSubscription` - correctly unsubscribed on replacement, not a caveat callers need to work around.
 
 **Usage Recipe**
 

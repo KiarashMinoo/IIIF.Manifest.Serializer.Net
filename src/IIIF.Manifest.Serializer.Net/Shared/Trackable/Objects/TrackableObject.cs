@@ -1,5 +1,6 @@
 using IIIF.Manifests.Serializer.Shared.Trackable.AdditionalProperties;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -31,6 +32,30 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
     public event PropertyChangingEventHandler? PropertyChanging;
     public event TrackableObjectPropertyChangingEventHandler<TTrackableObject>? TrackableObjectPropertyChanging;
     public event TrackableObjectPropertyChangedEventHandler<TTrackableObject>? TrackableObjectPropertyChanged;
+
+    private static readonly ConcurrentDictionary<Type, Type> TrackableCollectionTypeCache = new();
+
+    // Keyed by member name so the same subscription instance (and therefore the same delegate
+    // identity) is reused across every SetElementValue call for that property - a fresh
+    // delegate each call would never equal the one actually attached to an earlier value, so
+    // DetachChangeHandlers would silently fail to unsubscribe from replaced collections.
+    private readonly Dictionary<string, ChangeNotificationSubscription> _changeHandlerSubscriptions = [];
+
+    private ChangeNotificationSubscription GetChangeHandlerSubscription(string memberName)
+    {
+        if (!_changeHandlerSubscriptions.TryGetValue(memberName, out var subscription))
+        {
+            var self = (TTrackableObject)this;
+            subscription = new ChangeNotificationSubscription(
+                (_, e) => self.OnPropertyChanging(memberName, e.ChangeType),
+                (_, e) => self.OnPropertyChanged(memberName, e.ChangeType),
+                (_, _) => self.OnPropertyChanging(memberName),
+                (_, _) => self.OnPropertyChanged(memberName));
+            _changeHandlerSubscriptions[memberName] = subscription;
+        }
+
+        return subscription;
+    }
 
     protected virtual void OnPropertyChanging([CallerMemberName] string? propertyName = null, CollectionChangeType? changeType = null)
     {
@@ -92,15 +117,33 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
         TValue currentValue = default!;
         if (target.ElementDescriptors.TryGetValue(memberName, out var elementDescriptor))
         {
-            // Safe cast with proper null handling
-            try
+            if (elementDescriptor.Value is TValue typedCurrentValue)
             {
-                currentValue = (TValue)elementDescriptor.Value;
+                currentValue = typedCurrentValue;
             }
-            catch (InvalidCastException)
+            else
             {
-                // If cast fails, use default value
-                currentValue = default!;
+                try
+                {
+                    currentValue = (TValue)elementDescriptor.Value;
+                }
+                catch (InvalidCastException)
+                {
+                    // Mirrors GetElementValue's JToken recovery: an additional property that
+                    // hasn't been read yet is still a raw JToken from JsonExtensionData, and a
+                    // valueFactory-based setter can be the first access - fall back to default
+                    // only if conversion genuinely fails, instead of always discarding it.
+                    try
+                    {
+                        var token = elementDescriptor.Value as JToken
+                                    ?? JToken.FromObject(elementDescriptor.Value);
+                        currentValue = token.ToObject<TValue>()!;
+                    }
+                    catch (JsonException)
+                    {
+                        currentValue = default!;
+                    }
+                }
             }
         }
 
@@ -111,13 +154,15 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
         if (value is ITrackableCollection && ReferenceEquals(currentValue, value))
             return target;
 
+        var subscription = target.GetChangeHandlerSubscription(memberName);
+
         target.OnPropertyChanging(memberName);
 
         if (value is null)
         {
             if (elementDescriptor is not null)
             {
-                DetachChangeHandlers(elementDescriptor.Value);
+                subscription.Detach(elementDescriptor.Value);
 
                 if (elementDescriptor.ModificationType == ModificationType.Added)
                     target.ElementDescriptors.Remove(memberName);
@@ -133,16 +178,19 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
 
             if (isEnumerable && value is not ITrackableCollection)
             {
-                var valueType = value.GetType();
-                var elementType = valueType
-                                      .GetInterfaces()
-                                      .Concat([valueType])
-                                      .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                                      .Select(t => t.GetGenericArguments()[0])
-                                      .FirstOrDefault()
-                                  ?? typeof(object);
+                var trackableCollectionType = TrackableCollectionTypeCache.GetOrAdd(value.GetType(), static valueType =>
+                {
+                    var elementType = valueType
+                                          .GetInterfaces()
+                                          .Concat([valueType])
+                                          .Where(t => t.IsGenericType && t.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                                          .Select(t => t.GetGenericArguments()[0])
+                                          .FirstOrDefault()
+                                      ?? typeof(object);
 
-                var trackableCollectionType = typeof(TrackableCollection<>).MakeGenericType(elementType);
+                    return typeof(TrackableCollection<>).MakeGenericType(elementType);
+                });
+
                 var trackableCollection = (ITrackableCollection)Activator.CreateInstance(trackableCollectionType)!;
 
                 foreach (var item in (IEnumerable)value) trackableCollection.Add(item);
@@ -151,11 +199,11 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
                 value = (TValue)trackableCollection;
             }
 
-            AttachChangeHandlers(value);
+            subscription.Attach(value);
 
             if (elementDescriptor is not null)
             {
-                DetachChangeHandlers(elementDescriptor.Value);
+                subscription.Detach(elementDescriptor.Value);
 
                 var newElementDescriptor = new ElementDescriptor(elementDescriptor, value);
                 var modificationType = elementDescriptor.ModificationType == ModificationType.Added
@@ -177,42 +225,6 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
         }
 
         return target;
-
-        void OnTrackedCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
-        {
-            target.OnPropertyChanging(memberName, e.ChangeType);
-        }
-
-        void OnTrackedCollectionChanged(object sender, TrackableCollectionChangedEventArgs e)
-        {
-            target.OnPropertyChanged(memberName, e.ChangeType);
-        }
-
-        void OnTrackedItemPropertyChanging(object sender, PropertyChangingEventArgs e)
-        {
-            target.OnPropertyChanging(memberName);
-        }
-
-        void OnTrackedItemPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            target.OnPropertyChanged(memberName);
-        }
-
-        void AttachChangeHandlers(object item)
-        {
-            (item as ITrackableCollection)?.CollectionChanging += OnTrackedCollectionChanging;
-            (item as ITrackableCollection)?.CollectionChanged += OnTrackedCollectionChanged;
-            (item as INotifyPropertyChanging)?.PropertyChanging += OnTrackedItemPropertyChanging;
-            (item as INotifyPropertyChanged)?.PropertyChanged += OnTrackedItemPropertyChanged;
-        }
-
-        void DetachChangeHandlers(object item)
-        {
-            (item as ITrackableCollection)?.CollectionChanging -= OnTrackedCollectionChanging;
-            (item as ITrackableCollection)?.CollectionChanged -= OnTrackedCollectionChanged;
-            (item as INotifyPropertyChanging)?.PropertyChanging -= OnTrackedItemPropertyChanging;
-            (item as INotifyPropertyChanged)?.PropertyChanged -= OnTrackedItemPropertyChanged;
-        }
     }
 
     /// <summary>
