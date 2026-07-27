@@ -15,7 +15,7 @@ workflow YAML.
 
 ## Packaging
 
-- [ ] `Directory.Build.props`'s `<Version>` (core) and `extensions/Directory.Build.props`'s `<Version>` (all 3 extensions share one version number, independent of core) both reflect the intended release version.
+- [ ] Root `Directory.Build.props`'s `<Version>` reflects the intended version for all 4 packages; `extensions/Directory.Build.props` imports it and does not define a separate package version.
 - [ ] Package metadata verified: `Authors`/`Company`/`Product`/license expression/repository URL in `Directory.Build.props` are current and match this repository (see "License metadata" below).
 - [ ] `./scripts/smoke-test-packages.ps1` passes locally - packs all 4 packages, installs them into a throwaway clean console app via `--source` (never a `ProjectReference`), and confirms a Manifest with a navPlace extension actually builds/serializes/round-trips through the *published artifact*, not just the in-repo project. This also runs automatically in `publish-nuget.yml`'s `pack` job, before packages are uploaded/published - a failure there blocks the `publish` job entirely.
 - [ ] README install example (`docs/README.md`'s "Install" section) matches the actual package IDs and current version.
@@ -30,7 +30,7 @@ workflow YAML.
 - [ ] `docs/SDK_VERSIONING_GUIDE.md`'s `## Status` line and round history are up to date with whatever round(s) this release includes.
 - [ ] `docs/COOKBOOK_COVERAGE.md`/`docs/DEMO_COVERAGE.md` re-verified against upstream if either the Cookbook recipe set or the official demos page changed since the last check (see each doc's own "How this was verified"/"was researched" section for the re-check method).
 - [ ] `docs/IIIF_UPSTREAM_COVERAGE_MATRIX.md` re-verified if a meaningful amount of time has passed since its last research pass (it records its own retrieval date - check whether upstream standards, `awesome-iiif`, or the validators have moved since then).
-- [ ] Generated per-folder API reference docs under `docs/` (mirroring the source tree) are regenerated if any public API changed - see `docs/README.md`'s "Documentation index"/"Docs Catalog" for the full index and how these are produced.
+- [ ] Per-folder API reference docs under `docs/` (mirroring the source tree) are synchronized if any public API changed - see `docs/README.md`'s "Documentation index"/"Docs Catalog" for the full index.
 
 ## Public API compatibility
 

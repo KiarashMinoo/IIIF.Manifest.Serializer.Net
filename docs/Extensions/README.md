@@ -1,9 +1,9 @@
 # Extensions
 
-3 independently-versioned, independently-published NuGet packages that each add **3.0-only,
+3 independently-published NuGet packages that currently share the repository version and each add **3.0-only,
 spec-defined data** to any `BaseNode<T>` (the core SDK's shared descriptive-property base) via the
 core SDK's "additional properties" / extension-data mechanism. None of these packages need to
-modify the core SDK to work, and each ships as its own assembly with its own version number.
+modify the core SDK to work, and each ships as its own assembly and package.
 
 | Package | NuGet ID | Models | Docs |
 | --- | --- | --- | --- |

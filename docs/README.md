@@ -53,7 +53,7 @@ implemented and verified.
 dotnet add package IIIF.Manifest.Serializer.Net
 ```
 
-Optional extension packages, each versioned and shipped independently:
+Optional extension packages, each shipped independently but currently sharing the repository version:
 
 ```powershell
 dotnet add package IIIF.Manifest.Serializer.Net.NavPlace
@@ -169,7 +169,7 @@ top-level documents' own JSON tree, which the bridge builds via the existing New
 
 ```
 src/IIIF.Manifest.Serializer.Net/     Core SDK (netstandard2.1)
-extensions/                           Independently-versioned extension packages
+extensions/                           Separately published extension packages
   IIIF.Manifest.Serializer.Net.NavPlace          navPlace geolocation extension
   IIIF.Manifest.Serializer.Net.Georeference      Georeference (image-to-map) extension
   IIIF.Manifest.Serializer.Net.TextGranularity   Text Granularity extension
@@ -313,10 +313,10 @@ All three explicitly expose an idempotent `Register()` (`NavPlaceExtensions.Regi
 deliberate bootstrap step; a static-constructor fallback (`Feature`'s, for the Annotation-body-dispatch
 case) means most usage works without ever calling it explicitly.
 
-**Versioning note**: each extension's `.csproj` references core via `ProjectReference`, which
-`dotnet pack` converts into a `PackageReference` pinned to the exact core version built at pack
-time (e.g. Georeference `1.0.1` pinned to core `3.0.1`, not a floating range) - bump an extension's
-own package version alongside any core release it's packed against.
+**Versioning note**: all packable projects inherit the version from the root
+`Directory.Build.props`. Each extension's `.csproj` references core via `ProjectReference`, which
+`dotnet pack` records as a dependency on the matching package version. Georeference also records a
+dependency on the matching navPlace package version.
 
 ## Examples and Cookbook
 
@@ -369,7 +369,7 @@ dotnet test tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Ne
 dotnet test tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj
 ```
 
-393 unit tests (xUnit + AwesomeAssertions), including per-feature round-trip tests, an automatic
+557 unit tests (xUnit + AwesomeAssertions), including per-feature round-trip tests, an automatic
 per-catalog-entry round-trip test for every Cookbook recipe, and the System.Text.Json interop
 suite - plus 8 architecture tests (NetArchTest.Rules) enforcing namespace layering and naming
 conventions. Coverage is collected via `coverlet.collector` in CI; see `coverage-report/` for the
@@ -399,11 +399,11 @@ latest generated report (no hard coverage gate is enforced yet - report visibili
   pull-based design and why, the change-tracking lifecycle, how parent/child propagation and
   collection changes are represented, changed-only manifest/delta output for time-scale storage,
   and this feature's documented limitations.
-- Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own generated
+- Every folder under `src/IIIF.Manifest.Serializer.Net/` and `extensions/*` has its own
   API reference under `docs/` (types, members, attributes, Mermaid diagrams, package dependencies),
   mirroring the source tree 1:1 (`src/IIIF.Manifest.Serializer.Net/Nodes/Contents/Annotation` →
   [`docs/Nodes/Contents/Annotation`](Nodes/Contents/Annotation/README.md), etc.). These are
-  regenerated from source and doc-comments, not hand-maintained - see the **Docs Catalog** below for
+  synchronized source-derived reference - see the **Docs Catalog** below for
   the full index, or start from [`docs/Nodes/README.md`](Nodes/README.md),
   [`docs/Properties/README.md`](Properties/README.md), [`docs/Shared/README.md`](Shared/README.md),
   [`docs/Attributes/README.md`](Attributes/README.md), [`docs/Helpers/README.md`](Helpers/README.md),
@@ -412,13 +412,14 @@ latest generated report (no hard coverage gate is enforced yet - report visibili
 
 ### Docs Catalog
 
-Two-level index of every generated area (badges: `Types` = public/internal types documented,
+Two-level index of every documented area (badges: `Types` = public/internal types documented,
 `Files` = source files documented, `Diagrams` = whether a `## Diagrams` section has at least one
 Mermaid block). Sorted alphabetically; children shown are each area's direct subfolders only -
 follow a child's own link for its further nesting (e.g. `Nodes/Contents` has 10 more content-type
 subfolders, `Properties/Services` has 4).
 
 - [Attributes](Attributes/README.md) `Types:10` `Files:10` `Diagrams:✓`
+- [ChangeTracking](ChangeTracking/README.md) `Types:4` `Files:4` `Diagrams:✓`
 - [Extensions](Extensions/README.md) `Types:22` `Files:23` `Diagrams:✓`
   - [NavPlace](Extensions/NavPlace/README.md) `Types:9` `Files:10` `Diagrams:✓`
   - [Georeference](Extensions/Georeference/README.md) `Types:11` `Files:11` `Diagrams:✓`
@@ -435,27 +436,29 @@ subfolders, `Properties/Services` has 4).
   - [Exceptions](Shared/Exceptions/README.md) `Types:3` `Files:3` `Diagrams:✓`
   - [Selectors](Shared/Selectors/README.md) `Types:6` `Files:6` `Diagrams:✓`
   - [Service](Shared/Service/README.md) `Types:1` `Files:1` `Diagrams:✗` *(single self-contained type)*
-  - [Trackable](Shared/Trackable/README.md) `Types:9` `Files:10` `Diagrams:✓`
+  - [Trackable](Shared/Trackable/README.md) `Types:19` `Files:21` `Diagrams:✓`
+    - [AdditionalProperties](Shared/Trackable/AdditionalProperties/README.md) `Types:1` `Files:1` `Diagrams:✓`
+    - [Collections](Shared/Trackable/Collections/README.md) `Types:3` `Files:3` `Diagrams:✓`
+    - [Core](Shared/Trackable/Core/README.md) `Types:4` `Files:4` `Diagrams:✓`
+    - [Notifications](Shared/Trackable/Notifications/README.md) `Types:10` `Files:9` `Diagrams:✓`
+    - [Objects](Shared/Trackable/Objects/README.md) `Types:1` `Files:4` `Diagrams:✓`
   - [ValuableItem](Shared/ValuableItem/README.md) `Types:2` `Files:2` `Diagrams:✓`
 - [SystemTextJson](SystemTextJson/README.md) `Types:4` `Files:4` `Diagrams:✓`
+- [Validation](Validation/README.md) `Types:5` `Files:6` `Diagrams:✓`
 
-**Totals**: ~180 types and ~178 source files documented across 44 folders (plus the `Extensions`
+**Totals**: more than 200 public API types across 219 source files documented in 51 source folders (plus the `Extensions`
 navigational index), spanning the core SDK (`src/IIIF.Manifest.Serializer.Net/`) and all 3
 extension packages.
 
-**Last generated**: 2026-07-12.
+**Last synchronized**: 2026-07-27.
 
 ### Coverage Audit
 
-Every folder in scope (`src/IIIF.Manifest.Serializer.Net/**` and `extensions/*/**`, excluding
-`bin`/`obj`) has a generated README with all required sections (Contents, Overview, Files,
-Types & Members, Diagrams, Package Dependencies, See Also): ✅ all 44 folders, plus the
-`Extensions` navigational index. No folder needed a retry pass or was left with placeholder
-content. `examples/*` and `tests/*` were intentionally excluded from this run (examples are
-demo/consumer code, not documented library API surface; tests are excluded per policy). The
-top-level `docs/README.md` (this file) and `docs/SDK_VERSIONING_GUIDE.md` were preserved
-unchanged by the regeneration, per an explicit decision to keep this hand-authored content rather
-than have it overwritten by source-derived generation.
+Every source folder in scope (`src/IIIF.Manifest.Serializer.Net/**` and `extensions/*/**`, excluding
+`bin`/`obj`) has a corresponding README under `docs/`. The 2026-07-27 synchronization added pages
+for `ChangeTracking`, `Validation`, and the five concern-specific subfolders introduced by the
+`Shared/Trackable` reorganization. `examples/*` and `tests/*` remain intentionally excluded because
+they are consumer/demo and test code rather than package API surface.
 
 ## Contributing
 
@@ -476,10 +479,9 @@ than have it overwritten by source-derived generation.
 
 ## Release hygiene
 
-- **Versioning**: the core package version lives in the root [`Directory.Build.props`](../Directory.Build.props)
-  (`<Version>`); each extension's version is set independently in
-  [`extensions/Directory.Build.props`](../extensions/Directory.Build.props). Bump the relevant file,
-  not individual `.csproj` files - `Directory.Packages.props` under `src/`, `extensions/`,
+- **Versioning**: all four package versions live in the root [`Directory.Build.props`](../Directory.Build.props)
+  (`<Version>`). `extensions/Directory.Build.props` imports that value and does not override it.
+  Bump the root version, not individual `.csproj` files - `Directory.Packages.props` under `src/`, `extensions/`,
   `examples/`, and `tests/` centralizes third-party package *versions*, not this project's own.
 - **License**: the repository ships under **MIT** ([`LICENSE`](../LICENSE)). `PackageLicenseExpression`
   (root `Directory.Build.props`) and the README license badge must always agree with the `LICENSE`

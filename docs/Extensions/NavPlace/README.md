@@ -19,8 +19,8 @@ geographic location to a `Collection`, `Manifest`, `Range`, or `Canvas`. The mod
 `GeometryCollection`) built from `CoordinateItem` coordinate pairs/triples, plus optional
 `FeatureProperties` (currently just `label`). `NavPlaceExtensions` is the fluent entry point that
 attaches a `NavPlace` value to any core-SDK `BaseNode<T>` via the additional-properties mechanism,
-so this package needs no core SDK changes to work. It ships and versions independently of the core
-`IIIF.Manifest.Serializer.Net` library and of the Georeference/Text Granularity extensions (though
+so this package needs no core SDK changes to work. It ships independently but currently inherits
+the same repository version as the core and other extension packages (and
 Georeference depends on this package — see [../Georeference/README.md](../Georeference/README.md)).
 
 navPlace postdates Presentation API 3.0 (it has no 2.x form), so its top-level types use unprefixed

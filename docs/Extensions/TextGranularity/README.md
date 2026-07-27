@@ -17,8 +17,8 @@ describing the level of text segmentation available in OCR or other transcribed 
 (`page`/`block`/`paragraph`/`line`/`word`/`glyph`). `TextGranularityExtensions` fluently attaches a
 `TextGranularity` value to a real `Annotation` (or, for compatibility, an `IBaseResource` tagged
 `ResourceType.Annotation`) via the core SDK's additional-properties mechanism, so *adding this
-package itself* needs no core SDK changes. It ships and versions independently of the core
-`IIIF.Manifest.Serializer.Net` library and of the navPlace/Georeference extensions.
+package itself* needs no core SDK changes. It ships independently but currently inherits the same
+repository version as the core and the navPlace/Georeference packages.
 
 Reading/writing the value through plain `JsonConvert`/`TrackableObject.Serialize()` needs no core
 awareness of this package at all - that's the `[JsonExtensionData]` bridge working generically. The

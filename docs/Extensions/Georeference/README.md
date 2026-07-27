@@ -22,8 +22,8 @@ real-world geography. The spec's actual top-level construct is a full **W3C Web 
 extension's `NavPlace`/`Feature` type directly for that body, since both specs describe the same
 shape). This package therefore has a `ProjectReference` to
 `IIIF.Manifest.Serializer.Net.NavPlace` (see [Package Dependencies](#package-dependencies)). It ships
-and versions independently of the core `IIIF.Manifest.Serializer.Net` library and of the navPlace/
-Text Granularity extensions.
+independently but currently inherits the same repository version as the core, navPlace, and Text
+Granularity packages.
 
 Like navPlace, Georeference postdates Presentation API 3.0, so `GeoreferenceAnnotation` uses
 unprefixed `id`/`type`/`@context` conventions matching the spec's own JSON examples rather than the

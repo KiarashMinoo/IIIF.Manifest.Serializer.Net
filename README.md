@@ -16,14 +16,14 @@ resources, image services, and related IIIF service payloads.
 
 ## Status
 
-- Core package version: `3.0.1` from `Directory.Build.props`.
+- Package version: `3.0.13` from `Directory.Build.props` (core and extension packages).
 - Core target framework: `netstandard2.1`.
 - Extension target framework: `netstandard2.1`.
 - Test and example project target framework: `net10.0`.
 - Checked-in coverage summary: about 82% line coverage (core + extension packages only).
-- Test suite: 393 unit tests (xUnit + AwesomeAssertions) plus 8 architecture tests (NetArchTest.Rules), all passing.
-- Documentation: every source folder under `src/`/`extensions/` now has a generated, source-derived
-  API-reference README under `docs/` (regenerated - see [Documentation](#documentation) below); it is
+- Test suite: 557 unit tests (xUnit + AwesomeAssertions) plus 8 architecture tests (NetArchTest.Rules), all passing.
+- Documentation: every source folder under `src/`/`extensions/` now has a synchronized, source-derived
+  API-reference README under `docs/` (see [Documentation](#documentation) below); it is
   current, not lagging.
 
 ## What It Supports
@@ -44,6 +44,8 @@ resources, image services, and related IIIF service payloads.
 - IIIF Content Search 2.0 service and response models.
 - IIIF Change Discovery 1.0 ordered collection/page and activity models.
 - IIIF Content State 1.0 objects and `iiif-content` base64url encode/decode helpers.
+- Opt-in, version-aware validation for manifests, collections, and manifest JSON.
+- Recursive object-graph change tracking, including collection changes and manifest delta envelopes.
 - Extension packages for navPlace, Georeference, and Text Granularity.
 - A cookbook example project with faithful C# reconstructions of 71 real IIIF Cookbook recipes.
 - `System.Text.Json` interop for `Manifest`/`Collection`/`AnnotationCollection`/`ContentState`: each
@@ -103,6 +105,23 @@ through `JsonExtensionData`, allowing extension payloads such as navPlace, Geore
 survive JSON round trips.
 
 ## Quick Start
+
+Install the core package:
+
+```powershell
+dotnet add package IIIF.Manifest.Serializer.Net
+```
+
+Install only the extension packages your application uses:
+
+```powershell
+dotnet add package IIIF.Manifest.Serializer.Net.NavPlace
+dotnet add package IIIF.Manifest.Serializer.Net.Georeference
+dotnet add package IIIF.Manifest.Serializer.Net.TextGranularity
+```
+
+All four packages use the version in `Directory.Build.props`; extension packages reference the
+matching core package version when packed.
 
 ```csharp
 using IIIF.Manifests.Serializer;
@@ -284,57 +303,60 @@ packages only - demo/test harness assemblies are excluded, see
 
 ## Packaging
 
-The core library version is defined in `Directory.Build.props` and is currently `3.0.1`. The core package metadata
+The package version is defined in `Directory.Build.props` and is currently `3.0.13`. The core package metadata
 describes the package as:
 
 > Version-aware IIIF Presentation API manifest serializer using Newtonsoft.Json.
 
-Extension projects have their own package IDs:
-
-- `IIIF.Manifest.Serializer.Net.NavPlace`
-- `IIIF.Manifest.Serializer.Net.Georeference`
-- `IIIF.Manifest.Serializer.Net.TextGranularity`
+| Package | NuGet | Documentation |
+| --- | --- | --- |
+| `IIIF.Manifest.Serializer.Net` | [Core package](https://www.nuget.org/packages/IIIF.Manifest.Serializer.Net) | [Project guide](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/README.md) |
+| `IIIF.Manifest.Serializer.Net.NavPlace` | [navPlace package](https://www.nuget.org/packages/IIIF.Manifest.Serializer.Net.NavPlace) | [navPlace API](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Extensions/NavPlace/README.md) |
+| `IIIF.Manifest.Serializer.Net.Georeference` | [Georeference package](https://www.nuget.org/packages/IIIF.Manifest.Serializer.Net.Georeference) | [Georeference API](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Extensions/Georeference/README.md) |
+| `IIIF.Manifest.Serializer.Net.TextGranularity` | [Text Granularity package](https://www.nuget.org/packages/IIIF.Manifest.Serializer.Net.TextGranularity) | [Text Granularity API](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Extensions/TextGranularity/README.md) |
 
 All four packages are consumed straight from [nuget.org](https://www.nuget.org) - there is no
 `NuGet.Config` in this repository and no private/custom feed to configure.
 
-Package versions are managed centrally with folder-scoped `Directory.Packages.props` files in
-`src/`, `extensions/`, `examples/`, and `tests/`.
+This repository's package version is managed by the root `Directory.Build.props`. Folder-scoped
+`Directory.Packages.props` files manage third-party dependency versions.
 
-See [`docs/README.md#release-hygiene`](docs/README.md#release-hygiene) for how CI, SAST, patch
+See the [release hygiene guide](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/README.md#release-hygiene) for how CI, SAST, patch
 management, and NuGet publishing fit together, and the exact commands to smoke-test a release
 locally before tagging.
 
 ## Documentation
 
-- **[`docs/README.md`](docs/README.md)** - the full project guide: installation, quick start,
+- **[Project guide](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/README.md)** - installation, quick start,
   multi-version serialization, Newtonsoft.Json/System.Text.Json interop, the object model, the
   `IiifSerializer` architecture, services, extension packages, the Cookbook's Strategy+Registry
   design, and testing.
-- **[`docs/SDK_VERSIONING_GUIDE.md`](docs/SDK_VERSIONING_GUIDE.md)** - the authoritative design
+- **[Versioning and architecture guide](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/SDK_VERSIONING_GUIDE.md)** - the authoritative design
   record: the 2.x↔3.0 property mapping table, the Obsolete-tagging convention, and the full
   milestone history (multi-version reshape, extended standards coverage, the Cookbook catalog, the
   Facade/Strategy/Registry structural refactor, and the System.Text.Json interop bridge).
-- **Generated API reference** - every folder under `src/IIIF.Manifest.Serializer.Net/` and
+- **API reference** - every folder under `src/IIIF.Manifest.Serializer.Net/` and
   `extensions/*` has its own README under `docs/`, mirroring the source tree 1:1 (types, members,
   attributes, Mermaid diagrams, package dependencies). Two-level catalog below; each area links to
   its own deeper nesting.
 
   | Area | Types | Files | Diagrams |
     | --- | --- | --- | --- |
-  | [Attributes](docs/Attributes/README.md) | 10 | 10 | ✓ |
-  | [Extensions](docs/Extensions/README.md) | 22 | 23 | ✓ |
-  | &nbsp;&nbsp;[NavPlace](docs/Extensions/NavPlace/README.md) | 9 | 10 | ✓ |
-  | &nbsp;&nbsp;[Georeference](docs/Extensions/Georeference/README.md) | 11 | 11 | ✓ |
-  | &nbsp;&nbsp;[TextGranularity](docs/Extensions/TextGranularity/README.md) | 2 | 2 | ✓ |
-  | [Helpers](docs/Helpers/README.md) | 6 | 6 | ✓ |
-  | [Nodes](docs/Nodes/README.md) | 34 | 34 | ✓ |
-  | [Properties](docs/Properties/README.md) | 65 | 65 | ✓ |
-  | [Shared](docs/Shared/README.md) | 39 | 36 | ✓ |
-  | [SystemTextJson](docs/SystemTextJson/README.md) | 4 | 4 | ✓ |
+  | [Attributes](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Attributes/README.md) | 10 | 10 | ✓ |
+  | [Change tracking](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/ChangeTracking/README.md) | 4 | 4 | ✓ |
+  | [Extensions](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Extensions/README.md) | 22 | 23 | ✓ |
+  | &nbsp;&nbsp;[NavPlace](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Extensions/NavPlace/README.md) | 9 | 10 | ✓ |
+  | &nbsp;&nbsp;[Georeference](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Extensions/Georeference/README.md) | 11 | 11 | ✓ |
+  | &nbsp;&nbsp;[TextGranularity](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Extensions/TextGranularity/README.md) | 2 | 2 | ✓ |
+  | [Helpers](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Helpers/README.md) | 6 | 6 | ✓ |
+  | [Nodes](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Nodes/README.md) | 34 | 34 | ✓ |
+  | [Properties](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Properties/README.md) | 65 | 65 | ✓ |
+  | [Shared](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Shared/README.md) | 39 | 36 | ✓ |
+  | [System.Text.Json interop](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/SystemTextJson/README.md) | 4 | 4 | ✓ |
+  | [Validation](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/Validation/README.md) | 5 | 6 | ✓ |
 
-  ~180 types / ~178 files documented across 44 folders. See
-  [`docs/README.md#docs-catalog`](docs/README.md#docs-catalog) for the fully expanded catalog
+  More than 200 public API types across 219 source files are documented in 51 source folders. See
+  the [documentation catalog](https://github.com/KiarashMinoo/IIIF.Manifest.Serializer.Net/blob/main/docs/README.md#docs-catalog) for the fully expanded catalog
   (every subfolder, not just each area's direct children) and the coverage audit.
 
 When changing serializer behavior, update tests and prefer checking the real JSON shape through `IiifSerializer` rather
