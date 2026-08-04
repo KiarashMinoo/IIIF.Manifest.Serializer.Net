@@ -17,6 +17,14 @@ public sealed class SearchAnnotationCollectionRef : TrackableObject<SearchAnnota
     public const string LastJName = "last";
     public const string TotalJName = "total";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SearchAnnotationCollectionRef()
+    {
+    }
+
     [JsonConstructor]
     public SearchAnnotationCollectionRef(string id)
     {

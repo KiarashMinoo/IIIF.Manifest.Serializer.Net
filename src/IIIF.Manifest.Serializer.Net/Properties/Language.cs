@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<Language>))]
 public sealed class Language(string value) : ValuableItem<Language>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Language() : this(null!)
+    {
+    }
+
     // Common languages
     public static Language English => new("en");
     public static Language EnglishUs => new("en-US");

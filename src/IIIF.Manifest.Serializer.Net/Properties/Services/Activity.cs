@@ -20,6 +20,14 @@ public sealed class Activity : TrackableObject<Activity>
     public const string SummaryJName = "summary";
     public const string ActorJName = "actor";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Activity()
+    {
+    }
+
     public Activity(string type, ActivityObject @object, string endTime)
     {
         Type = type;

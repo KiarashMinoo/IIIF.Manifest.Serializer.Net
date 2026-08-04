@@ -13,6 +13,14 @@ public sealed class VideoResource : BaseResource<VideoResource>, IDimensionSuppo
 {
     public const string DurationJName = "duration";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private VideoResource()
+    {
+    }
+
     public VideoResource(string id, string format) : base(id, ResourceType.Video)
     {
         SetFormat(format);

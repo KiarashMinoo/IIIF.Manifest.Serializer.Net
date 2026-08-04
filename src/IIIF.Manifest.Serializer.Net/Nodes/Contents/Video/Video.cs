@@ -9,6 +9,14 @@ public sealed class Video : BaseContent<Video, VideoResource>
     public const string MotivationJName = "motivation";
     public const string OnJName = "on";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Video()
+    {
+    }
+
     public Video(string id, VideoResource resource, string on) : base(id, "oa:Annotation", resource)
     {
         Motivation = "sc:painting";

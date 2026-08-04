@@ -17,6 +17,14 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
 [JsonConverter(typeof(AnnotationTargetJsonConverter))]
 public sealed class AnnotationTarget : TrackableObject<AnnotationTarget>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AnnotationTarget()
+    {
+    }
+
     public AnnotationTarget(string sourceId, string? sourceType = null)
     {
         SourceId = sourceId;

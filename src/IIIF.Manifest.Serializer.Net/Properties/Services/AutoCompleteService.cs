@@ -11,6 +11,14 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 [SearchAPI("2.0", Notes = "AutoComplete service for Content Search API 2.0.")]
 public sealed class AutoCompleteService : UnprefixedBaseItem<AutoCompleteService>, IBaseService
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AutoCompleteService()
+    {
+    }
+
     [JsonConstructor]
     private AutoCompleteService(string id, string profile) : base(id, "AutoCompleteService2")
     {

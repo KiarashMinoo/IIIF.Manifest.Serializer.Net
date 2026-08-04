@@ -8,6 +8,14 @@ public sealed class Size : TrackableObject<Size>
     public const string WidthJName = "width";
     public const string HeightJName = "height";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Size()
+    {
+    }
+
     [JsonConstructor]
     public Size(int width, int height)
     {

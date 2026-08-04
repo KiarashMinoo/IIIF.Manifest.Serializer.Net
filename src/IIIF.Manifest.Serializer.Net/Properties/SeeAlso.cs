@@ -10,6 +10,14 @@ public sealed class SeeAlso : FormattableItem<SeeAlso>
     public const string ProfileJName = "profile";
     public const string LabelJName = "label";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SeeAlso()
+    {
+    }
+
     [JsonConstructor]
     public SeeAlso(string id) : base(id)
     {

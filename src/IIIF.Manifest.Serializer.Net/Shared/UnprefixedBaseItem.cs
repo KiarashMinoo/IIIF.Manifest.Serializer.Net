@@ -20,6 +20,14 @@ public class UnprefixedBaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseIt
     public const string TypeJName = "type";
     public const string ServiceJName = "service";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="Id" />-taking overloads.
+    /// </summary>
+    protected internal UnprefixedBaseItem()
+    {
+    }
+
     [JsonConstructor]
     protected internal UnprefixedBaseItem(string? id)
     {

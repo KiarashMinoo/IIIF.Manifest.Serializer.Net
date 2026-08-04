@@ -19,6 +19,14 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseItem, IConte
     public const string TypeJName = "@type";
     public const string ServiceJName = "service";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="Id" />-taking overloads.
+    /// </summary>
+    protected internal BaseItem()
+    {
+    }
+
     [JsonConstructor]
     protected internal BaseItem(string id)
     {

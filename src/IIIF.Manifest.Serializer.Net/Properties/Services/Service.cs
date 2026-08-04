@@ -26,6 +26,14 @@ public sealed class Service : BaseItem<Service>, IDimensionSupport<Service>, IBa
     public const string ExtraQualitiesJName = "extraQualities";
     public const string ExtraFeaturesJName = "extraFeatures";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Service()
+    {
+    }
+
     [JsonConstructor]
     private Service(string id, string profile) : base(id, "ImageService3")
     {

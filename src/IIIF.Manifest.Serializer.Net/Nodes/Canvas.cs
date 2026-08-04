@@ -27,6 +27,14 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     public const string AnnotationsJName = "annotations";
     public const string PlaceholderCanvasJName = "placeholderCanvas";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Canvas()
+    {
+    }
+
     public Canvas(string id, Label label, int height, int width) : base(id, "sc:Canvas")
     {
         AddLabel(label);

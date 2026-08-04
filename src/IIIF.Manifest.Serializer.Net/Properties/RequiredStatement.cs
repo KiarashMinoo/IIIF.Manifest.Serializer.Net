@@ -16,6 +16,14 @@ public sealed class RequiredStatement : TrackableObject<RequiredStatement>
     public const string LabelJName = "label";
     public const string ValueJName = "value";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private RequiredStatement()
+    {
+    }
+
     [JsonConstructor]
     public RequiredStatement(IReadOnlyCollection<Label> label, IReadOnlyCollection<Description> value)
     {

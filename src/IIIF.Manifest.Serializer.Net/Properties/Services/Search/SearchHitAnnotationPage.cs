@@ -17,6 +17,14 @@ public sealed class SearchHitAnnotationPage : TrackableObject<SearchHitAnnotatio
     public const string TypeJName = "type";
     public const string ItemsJName = "items";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SearchHitAnnotationPage()
+    {
+    }
+
     public SearchHitAnnotationPage(IReadOnlyCollection<SearchHitAnnotation> items)
     {
         Type = "AnnotationPage";

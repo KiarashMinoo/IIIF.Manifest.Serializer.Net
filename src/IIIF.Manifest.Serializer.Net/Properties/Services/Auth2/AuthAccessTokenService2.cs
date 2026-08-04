@@ -15,6 +15,14 @@ public sealed class AuthAccessTokenService2 : UnprefixedBaseItem<AuthAccessToken
     public const string ErrorHeadingJName = "errorHeading";
     public const string ErrorNoteJName = "errorNote";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthAccessTokenService2()
+    {
+    }
+
     [JsonConstructor]
     public AuthAccessTokenService2(string id) : base(id, "AuthAccessTokenService2")
     {

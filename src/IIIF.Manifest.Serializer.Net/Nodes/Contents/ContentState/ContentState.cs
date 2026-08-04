@@ -22,6 +22,14 @@ public sealed class ContentState : TrackableObject<ContentState>
     public const string MotivationJName = "motivation";
     public const string TargetJName = "target";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ContentState()
+    {
+    }
+
     public ContentState(params ContentStateTarget[] targets)
     {
         Type = "Annotation";

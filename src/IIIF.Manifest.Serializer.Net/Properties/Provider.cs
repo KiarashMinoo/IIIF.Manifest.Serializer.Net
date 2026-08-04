@@ -19,6 +19,14 @@ public sealed class Provider : FormattableItem<Provider>
     public const string LogoJName = "logo";
     public const string SeeAlsoJName = "seeAlso";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Provider()
+    {
+    }
+
     [JsonConstructor]
     public Provider(string id) : base(id, "Agent")
     {

@@ -24,6 +24,14 @@ public sealed partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupp
     public const string PlaceholderCanvasJName = "placeholderCanvas";
     public const string ServicesJName = "services";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Manifest()
+    {
+    }
+
     [Newtonsoft.Json.JsonConstructor]
     internal Manifest(string id) : base(id, "sc:Manifest")
     {

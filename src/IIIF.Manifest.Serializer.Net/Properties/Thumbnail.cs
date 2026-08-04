@@ -8,6 +8,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [PresentationAPI("2.0")]
 public sealed class Thumbnail : FormattableItem<Thumbnail>, IDimensionSupport<Thumbnail>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Thumbnail()
+    {
+    }
+
     [JsonConstructor]
     public Thumbnail(string id) : base(id, "dctypes:Image")
     {

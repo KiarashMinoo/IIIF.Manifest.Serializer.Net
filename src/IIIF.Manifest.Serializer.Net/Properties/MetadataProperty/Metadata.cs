@@ -10,6 +10,14 @@ public sealed class Metadata : TrackableObject<Metadata>
     public const string LabelJName = "label";
     public const string ValueJName = "value";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Metadata()
+    {
+    }
+
     [JsonConstructor]
     private Metadata(string label)
     {

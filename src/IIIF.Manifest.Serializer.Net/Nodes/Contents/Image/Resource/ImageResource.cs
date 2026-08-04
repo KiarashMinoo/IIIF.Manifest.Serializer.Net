@@ -8,6 +8,14 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.Image.Resource;
 
 public sealed class ImageResource : BaseResource<ImageResource>, IDimensionSupport<ImageResource>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ImageResource()
+    {
+    }
+
     [JsonConstructor]
     private ImageResource(string id, string format) : base(id, ResourceType.Image)
     {

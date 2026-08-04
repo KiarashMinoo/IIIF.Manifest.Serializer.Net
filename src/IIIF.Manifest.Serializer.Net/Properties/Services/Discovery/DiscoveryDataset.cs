@@ -19,6 +19,14 @@ public sealed class DiscoveryDataset : TrackableObject<DiscoveryDataset>
     public const string LabelJName = "label";
     public const string ProfileJName = "profile";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private DiscoveryDataset()
+    {
+    }
+
     [JsonConstructor]
     public DiscoveryDataset(string id)
     {

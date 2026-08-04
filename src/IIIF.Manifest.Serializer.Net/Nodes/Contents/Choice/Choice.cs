@@ -24,6 +24,14 @@ public sealed class Choice : TrackableObject<Choice>, IBaseResource
     public const string TypeJName = "type";
     public const string ItemsJName = "items";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Choice()
+    {
+    }
+
     public Choice(IReadOnlyCollection<IBaseResource> items)
     {
         Type = "Choice";

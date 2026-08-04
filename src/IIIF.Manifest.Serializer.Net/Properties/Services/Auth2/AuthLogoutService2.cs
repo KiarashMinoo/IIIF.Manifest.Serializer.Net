@@ -15,6 +15,14 @@ public sealed class AuthLogoutService2 : UnprefixedBaseItem<AuthLogoutService2>,
 {
     public const string LabelJName = "label";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthLogoutService2()
+    {
+    }
+
     [JsonConstructor]
     public AuthLogoutService2(string id, IReadOnlyCollection<Label> label) : base(id, "AuthLogoutService2")
     {

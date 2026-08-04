@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<ResourceType>))]
 public sealed class ResourceType(string value) : ValuableItem<ResourceType>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ResourceType() : this(null!)
+    {
+    }
+
     // IIIF Presentation 3.0 types
     public static ResourceType Collection => new("Collection");
     public static ResourceType Manifest => new("Manifest");

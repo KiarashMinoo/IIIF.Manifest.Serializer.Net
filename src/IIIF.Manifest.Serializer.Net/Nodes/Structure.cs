@@ -18,6 +18,14 @@ public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), 
     public const string StartCanvasJName = "startCanvas";
     public const string MembersJName = "members";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Structure() : this(null!)
+    {
+    }
+
     public Structure(string id, Label label) : this(id)
     {
         AddLabel(label);

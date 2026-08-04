@@ -11,6 +11,14 @@ public sealed class Segment : BaseContent<Segment, SegmentResource>
     public const string SelectorJName = "selector";
 
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Segment()
+    {
+    }
+
     public Segment(string id, SegmentResource resource, string on) : base(id, "oa:Annotation", resource)
     {
         SetElementValue(x => x.Motivation, "sc:painting");

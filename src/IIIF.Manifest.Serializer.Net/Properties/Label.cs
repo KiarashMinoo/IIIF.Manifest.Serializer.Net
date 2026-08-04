@@ -15,6 +15,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<Label>))]
 public sealed class Label : ValuableItem<Label>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Label()
+    {
+    }
+
     public Label(string value) : base(value)
     {
     }

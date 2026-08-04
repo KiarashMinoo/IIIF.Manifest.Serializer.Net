@@ -14,6 +14,14 @@ public sealed class ContentStatePointSelector : TrackableObject<ContentStatePoin
     public const string TypeJName = "type";
     public const string TJName = "t";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ContentStatePointSelector()
+    {
+    }
+
     [JsonConstructor]
     public ContentStatePointSelector(double t)
     {

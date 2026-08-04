@@ -12,6 +12,14 @@ public class ValuableItem<TValuableItem> : TrackableObject<TValuableItem>
         Value = value;
     }
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="Value" />-taking overloads.
+    /// </summary>
+    protected internal ValuableItem()
+    {
+    }
+
     public virtual string Value
     {
         get { return GetElementValue(x => x.Value)!; }

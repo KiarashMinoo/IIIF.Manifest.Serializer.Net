@@ -19,6 +19,14 @@ namespace IIIF.Manifests.Serializer.Nodes.Contents.ContentState;
 [JsonConverter(typeof(ContentStateTargetJsonConverter))]
 public sealed class ContentStateTarget : TrackableObject<ContentStateTarget>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ContentStateTarget()
+    {
+    }
+
     public ContentStateTarget(string id, string? resourceType = null)
     {
         Id = id;

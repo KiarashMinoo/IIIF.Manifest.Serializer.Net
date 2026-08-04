@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<ImageFeature>))]
 public sealed class ImageFeature(string value) : ValuableItem<ImageFeature>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ImageFeature() : this(null!)
+    {
+    }
+
     // Region features
     public static ImageFeature RegionByPx => new("regionByPx");
     public static ImageFeature RegionByPct => new("regionByPct");

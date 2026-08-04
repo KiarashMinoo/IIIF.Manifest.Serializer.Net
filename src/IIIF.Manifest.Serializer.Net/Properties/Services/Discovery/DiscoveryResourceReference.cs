@@ -15,6 +15,14 @@ public sealed class DiscoveryResourceReference : TrackableObject<DiscoveryResour
     public const string IdJName = "id";
     public const string TypeJName = "type";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private DiscoveryResourceReference()
+    {
+    }
+
     [JsonConstructor]
     public DiscoveryResourceReference(string id, string type)
     {

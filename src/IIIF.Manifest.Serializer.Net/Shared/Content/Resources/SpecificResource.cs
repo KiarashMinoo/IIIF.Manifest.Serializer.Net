@@ -24,6 +24,14 @@ public sealed class SpecificResource : TrackableObject<SpecificResource>, IBaseR
     public const string SelectorJName = "selector";
     public const string StyleClassJName = "styleClass";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SpecificResource()
+    {
+    }
+
     [JsonConstructor]
     public SpecificResource(IBaseResource source)
     {

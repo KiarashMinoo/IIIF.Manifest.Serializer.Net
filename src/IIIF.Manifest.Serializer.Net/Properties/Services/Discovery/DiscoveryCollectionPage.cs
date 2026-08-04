@@ -25,6 +25,14 @@ public sealed class DiscoveryCollectionPage : TrackableObject<DiscoveryCollectio
     public const string StartIndexJName = "startIndex";
     public const string OrderedItemsJName = "orderedItems";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private DiscoveryCollectionPage()
+    {
+    }
+
     public DiscoveryCollectionPage(string id, IReadOnlyCollection<Activity> orderedItems)
     {
         Type = "OrderedCollectionPage";

@@ -9,6 +9,14 @@ public class BaseContent<TBaseContent> : BaseNode<TBaseContent>, IDimensionSuppo
 {
     public const string FormatJName = "format";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="BaseItem{TBaseItem}.Id" />-taking overloads.
+    /// </summary>
+    protected internal BaseContent()
+    {
+    }
+
     [JsonConstructor]
     protected internal BaseContent(string id) : base(id)
     {
@@ -63,6 +71,14 @@ public class BaseContent<TContent, TResource> : BaseContent<TContent>
     where TResource : BaseResource<TResource>
 {
     public const string ResourceJName = "resource";
+
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="Resource" />-taking overloads.
+    /// </summary>
+    protected internal BaseContent()
+    {
+    }
 
     [JsonConstructor]
     public BaseContent(string id, string type, TResource resource) : base(id, type)

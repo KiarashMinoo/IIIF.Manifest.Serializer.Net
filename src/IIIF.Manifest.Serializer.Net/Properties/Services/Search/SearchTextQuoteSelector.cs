@@ -16,6 +16,14 @@ public sealed class SearchTextQuoteSelector : TrackableObject<SearchTextQuoteSel
     public const string ExactJName = "exact";
     public const string SuffixJName = "suffix";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SearchTextQuoteSelector()
+    {
+    }
+
     [JsonConstructor]
     public SearchTextQuoteSelector(string exact)
     {

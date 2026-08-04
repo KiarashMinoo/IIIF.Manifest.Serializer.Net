@@ -14,6 +14,14 @@ public sealed class SearchService : UnprefixedBaseItem<SearchService>, IBaseServ
 {
     public new const string ServiceJName = "service";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SearchService()
+    {
+    }
+
     [JsonConstructor]
     private SearchService(string id, string profile) : base(id, "SearchService2")
     {

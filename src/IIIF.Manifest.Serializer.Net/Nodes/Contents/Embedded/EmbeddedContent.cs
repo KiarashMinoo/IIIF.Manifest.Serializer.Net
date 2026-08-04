@@ -8,6 +8,14 @@ public sealed class EmbeddedContent : BaseContent<EmbeddedContent, EmbeddedConte
 {
     public const string OnJName = "on";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private EmbeddedContent()
+    {
+    }
+
     public EmbeddedContent(string id, EmbeddedContentResource resource, string on) : base(id, "oa:Annotation", resource)
     {
         On = on;

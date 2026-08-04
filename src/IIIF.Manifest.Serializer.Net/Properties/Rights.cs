@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<Rights>))]
 public sealed class Rights(string value) : ValuableItem<Rights>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Rights() : this(null!)
+    {
+    }
+
     // Creative Commons 4.0
     public static Rights CcBy => new("http://creativecommons.org/licenses/by/4.0/");
     public static Rights CcBySa => new("http://creativecommons.org/licenses/by-sa/4.0/");

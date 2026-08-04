@@ -21,6 +21,14 @@ public sealed class Annotation : BaseItem<Annotation>
     public const string StylesheetJName = "stylesheet";
     public const string TimeModeJName = "timeMode";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Annotation()
+    {
+    }
+
     // Newtonsoft's constructor-parameter matching binds by wire-name first ("target" is
     // Targets' JsonProperty name), so the [JsonConstructor] parameter must be the plural
     // collection type to match what it actually resolves - a scalar-typed parameter named

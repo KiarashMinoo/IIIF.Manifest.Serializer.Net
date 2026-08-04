@@ -11,6 +11,14 @@ namespace IIIF.Manifests.Serializer.Properties.Services;
 [ContentStateAPI("1.0", Notes = "Content State API 1.0 service for deep linking and state representation.")]
 public sealed class ContentStateService : BaseItem<ContentStateService>, IBaseService
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ContentStateService()
+    {
+    }
+
     [JsonConstructor]
     private ContentStateService(string id, string profile) : base(id, "ContentStateService")
     {

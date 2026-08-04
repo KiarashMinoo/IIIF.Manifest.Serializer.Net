@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<Profile>))]
 public sealed class Profile(string value) : ValuableItem<Profile>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Profile() : this(null!)
+    {
+    }
+
     // IIIF Image API 3.0 profiles
     public static Profile Level0 => new("level0");
     public static Profile Level1 => new("level1");

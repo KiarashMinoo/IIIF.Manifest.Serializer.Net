@@ -10,6 +10,14 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </summary>
 public sealed class RangeReference : BaseItem<RangeReference>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private RangeReference()
+    {
+    }
+
     [JsonConstructor]
     public RangeReference(string id) : base(id, "Range")
     {

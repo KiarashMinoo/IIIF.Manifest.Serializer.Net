@@ -18,6 +18,14 @@ public sealed class AuthAccessToken2 : TrackableObject<AuthAccessToken2>
     public const string AccessTokenJName = "accessToken";
     public const string ExpiresInJName = "expiresIn";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthAccessToken2()
+    {
+    }
+
     [JsonConstructor]
     public AuthAccessToken2(string messageId, string accessToken)
     {

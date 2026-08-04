@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<Motivation>))]
 public sealed class Motivation(string value) : ValuableItem<Motivation>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Motivation() : this(null!)
+    {
+    }
+
     // IIIF Presentation motivations
     public static Motivation Painting => new("painting");
     public static Motivation Supplementing => new("supplementing");

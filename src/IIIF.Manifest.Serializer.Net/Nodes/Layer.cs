@@ -19,6 +19,14 @@ public sealed class Layer(string id) : BaseNode<Layer>(id, "sc:Layer")
 {
     public const string OtherContentJName = "otherContent";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Layer() : this(null!)
+    {
+    }
+
     public Layer(string id, Label label) : this(id)
     {
         AddLabel(label);

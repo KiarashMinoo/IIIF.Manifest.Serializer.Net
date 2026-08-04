@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<TimeMode>))]
 public sealed class TimeMode(string value) : ValuableItem<TimeMode>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private TimeMode() : this(null!)
+    {
+    }
+
     public static TimeMode Trim => new("trim");
     public static TimeMode Scale => new("scale");
     public static TimeMode Loop => new("loop");

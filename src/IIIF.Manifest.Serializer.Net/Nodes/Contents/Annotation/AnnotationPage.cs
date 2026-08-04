@@ -18,6 +18,14 @@ public sealed class AnnotationPage : BaseNode<AnnotationPage>
     public const string NextJName = "next";
     public const string PrevJName = "prev";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AnnotationPage()
+    {
+    }
+
     [JsonConstructor]
     public AnnotationPage(string id) : base(id, "AnnotationPage")
     {

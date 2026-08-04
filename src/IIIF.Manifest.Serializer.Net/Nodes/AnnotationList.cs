@@ -20,6 +20,14 @@ public sealed class AnnotationList(string id) : BaseNode<AnnotationList>(id, "sc
 {
     public const string ResourcesJName = "resources";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AnnotationList() : this(null!)
+    {
+    }
+
     [JsonConstructor]
     public AnnotationList(string id, Label label) : this(id)
     {

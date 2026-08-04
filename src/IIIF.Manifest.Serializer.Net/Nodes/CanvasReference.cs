@@ -9,6 +9,14 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </summary>
 public sealed class CanvasReference : BaseItem<CanvasReference>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private CanvasReference()
+    {
+    }
+
     [JsonConstructor]
     public CanvasReference(string id) : base(id, "Canvas")
     {

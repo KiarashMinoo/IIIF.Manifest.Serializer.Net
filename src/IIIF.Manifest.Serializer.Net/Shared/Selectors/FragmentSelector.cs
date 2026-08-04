@@ -14,6 +14,14 @@ public sealed class FragmentSelector : TrackableObject<FragmentSelector>, ISelec
     public const string ValueJName = "value";
     public const string MediaFragmentConformsTo = "http://www.w3.org/TR/media-frags/";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private FragmentSelector()
+    {
+    }
+
     [JsonConstructor]
     public FragmentSelector(string value)
     {

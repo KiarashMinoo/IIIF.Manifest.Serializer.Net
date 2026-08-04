@@ -19,6 +19,14 @@ public sealed class ActivityObject : TrackableObject<ActivityObject>
     public const string SeeAlsoJName = "seeAlso";
     public const string ProviderJName = "provider";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ActivityObject()
+    {
+    }
+
     [JsonConstructor]
     public ActivityObject(string id, string type)
     {

@@ -16,6 +16,14 @@ public sealed class AuthProbeService2 : UnprefixedBaseItem<AuthProbeService2>, I
     public const string ErrorHeadingJName = "errorHeading";
     public const string ErrorNoteJName = "errorNote";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthProbeService2()
+    {
+    }
+
     [JsonConstructor]
     public AuthProbeService2(string id, IReadOnlyCollection<IBaseService> service) : base(id, "AuthProbeService2")
     {

@@ -10,6 +10,15 @@ public sealed class Tile : TrackableObject<Tile>
     public const string HeightJName = "height";
     public const string ScaleFactorsJName = "scaleFactors";
 
+    /// <summary>
+    ///     Also the type's normal fluent-builder entry point (<c>new Tile().SetWidth(...)</c>) - kept
+    ///     <c>public</c> rather than private since it's genuine application-facing API, not just an
+    ///     EF Core/ORM materialization backdoor.
+    /// </summary>
+    public Tile()
+    {
+    }
+
     [JsonProperty(WidthJName)]
     public int? Width
     {

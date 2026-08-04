@@ -24,6 +24,14 @@ public class BaseResource<TBaseResource> : FormattableItem<TBaseResource>, IBase
 {
     public const string LabelJName = "label";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="BaseItem{TBaseItem}.Id" />-taking overloads.
+    /// </summary>
+    protected internal BaseResource()
+    {
+    }
+
     protected internal BaseResource(string id) : base(id)
     {
     }
@@ -69,6 +77,14 @@ public class BaseResource<TBaseResource> : FormattableItem<TBaseResource>, IBase
 
 public class BaseResource : BaseResource<BaseResource>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="BaseItem{TBaseItem}.Id" />-taking overloads.
+    /// </summary>
+    private BaseResource()
+    {
+    }
+
     protected internal BaseResource(string id) : base(id)
     {
     }

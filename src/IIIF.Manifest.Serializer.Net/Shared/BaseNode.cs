@@ -45,6 +45,14 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
         "paged", "continuous", "individuals", "facing-pages", "non-paged", "multi-part"
     ];
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="BaseItem{TBaseItem}.Id" />-taking overloads.
+    /// </summary>
+    protected internal BaseNode()
+    {
+    }
+
     [JsonConstructor]
     protected internal BaseNode(string id) : base(id)
     {

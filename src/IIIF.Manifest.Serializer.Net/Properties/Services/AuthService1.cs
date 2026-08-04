@@ -20,6 +20,14 @@ public sealed class AuthService1 : BaseItem<AuthService1>, IBaseService
     public const string FailureDescriptionJName = "failureDescription";
 
     /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthService1()
+    {
+    }
+
+    /// <summary>
     ///     Creates a new Auth API 1.0 service.
     /// </summary>
     /// <param name="id">Service identifier (login/token/logout endpoint URL)</param>

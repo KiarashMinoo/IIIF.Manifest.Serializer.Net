@@ -22,6 +22,14 @@ public sealed class TextualBody : TrackableObject<TextualBody>, IBaseResource
     public const string FormatJName = "format";
     public const string LanguageJName = "language";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private TextualBody()
+    {
+    }
+
     [JsonConstructor]
     public TextualBody(string value)
     {

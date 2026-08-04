@@ -6,6 +6,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<Description>))]
 public sealed class Description(string value) : ValuableItem<Description>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Description() : this(null!)
+    {
+    }
+
     public const string ValueJName = "@value";
     public const string LanguageJName = "@language";
 

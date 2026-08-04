@@ -24,6 +24,14 @@ public sealed class DiscoveryService : UnprefixedBaseItem<DiscoveryService>, IBa
     public const string PartOfJName = "partOf";
     public const string RightsJName = "rights";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private DiscoveryService()
+    {
+    }
+
     [JsonConstructor]
     public DiscoveryService(string id, DiscoveryResourceReference last) : base(id, "OrderedCollection")
     {

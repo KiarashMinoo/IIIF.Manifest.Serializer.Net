@@ -7,6 +7,14 @@ public class FormattableItem<TFormattableItem> : BaseItem<TFormattableItem>
 {
     public const string FormatJName = "format";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through <see cref="BaseItem{TBaseItem}.Id" />-taking overloads.
+    /// </summary>
+    protected internal FormattableItem()
+    {
+    }
+
     [JsonConstructor]
     protected internal FormattableItem(string id) : base(id)
     {

@@ -17,6 +17,14 @@ public sealed class SearchHitTarget : TrackableObject<SearchHitTarget>
     public const string SourceJName = "source";
     public const string SelectorJName = "selector";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SearchHitTarget()
+    {
+    }
+
     [JsonConstructor]
     public SearchHitTarget(string source, IReadOnlyCollection<SearchTextQuoteSelector> selector)
     {

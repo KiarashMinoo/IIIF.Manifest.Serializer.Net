@@ -24,6 +24,14 @@ public sealed class Collection : BaseNode<Collection>, IViewingDirectionSupport<
     public const string PrevJName = "prev";
     public const string StartIndexJName = "startIndex";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Collection()
+    {
+    }
+
     [Newtonsoft.Json.JsonConstructor]
     internal Collection(string id) : base(id, "sc:Collection")
     {

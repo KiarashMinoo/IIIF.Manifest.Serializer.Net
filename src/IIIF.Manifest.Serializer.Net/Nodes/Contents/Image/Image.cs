@@ -9,6 +9,14 @@ public sealed class Image : BaseContent<Image, ImageResource>
     public const string MotivationJName = "motivation";
     public const string OnJName = "on";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Image()
+    {
+    }
+
     public Image(string id, ImageResource resource, string on) : base(id, "oa:Annotation", resource)
     {
         Motivation = "sc:painting";

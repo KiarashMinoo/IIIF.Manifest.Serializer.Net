@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<ImageQuality>))]
 public sealed class ImageQuality(string value) : ValuableItem<ImageQuality>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ImageQuality() : this(null!)
+    {
+    }
+
     // Standard qualities
     public static ImageQuality Default => new("default");
     public static ImageQuality Color => new("color");

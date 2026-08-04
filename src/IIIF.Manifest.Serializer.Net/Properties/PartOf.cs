@@ -11,6 +11,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [PresentationAPI("3.0", Notes = "Replaces within from API 2.x. Restructured to an object array with id/type.")]
 public sealed class PartOf : BaseItem<PartOf>
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private PartOf()
+    {
+    }
+
     [JsonConstructor]
     public PartOf(string id, string type) : base(id, type)
     {

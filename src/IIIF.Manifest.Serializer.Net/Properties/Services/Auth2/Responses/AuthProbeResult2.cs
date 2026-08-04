@@ -22,6 +22,14 @@ public sealed class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
     public const string HeadingJName = "heading";
     public const string NoteJName = "note";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthProbeResult2()
+    {
+    }
+
     public AuthProbeResult2(int status)
     {
         Context = DefaultContext;

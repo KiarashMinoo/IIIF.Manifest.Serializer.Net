@@ -29,6 +29,14 @@ public sealed class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError
     public const string ExpiredAspect = "expiredAspect";
     public const string Unavailable = "unavailable";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthAccessTokenError2()
+    {
+    }
+
     [JsonConstructor]
     public AuthAccessTokenError2(string profile, string messageId)
     {

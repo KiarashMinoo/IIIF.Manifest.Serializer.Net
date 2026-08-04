@@ -17,6 +17,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 public sealed class ViewingHint(string value) : ValuableItem<ViewingHint>(value)
 {
     /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ViewingHint() : this(null!)
+    {
+    }
+
+    /// <summary>
     ///     Valid on Collection, Manifest. Each canvas represents a separate page/view.
     ///     Implies that viewers should show one or few pages at a time.
     /// </summary>

@@ -20,6 +20,14 @@ public sealed class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>,
     public const string NoteJName = "note";
     public const string ConfirmLabelJName = "confirmLabel";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private AuthAccessService2()
+    {
+    }
+
     [JsonConstructor]
     private AuthAccessService2(string? id, string profile, IReadOnlyCollection<IBaseService> service)
         : base(id, "AuthAccessService2")

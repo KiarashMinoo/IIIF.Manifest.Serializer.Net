@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<ViewingDirection>))]
 public sealed class ViewingDirection(string value) : ValuableItem<ViewingDirection>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private ViewingDirection() : this(null!)
+    {
+    }
+
     public static ViewingDirection Ltr => new("left-to-right");
     public static ViewingDirection Rtl => new("right-to-left");
     public static ViewingDirection Ttb => new("top-to-bottom");

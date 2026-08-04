@@ -7,6 +7,14 @@ public sealed class Selector(string id, string type) : BaseItem<Selector>(id, ty
 {
     public const string RegionJName = "region";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Selector() : this(null!, null!)
+    {
+    }
+
     [JsonProperty(RegionJName)]
     public IReadOnlyCollection<int> Region
     {

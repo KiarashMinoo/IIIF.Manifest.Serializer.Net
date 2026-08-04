@@ -6,6 +6,14 @@ namespace IIIF.Manifests.Serializer.Properties.MetadataProperty.MetadataValue;
 [JsonConverter(typeof(ValuableItemJsonConverter<MetadataValue>))]
 public sealed class MetadataValue(string value) : ValuableItem<MetadataValue>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private MetadataValue() : this(null!)
+    {
+    }
+
     public const string ValueJName = "@value";
     public const string LanguageJName = "@language";
 

@@ -21,6 +21,14 @@ public sealed class SearchTerm : TrackableObject<SearchTerm>
     public const string LanguageJName = "language";
     public const string ServiceJName = "service";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SearchTerm()
+    {
+    }
+
     [JsonConstructor]
     public SearchTerm(string value)
     {

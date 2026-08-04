@@ -15,6 +15,14 @@ public sealed class SvgSelector : TrackableObject<SvgSelector>, ISelector
     public const string TypeJName = "type";
     public const string ValueJName = "value";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SvgSelector()
+    {
+    }
+
     [JsonConstructor]
     public SvgSelector(string value)
     {

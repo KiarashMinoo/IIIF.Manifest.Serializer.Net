@@ -12,6 +12,14 @@ public sealed class EmbeddedContentResource : BaseResource<EmbeddedContentResour
     // inline value, not a dereferenceable resource) - previously this constructor
     // accidentally passed the type string itself as @id (via the single-arg base(id) overload)
     // and misspelled it ("ContextAsText"), so @type was never actually set at all.
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private EmbeddedContentResource()
+    {
+    }
+
     public EmbeddedContentResource(string chars, string language) : base(string.Empty, "cnt:ContentAsText")
     {
         Chars = chars;

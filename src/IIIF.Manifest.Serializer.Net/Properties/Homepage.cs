@@ -9,6 +9,14 @@ public sealed class Homepage : FormattableItem<Homepage>
 {
     public const string LabelJName = "label";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Homepage()
+    {
+    }
+
     [JsonConstructor]
     public Homepage(string id) : base(id)
     {

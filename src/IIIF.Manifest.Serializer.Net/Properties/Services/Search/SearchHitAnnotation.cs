@@ -16,6 +16,14 @@ public sealed class SearchHitAnnotation : TrackableObject<SearchHitAnnotation>
     public const string MotivationJName = "motivation";
     public const string TargetJName = "target";
 
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private SearchHitAnnotation()
+    {
+    }
+
     [JsonConstructor]
     public SearchHitAnnotation(SearchHitTarget target)
     {

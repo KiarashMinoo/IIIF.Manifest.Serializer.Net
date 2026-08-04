@@ -12,6 +12,14 @@ namespace IIIF.Manifests.Serializer.Properties;
 [JsonConverter(typeof(ValuableItemJsonConverter<Context>))]
 public sealed class Context(string value) : ValuableItem<Context>(value)
 {
+    /// <summary>
+    ///     Parameterless constructor for materialization by EF Core (or other reflection-based ORMs) - not for
+    ///     application code, which should always go through the other constructor overloads.
+    /// </summary>
+    private Context() : this(null!)
+    {
+    }
+
     // IIIF Presentation API contexts
     public static Context Presentation2 => new("http://iiif.io/api/presentation/2/context.json");
     public static Context Presentation3 => new("http://iiif.io/api/presentation/3/context.json");
