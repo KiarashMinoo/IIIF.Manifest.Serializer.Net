@@ -31,6 +31,10 @@ jobs:
   # id-token:write (publish-nuget, for GitHub Packages / OIDC respectively, if ever
   # switched on), actions:write (cleanup-nuget-artifacts, to delete run artifacts).
   release:
+    # workflow_dispatch has no branch filter in the `on:` trigger itself (unlike push/pull_request) -
+    # anyone can fire this from the branch dropdown in the Actions UI, so the restriction has to be
+    # a job-level guard instead. IIIF releases only from main.
+    if: github.ref == 'refs/heads/main'
     permissions:
       contents: write
       packages: write
