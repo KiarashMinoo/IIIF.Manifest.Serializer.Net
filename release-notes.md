@@ -1,17 +1,5 @@
-## [3.0.14] — 2026-08-04
-
-### 🚀 Features
-
-- add EF Core-compatible parameterless constructors to all model types `(4fa0431)` — Kiarash Minoo
+## [3.0.15] — 2026-08-05
 
 ### 🐛 Bug Fixes
 
-- harden trackable change subscriptions `(3d59974)` — Kiarash Minoo
-
-### ⚙️ CI / Tooling
-
-- restrict publish-nuget.yml to the main branch `(5321198)` — Kiarash Minoo
-
-### 📝 Documentation
-
-- synchronize API and NuGet documentation `(6026fad)` — Kiarash Minoo
+- IIIF.Manifest.Serializer.Net: split collection tombstones from live items, fix change-tracking bugs, cut hot-path allocations `(368a178)` — Kiarash Minoo
