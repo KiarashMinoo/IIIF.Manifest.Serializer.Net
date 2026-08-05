@@ -45,7 +45,7 @@ public static class CollectionHelper
         /// </summary>
         public IReadOnlyCollection<TItem> With(TItem item)
         {
-            if (collection is TrackableCollection<TItem> trackableCollection)
+            if (collection is ITrackableCollection<TItem> trackableCollection)
             {
                 trackableCollection.Add(item);
                 return trackableCollection;
@@ -67,7 +67,7 @@ public static class CollectionHelper
         /// </summary>
         public IReadOnlyCollection<TItem> Without(TItem item)
         {
-            if (collection is TrackableCollection<TItem> trackableCollection)
+            if (collection is ITrackableCollection<TItem> trackableCollection)
             {
                 trackableCollection.Remove(item);
                 return trackableCollection;

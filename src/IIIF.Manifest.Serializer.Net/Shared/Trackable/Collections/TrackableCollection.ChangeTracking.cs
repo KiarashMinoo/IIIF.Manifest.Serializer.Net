@@ -3,16 +3,18 @@ using IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable.Collections;
 
-public partial class TrackableCollection<T>
+public partial class TrackableCollection
 {
     internal override bool HasChangesCore(HashSet<object> visited)
     {
         if (!visited.Add(this)) return false;
 
+        if (_removedItems.Count > 0) return true;
+
         foreach (var descriptor in _items)
         {
             if (IsChanged(descriptor.ModificationType)) return true;
-            if (descriptor.ModificationType != ModificationType.Removed && HasNestedChanges(descriptor.Value, visited)) return true;
+            if (HasNestedChanges(descriptor.Value, visited)) return true;
         }
 
         return false;
@@ -22,50 +24,44 @@ public partial class TrackableCollection<T>
     {
         if (!visited.Add(this)) return;
 
-        var originalIndex = 0;
-        var currentIndex = 0;
-
-        foreach (var descriptor in _items)
+        for (var index = 0; index < _items.Count; index++)
         {
+            var descriptor = _items[index];
             switch (descriptor.ModificationType)
             {
                 case ModificationType.Added:
                     entries.Add(new IiifChangeEntry(
-                        $"[{currentIndex}]",
+                        $"[{index}]",
                         IiifChangeKind.CollectionItemAdded,
                         null,
                         null,
                         descriptor.Value,
                         changedAtUtc));
-                    currentIndex++;
-                    break;
-                case ModificationType.Removed:
-                    entries.Add(new IiifChangeEntry(
-                        $"[{originalIndex}]",
-                        IiifChangeKind.CollectionItemRemoved,
-                        null,
-                        descriptor.OriginalValue,
-                        null,
-                        changedAtUtc));
-                    originalIndex++;
                     break;
                 case ModificationType.Changed:
                     entries.Add(new IiifChangeEntry(
-                        $"[{currentIndex}]",
+                        $"[{index}]",
                         IiifChangeKind.Modified,
                         null,
                         descriptor.OriginalValue,
                         descriptor.Value,
                         changedAtUtc));
-                    originalIndex++;
-                    currentIndex++;
                     break;
                 default:
-                    CollectNestedChanges(descriptor.Value, $"[{currentIndex}]", entries, visited, changedAtUtc);
-                    originalIndex++;
-                    currentIndex++;
+                    CollectNestedChanges(descriptor.Value, $"[{index}]", entries, visited, changedAtUtc);
                     break;
             }
+        }
+
+        foreach (var (descriptor, originalIndex) in _removedItems)
+        {
+            entries.Add(new IiifChangeEntry(
+                $"[{originalIndex}]",
+                IiifChangeKind.CollectionItemRemoved,
+                null,
+                descriptor.OriginalValue,
+                null,
+                changedAtUtc));
         }
     }
 
@@ -73,17 +69,16 @@ public partial class TrackableCollection<T>
     {
         if (!visited.Add(this)) return;
 
-        for (var index = _items.Count - 1; index >= 0; index--)
+        _removedItems.Clear();
+        _removedOriginalIndices.Clear();
+
+        for (var index = 0; index < _items.Count; index++)
         {
             var descriptor = _items[index];
-            if (descriptor.ModificationType == ModificationType.Removed)
-            {
-                _items.RemoveAt(index);
-                continue;
-            }
-
             ClearNestedChanges(descriptor.Value, visited);
-            _items[index] = new ElementDescriptor<T>(descriptor.Value);
+            _items[index] = _descriptorFactory(descriptor.Value);
         }
+
+        _baselineCount = _items.Count;
     }
 }

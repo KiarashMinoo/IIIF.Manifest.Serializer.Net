@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using IIIF.Manifests.Serializer.ChangeTracking;
 using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
@@ -29,7 +30,7 @@ public class TrackableCollectionTests
     [Fact]
     public void Add_Should_AppendItemsInOrder_WhenCollectionStartsEmpty()
     {
-        var collection = new TrackableCollection<string>();
+        ITrackableCollection<string> collection = new TrackableCollection<string>();
 
         collection.Add("first");
         collection.Add("second");
@@ -41,7 +42,7 @@ public class TrackableCollectionTests
     [Fact]
     public void Add_Should_RaiseCollectionChanged_WithAddedTypeAndAppendedIndex()
     {
-        var collection = new TrackableCollection<string>();
+        ITrackableCollection<string> collection = new TrackableCollection<string>();
         TrackableCollectionChangedEventArgs? raised = null;
         collection.CollectionChanged += (_, e) => raised = e;
 
@@ -56,7 +57,7 @@ public class TrackableCollectionTests
     public void Remove_Should_RaiseCollectionChanged_WithRemovedType()
     {
         var item = new NotifyingItem();
-        var collection = new TrackableCollection<NotifyingItem>([item]);
+        ITrackableCollection<NotifyingItem> collection = new TrackableCollection<NotifyingItem>([item]);
         TrackableCollectionChangedEventArgs? raised = null;
         collection.CollectionChanged += (_, e) => raised = e;
 
@@ -84,7 +85,7 @@ public class TrackableCollectionTests
     public void ItemPropertyChange_Should_NotRaiseCollectionChanged_AfterItemIsRemoved()
     {
         var item = new NotifyingItem();
-        var collection = new TrackableCollection<NotifyingItem>([item]);
+        ITrackableCollection<NotifyingItem> collection = new TrackableCollection<NotifyingItem>([item]);
         collection.Remove(item);
         var raiseCount = 0;
         collection.CollectionChanged += (_, _) => raiseCount++;
@@ -97,7 +98,7 @@ public class TrackableCollectionTests
     [Fact]
     public void Clear_Should_EmptyCollection_WhenMultipleItemsArePresent()
     {
-        var collection = new TrackableCollection<string>(["a", "b", "c"]);
+        IList<string> collection = new TrackableCollection<string>(["a", "b", "c"]);
 
         collection.Clear();
 
@@ -107,7 +108,7 @@ public class TrackableCollectionTests
     [Fact]
     public void Collection_Should_ImplementIiifChangeTracking_FromItsItemDescriptors()
     {
-        var collection = new TrackableCollection<string>(["baseline"]);
+        ITrackableCollection<string> collection = new TrackableCollection<string>(["baseline"]);
         var trackable = (IIiifChangeTrackable)collection;
 
         trackable.HasChanges.Should().BeFalse();
@@ -124,7 +125,7 @@ public class TrackableCollectionTests
     [Fact]
     public void AcceptChanges_Should_ResetCollectionDescriptors_AndKeepAcceptedState()
     {
-        var collection = new TrackableCollection<string>(["first", "second"]);
+        ITrackableCollection<string> collection = new TrackableCollection<string>(["first", "second"]);
         var trackable = (IIiifChangeTrackable)collection;
         collection.Remove("first");
 

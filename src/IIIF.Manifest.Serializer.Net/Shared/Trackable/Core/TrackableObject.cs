@@ -6,7 +6,7 @@ namespace IIIF.Manifests.Serializer.Shared.Trackable.Core;
 
 public partial class TrackableObject
 {
-    [JsonIgnore] internal readonly Dictionary<string, ElementDescriptor> ElementDescriptors = [];
+    [JsonIgnore] internal readonly Dictionary<string, IElementDescriptor> ElementDescriptors = [];
 
     protected internal static JsonSerializerSettings JsonSerializerSettings { get; } = new()
     {

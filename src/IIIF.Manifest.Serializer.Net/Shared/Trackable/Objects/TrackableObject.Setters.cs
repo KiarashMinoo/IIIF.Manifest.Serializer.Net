@@ -7,7 +7,7 @@ public partial class TrackableObject<TTrackableObject>
     where TTrackableObject : TrackableObject<TTrackableObject>
 {
     protected TTrackableObject SetElementValue<TValue>(
-        Func<TValue, TValue?> valueFactory,
+        Func<TValue?, TValue?> valueFactory,
         bool isAdditional = false,
         [CallerMemberName] string? memberName = null
     )
@@ -26,7 +26,7 @@ public partial class TrackableObject<TTrackableObject>
 
     protected TTrackableObject SetElementValue<TValue>(
         Expression<Func<TTrackableObject, TValue>> expression,
-        Func<TValue, TValue?> valueFactory,
+        Func<TValue?, TValue?> valueFactory,
         bool isAdditional = false
     )
     {

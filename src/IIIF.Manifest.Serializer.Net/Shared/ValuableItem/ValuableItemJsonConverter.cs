@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using System.Reflection;
 using Newtonsoft.Json;
 
@@ -10,6 +11,24 @@ namespace IIIF.Manifests.Serializer.Shared.ValuableItem;
 public sealed class ValuableItemJsonConverter<TValuableItem> : JsonConverter<TValuableItem>
     where TValuableItem : ValuableItem<TValuableItem>
 {
+    // Resolved and compiled once per closed TValuableItem (Label, Description, Rights, ...) instead
+    // of re-resolving the (string) constructor via Activator.CreateInstance on every value read -
+    // this type is on the hot path for nearly every IIIF resource (label/summary/rights/etc).
+    private static readonly Func<string, TValuableItem> Factory = CreateFactory();
+
+    private static Func<string, TValuableItem> CreateFactory()
+    {
+        var constructor = typeof(TValuableItem).GetConstructor(
+                               BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                               null,
+                               [typeof(string)],
+                               null)
+                           ?? throw new InvalidOperationException($"{typeof(TValuableItem)} has no (string) constructor.");
+
+        var parameter = Expression.Parameter(typeof(string), "value");
+        return Expression.Lambda<Func<string, TValuableItem>>(Expression.New(constructor, parameter), parameter).Compile();
+    }
+
     /// <summary>
     ///     Writes a ValuableItem to JSON as a simple string value.
     /// </summary>
@@ -43,14 +62,6 @@ public sealed class ValuableItemJsonConverter<TValuableItem> : JsonConverter<TVa
 
         if (string.IsNullOrEmpty(stringValue)) return null;
 
-        // Create instance using the string constructor
-        // Use BindingFlags to find constructors regardless of visibility (public, private, internal)
-        return (TValuableItem)Activator.CreateInstance(
-            typeof(TValuableItem),
-            BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
-            null,
-            [stringValue],
-            null
-        )!;
+        return Factory(stringValue);
     }
 }

@@ -1,10 +1,28 @@
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using Newtonsoft.Json;
 
 namespace IIIF.Manifests.Serializer.Shared;
 
 public sealed class ObjectArrayJsonConverter : JsonConverter
 {
+    // objectType -> (elementType, compiled List<elementType> constructor), resolved once per closed
+    // generic array-property type instead of re-running GetGenericArguments/MakeGenericType/
+    // Activator.CreateInstance reflection on every deserialize.
+    private static readonly ConcurrentDictionary<Type, (Type ElementType, Func<IList> NewList)> ListFactoryCache = new();
+
+    private static (Type ElementType, Func<IList> NewList) GetListFactory(Type objectType)
+    {
+        return ListFactoryCache.GetOrAdd(objectType, static type =>
+        {
+            var elementType = type.GetGenericArguments()[0];
+            var listType = typeof(List<>).MakeGenericType(elementType);
+            var newList = Expression.Lambda<Func<IList>>(Expression.New(listType)).Compile();
+            return (elementType, newList);
+        });
+    }
+
     public override bool CanConvert(Type objectType)
     {
         return typeof(IEnumerable).IsAssignableFrom(objectType);
@@ -12,9 +30,8 @@ public sealed class ObjectArrayJsonConverter : JsonConverter
 
     public override object ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
     {
-        var elementType = objectType.GetGenericArguments()[0];
-        var listType = typeof(List<>).MakeGenericType(elementType);
-        var list = (IList)Activator.CreateInstance(listType)!;
+        var (elementType, newList) = GetListFactory(objectType);
+        var list = newList();
 
         // An explicit JSON null means "no values" - an empty collection, not a single null
         // element. Without this, downstream code that maps/derives from the collection (e.g. a

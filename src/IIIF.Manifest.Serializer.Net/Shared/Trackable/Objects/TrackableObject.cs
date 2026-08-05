@@ -103,7 +103,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
     /// <returns>The trackable object for fluent chaining.</returns>
     private static TTrackableObject SetElementValue<TValue>(
         TTrackableObject target,
-        Func<TValue, TValue?> valueFactory,
+        Func<TValue?, TValue?> valueFactory,
         bool isAdditional = false,
         [CallerMemberName] string? memberName = null
     )
@@ -114,7 +114,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
 
         if (valueFactory is null) throw new ArgumentNullException(nameof(valueFactory));
 
-        TValue currentValue = default!;
+        TValue? currentValue = default;
         if (target.ElementDescriptors.TryGetValue(memberName, out var elementDescriptor))
         {
             if (elementDescriptor.Value is TValue typedCurrentValue)
@@ -125,7 +125,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
             {
                 try
                 {
-                    currentValue = (TValue)elementDescriptor.Value;
+                    currentValue = (TValue?)elementDescriptor.Value;
                 }
                 catch (InvalidCastException)
                 {
@@ -136,7 +136,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
                     try
                     {
                         var token = elementDescriptor.Value as JToken
-                                    ?? JToken.FromObject(elementDescriptor.Value);
+                                    ?? JToken.FromObject(elementDescriptor.Value!);
                         currentValue = token.ToObject<TValue>()!;
                     }
                     catch (JsonException)
@@ -205,7 +205,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
             {
                 subscription.Detach(elementDescriptor.Value);
 
-                var newElementDescriptor = new ElementDescriptor(elementDescriptor, value);
+                IElementDescriptor newElementDescriptor = new ElementDescriptor(elementDescriptor.OriginalValue, value, elementDescriptor.IsAdditional);
                 var modificationType = elementDescriptor.ModificationType == ModificationType.Added
                     ? ModificationType.Added
                     : Equals(elementDescriptor.OriginalValue, value)
@@ -258,7 +258,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
             // Try to cast if possible, otherwise return default
             try
             {
-                return (TValue)elementDescriptor.Value;
+                return (TValue?)elementDescriptor.Value;
             }
             catch (InvalidCastException)
             {
@@ -270,7 +270,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
                 try
                 {
                     var token = elementDescriptor.Value as JToken
-                                ?? JToken.FromObject(elementDescriptor.Value);
+                                ?? JToken.FromObject(elementDescriptor.Value!);
                     var converted = token.ToObject<TValue>();
                     target.ElementDescriptors[memberName] = new ElementDescriptor(converted!, elementDescriptor.IsAdditional);
                     return converted;
@@ -289,7 +289,7 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
 
     private sealed class AdditionalPropertiesDictionary(TrackableObject<TTrackableObject> owner) : IDictionary<string, object?>
     {
-        private IEnumerable<KeyValuePair<string, ElementDescriptor>> AdditionalEntries =>
+        private IEnumerable<KeyValuePair<string, IElementDescriptor>> AdditionalEntries =>
             owner.ElementDescriptors.Where(kvp => kvp.Value.IsAdditional);
 
         public object? this[string key]
@@ -320,8 +320,8 @@ public partial class TrackableObject<TTrackableObject> : Core.TrackableObject, I
             return match.Value is not null;
         }
 
-        public ICollection<string> Keys => AdditionalEntries.Select(kvp => kvp.Key).ToList();
-        public ICollection<object?> Values => AdditionalEntries.Select(kvp => (object?)kvp.Value.Value).ToList();
+        public ICollection<string> Keys => [.. AdditionalEntries.Select(kvp => kvp.Key)];
+        public ICollection<object?> Values => [.. AdditionalEntries.Select(kvp => kvp.Value.Value)];
         public int Count => AdditionalEntries.Count();
         public bool IsReadOnly => false;
 

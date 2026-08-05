@@ -1,4 +1,3 @@
-using IIIF.Manifests.Serializer.Shared.Trackable.AdditionalProperties;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using IIIF.Manifests.Serializer.Shared.Trackable.Core;
@@ -11,13 +10,13 @@ public interface IAdditionalPropertiesSupport<TAdditionalPropertiesSupport>
     //Setters
 
     TAdditionalPropertiesSupport SetElementValue<TValue>(
-        Func<TValue, TValue?> valueFactory,
+        Func<TValue?, TValue?> valueFactory,
         [CallerMemberName] string? memberName = null
     );
 
     TAdditionalPropertiesSupport SetElementValue<TValue>(
         Expression<Func<TAdditionalPropertiesSupport, TValue>> expression,
-        Func<TValue, TValue?> valueFactory
+        Func<TValue?, TValue?> valueFactory
     );
 
     //Getters

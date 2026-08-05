@@ -1,221 +1,367 @@
 using System.Collections;
 using System.ComponentModel;
+using IIIF.Manifests.Serializer.ChangeTracking;
 using IIIF.Manifests.Serializer.Shared.Trackable.Core;
 using IIIF.Manifests.Serializer.Shared.Trackable.Notifications;
 
 namespace IIIF.Manifests.Serializer.Shared.Trackable.Collections;
 
-public interface ITrackableCollection
+public interface ITrackableCollection :
+    ICollection,
+    IList
 {
     event TrackableCollectionChangingEventHandler? CollectionChanging;
     event TrackableCollectionChangedEventHandler? CollectionChanged;
-
-    void Add(object item);
 }
 
-public partial class TrackableCollection<T> :
-    Core.TrackableObject,
+public interface ITrackableCollection<T> :
+    ITrackableCollection,
     ICollection<T>,
-    IReadOnlyCollection<T>,
-    ITrackableCollection
-{
-    private readonly List<ElementDescriptor<T>> _items = [];
-    private readonly ChangeNotificationSubscription _itemSubscription;
-    private int _activeCount;
+    IList<T>,
+    IReadOnlyCollection<T>;
 
-    public TrackableCollection()
+public partial class TrackableCollection :
+    Core.TrackableObject,
+    ITrackableCollection,
+    ICollection,
+    IList
+{
+    private readonly List<IElementDescriptor> _items = [];
+
+    /// <summary>
+    ///     Tombstones for pre-existing items removed this session, each paired with the index it held
+    ///     in the last-accepted baseline - resolved once at removal time via <see cref="ResolveOriginalIndex" />
+    ///     since the item itself is no longer in <see cref="_items" /> to read a position back from.
+    /// </summary>
+    private readonly List<(IElementDescriptor Descriptor, int OriginalIndex)> _removedItems = [];
+
+    /// <summary>Mirrors <see cref="_removedItems" />'s original indices for O(1) membership checks in <see cref="ResolveOriginalIndex" />.</summary>
+    private readonly HashSet<int> _removedOriginalIndices = [];
+
+    private readonly ChangeNotificationSubscription _itemSubscription;
+    private readonly Func<object?, IElementDescriptor> _descriptorFactory;
+    private readonly IEqualityComparer _equalityComparer;
+    private int _baselineCount;
+
+    public event TrackableCollectionChangingEventHandler? CollectionChanging;
+    public event TrackableCollectionChangedEventHandler? CollectionChanged;
+
+    bool ICollection.IsSynchronized => false;
+    object ICollection.SyncRoot => this;
+
+    bool IList.IsFixedSize => false;
+
+    object? IList.this[int index]
     {
+        get => GetAtIndex(index).Value;
+        set => throw new NotImplementedException();
+    }
+
+    public int Count => _items.Count;
+    public bool IsReadOnly => false;
+
+    internal TrackableCollection(Func<object?, IElementDescriptor> descriptorFactory, IEqualityComparer equalityComparer)
+    {
+        _descriptorFactory = descriptorFactory;
+        _equalityComparer = equalityComparer;
+
         _itemSubscription = new ChangeNotificationSubscription(
             OnNestedCollectionChanging, OnNestedCollectionChanged, OnItemPropertyChanging, OnItemPropertyChanged);
     }
 
-    public TrackableCollection(IEnumerable<T> items) : this()
+    internal TrackableCollection(Func<object?, IElementDescriptor> descriptorFactory, IEnumerable items, IEqualityComparer equalityComparer) : this(descriptorFactory, equalityComparer)
     {
         if (items is null) throw new ArgumentNullException(nameof(items));
 
         foreach (var item in items)
         {
-            SubscribeItem(item);
-            _items.Add(new ElementDescriptor<T>(item));
-            _activeCount++;
+            AddFast(item);
         }
+
+        _baselineCount = _items.Count;
     }
 
-    public event TrackableCollectionChangingEventHandler? CollectionChanging;
-    public event TrackableCollectionChangedEventHandler? CollectionChanged;
-
-    public int Count => _activeCount;
-    public bool IsReadOnly => false;
-
-    protected virtual void OnCollectionChanging(T item, CollectionChangeType changeType, int index)
+    public TrackableCollection() : this(item => new ElementDescriptor(item), EqualityComparer<object?>.Default)
     {
-        var args = new TrackableCollectionChangingEventArgs<T>(item, changeType, index);
+    }
+
+
+    protected virtual void OnCollectionChanging(object? item, CollectionChangeType changeType, int index)
+    {
+        var args = new TrackableCollectionChangingEventArgs(item, changeType, index);
         CollectionChanging?.Invoke(this, args);
     }
 
-    protected virtual void OnCollectionChanged(T item, CollectionChangeType changeType, int index)
+    protected virtual void OnCollectionChanged(object? item, CollectionChangeType changeType, int index)
     {
-        var args = new TrackableCollectionChangedEventArgs<T>(item, changeType, index);
+        var args = new TrackableCollectionChangedEventArgs(item, changeType, index);
         CollectionChanged?.Invoke(this, args);
     }
 
-    protected virtual void OnItemPropertyChanging(object sender, PropertyChangingEventArgs e)
+    private void OnNestedCollectionChanging(object? sender, TrackableCollectionChangingEventArgs e)
     {
-        var item = (T)sender;
-        var index = FindItemIndex(item);
-        OnCollectionChanging(item, CollectionChangeType.Changed, index);
+        OnCollectionChanging(sender, e.ChangeType, FindIndex(sender));
     }
 
-    protected virtual void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+    private void OnNestedCollectionChanged(object? sender, TrackableCollectionChangedEventArgs e)
     {
-        var item = (T)sender;
-        var index = FindItemIndex(item);
-        OnCollectionChanged(item, CollectionChangeType.Changed, index);
+        OnCollectionChanged(sender, e.ChangeType, FindIndex(sender));
     }
 
-    private void OnNestedCollectionChanging(object sender, TrackableCollectionChangingEventArgs e)
+    protected virtual void OnItemPropertyChanging(object? sender, PropertyChangingEventArgs e)
     {
-        var item = (T)sender;
-        OnCollectionChanging(item, e.ChangeType, FindItemIndex(item));
+        OnCollectionChanging(sender, CollectionChangeType.Changed, FindIndex(sender));
     }
 
-    private void OnNestedCollectionChanged(object sender, TrackableCollectionChangedEventArgs e)
+    protected virtual void OnItemPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        var item = (T)sender;
-        OnCollectionChanged(item, e.ChangeType, FindItemIndex(item));
+        OnCollectionChanged(sender, CollectionChangeType.Changed, FindIndex(sender));
     }
 
-    private void SubscribeItem(T item)
+    protected internal void SubscribeItem(object? item)
     {
         _itemSubscription.Attach(item);
     }
 
-    private void UnsubscribeItem(T item)
+    protected internal void UnsubscribeItem(object? item)
     {
         _itemSubscription.Detach(item);
     }
 
-    private int FindItemIndex(T item)
+    protected internal virtual IElementDescriptor GetAtIndex(int index)
     {
-        var visibleIndex = 0;
-        foreach (var descriptor in _items)
-        {
-            if (descriptor.ModificationType == ModificationType.Removed) continue;
-            if (EqualityComparer<T>.Default.Equals(descriptor.Value, item)) return visibleIndex;
-            visibleIndex++;
-        }
+        return _items[index];
+    }
+
+    protected internal virtual int FindIndex(object? item)
+    {
+        // Hand-written loop instead of List<T>.FindIndex(predicate) - this runs on every add/remove
+        // and on every property change of every item already in the collection (see
+        // OnItemPropertyChanging/Changed below), so avoiding a per-call closure allocation matters.
+        for (var i = 0; i < _items.Count; i++)
+            if (_equalityComparer.Equals(_items[i].Value, item))
+                return i;
 
         return -1;
     }
 
-    private int FindDescriptorIndex(T item)
+    protected internal virtual IElementDescriptor AddFast(object? item)
     {
-        return _items.FindIndex(x =>
-            x.ModificationType != ModificationType.Removed &&
-            EqualityComparer<T>.Default.Equals(x.Value, item));
+        SubscribeItem(item);
+        var descriptor = _descriptorFactory(item);
+        _items.Add(descriptor);
+        return descriptor;
     }
 
-    private bool TryFindForRemoval(T item, out int descriptorIndex, out int visibleIndex)
-    {
-        var scannedVisibleIndex = 0;
-        for (var i = 0; i < _items.Count; i++)
-        {
-            if (_items[i].ModificationType == ModificationType.Removed) continue;
-
-            if (EqualityComparer<T>.Default.Equals(_items[i].Value, item))
-            {
-                descriptorIndex = i;
-                visibleIndex = scannedVisibleIndex;
-                return true;
-            }
-
-            scannedVisibleIndex++;
-        }
-
-        descriptorIndex = -1;
-        visibleIndex = -1;
-        return false;
-    }
-
-    private int AddCore(T item)
+    protected internal virtual int AddCore(object? item)
     {
         if (IsReadOnly) throw new InvalidOperationException("Cannot add items to read-only collection");
 
         var index = Count;
         OnCollectionChanging(item, CollectionChangeType.Added, index);
-        SubscribeItem(item);
 
-        var descriptor = new ElementDescriptor<T>(item);
-        descriptor.SetModificationType(ModificationType.Added);
-        _items.Add(descriptor);
-        _activeCount++;
+        AddFast(item).SetModificationType(ModificationType.Added);
 
         OnCollectionChanged(item, CollectionChangeType.Added, index);
         return index;
     }
 
-    public int Add(T item)
+    int IList.Add(object? item) => AddCore(item!);
+
+    protected internal virtual bool ClearCore()
     {
-        return AddCore(item);
-    }
+        // Walk backwards by index rather than delegating to RemoveCore(item) per element - that
+        // would re-run FindIndex's linear scan for every item, turning a bulk clear into O(n^2).
+        for (var index = _items.Count - 1; index >= 0; index--)
+            RemoveAtCore(index);
 
-    void ITrackableCollection.Add(object item)
-    {
-        if (item is not T typedItem) throw new ArgumentException("Cannot add item to trackable collection", nameof(item));
-        AddCore(typedItem);
-    }
-
-    void ICollection<T>.Add(T item)
-    {
-        AddCore(item);
-    }
-
-    public bool Remove(T item)
-    {
-        if (IsReadOnly) return false;
-
-        if (!TryFindForRemoval(item, out var descriptorIndex, out var visibleIndex)) return false;
-
-        var descriptor = _items[descriptorIndex];
-        OnCollectionChanging(descriptor.Value, CollectionChangeType.Removed, visibleIndex);
-        UnsubscribeItem(descriptor.Value);
-
-        if (descriptor.ModificationType == ModificationType.Added)
-            _items.RemoveAt(descriptorIndex);
-        else
-            descriptor.SetModificationType(ModificationType.Removed);
-
-        _activeCount--;
-        OnCollectionChanged(descriptor.Value, CollectionChangeType.Removed, visibleIndex);
         return true;
     }
 
-    public void Clear()
+    void IList.Clear() => ClearCore();
+
+    bool IList.Contains(object? item) => FindIndex(item) >= 0;
+
+    int IList.IndexOf(object? item) => FindIndex(item);
+
+    protected internal virtual void InsertCore(int index, object? item) => _items.Insert(index, _descriptorFactory(item));
+
+    void IList.Insert(int index, object? item) => InsertCore(index, item);
+
+    protected internal virtual bool RemoveCore(object? item)
     {
-        foreach (var item in _items.Where(x => x.ModificationType != ModificationType.Removed).Select(x => x.Value).ToList()) Remove(item);
+        if (IsReadOnly) return false;
+
+        var index = FindIndex(item);
+        return index >= 0 && RemoveAtCore(index);
     }
 
-    public bool Contains(T item)
+    protected internal virtual bool RemoveAtCore(int index)
     {
-        return FindDescriptorIndex(item) >= 0;
+        var descriptor = GetAtIndex(index);
+        OnCollectionChanging(descriptor.Value, CollectionChangeType.Removed, index);
+        UnsubscribeItem(descriptor.Value);
+
+        if (descriptor.ModificationType != ModificationType.Added)
+        {
+            var liveRank = 0;
+            for (var i = 0; i < index; i++)
+                if (_items[i].ModificationType != ModificationType.Added) liveRank++;
+
+            descriptor.SetModificationType(ModificationType.Removed);
+            var originalIndex = ResolveOriginalIndex(liveRank);
+            _removedItems.Add((descriptor, originalIndex));
+            _removedOriginalIndices.Add(originalIndex);
+        }
+
+        _items.RemoveAt(index);
+
+        OnCollectionChanged(descriptor.Value, CollectionChangeType.Removed, index);
+        return true;
     }
 
-    public void CopyTo(T[] array, int arrayIndex)
+    /// <summary>
+    ///     Recovers the baseline index a pre-existing item held before any of this session's removals.
+    ///     A removed item's rank among the survivors still in <see cref="_items" /> (<paramref name="liveRank" />)
+    ///     isn't its true original index once earlier removals have pulled other items out from before
+    ///     it - so this walks the baseline's index space (<c>0.._baselineCount</c>), skips indices
+    ///     already claimed by earlier tombstones, and returns the <paramref name="liveRank" />-th one
+    ///     still unclaimed.
+    /// </summary>
+    private int ResolveOriginalIndex(int liveRank)
     {
-        _items.Where(x => x.ModificationType != ModificationType.Removed).Select(x => x.Value).ToArray().CopyTo(array, arrayIndex);
+        var seen = 0;
+        for (var candidate = 0; candidate < _baselineCount; candidate++)
+        {
+            if (_removedOriginalIndices.Contains(candidate)) continue;
+            if (seen == liveRank) return candidate;
+            seen++;
+        }
+
+        throw new InvalidOperationException("Trackable collection is in an inconsistent state: could not resolve the original index of a removed item.");
     }
 
-    public IEnumerator<T> GetEnumerator()
+    void IList.Remove(object? item) => RemoveCore(item);
+
+    void IList.RemoveAt(int index) => RemoveAtCore(index);
+
+    protected internal virtual void CopyToCore(Array array, int arrayIndex)
     {
-        return _items
-            .Where(x => x.ModificationType != ModificationType.Removed)
-            .Select(x => x.Value)
-            .GetEnumerator();
+        for (var i = 0; i < _items.Count; i++)
+            array.SetValue(_items[i].Value, arrayIndex + i);
+    }
+
+    void ICollection.CopyTo(Array array, int arrayIndex) => CopyToCore(array, arrayIndex);
+
+    protected internal virtual IEnumerator<T> GetEnumerator<T>()
+    {
+        foreach (var descriptor in _items)
+            if (descriptor.Value is T typedValue)
+                yield return typedValue;
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return GetEnumerator();
+        return GetEnumerator<object>();
+    }
+}
+
+public partial class TrackableCollection<T> :
+    Core.TrackableObject,
+    ITrackableCollection<T>,
+    ICollection,
+    ICollection<T>,
+    IList,
+    IList<T>,
+    IReadOnlyCollection<T>
+{
+    private static readonly Func<object?, IElementDescriptor> DescriptorFactory = item => new ElementDescriptor<T>(TypedItem(item));
+
+    private readonly TrackableCollection _trackableCollection;
+
+    public event TrackableCollectionChangingEventHandler? CollectionChanging
+    {
+        add => _trackableCollection.CollectionChanging += value;
+        remove => _trackableCollection.CollectionChanging -= value;
     }
 
+    public event TrackableCollectionChangedEventHandler? CollectionChanged
+    {
+        add => _trackableCollection.CollectionChanged += value;
+        remove => _trackableCollection.CollectionChanged -= value;
+    }
+
+    // Change-tracking state lives on the wrapped _trackableCollection, not on this wrapper (which
+    // has no ElementDescriptors of its own) - delegate rather than let the TrackableObject base
+    // walk an always-empty dictionary here.
+    internal override bool HasChangesCore(HashSet<object> visited) => _trackableCollection.HasChangesCore(visited);
+
+    internal override void GetChangesCore(List<IiifChangeEntry> entries, HashSet<object> visited, DateTimeOffset changedAtUtc)
+        => _trackableCollection.GetChangesCore(entries, visited, changedAtUtc);
+
+    internal override void ClearChangesCore(HashSet<object> visited) => _trackableCollection.ClearChangesCore(visited);
+
+    bool ICollection.IsSynchronized => ((ICollection)_trackableCollection).IsSynchronized;
+    object ICollection.SyncRoot => ((ICollection)_trackableCollection).SyncRoot;
+
+    bool IList.IsFixedSize => ((IList)_trackableCollection).IsFixedSize;
+
+    object? IList.this[int index]
+    {
+        get => _trackableCollection.GetAtIndex(index).Value;
+        set => throw new NotImplementedException();
+    }
+
+    T IList<T>.this[int index]
+    {
+        get => TypedItem(_trackableCollection.GetAtIndex(index).Value);
+        set => throw new NotImplementedException();
+    }
+
+    public int Count => _trackableCollection.Count;
+    public bool IsReadOnly => _trackableCollection.IsReadOnly;
+
+    public TrackableCollection()
+    {
+        _trackableCollection = new TrackableCollection(DescriptorFactory, EqualityComparer<T>.Default);
+    }
+
+    public TrackableCollection(IEnumerable<T> items)
+    {
+        _trackableCollection = new TrackableCollection(DescriptorFactory, items, EqualityComparer<T>.Default);
+    }
+
+    private static T TypedItem(object? item)
+    {
+        return item is not T typedItem
+            ? throw new ArgumentException("Cannot add item to trackable collection", nameof(item))
+            : typedItem;
+    }
+
+    int IList.Add(object? item) => _trackableCollection.AddCore(TypedItem(item));
+    void ICollection<T>.Add(T item) => _trackableCollection.AddCore(item);
+
+    void IList.Clear() => _trackableCollection.ClearCore();
+    void ICollection<T>.Clear() => _trackableCollection.ClearCore();
+
+    bool IList.Contains(object? item) => _trackableCollection.FindIndex(TypedItem(item)) >= 0;
+    bool ICollection<T>.Contains(T item) => _trackableCollection.FindIndex(item) >= 0;
+
+    int IList.IndexOf(object? item) => _trackableCollection.FindIndex(item);
+    int IList<T>.IndexOf(T item) => _trackableCollection.FindIndex(item);
+
+    void IList.Insert(int index, object? item) => _trackableCollection.InsertCore(index, TypedItem(item));
+    void IList<T>.Insert(int index, T item) => _trackableCollection.InsertCore(index, item);
+
+    void IList.Remove(object? item) => _trackableCollection.RemoveCore(TypedItem(item));
+    bool ICollection<T>.Remove(T item) => _trackableCollection.RemoveCore(item);
+
+    void IList.RemoveAt(int index) => _trackableCollection.RemoveAtCore(index);
+    void IList<T>.RemoveAt(int index) => _trackableCollection.RemoveAtCore(index);
+
+    void ICollection.CopyTo(Array array, int arrayIndex) => _trackableCollection.CopyToCore(array, arrayIndex);
+    void ICollection<T>.CopyTo(T[] array, int arrayIndex) => _trackableCollection.CopyToCore(array, arrayIndex);
+
+    IEnumerator IEnumerable.GetEnumerator() => _trackableCollection.GetEnumerator<object>();
+    IEnumerator<T> IEnumerable<T>.GetEnumerator() => _trackableCollection.GetEnumerator<T>();
 }

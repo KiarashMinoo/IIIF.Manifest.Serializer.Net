@@ -98,7 +98,7 @@ public partial class TrackableObject : IIiifChangeTrackable
         }
     }
 
-    private static bool ItemCollectionDescriptorHasChanges(ElementDescriptor descriptor, HashSet<object> visited)
+    private static bool ItemCollectionDescriptorHasChanges(IElementDescriptor descriptor, HashSet<object> visited)
     {
         switch (descriptor.ModificationType)
         {
@@ -106,12 +106,12 @@ public partial class TrackableObject : IIiifChangeTrackable
             case ModificationType.Removed:
                 return true;
             case ModificationType.Changed:
-                {
-                    var original = ToObjectList(descriptor.OriginalValue);
-                    var current = ToObjectList(descriptor.Value);
-                    if (!HaveSameReferences(original, current)) return true;
-                    return current.Any(item => HasNestedChanges(item, visited));
-                }
+            {
+                var original = ToObjectList(descriptor.OriginalValue);
+                var current = ToObjectList(descriptor.Value);
+                if (!HaveSameReferences(original, current)) return true;
+                return current.Any(item => HasNestedChanges(item, visited));
+            }
             default:
                 return HasNestedChanges(descriptor.Value, visited);
         }
@@ -119,7 +119,7 @@ public partial class TrackableObject : IIiifChangeTrackable
 
     private static void CollectItemCollectionDescriptorChanges(
         string propertyName,
-        ElementDescriptor descriptor,
+        IElementDescriptor descriptor,
         List<IiifChangeEntry> entries,
         HashSet<object> visited,
         DateTimeOffset changedAtUtc)
@@ -185,25 +185,26 @@ public partial class TrackableObject : IIiifChangeTrackable
         switch (value)
         {
             case TrackableObject trackable:
-                {
-                    var childEntries = new List<IiifChangeEntry>();
-                    trackable.GetChangesCore(childEntries, visited, changedAtUtc);
-                    AddPrefixedEntries(parentPath, null, childEntries, entries);
-                    return;
-                }
+            {
+                var childEntries = new List<IiifChangeEntry>();
+                trackable.GetChangesCore(childEntries, visited, changedAtUtc);
+                AddPrefixedEntries(parentPath, null, childEntries, entries);
+                return;
+            }
             case IIiifChangeTrackable externalTrackable:
                 AddPrefixedEntries(parentPath, null, externalTrackable.GetChanges(), entries);
                 return;
             case IEnumerable enumerable and not string:
+            {
+                var index = 0;
+                foreach (var item in enumerable)
                 {
-                    var index = 0;
-                    foreach (var item in enumerable)
-                    {
-                        CollectNestedChanges(item, $"{parentPath}[{index}]", entries, visited, changedAtUtc);
-                        index++;
-                    }
-                    return;
+                    CollectNestedChanges(item, $"{parentPath}[{index}]", entries, visited, changedAtUtc);
+                    index++;
                 }
+
+                return;
+            }
         }
     }
 

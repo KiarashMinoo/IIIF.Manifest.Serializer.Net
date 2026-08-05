@@ -9,7 +9,7 @@ public partial class TrackableObject<TTrackableObject> : IAdditionalPropertiesSu
     where TTrackableObject : TrackableObject<TTrackableObject>
 {
     TTrackableObject IAdditionalPropertiesSupport<TTrackableObject>.SetElementValue<TValue>(
-        Func<TValue, TValue?> valueFactory,
+        Func<TValue?, TValue?> valueFactory,
         string? memberName
     ) where TValue : default
     {
@@ -18,7 +18,7 @@ public partial class TrackableObject<TTrackableObject> : IAdditionalPropertiesSu
 
     TTrackableObject IAdditionalPropertiesSupport<TTrackableObject>.SetElementValue<TValue>(
         Expression<Func<TTrackableObject, TValue>> expression,
-        Func<TValue, TValue?> valueFactory
+        Func<TValue?, TValue?> valueFactory
     ) where TValue : default
     {
         return SetAdditionalProperty(valueFactory, GetMemberName(expression));
@@ -41,7 +41,7 @@ public partial class TrackableObject<TTrackableObject> : IAdditionalPropertiesSu
     }
     //Setters
 
-    private TTrackableObject SetAdditionalProperty<TValue>(Func<TValue, TValue?> valueFactory, [CallerMemberName] string? memberName = null)
+    private TTrackableObject SetAdditionalProperty<TValue>(Func<TValue?, TValue?> valueFactory, [CallerMemberName] string? memberName = null)
     {
         return SetElementValue((TTrackableObject)this, valueFactory, true, memberName);
     }
