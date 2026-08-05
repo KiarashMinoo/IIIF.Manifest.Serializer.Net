@@ -248,11 +248,13 @@ public class BaseNodeReshapeTests
     [InlineData(nameof(BaseNode<Manifest>.Within))]
     [InlineData(nameof(BaseNode<Manifest>.Related))]
     [InlineData(nameof(BaseNode<Manifest>.Description))]
-    public void LegacyGetters_Should_NotBeObsolete(string propertyName)
+    public void LegacyGetters_Should_BeMarkedObsoleteAsWarnings(string propertyName)
     {
         var property = typeof(BaseNode<Manifest>).GetProperty(propertyName);
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
+        var obsolete = property!.GetCustomAttribute<ObsoleteAttribute>();
+        obsolete.Should().NotBeNull();
+        obsolete!.IsError.Should().BeFalse("legacy getters remain readable - deprecated with a warning, not a compile-time error");
     }
 }

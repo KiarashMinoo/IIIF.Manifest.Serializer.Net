@@ -248,12 +248,14 @@ public class CollectionReshapeTests
     [InlineData(nameof(Collection.Collections))]
     [InlineData(nameof(Collection.Manifests))]
     [InlineData(nameof(Collection.Members))]
-    public void LegacyGetters_Should_NotBeObsolete(string propertyName)
+    public void LegacyGetters_Should_BeMarkedObsoleteAsWarnings(string propertyName)
     {
         var property = typeof(Collection).GetProperty(propertyName);
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
+        var obsolete = property!.GetCustomAttribute<ObsoleteAttribute>();
+        obsolete.Should().NotBeNull();
+        obsolete!.IsError.Should().BeFalse("legacy getters remain readable - deprecated with a warning, not a compile-time error");
     }
 
     [Fact]

@@ -59,6 +59,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     ///     backing store. Prefer <see cref="AddAnnotation" /> for new code.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(ImagesJName)]
     public IReadOnlyCollection<Image> Images
     {
@@ -72,6 +73,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     ///     backing store. Prefer <see cref="AddAnnotation" /> for new code.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(nameof(Audios))]
     public IReadOnlyCollection<Audio> Audios
     {
@@ -85,6 +87,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     ///     backing store. Prefer <see cref="AddAnnotation" /> for new code.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(nameof(Videos))]
     public IReadOnlyCollection<Video> Videos
     {
@@ -107,6 +110,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     ///     Legacy (2.x) view of external annotation list references. Computed from <see cref="Annotations" />.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "annotations")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Annotations instead.")]
     [JsonProperty(OtherContentsJName)]
     public IReadOnlyCollection<OtherContent> OtherContents
     {

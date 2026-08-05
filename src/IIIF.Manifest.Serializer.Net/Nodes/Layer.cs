@@ -15,6 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </remarks>
 [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
     ReplacedBy = "AnnotationCollection", Notes = "Layers removed in API 3.0")]
+[Obsolete("Deprecated in IIIF Presentation API 3.0. Use AnnotationCollection instead.")]
 public sealed class Layer(string id) : BaseNode<Layer>(id, "sc:Layer")
 {
     public const string OtherContentJName = "otherContent";

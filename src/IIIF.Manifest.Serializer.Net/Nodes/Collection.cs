@@ -52,6 +52,7 @@ public sealed class Collection : BaseNode<Collection>, IViewingDirectionSupport<
     ///     <see cref="BaseNode{TBaseNode}.Items" /> (the 3.0-native storage).
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(CollectionsJName)]
     public IReadOnlyCollection<Collection> Collections
     {
@@ -65,6 +66,7 @@ public sealed class Collection : BaseNode<Collection>, IViewingDirectionSupport<
     ///     <see cref="Manifest" /> stub (2.x only ever carried the bare id, never a full object).
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(ManifestsJName)]
     public IReadOnlyCollection<string> Manifests
     {
@@ -77,6 +79,7 @@ public sealed class Collection : BaseNode<Collection>, IViewingDirectionSupport<
     ///     analogue to 3.0 <c>items</c>. Computed directly from <see cref="BaseNode{TBaseNode}.Items" />.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(MembersJName)]
     public IReadOnlyCollection<object> Members
     {

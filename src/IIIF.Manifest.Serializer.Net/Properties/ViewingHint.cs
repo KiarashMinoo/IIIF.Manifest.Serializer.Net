@@ -13,6 +13,7 @@ namespace IIIF.Manifests.Serializer.Properties;
 /// </remarks>
 [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
     ReplacedBy = "behavior", Notes = "viewingHint renamed to behavior in API 3.0")]
+[Obsolete("Deprecated in IIIF Presentation API 3.0. Replaced by behavior.")]
 [JsonConverter(typeof(ValuableItemJsonConverter<ViewingHint>))]
 public sealed class ViewingHint(string value) : ValuableItem<ViewingHint>(value)
 {

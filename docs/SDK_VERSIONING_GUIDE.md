@@ -1878,4 +1878,46 @@ above changes.
 No behavior changes were made to the public API surface; full test suite (557 unit tests + 8
 architecture tests) passes unchanged, 0 build warnings/errors.
 
-## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage, round 16 validation layer plus release-hardening (package smoke test, release checklist), round 17 EF Core-style object-graph change tracking plus changed-only manifest/delta output, and round 18 a Trackable-infrastructure audit fixing a latent event-subscription leak, four hot-path reflection/scan optimizations, dead-code removal, and an `IAdditionalPropertiesSupport<T>` interface cleanup.
+## Round 19: tag every deprecated member with [Obsolete], including legacy getters
+
+Scope (ad hoc request): reverse the "legacy getters stay untagged" half of mandate item 3 /
+Conventions-to-follow (originally set in Round 8/9). The user asked for **every** member carrying
+`[PresentationAPI(IsDeprecated = true, ...)]` to also carry a matching `[Obsolete("...")]` at
+warning level - not just the setters/mutators that already had one. Flagged the tension with the
+documented "reading old-shaped data must never produce compiler noise" rule before making the
+change; the user confirmed they want the broader tagging anyway.
+
+Changed: added `[Obsolete("Deprecated in IIIF Presentation API 3.0. Use <Replacement> instead.")]`
+(wording tailored per member, mirroring each `ReplacedBy`) to every previously-untagged legacy
+getter and legacy-only type across `Shared/BaseNode.cs` (`Description`, `Attribution`, `License`,
+`Within`, `Related`), `Nodes/Structure.cs` (`Canvases`, `Ranges`, `Members`),
+`Nodes/Sequence.cs` (the `Sequence` class itself, plus `Canvases`/`StartCanvas`),
+`Nodes/Manifest.cs` (`Sequences`, `AdditionalSequences`), `Nodes/Canvas.cs` (`Images`, `Audios`,
+`Videos`, `OtherContents`), `Nodes/Collection.cs` (`Collections`, `Manifests`, `Members`),
+`Nodes/Layer.cs` (the `Layer` class), `Nodes/AnnotationList.cs` (the `AnnotationList` class), and
+`Properties/ViewingHint.cs` (the `ViewingHint` class). Every legacy setter/mutator already had a
+matching `[Obsolete]` from Round 8/9, so those were left untouched. `CLAUDE.md`'s mandate item 3
+and "Conventions to follow" were updated to describe the new, symmetric rule instead of the old
+getter exemption.
+
+Consequence worth knowing: reading a legacy-shaped document through any of these getters (or
+constructing/reading a `Sequence`, `Layer`, `AnnotationList`, or `ViewingHint`) now produces a
+`CS0618` warning at the call site - the exact noise mandate item 3 originally set out to avoid.
+Internal call sites *inside* the same now-obsolete member/type (e.g. `ViewingHint`'s own static
+factory properties, or `AddDescription` setting `Description` from within `BaseNode<T>`) stay
+warning-free because the C# compiler suppresses `CS0618` when the referencing context is itself
+`[Obsolete]`; call sites in the test suite that exercise these legacy shapes directly do surface
+the warning (verified: 0 warnings in `src/`, all ~76 `CS0618` warnings land in
+`tests/IIIF.Manifest.Serializer.Net.Tests`, none in the Cookbook/Examples projects since those
+already exercise the 3.0-native API).
+
+Tests: the 5 `LegacyGetters_Should_NotBeObsolete`/`*Getter_Should_NotBeObsolete` theories (one per
+`BaseNodeReshapeTests.cs`/`StructureReshapeTests.cs`/`ManifestSequenceReshapeTests.cs`/
+`CanvasReshapeTests.cs`/`CollectionReshapeTests.cs`) were renamed to
+`LegacyGetters_Should_BeMarkedObsoleteAsWarnings`/`*Getter_Should_BeMarkedObsoleteAsWarning` and
+their assertions flipped from `.Should().BeNull()` to asserting the attribute is present with
+`IsError == false` - the same shape Round 9 already used for the mutator-side theories. Full suite:
+**557 unit tests + 8 architecture tests, all passing**; build succeeds with 0 errors (warnings are
+expected and confined to the test project, per above).
+
+## Status: all 24 (rounds 1-2) + 10 (round 3) milestones complete, plus the round 4 structural refactor, round 5 System.Text.Json interop, round 6 version-detection hardening, round 7 legacy-import normalization audit, round 8 obsolete-member IIIFVersionAttribute decoration, round 9 legacy-mutator severity downgrade (error to warning), round 10 versioned-writer audit with the behavior-to-viewingHint downgrade fix, round 11 auxiliary API surface audit with the Image API info.json read gap fixed, round 12 extension package hardening with the extension-data-dropped-by-IiifSerializer bug fixed, round 13 cookbook coverage inventory confirming 100% official recipe parity with a new coverage matrix, round 14 demo scenarios with the embedded-service-dropped-by-IiifSerializer bug fixed, round 15 upstream standards/ecosystem coverage matrix confirming no missing API-family coverage, round 16 validation layer plus release-hardening (package smoke test, release checklist), round 17 EF Core-style object-graph change tracking plus changed-only manifest/delta output, round 18 a Trackable-infrastructure audit fixing a latent event-subscription leak, four hot-path reflection/scan optimizations, dead-code removal, and an `IAdditionalPropertiesSupport<T>` interface cleanup, and round 19 extending `[Obsolete]` warnings to every deprecated legacy getter and legacy-only type, not just mutators.

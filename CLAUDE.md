@@ -23,8 +23,11 @@ was to reshape it into a **version-aware** SDK:
 3. **Legacy properties become computed, read-only views.** The internal storage is 3.0-native
    (`Items`, `Behavior`, `Rights`, `RequiredStatement`, `Summary`, `PartOf`, ...). Old 2.x-only
    concepts (`Sequences`, `Canvas.Images`, `ViewingHint`, `License`, `Attribution`, `Within`, ...) are
-   *getters only* - synthesized on demand from the same 3.0-native storage, never tagged
-   `[Obsolete]` (reading old-shaped data must never produce compiler noise).
+   *getters only* - synthesized on demand from the same 3.0-native storage. As of Round 19, every
+   one of these getters (and every legacy-only type, e.g. `Sequence`, `Layer`, `AnnotationList`,
+   `ViewingHint`) also carries `[Obsolete("...")]` at warning level, mirroring its
+   `[PresentationAPI(IsDeprecated = true, ...)]` tag - see Round 19 in the versioning guide for why
+   this reverses the earlier "getters stay untagged" rule.
 4. **Legacy mutators still work, but nudge callers toward the current API.** Every setter/adder
    tied to a legacy shape (`AddSequence`, `AddImage`, `SetLicense`, `AddAttribution`, ...) is
    `[Obsolete("...")]` at warning level (no `error: true`) - callers see a compiler warning naming
@@ -108,10 +111,11 @@ rounds to the end; don't rewrite history that's already there.
   `service`) and `BaseNode<T>` (label/summary/metadata/thumbnail/rendering/homepage/seeAlso/rights/
   requiredStatement/partOf/behavior/provider - shared by every top-level resource).
 - **New 3.0-native property**: back any legacy 2.x equivalent with a *computed, read-only* view -
-  never the other way around. Legacy getters stay untagged; legacy setters/mutators get
-  `[Obsolete("...")]` at warning level (no `error: true`) plus a `[PresentationAPI(...,
-  IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "...")]` mirroring the sibling
-  getter's tag.
+  never the other way around. Every legacy member - getter, setter/mutator, or a whole legacy-only
+  type - carries both a `[PresentationAPI(..., IsDeprecated = true, DeprecatedInVersion = "3.0",
+  ReplacedBy = "...")]` tag and a matching `[Obsolete("...")]` at warning level (no `error: true`),
+  so reading or writing through the legacy shape surfaces a compiler warning either way (see Round
+  19 in the versioning guide).
 - **`[JsonIgnore]` new 3.0-only storage properties** that shouldn't leak into legacy 2.x JSON via
   plain `JsonConvert` reflection (this bit the project twice already - see the versioning guide's
   "Known follow-up" notes).

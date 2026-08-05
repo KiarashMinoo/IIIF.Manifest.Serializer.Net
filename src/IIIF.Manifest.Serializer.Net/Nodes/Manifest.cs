@@ -80,6 +80,7 @@ public sealed partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupp
     ///     <see cref="AdditionalSequences" /> rather than silently dropped.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(SequencesJName)]
     public IReadOnlyCollection<Sequence> Sequences
     {
@@ -95,6 +96,7 @@ public sealed partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupp
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
         Notes = "No 3.0 equivalent. Only the first sequence's canvases become Items; the rest are preserved here, not dropped.")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. No 3.0 equivalent; preserved only for lossless round-tripping of multi-sequence legacy documents.")]
     [JsonIgnore]
     public IReadOnlyCollection<Sequence> AdditionalSequences
     {

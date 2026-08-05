@@ -75,6 +75,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     ///     unlike <see cref="Attribution" />/<see cref="RequiredStatement" /> which also restructured.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "summary")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Summary instead.")]
     [JsonProperty(DescriptionJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Description> Description
@@ -107,6 +108,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     ///     only the value entries.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "requiredStatement")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use RequiredStatement instead.")]
     [JsonProperty(AttributionJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Attribution> Attribution
@@ -153,6 +155,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     ///     3.0-native storage) — rename only, per the confirmed spec mapping.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "rights")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Rights instead.")]
     [JsonProperty(LicenseJName)]
     public License? License
     {
@@ -196,6 +199,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     ///     converting a legacy value into <see cref="PartOf" />.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "partOf")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use PartOf instead.")]
     [JsonProperty(WithinJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Within> Within
@@ -274,6 +278,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     ///     Homepage collection with a single entry, matching related's historically singular shape.
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "homepage")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Homepage instead.")]
     [JsonProperty(RelatedJName)]
     public string? Related
     {

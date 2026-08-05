@@ -216,13 +216,14 @@ public class CanvasReshapeTests
     }
 
     [Fact]
-    public void ImagesGetter_Should_NotBeObsolete()
+    public void ImagesGetter_Should_BeMarkedObsoleteAsWarning()
     {
         var property = typeof(Canvas).GetProperty(nameof(Canvas.Images));
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<ObsoleteAttribute>().Should()
-            .BeNull("legacy getters must stay warning-free so reading a parsed legacy document produces no compiler noise");
+        var obsolete = property!.GetCustomAttribute<ObsoleteAttribute>();
+        obsolete.Should().NotBeNull();
+        obsolete!.IsError.Should().BeFalse("legacy getters remain readable - deprecated with a warning, not a compile-time error");
     }
 
     [Theory]

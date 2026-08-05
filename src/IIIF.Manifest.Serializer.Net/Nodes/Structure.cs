@@ -37,6 +37,7 @@ public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), 
     ///     minimal <see cref="CanvasReference" /> (2.x only ever carried the bare id).
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(CanvasesJName)]
     public IReadOnlyCollection<string> Canvases
     {
@@ -51,6 +52,7 @@ public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), 
     ///     <see cref="Structure" /> added via the 3.0-preferred API.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(RangesJName)]
     public IReadOnlyCollection<string> Ranges
     {
@@ -70,6 +72,7 @@ public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), 
     ///     <see cref="BaseNode{TBaseNode}.Items" />.
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
     [JsonProperty(MembersJName)]
     public IReadOnlyCollection<object> Members
     {

@@ -16,6 +16,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </remarks>
 [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
     ReplacedBy = "AnnotationPage", Notes = "AnnotationLists replaced by AnnotationPage in API 3.0")]
+[Obsolete("Deprecated in IIIF Presentation API 3.0. Use AnnotationPage instead.")]
 public sealed class AnnotationList(string id) : BaseNode<AnnotationList>(id, "sc:AnnotationList")
 {
     public const string ResourcesJName = "resources";

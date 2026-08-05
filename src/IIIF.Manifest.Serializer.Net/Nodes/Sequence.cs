@@ -15,6 +15,7 @@ namespace IIIF.Manifests.Serializer.Nodes;
 /// </remarks>
 [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
     ReplacedBy = "Manifest.items", Notes = "Sequences removed in API 3.0; canvases moved to items array")]
+[Obsolete("Deprecated in IIIF Presentation API 3.0. Use Manifest.Items instead.")]
 public sealed class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequence>
 {
     public const string StartCanvasJName = "startCanvas";
@@ -30,6 +31,7 @@ public sealed class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequ
     }
 
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Manifest.Items instead.")]
     [JsonProperty(CanvasesJName)]
     public IReadOnlyCollection<Canvas> Canvases
     {
@@ -38,6 +40,7 @@ public sealed class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequ
     }
 
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "start")]
+    [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Manifest.Start instead.")]
     [JsonProperty(StartCanvasJName)]
     public StartCanvas? StartCanvas
     {

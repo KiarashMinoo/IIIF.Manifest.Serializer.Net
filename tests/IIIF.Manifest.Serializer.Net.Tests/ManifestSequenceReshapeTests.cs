@@ -216,12 +216,14 @@ public class ManifestSequenceReshapeTests
     }
 
     [Fact]
-    public void SequencesGetter_Should_NotBeObsolete()
+    public void SequencesGetter_Should_BeMarkedObsoleteAsWarning()
     {
         var property = typeof(Manifest).GetProperty(nameof(Manifest.Sequences));
 
         property.Should().NotBeNull();
-        property!.GetCustomAttribute<ObsoleteAttribute>().Should().BeNull();
+        var obsolete = property!.GetCustomAttribute<ObsoleteAttribute>();
+        obsolete.Should().NotBeNull();
+        obsolete!.IsError.Should().BeFalse("legacy getters remain readable - deprecated with a warning, not a compile-time error");
     }
 
     [Fact]
