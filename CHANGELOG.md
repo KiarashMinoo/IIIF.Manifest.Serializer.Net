@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.15] — 2026-08-05
+
+### 🐛 Bug Fixes
+
+- IIIF.Manifest.Serializer.Net: split collection tombstones from live items, fix change-tracking bugs, cut hot-path allocations `(368a178)` — Kiarash Minoo
+
 ## [3.0.14] — 2026-08-04
 
 ### 🚀 Features
