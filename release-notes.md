@@ -1,5 +1,5 @@
-## [3.0.15] — 2026-08-05
+## [3.0.16] — 2026-08-05
 
-### 🐛 Bug Fixes
+### 🚀 Features
 
-- IIIF.Manifest.Serializer.Net: split collection tombstones from live items, fix change-tracking bugs, cut hot-path allocations `(368a178)` — Kiarash Minoo
+- IIIF.Manifest.Serializer.Net: mark every deprecated legacy member [Obsolete], not just mutators `(d632196)` — Kiarash Minoo

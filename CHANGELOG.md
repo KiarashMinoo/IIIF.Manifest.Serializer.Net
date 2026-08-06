@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.16] — 2026-08-05
+
+### 🚀 Features
+
+- IIIF.Manifest.Serializer.Net: mark every deprecated legacy member [Obsolete], not just mutators `(d632196)` — Kiarash Minoo
+
 ## [3.0.15] — 2026-08-05
 
 ### 🐛 Bug Fixes
