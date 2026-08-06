@@ -1,5 +1,6 @@
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Shared;
+using IIIF.Manifests.Serializer.Shared.Trackable.Collections;
 using IIIF.Manifests.Serializer.Shared.Trackable.Objects;
 using Newtonsoft.Json;
 
@@ -38,7 +39,9 @@ public sealed class GeoreferenceAnnotation : TrackableObject<GeoreferenceAnnotat
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<string> Context
     {
-        get => GetElementValue(x => x.Context) ?? [DefaultGeoreferenceContext, DefaultPresentationContext];
+        // See BaseItem.Context: bypasses the `x => x.Context` expression overload (never null) since
+        // this property's unset default is the two-element context list, not [].
+        get => GetElementValue<IReadOnlyCollection<string>>(out _, nameof(Context)) ?? new TrackableCollection<string>([DefaultGeoreferenceContext, DefaultPresentationContext]);
         private set => SetElementValue(value);
     }
 

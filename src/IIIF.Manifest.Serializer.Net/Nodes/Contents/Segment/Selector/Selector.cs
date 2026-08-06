@@ -18,7 +18,7 @@ public sealed class Selector(string id, string type) : BaseItem<Selector>(id, ty
     [JsonProperty(RegionJName)]
     public IReadOnlyCollection<int> Region
     {
-        get => GetElementValue(x => x.Region) ?? [];
+        get => GetElementValue(x => x.Region);
         private set => SetElementValue(value);
     }
 

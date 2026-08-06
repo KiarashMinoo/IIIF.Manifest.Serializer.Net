@@ -42,7 +42,7 @@ public sealed class SearchHitAnnotationPage : TrackableObject<SearchHitAnnotatio
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<SearchHitAnnotation> Items
     {
-        get => GetElementValue(x => x.Items) ?? [];
+        get => GetElementValue(x => x.Items);
         private set => SetElementValue(value);
     }
 

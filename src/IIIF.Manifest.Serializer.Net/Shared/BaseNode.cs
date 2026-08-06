@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
@@ -66,7 +67,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 
@@ -76,6 +77,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "summary")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Summary instead.")]
+    [NotMapped]
     [JsonProperty(DescriptionJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Description> Description
@@ -88,7 +90,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonIgnore]
     public IReadOnlyCollection<Description> Summary
     {
-        get => GetElementValue(x => x.Summary) ?? [];
+        get => GetElementValue(x => x.Summary);
         private set => SetElementValue(value);
     }
 
@@ -97,7 +99,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Metadata> Metadata
     {
-        get => GetElementValue(x => x.Metadata) ?? [];
+        get => GetElementValue(x => x.Metadata);
         private set => SetElementValue(value);
     }
 
@@ -109,6 +111,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "requiredStatement")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use RequiredStatement instead.")]
+    [NotMapped]
     [JsonProperty(AttributionJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Attribution> Attribution
@@ -156,6 +159,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "rights")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Rights instead.")]
+    [NotMapped]
     [JsonProperty(LicenseJName)]
     public License? License
     {
@@ -177,6 +181,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
 
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "behavior")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Replaced by behavior.")]
+    [NotMapped]
     [JsonProperty(ViewingHintJName)]
     public ViewingHint? ViewingHint
     {
@@ -189,7 +194,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Rendering> Rendering
     {
-        get => GetElementValue(x => x.Rendering) ?? [];
+        get => GetElementValue(x => x.Rendering);
         private set => SetElementValue(value);
     }
 
@@ -200,6 +205,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "partOf")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use PartOf instead.")]
+    [NotMapped]
     [JsonProperty(WithinJName)]
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Within> Within
@@ -217,7 +223,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonIgnore]
     public IReadOnlyCollection<PartOf> PartOf
     {
-        get => GetElementValue(x => x.PartOf) ?? [];
+        get => GetElementValue(x => x.PartOf);
         private set => SetElementValue(value);
     }
 
@@ -226,7 +232,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<SeeAlso> SeeAlso
     {
-        get => GetElementValue(x => x.SeeAlso) ?? [];
+        get => GetElementValue(x => x.SeeAlso);
         private set => SetElementValue(value);
     }
 
@@ -235,7 +241,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Homepage> Homepage
     {
-        get => GetElementValue(x => x.Homepage) ?? [];
+        get => GetElementValue(x => x.Homepage);
         private set => SetElementValue(value);
     }
 
@@ -244,7 +250,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Provider> Provider
     {
-        get => GetElementValue(x => x.Provider) ?? [];
+        get => GetElementValue(x => x.Provider);
         private set => SetElementValue(value);
     }
 
@@ -267,7 +273,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonIgnore]
     public IReadOnlyCollection<Behavior> Behavior
     {
-        get => GetElementValue(x => x.Behavior) ?? [];
+        get => GetElementValue(x => x.Behavior);
         private set => SetElementValue(value);
     }
 
@@ -279,6 +285,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     /// </summary>
     [PresentationAPI("2.0", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "homepage")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Homepage instead.")]
+    [NotMapped]
     [JsonProperty(RelatedJName)]
     public string? Related
     {
@@ -296,7 +303,7 @@ public class BaseNode<TBaseNode> : BaseItem<TBaseNode> where TBaseNode : BaseNod
     [JsonIgnore]
     public IReadOnlyCollection<IBaseItem> Items
     {
-        get => GetElementValue(x => x.Items) ?? [];
+        get => GetElementValue(x => x.Items);
         private set => SetElementValue(value);
     }
 

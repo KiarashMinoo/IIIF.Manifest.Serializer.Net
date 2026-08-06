@@ -45,7 +45,7 @@ public sealed class Provider : FormattableItem<Provider>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 
@@ -53,7 +53,7 @@ public sealed class Provider : FormattableItem<Provider>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Homepage> Homepage
     {
-        get => GetElementValue(x => x.Homepage) ?? [];
+        get => GetElementValue(x => x.Homepage);
         private set => SetElementValue(value);
     }
 
@@ -61,7 +61,7 @@ public sealed class Provider : FormattableItem<Provider>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Logo> Logo
     {
-        get => GetElementValue(x => x.Logo) ?? [];
+        get => GetElementValue(x => x.Logo);
         private set => SetElementValue(value);
     }
 
@@ -69,7 +69,7 @@ public sealed class Provider : FormattableItem<Provider>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<SeeAlso> SeeAlso
     {
-        get => GetElementValue(x => x.SeeAlso) ?? [];
+        get => GetElementValue(x => x.SeeAlso);
         private set => SetElementValue(value);
     }
 

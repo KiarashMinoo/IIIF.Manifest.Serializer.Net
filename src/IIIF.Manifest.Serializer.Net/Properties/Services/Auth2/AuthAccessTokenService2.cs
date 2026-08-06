@@ -33,7 +33,7 @@ public sealed class AuthAccessTokenService2 : UnprefixedBaseItem<AuthAccessToken
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> ErrorHeading
     {
-        get => GetElementValue(x => x.ErrorHeading) ?? [];
+        get => GetElementValue(x => x.ErrorHeading);
         private set => SetElementValue(value);
     }
 
@@ -42,7 +42,7 @@ public sealed class AuthAccessTokenService2 : UnprefixedBaseItem<AuthAccessToken
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> ErrorNote
     {
-        get => GetElementValue(x => x.ErrorNote) ?? [];
+        get => GetElementValue(x => x.ErrorNote);
         private set => SetElementValue(value);
     }
 

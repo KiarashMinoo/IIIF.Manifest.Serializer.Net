@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
@@ -59,7 +60,7 @@ public sealed partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupp
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<IBaseService> Services
     {
-        get => GetElementValue(x => x.Services) ?? [];
+        get => GetElementValue(x => x.Services);
         private set => SetElementValue(value);
     }
 
@@ -81,6 +82,7 @@ public sealed partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupp
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
+    [NotMapped]
     [JsonProperty(SequencesJName)]
     public IReadOnlyCollection<Sequence> Sequences
     {
@@ -97,10 +99,11 @@ public sealed partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupp
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0",
         Notes = "No 3.0 equivalent. Only the first sequence's canvases become Items; the rest are preserved here, not dropped.")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. No 3.0 equivalent; preserved only for lossless round-tripping of multi-sequence legacy documents.")]
+    [NotMapped]
     [JsonIgnore]
     public IReadOnlyCollection<Sequence> AdditionalSequences
     {
-        get => GetElementValue(x => x.AdditionalSequences) ?? [];
+        get => GetElementValue(x => x.AdditionalSequences);
         private set => SetElementValue(value);
     }
 
@@ -121,7 +124,7 @@ public sealed partial class Manifest : BaseNode<Manifest>, IViewingDirectionSupp
     [JsonProperty(StructuresJName)]
     public IReadOnlyCollection<Structure> Structures
     {
-        get => GetElementValue(x => x.Structures) ?? [];
+        get => GetElementValue(x => x.Structures);
         private set => SetElementValue(value);
     }
 

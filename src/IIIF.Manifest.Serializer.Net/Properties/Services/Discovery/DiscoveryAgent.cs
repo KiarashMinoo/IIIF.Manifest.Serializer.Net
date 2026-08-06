@@ -51,7 +51,7 @@ public sealed class DiscoveryAgent : TrackableObject<DiscoveryAgent>
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 

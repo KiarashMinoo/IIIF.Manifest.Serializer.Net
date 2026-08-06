@@ -57,7 +57,7 @@ public class BaseResource<TBaseResource> : FormattableItem<TBaseResource>, IBase
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 

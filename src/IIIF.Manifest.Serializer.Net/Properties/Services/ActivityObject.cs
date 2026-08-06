@@ -61,7 +61,7 @@ public sealed class ActivityObject : TrackableObject<ActivityObject>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<DiscoveryDataset> SeeAlso
     {
-        get => GetElementValue(x => x.SeeAlso) ?? [];
+        get => GetElementValue(x => x.SeeAlso);
         private set => SetElementValue(value);
     }
 
@@ -70,7 +70,7 @@ public sealed class ActivityObject : TrackableObject<ActivityObject>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<DiscoveryAgent> Provider
     {
-        get => GetElementValue(x => x.Provider) ?? [];
+        get => GetElementValue(x => x.Provider);
         private set => SetElementValue(value);
     }
 

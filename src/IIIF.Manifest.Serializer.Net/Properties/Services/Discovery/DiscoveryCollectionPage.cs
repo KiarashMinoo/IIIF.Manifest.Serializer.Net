@@ -93,7 +93,7 @@ public sealed class DiscoveryCollectionPage : TrackableObject<DiscoveryCollectio
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Activity> OrderedItems
     {
-        get => GetElementValue(x => x.OrderedItems) ?? [];
+        get => GetElementValue(x => x.OrderedItems);
         private set => SetElementValue(value);
     }
 

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Properties;
@@ -32,15 +33,17 @@ public sealed class Sequence : BaseNode<Sequence>, IViewingDirectionSupport<Sequ
 
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Manifest.Items instead.")]
+    [NotMapped]
     [JsonProperty(CanvasesJName)]
     public IReadOnlyCollection<Canvas> Canvases
     {
-        get => GetElementValue(x => x.Canvases) ?? [];
+        get => GetElementValue(x => x.Canvases);
         private set => SetElementValue(value);
     }
 
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "start")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Manifest.Start instead.")]
+    [NotMapped]
     [JsonProperty(StartCanvasJName)]
     public StartCanvas? StartCanvas
     {

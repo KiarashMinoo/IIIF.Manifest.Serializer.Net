@@ -48,7 +48,7 @@ public sealed class Metadata : TrackableObject<Metadata>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<MetadataValue.MetadataValue> Value
     {
-        get => GetElementValue(x => x.Value) ?? [];
+        get => GetElementValue(x => x.Value);
         private set => SetElementValue(value);
     }
 

@@ -60,7 +60,7 @@ public sealed class TermPageResponse : TrackableObject<TermPageResponse>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<SearchTerm> Items
     {
-        get => GetElementValue(x => x.Items) ?? [];
+        get => GetElementValue(x => x.Items);
         private set => SetElementValue(value);
     }
 
@@ -68,7 +68,7 @@ public sealed class TermPageResponse : TrackableObject<TermPageResponse>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<string> Ignored
     {
-        get => GetElementValue(x => x.Ignored) ?? [];
+        get => GetElementValue(x => x.Ignored);
         private set => SetElementValue(value);
     }
 

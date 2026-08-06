@@ -59,7 +59,7 @@ public sealed class DiscoveryDataset : TrackableObject<DiscoveryDataset>
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 

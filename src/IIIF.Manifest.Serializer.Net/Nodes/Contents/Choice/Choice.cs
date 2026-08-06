@@ -48,7 +48,7 @@ public sealed class Choice : TrackableObject<Choice>, IBaseResource
     [JsonProperty(ItemsJName)]
     public IReadOnlyCollection<IBaseResource> Items
     {
-        get => GetElementValue(x => x.Items) ?? [];
+        get => GetElementValue(x => x.Items);
         private set => SetElementValue(value);
     }
 

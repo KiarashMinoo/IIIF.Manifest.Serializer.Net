@@ -17,7 +17,7 @@ public sealed class FeatureProperties : TrackableObject<FeatureProperties>
     [JsonProperty(LabelJName)]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 

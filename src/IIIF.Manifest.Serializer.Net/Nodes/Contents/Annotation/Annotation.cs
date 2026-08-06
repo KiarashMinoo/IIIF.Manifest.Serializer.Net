@@ -66,7 +66,7 @@ public sealed class Annotation : BaseItem<Annotation>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<IBaseResource> Bodies
     {
-        get => GetElementValue(x => x.Bodies) ?? [];
+        get => GetElementValue(x => x.Bodies);
         private set => SetElementValue(value);
     }
 
@@ -91,7 +91,7 @@ public sealed class Annotation : BaseItem<Annotation>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<AnnotationTarget> Targets
     {
-        get => GetElementValue(x => x.Targets) ?? [];
+        get => GetElementValue(x => x.Targets);
         private set => SetElementValue(value);
     }
 

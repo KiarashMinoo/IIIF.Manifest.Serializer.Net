@@ -60,7 +60,7 @@ public sealed class SearchTerm : TrackableObject<SearchTerm>
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 
@@ -75,7 +75,7 @@ public sealed class SearchTerm : TrackableObject<SearchTerm>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<IBaseService> Service
     {
-        get => GetElementValue(x => x.Service) ?? [];
+        get => GetElementValue(x => x.Service);
         private set => SetElementValue(value);
     }
 

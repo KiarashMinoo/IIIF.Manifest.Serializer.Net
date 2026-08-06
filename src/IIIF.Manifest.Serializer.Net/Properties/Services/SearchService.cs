@@ -46,7 +46,7 @@ public sealed class SearchService : UnprefixedBaseItem<SearchService>, IBaseServ
     [JsonProperty(ServiceJName)]
     public IReadOnlyCollection<AutoCompleteService> Services
     {
-        get => GetElementValue(x => x.Services) ?? [];
+        get => GetElementValue(x => x.Services);
         private set => SetElementValue(value);
     }
 

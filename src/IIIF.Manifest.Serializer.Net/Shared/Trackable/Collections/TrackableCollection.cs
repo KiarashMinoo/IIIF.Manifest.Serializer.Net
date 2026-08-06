@@ -206,7 +206,8 @@ public partial class TrackableCollection :
         {
             var liveRank = 0;
             for (var i = 0; i < index; i++)
-                if (_items[i].ModificationType != ModificationType.Added) liveRank++;
+                if (_items[i].ModificationType != ModificationType.Added)
+                    liveRank++;
 
             descriptor.SetModificationType(ModificationType.Removed);
             var originalIndex = ResolveOriginalIndex(liveRank);
@@ -264,6 +265,8 @@ public partial class TrackableCollection :
     {
         return GetEnumerator<object>();
     }
+    
+    public static TrackableCollection Empty => new();
 }
 
 public partial class TrackableCollection<T> :
@@ -275,6 +278,8 @@ public partial class TrackableCollection<T> :
     IList<T>,
     IReadOnlyCollection<T>
 {
+    public static TrackableCollection<T> Empty => new();
+
     private static readonly Func<object?, IElementDescriptor> DescriptorFactory = item => new ElementDescriptor<T>(TypedItem(item));
 
     private readonly TrackableCollection _trackableCollection;

@@ -47,7 +47,7 @@ public sealed class CoordinateItem : TrackableObject<CoordinateItem>, ICoordinat
 
     public IReadOnlyCollection<CoordinateItem> Coordinates
     {
-        get => GetElementValue(x => x.Coordinates) ?? [];
+        get => GetElementValue(x => x.Coordinates);
         private set => SetElementValue(value);
     }
 

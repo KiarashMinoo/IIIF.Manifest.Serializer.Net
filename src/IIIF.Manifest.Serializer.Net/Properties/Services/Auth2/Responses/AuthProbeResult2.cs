@@ -62,7 +62,7 @@ public sealed class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<AuthResourceReference> Substitute
     {
-        get => GetElementValue(x => x.Substitute) ?? [];
+        get => GetElementValue(x => x.Substitute);
         private set => SetElementValue(value);
     }
 
@@ -77,7 +77,7 @@ public sealed class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Heading
     {
-        get => GetElementValue(x => x.Heading) ?? [];
+        get => GetElementValue(x => x.Heading);
         private set => SetElementValue(value);
     }
 
@@ -85,7 +85,7 @@ public sealed class AuthProbeResult2 : TrackableObject<AuthProbeResult2>
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Note
     {
-        get => GetElementValue(x => x.Note) ?? [];
+        get => GetElementValue(x => x.Note);
         private set => SetElementValue(value);
     }
 

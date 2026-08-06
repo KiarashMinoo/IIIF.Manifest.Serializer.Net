@@ -31,7 +31,7 @@ public sealed class NavPlace : UnprefixedBaseItem<NavPlace>
     [JsonProperty(FeaturesJName)]
     public IReadOnlyCollection<Feature> Features
     {
-        get => GetElementValue(x => x.Features) ?? [];
+        get => GetElementValue(x => x.Features);
         private set => SetElementValue(value);
     }
 

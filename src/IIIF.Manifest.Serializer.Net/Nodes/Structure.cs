@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Properties;
 using IIIF.Manifests.Serializer.Properties.Interfaces;
@@ -38,6 +39,7 @@ public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), 
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
+    [NotMapped]
     [JsonProperty(CanvasesJName)]
     public IReadOnlyCollection<string> Canvases
     {
@@ -53,6 +55,7 @@ public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), 
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
+    [NotMapped]
     [JsonProperty(RangesJName)]
     public IReadOnlyCollection<string> Ranges
     {
@@ -73,6 +76,7 @@ public sealed class Structure(string id) : BaseNode<Structure>(id, "sc:Range"), 
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
+    [NotMapped]
     [JsonProperty(MembersJName)]
     public IReadOnlyCollection<object> Members
     {

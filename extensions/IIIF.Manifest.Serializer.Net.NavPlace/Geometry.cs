@@ -39,14 +39,14 @@ public sealed class Geometry : TrackableObject<Geometry>, ICoordinateItemSupport
     [JsonProperty(GeometriesJName)]
     public IReadOnlyCollection<Geometry> Geometries
     {
-        get => GetElementValue(x => x.Geometries) ?? [];
+        get => GetElementValue(x => x.Geometries);
         private set => SetElementValue(value);
     }
 
     [JsonProperty(CoordinatesJName)]
     public IReadOnlyCollection<CoordinateItem> Coordinates
     {
-        get => GetElementValue(x => x.Coordinates) ?? [];
+        get => GetElementValue(x => x.Coordinates);
         private set => SetElementValue(value);
     }
 

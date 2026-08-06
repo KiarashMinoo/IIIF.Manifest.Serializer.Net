@@ -15,7 +15,11 @@
         <Project Path="src/IIIF.Manifest.Serializer.Net/IIIF.Manifest.Serializer.Net.csproj" />
     </Folder>
     <Folder Name="/tests/">
-        <Project Path="tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj" />
-        <Project Path="tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj" />
+        <Project Path="tests/IIIF.Manifest.Serializer.Net.ArchTests/IIIF.Manifest.Serializer.Net.ArchTests.csproj">
+            <Build Solution="Release|*" Project="false" />
+        </Project>
+        <Project Path="tests/IIIF.Manifest.Serializer.Net.Tests/IIIF.Manifest.Serializer.Net.Tests.csproj">
+            <Build Solution="Release|*" Project="false" />
+        </Project>
     </Folder>
 </Solution>

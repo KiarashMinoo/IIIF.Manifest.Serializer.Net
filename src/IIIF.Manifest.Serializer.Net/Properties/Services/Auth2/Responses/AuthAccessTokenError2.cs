@@ -78,7 +78,7 @@ public sealed class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Heading
     {
-        get => GetElementValue(x => x.Heading) ?? [];
+        get => GetElementValue(x => x.Heading);
         private set => SetElementValue(value);
     }
 
@@ -86,7 +86,7 @@ public sealed class AuthAccessTokenError2 : TrackableObject<AuthAccessTokenError
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Note
     {
-        get => GetElementValue(x => x.Note) ?? [];
+        get => GetElementValue(x => x.Note);
         private set => SetElementValue(value);
     }
 

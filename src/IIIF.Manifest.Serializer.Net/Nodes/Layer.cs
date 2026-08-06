@@ -39,7 +39,7 @@ public sealed class Layer(string id) : BaseNode<Layer>(id, "sc:Layer")
     [JsonProperty(OtherContentJName)]
     public IReadOnlyCollection<string> OtherContent
     {
-        get => GetElementValue(x => x.OtherContent) ?? [];
+        get => GetElementValue(x => x.OtherContent);
         private set => SetElementValue(value);
     }
 

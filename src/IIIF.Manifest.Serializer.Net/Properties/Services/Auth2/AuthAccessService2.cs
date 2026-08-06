@@ -50,7 +50,7 @@ public sealed class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>,
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 
@@ -59,7 +59,7 @@ public sealed class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>,
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Heading
     {
-        get => GetElementValue(x => x.Heading) ?? [];
+        get => GetElementValue(x => x.Heading);
         private set => SetElementValue(value);
     }
 
@@ -68,7 +68,7 @@ public sealed class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>,
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Note
     {
-        get => GetElementValue(x => x.Note) ?? [];
+        get => GetElementValue(x => x.Note);
         private set => SetElementValue(value);
     }
 
@@ -77,7 +77,7 @@ public sealed class AuthAccessService2 : UnprefixedBaseItem<AuthAccessService2>,
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> ConfirmLabel
     {
-        get => GetElementValue(x => x.ConfirmLabel) ?? [];
+        get => GetElementValue(x => x.ConfirmLabel);
         private set => SetElementValue(value);
     }
 

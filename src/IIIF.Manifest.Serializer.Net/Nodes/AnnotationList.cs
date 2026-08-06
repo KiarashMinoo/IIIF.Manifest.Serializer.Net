@@ -41,7 +41,7 @@ public sealed class AnnotationList(string id) : BaseNode<AnnotationList>(id, "sc
     [JsonProperty(ResourcesJName)]
     public IReadOnlyCollection<IBaseResource> Resources
     {
-        get => GetElementValue(x => x.Resources) ?? [];
+        get => GetElementValue(x => x.Resources);
         private set => SetElementValue(value);
     }
 

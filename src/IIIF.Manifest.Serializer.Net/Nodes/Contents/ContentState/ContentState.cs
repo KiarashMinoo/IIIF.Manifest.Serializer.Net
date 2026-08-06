@@ -66,7 +66,7 @@ public sealed class ContentState : TrackableObject<ContentState>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<ContentStateTarget> Target
     {
-        get => GetElementValue(x => x.Target) ?? [];
+        get => GetElementValue(x => x.Target);
         private set => SetElementValue(value);
     }
 

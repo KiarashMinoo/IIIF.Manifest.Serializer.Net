@@ -63,7 +63,7 @@ public sealed class Service : BaseItem<Service>, IDimensionSupport<Service>, IBa
     [JsonProperty(TilesJName)]
     public IReadOnlyCollection<Tile> Tiles
     {
-        get => GetElementValue(x => x.Tiles) ?? [];
+        get => GetElementValue(x => x.Tiles);
         private set => SetElementValue(value);
     }
 
@@ -71,7 +71,7 @@ public sealed class Service : BaseItem<Service>, IDimensionSupport<Service>, IBa
     [JsonProperty(SizesJName)]
     public IReadOnlyCollection<Size> Sizes
     {
-        get => GetElementValue(x => x.Sizes) ?? [];
+        get => GetElementValue(x => x.Sizes);
         private set => SetElementValue(value);
     }
 
@@ -111,7 +111,7 @@ public sealed class Service : BaseItem<Service>, IDimensionSupport<Service>, IBa
     [JsonProperty(PreferredFormatsJName)]
     public IReadOnlyCollection<ImageFormat> PreferredFormats
     {
-        get => GetElementValue(x => x.PreferredFormats) ?? [];
+        get => GetElementValue(x => x.PreferredFormats);
         private set => SetElementValue(value);
     }
 
@@ -119,7 +119,7 @@ public sealed class Service : BaseItem<Service>, IDimensionSupport<Service>, IBa
     [JsonProperty(ExtraFormatsJName)]
     public IReadOnlyCollection<ImageFormat> ExtraFormats
     {
-        get => GetElementValue(x => x.ExtraFormats) ?? [];
+        get => GetElementValue(x => x.ExtraFormats);
         private set => SetElementValue(value);
     }
 
@@ -127,14 +127,14 @@ public sealed class Service : BaseItem<Service>, IDimensionSupport<Service>, IBa
     [JsonProperty(ExtraQualitiesJName)]
     public IReadOnlyCollection<ImageQuality> ExtraQualities
     {
-        get => GetElementValue(x => x.ExtraQualities) ?? [];
+        get => GetElementValue(x => x.ExtraQualities);
         private set => SetElementValue(value);
     }
 
     [JsonProperty(ExtraFeaturesJName)]
     public IReadOnlyCollection<ImageFeature> ExtraFeatures
     {
-        get => GetElementValue(x => x.ExtraFeatures) ?? [];
+        get => GetElementValue(x => x.ExtraFeatures);
         private set => SetElementValue(value);
     }
 

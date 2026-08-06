@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using IIIF.Manifests.Serializer.Attributes;
 using IIIF.Manifests.Serializer.Helpers;
 using IIIF.Manifests.Serializer.Nodes.Contents.Annotation;
@@ -60,6 +61,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
+    [NotMapped]
     [JsonProperty(ImagesJName)]
     public IReadOnlyCollection<Image> Images
     {
@@ -74,6 +76,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
+    [NotMapped]
     [JsonProperty(nameof(Audios))]
     public IReadOnlyCollection<Audio> Audios
     {
@@ -88,6 +91,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "items")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Items instead.")]
+    [NotMapped]
     [JsonProperty(nameof(Videos))]
     public IReadOnlyCollection<Video> Videos
     {
@@ -102,7 +106,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     [JsonProperty(AnnotationsJName)]
     public IReadOnlyCollection<AnnotationPage> Annotations
     {
-        get => GetElementValue(x => x.Annotations) ?? [];
+        get => GetElementValue(x => x.Annotations);
         private set => SetElementValue(value);
     }
 
@@ -111,6 +115,7 @@ public sealed class Canvas : BaseNode<Canvas>, IDimensionSupport<Canvas>
     /// </summary>
     [PresentationAPI("2.0", "2.1", IsDeprecated = true, DeprecatedInVersion = "3.0", ReplacedBy = "annotations")]
     [Obsolete("Deprecated in IIIF Presentation API 3.0. Use Annotations instead.")]
+    [NotMapped]
     [JsonProperty(OtherContentsJName)]
     public IReadOnlyCollection<OtherContent> OtherContents
     {

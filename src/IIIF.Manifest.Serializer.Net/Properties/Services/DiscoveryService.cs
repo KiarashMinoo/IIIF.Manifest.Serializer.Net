@@ -72,7 +72,7 @@ public sealed class DiscoveryService : UnprefixedBaseItem<DiscoveryService>, IBa
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<DiscoveryDataset> SeeAlso
     {
-        get => GetElementValue(x => x.SeeAlso) ?? [];
+        get => GetElementValue(x => x.SeeAlso);
         private set => SetElementValue(value);
     }
 
@@ -81,7 +81,7 @@ public sealed class DiscoveryService : UnprefixedBaseItem<DiscoveryService>, IBa
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<DiscoveryResourceReference> PartOf
     {
-        get => GetElementValue(x => x.PartOf) ?? [];
+        get => GetElementValue(x => x.PartOf);
         private set => SetElementValue(value);
     }
 

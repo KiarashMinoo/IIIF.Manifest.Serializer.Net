@@ -52,7 +52,9 @@ public class UnprefixedBaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseIt
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<string> Context
     {
-        get => GetElementValue(x => x.Context) ?? [DefaultContext];
+        // See BaseItem.Context: bypasses the `x => x.Context` expression overload (never null) since
+        // this property's unset default is [DefaultContext], not [].
+        get => GetElementValue<IReadOnlyCollection<string>>(out _, nameof(Context)) ?? [DefaultContext];
         private set => SetElementValue(value);
     }
 
@@ -60,7 +62,7 @@ public class UnprefixedBaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseIt
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<IBaseService> Service
     {
-        get => GetElementValue(x => x.Service) ?? [];
+        get => GetElementValue(x => x.Service);
         private set => SetElementValue(value);
     }
 

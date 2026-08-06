@@ -51,7 +51,7 @@ public sealed class SearchHitTarget : TrackableObject<SearchHitTarget>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<SearchTextQuoteSelector> Selector
     {
-        get => GetElementValue(x => x.Selector) ?? [];
+        get => GetElementValue(x => x.Selector);
         private set => SetElementValue(value);
     }
 }

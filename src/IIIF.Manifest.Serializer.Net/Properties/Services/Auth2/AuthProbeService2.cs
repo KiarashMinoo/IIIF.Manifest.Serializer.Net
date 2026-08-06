@@ -40,7 +40,7 @@ public sealed class AuthProbeService2 : UnprefixedBaseItem<AuthProbeService2>, I
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> ErrorHeading
     {
-        get => GetElementValue(x => x.ErrorHeading) ?? [];
+        get => GetElementValue(x => x.ErrorHeading);
         private set => SetElementValue(value);
     }
 
@@ -49,7 +49,7 @@ public sealed class AuthProbeService2 : UnprefixedBaseItem<AuthProbeService2>, I
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> ErrorNote
     {
-        get => GetElementValue(x => x.ErrorNote) ?? [];
+        get => GetElementValue(x => x.ErrorNote);
         private set => SetElementValue(value);
     }
 

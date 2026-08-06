@@ -39,7 +39,7 @@ public sealed class Tile : TrackableObject<Tile>
     [JsonProperty(ScaleFactorsJName)]
     public IReadOnlyCollection<int> ScaleFactors
     {
-        get => GetElementValue(x => x.ScaleFactors) ?? [];
+        get => GetElementValue(x => x.ScaleFactors);
         private set => SetElementValue(value);
     }
 

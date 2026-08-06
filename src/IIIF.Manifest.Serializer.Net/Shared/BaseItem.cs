@@ -48,7 +48,10 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseItem, IConte
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<string> Context
     {
-        get => GetElementValue(x => x.Context) ?? [DefaultContext];
+        // Deliberately bypasses the `x => x.Context` expression overload, which never returns null
+        // (it lazily persists an empty collection) - this property's unset default is [DefaultContext],
+        // not [], so it needs the raw member-name lookup that still returns null when unset.
+        get => GetElementValue<IReadOnlyCollection<string>>(out _, nameof(Context)) ?? [DefaultContext];
         private set => SetElementValue(value);
     }
 
@@ -56,7 +59,7 @@ public class BaseItem<TBaseItem> : TrackableObject<TBaseItem>, IBaseItem, IConte
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<IBaseService> Service
     {
-        get => GetElementValue(x => x.Service) ?? [];
+        get => GetElementValue(x => x.Service);
         private set => SetElementValue(value);
     }
 

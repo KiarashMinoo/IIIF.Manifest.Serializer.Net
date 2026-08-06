@@ -39,7 +39,7 @@ public sealed class RequiredStatement : TrackableObject<RequiredStatement>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 
@@ -47,7 +47,7 @@ public sealed class RequiredStatement : TrackableObject<RequiredStatement>
     [JsonConverter(typeof(ObjectArrayJsonConverter))]
     public IReadOnlyCollection<Description> Value
     {
-        get => GetElementValue(x => x.Value) ?? [];
+        get => GetElementValue(x => x.Value);
         private set => SetElementValue(value);
     }
 }

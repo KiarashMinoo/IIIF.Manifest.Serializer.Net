@@ -38,7 +38,7 @@ public sealed class AuthLogoutService2 : UnprefixedBaseItem<AuthLogoutService2>,
     [JsonConverter(typeof(LanguageMapJsonConverter))]
     public IReadOnlyCollection<Label> Label
     {
-        get => GetElementValue(x => x.Label) ?? [];
+        get => GetElementValue(x => x.Label);
         private set => SetElementValue(value);
     }
 
