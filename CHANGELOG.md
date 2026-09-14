@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [3.0.19] — 2026-09-14
+
+_No user-facing changes in this release._
+
 ## [3.0.18] — 2026-09-14
 
 ### 📦 Dependencies
