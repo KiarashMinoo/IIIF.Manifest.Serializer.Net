@@ -14,22 +14,34 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # NuGet.org Trusted Publishing (OIDC) is built directly into reusable-ci.yml (it has
-  # its own inline publish-nuget job) — this repo doesn't need its own. reusable-ci.yml
-  # defaults to nuget-auth-mode: 'classic', which pushes with a plain NuGet.org API key
-  # (secrets.nuget-api-key) instead of OIDC Trusted Publishing -- OIDC doesn't work
-  # through a reusable workflow hosted in a different repo (see reusable-ci.yml's
-  # nuget-auth-mode input description for the full explanation). Set a repo secret
-  # named NUGET_API_KEY (Settings > Secrets and variables > Actions > Secrets) with a
-  # classic API key from nuget.org > API Keys, scoped to this package/owner.
+  # NuGet.org Trusted Publishing (OIDC) can't run inside reusable-ci.yml itself: a
+  # reusable workflow's OIDC token always names ITS OWN hosting repo/file in the
+  # job_workflow_ref claim, never the caller's, no matter how the nuget.org trust
+  # policy is configured (see reusable-ci.yml's nuget-auth-mode input for the full
+  # explanation, and github.com/NuGet/login issues #6 and #24). So reusable-ci.yml is
+  # called here with publish-to-nuget: false -- it still bumps the version, writes the
+  # changelog, tags, creates the GitHub Release, builds/tests/packs, and uploads
+  # pkg-*/symbols-* artifacts; it just skips its own internal NuGet publish step.
+  # publish-nuget-oidc below does the actual push, as steps running directly in THIS
+  # file via the KiarashMinoo/.github/.github/actions/nuget-oidc-publish composite
+  # action -- because that action's steps execute inline in this job (not inside a
+  # called reusable workflow), the OIDC token's job_workflow_ref names this repo +
+  # this file, matching a Trusted Publishing policy configured with Repository
+  # Owner=KiarashMinoo, Repository=IIIF.Manifest.Serializer.Net, Workflow
+  # File=publish-nuget.yml. Requires a NUGET_USER repo secret (the nuget.org username
+  # the policy is attached to) -- Settings > Secrets and variables > Actions > Secrets.
   #
   # IMPORTANT: a job-level `permissions:` block is exhaustive, not additive -- any
   # scope not listed here is implicitly set to "none" for every nested job the called
-  # reusable workflow runs, regardless of what that nested job requests for itself.
-  # This must list every scope ANY of reusable-ci.yml's jobs need across the whole run:
-  # contents:write (version/changelog commit, tag, GitHub Release), packages:write +
-  # id-token:write (publish-nuget, for GitHub Packages / OIDC respectively, if ever
-  # switched on), actions:write (cleanup-nuget-artifacts, to delete run artifacts).
+  # reusable workflow runs, regardless of what that nested job requests for itself --
+  # and GitHub validates this statically against every job reusable-ci.yml DECLARES,
+  # not just the ones that will actually execute once `if:` conditions are evaluated.
+  # So even with publish-to-nuget: false (which only skips publish-nuget/
+  # cleanup-nuget-artifacts at runtime), this must still list every scope those two
+  # jobs declare needing: contents:write (version/changelog commit, tag, GitHub
+  # Release), packages:write + id-token:write (publish-nuget's GitHub Packages / OIDC
+  # paths), actions:write (cleanup-nuget-artifacts, to delete run artifacts) -- or the
+  # run fails at startup with "requesting X, but is only allowed none".
   release:
     # workflow_dispatch has no branch filter in the `on:` trigger itself (unlike push/pull_request) -
     # anyone can fire this from the branch dropdown in the Actions UI, so the restriction has to be
@@ -65,10 +77,21 @@ jobs:
       # pack-solution.ps1 (used by reusable-ci.yml's Pack step) writes to artifacts/pkg, not
       # smoke-test-packages.ps1's own default (artifacts/packages) -- point it at the right dir.
       post-pack-command: pwsh ./scripts/smoke-test-packages.ps1 -SkipPack -PackagesDir artifacts/pkg
-      publish-to-nuget: true
-      nuget-target: 'nuget.org'
-      nuget-auth-mode: 'classic'
+      publish-to-nuget: false
     secrets:
       gh-token: ${{ secrets.GH_TOKEN }}
-      nuget-api-key: ${{ secrets.NUGET_API_KEY }}
-  
+
+  publish-nuget-oidc:
+    name: Publish packages (OIDC Trusted Publishing)
+    needs: [release]
+    if: needs.release.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: KiarashMinoo/.github/.github/actions/nuget-oidc-publish@main
+        with:
+          nuget-user: ${{ secrets.NUGET_USER }}
+          nuget-filter-enabled: false
