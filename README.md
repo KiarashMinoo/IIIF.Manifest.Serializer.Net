@@ -7,6 +7,8 @@
 
 [![License: MIT](https://img.shields.io/github/license/KiarashMinoo/IIIF.Manifest.Serializer.Net)](LICENSE)
 
+[![Architecture diagram](https://gitdiagram.com/diagram-badge.svg)](https://gitdiagram.com/kiarashminoo/iiif.manifest.serializer.net?utm_source=readme&utm_medium=badge)
+
 Version-aware .NET models and serializers for IIIF Presentation API resources, with support for legacy 2.x JSON and
 modern Presentation API 3.0 output.
 
