@@ -1,0 +1,61 @@
+name: Secrets, Vulnerabilities & Duplication
+
+on:
+  push:
+    branches: [main, develop, 'release/**']
+  pull_request:
+    branches: [main, develop, 'release/**']
+  schedule:
+    - cron: '0 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+concurrency:
+  group: scq-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  gitleaks:
+    name: gitleaks (secret scan)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  osv-scanner:
+    name: osv-scanner (dependency vulnerabilities)
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@v2.0.0
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    with:
+      scan-args: |-
+        --recursive
+        --config=osv-scanner.toml
+        ./
+
+  jscpd:
+    name: jscpd (copy/paste detection)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npx --yes jscpd@4 --config .jscpd.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: jscpd-report
+          path: artifacts/jscpd
+          if-no-files-found: ignore

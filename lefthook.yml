@@ -1,0 +1,15 @@
+# Lefthook - local git hooks. Install: `lefthook install` (https://github.com/evilmartians/lefthook)
+# Requires gitleaks and jscpd on PATH. Skip once with: LEFTHOOK=0 git commit ...
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      run: gitleaks protect --staged --config .gitleaks.toml --redact --verbose
+    jscpd:
+      glob: "*.cs"
+      run: npx --yes jscpd@4 --config .jscpd.json
+
+pre-push:
+  commands:
+    osv-scanner:
+      run: osv-scanner scan source --recursive --config osv-scanner.toml .

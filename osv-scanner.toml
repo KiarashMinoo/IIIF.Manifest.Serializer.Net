@@ -1,0 +1,7 @@
+# osv-scanner config (https://google.github.io/osv-scanner/configuration/)
+# Add reviewed exceptions here, always with a reason and expiry:
+#
+# [[IgnoredVulns]]
+# id = "GHSA-xxxx-xxxx-xxxx"
+# ignoreUntil = 2027-01-01
+# reason = "Not reachable: ..."

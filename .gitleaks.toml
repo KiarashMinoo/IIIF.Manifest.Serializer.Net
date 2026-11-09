@@ -1,0 +1,12 @@
+title = "IIIF.Manifest.Serializer.Net gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Generated output and test fixtures"
+paths = [
+  '''coverage-report/''',
+  '''artifacts/''',
+  '''docs/''',
+]

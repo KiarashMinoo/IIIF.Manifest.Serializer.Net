@@ -1,0 +1,17 @@
+{
+  "threshold": 5,
+  "minLines": 10,
+  "minTokens": 100,
+  "format": ["csharp"],
+  "path": ["src", "extensions"],
+  "ignore": [
+    "**/bin/**",
+    "**/obj/**",
+    "**/*.g.cs",
+    "**/*.Designer.cs",
+    "**/Migrations/**"
+  ],
+  "reporters": ["console", "markdown"],
+  "output": "./artifacts/jscpd",
+  "gitignore": true
+}
